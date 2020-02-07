@@ -1,0 +1,146 @@
+@import './colors';
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  font-family: 'Open Sans', sans-serif;
+}
+
+body {
+    background-color: #eee;
+    transition-property: background-color;
+    transition-duration: 2s;
+}
+
+.page-title {
+    font-size: 30px;
+    margin-bottom: 20px;
+}
+
+.button {
+    background-color: $blueGrey;
+    color: white;
+    height: 40px;
+    border-radius: 5px;
+    padding: 0px 15px;
+    margin-right: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 1px 10px 0 rgba(10, 8, 72, 0.1);
+    border: none;
+    font-size: 14px;
+    font-weight: 800;
+    transition-property: box-shadow, background-color;
+    transition-duration: 0.3s, 2s;
+ 
+    &:hover { 
+        outline: none;
+        filter: brightness(110%);
+        cursor: pointer;
+    }
+    
+    &:focus { outline: none }
+}
+
+input {
+    background-color: transparent;
+}
+
+.input-wrapper {
+    font-size: 14px;
+    outline: none;
+    border: none;
+    background-color: white;
+    height: 40px;
+    border-radius: 5px;
+    padding: 0px 15px;
+    margin-right: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    box-shadow: 0 1px 10px 0 rgba(10, 8, 72, 0.1);
+    transition-property: box-shadow, background-color;
+    transition-duration: 0.3s, 2s;
+
+    &:hover {
+        box-shadow: 0 0 5px 6px $blueGreyTransparent;
+    }
+
+    &.modal {
+        width: 400px;
+        //height: auto;
+        //border: 1px solid rgba(0, 0, 0, 0.2)
+    }
+
+    &.error {
+        border: 1px solid rgb(255, 0, 0)
+    }
+}
+
+.input {
+    font-size: 14px;
+    outline: none;
+    border: none;
+}
+
+.margin-bottom-20 {
+    margin-bottom: 20px;
+}
+
+// Animation Keyframes
+@keyframes fade-in {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+
+//-------------------- Dark Mode --------------------//
+.dark-mode {
+    background-color:rgb(45, 45, 48);
+    transition-property: background-color;
+    transition-duration: 2s;
+
+    .navbar {
+        background-color: rgb(30, 30, 33);
+        transition-property: background-color;
+        transition-duration: 2s;
+    }
+
+    .input-wrapper {
+        background-color: rgb(70, 70, 75);
+        transition-property: background-color;
+        transition-duration: 2s;
+
+        &:hover {
+            box-shadow: 0 0 5px 6px $purple-o;
+        }
+    }
+
+    .post {
+        background-color: rgb(70, 70, 75);
+        transition-property: background-color;
+        transition-duration: 2s;
+    }
+
+    .create-post-modal {
+        background-color: rgb(40, 40, 45);
+        transition-property: background-color;
+        transition-duration: 2s;
+    }
+
+    .homepage,
+    .post-title,
+    .page-title, 
+    .post-description {
+        color: rgb(200, 200, 200);
+        transition-property: color;
+        transition-duration: 2s;
+    }
+
+    .button {
+        background-color: $purple;
+        transition-property: background-color;
+        transition-duration: 2s;
+    }
+}
