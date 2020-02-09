@@ -1,13 +1,37 @@
-import React from 'react'
-import Post from '.././components/post'
+import React, { useContext, useState } from 'react'
+import { PostContext } from '../contexts/PostContext'
+import Post from '../components/Post'
+import WallHeader from '../components/WallHeader';
 
-import WallHeader from '../components/wall-header';
+function Wall() {
+    const context = useContext(PostContext);
 
-import MyContext from '../components/MyContext';
+    // Filter posts by search text
+    let filteredPosts = context.posts.filter((post) => {
+        return post.title.indexOf(context.searchFilter) !== -1;
+    })
+    // Sort posts by ID
+    // if (context.sortBy === 'id') {
+    //     filteredPosts = filteredPosts.sort((a, b) => a.id - b.id)
+    // }
+    // Sort posts by Likes
+    if (context.sortBy === 'likes') {
+        filteredPosts = filteredPosts.sort((a, b) => b.likes - a.likes)
+    }
+    // Sort posts by Date
+    if (context.sortBy === 'date') {
+        filteredPosts = filteredPosts.sort((a, b) => b.date - a.date)
+    }
 
-function Wall(props) {
     return (
         <div className="wall">
+            <WallHeader />
+
+            <ul className="posts">
+                {/* {filteredPosts.map((post, index) => console.log(post.id, index) )}  */}
+                {filteredPosts.map((post, index) => <Post key={post.id} index={index} post={post} getPosts={context.getPosts}/> )} 
+            </ul>
+
             <style jsx="true">{`
                 .wall {
                     width: 600px;
@@ -18,7 +42,7 @@ function Wall(props) {
                     align-items: center;
                 }
 
-                .wall-list {
+                .posts {
                     padding: 0;
                     width: 100%;
                 }
@@ -33,11 +57,17 @@ function Wall(props) {
     )
 }
 
-export default Wall();
+
+export default Wall
+
+
+
+// import React from 'react'
+// import Post from '.././components/post'
+
+// import WallHeader from '../components/wall-header';
 
 // class wall extends React.Component {
-//     static contextType = MyContext;
-
 //     state = {
 //         searchText: '',
 //         sortBy: 'id'
@@ -53,7 +83,6 @@ export default Wall();
 //     SortByLikes = () => this.setState({ sortBy: 'likes' });
 
 //     render() {
-//         // let filteredPosts = this.context.posts;
 //         // // Filter out empty posts (TODO: add 'visible' boolean)
 //         // let usablePosts = this.props.posts.filter((el) => { return el != null})
 //         // // Filter out posts that don't match the search criteria (TODO: create new search queries when users enter search instead of searching existing state)
@@ -68,14 +97,9 @@ export default Wall();
 //         // if (this.state.sortBy === 'likes') {
 //         //     filteredPosts = filteredPosts.sort((a, b) => b.likes - a.likes)
 //         // }
-//         // let contextTest = this.context;
 
 //         return (
-
 //             <div className="wall">
-//                 <MyContext.Consumer>
-//                     { context => (context)  }
-//                 </MyContext.Consumer>
 //                 <WallHeader posts={this.props.posts} newPost={this.props.newPost} searchFilter={this.searchFilter} SortById={this.SortById} SortByLikes={this.SortByLikes}/>
 
 //                 {/* <ul className="wall-list">

@@ -39,11 +39,11 @@ router.post('/', (req, res) => {
 
 // Like a post
 router.put('/', (req, res) => {
-    const updatedLikes = req.body.post.likes + 1
+    // const updatedLikes = req.body.post.likes + 1
 
-    Posts.update({ likes: updatedLikes }, {
+    Posts.update({ likes: req.body.newLikes }, {
         where: {
-            id: req.body.post.id
+            id: req.body.id
         }
     })
     
