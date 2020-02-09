@@ -26,6 +26,9 @@ const Posts = db.define('post', {
     },
     likes: {
         type: Sequelize.INTEGER
+    },
+    pinned: {
+        type: Sequelize.STRING
     }
     /*,
     createdAt: {

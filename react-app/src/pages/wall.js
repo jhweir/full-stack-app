@@ -8,27 +8,33 @@ function Wall() {
 
     // Filter posts by search text
     let filteredPosts = context.posts.filter((post) => {
-        return post.title.indexOf(context.searchFilter) !== -1;
+        return post.title.indexOf(context.searchFilter) !== -1 && post.pinned == null
     })
-    // Sort posts by ID
-    // if (context.sortBy === 'id') {
-    //     filteredPosts = filteredPosts.sort((a, b) => a.id - b.id)
-    // }
+
     // Sort posts by Likes
     if (context.sortBy === 'likes') {
         filteredPosts = filteredPosts.sort((a, b) => b.likes - a.likes)
     }
+
     // Sort posts by Date
     if (context.sortBy === 'date') {
         filteredPosts = filteredPosts.sort((a, b) => b.date - a.date)
     }
 
+    // Pinned posts
+    let pinnedPosts = context.posts.filter((post) => {
+        return post.pinned === 'Global wall'
+    })
+
     return (
         <div className="wall">
             <WallHeader />
 
+            <ul className="pinned-posts">
+                {pinnedPosts.map((post, index) => <Post key={post.id} index={index} post={post} getPosts={context.getPosts}/> )} 
+            </ul>
+
             <ul className="posts">
-                {/* {filteredPosts.map((post, index) => console.log(post.id, index) )}  */}
                 {filteredPosts.map((post, index) => <Post key={post.id} index={index} post={post} getPosts={context.getPosts}/> )} 
             </ul>
 
@@ -41,12 +47,14 @@ function Wall() {
                     justify-content: center;
                     align-items: center;
                 }
-
                 .posts {
                     padding: 0;
                     width: 100%;
                 }
-
+                .pinned-posts {
+                    padding: 0;
+                    width: 100%;
+                }
                 @media screen and (max-width: 700px) {
                     .wall {
                         width: 100%;

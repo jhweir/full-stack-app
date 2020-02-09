@@ -17,9 +17,9 @@ router.get('/', (req, res) =>
 router.post('/', (req, res) => {
     res.send('Post request made')
     const data = req.body.post
-    let { title, description, creator, tags, comments, date, likes } = data;
+    let { title, description, creator, tags, comments, date, likes, pinned } = data;
 
-    Posts.create({ title, description, creator, tags, comments, date, likes})
+    Posts.create({ title, description, creator, tags, comments, date, likes, pinned })
         // .then(post => res.redirect('/posts'))
         // .catch(err => console.log(err))
 });
@@ -38,6 +38,22 @@ router.put('/', (req, res) => {
     })
     
     res.send('Post liked')
+})
+
+// Pin post
+router.put('/pinpost', (req, res) => {
+    Posts.update({ pinned: 'Global wall' }, {
+        where: { id: req.body.id }
+    })
+    res.send('Post pinned')
+})
+
+// Unin post
+router.put('/unpinpost', (req, res) => {
+    Posts.update({ pinned: null }, {
+        where: { id: req.body.id }
+    })
+    res.send('Post unpinned')
 })
 
 module.exports = router;

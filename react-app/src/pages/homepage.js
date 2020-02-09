@@ -38,7 +38,7 @@ function Homepage() {
                         <ul>
                             <li><input type="checkbox" checked="checked" readOnly></input> Like posts</li>
                             <li><input type="checkbox" checked="checked" readOnly></input> Delete posts</li>
-                            <li><input type="checkbox" checked="" readOnly></input> Pin posts</li>
+                            <li><input type="checkbox" checked="checked" readOnly></input> Pin posts</li>
                             <li><input type="checkbox" checked="" readOnly></input> Add tags to posts</li>
                             <li><input type="checkbox" checked="" readOnly></input> Link to unique post page</li>
                             <li><input type="checkbox" checked="" readOnly></input> Add comments to posts</li>
@@ -57,9 +57,9 @@ function Homepage() {
                 <li><input type="checkbox" checked="checked" readOnly></input> Setup .env on Server</li>
                 <li><input type="checkbox" checked="checked" readOnly></input> Change class based to function based components</li>
                 <li><input type="checkbox" checked="checked" readOnly></input> Like fix</li>
+                <li><input type="checkbox" checked="" readOnly></input> Fix page routing</li>
                 <li><input type="checkbox" checked="" readOnly></input> Authentication</li>
                 <li><input type="checkbox" checked="" readOnly></input> Users page</li>
-                <li><input type="checkbox" checked="" readOnly></input> Pin posts</li>
                 <li><input type="checkbox" checked="checked" readOnly></input> Global state managment using context</li>
                 <li><input type="checkbox" checked="" readOnly></input> Scrape URLs for post data</li>
                 <li><input type="checkbox" checked="" readOnly></input> Resize and save thumbnails</li>

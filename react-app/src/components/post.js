@@ -8,7 +8,7 @@ function Post(props) {
 
     const [likes, setLikes] = useState(props.post.likes)
 
-    let { id, title, description, creator, date } = props.post
+    let { id, title, description, creator, date, pinned } = props.post
 
     // Format date from SQL table
     const t = date.split(/[-.T :]/)
@@ -27,8 +27,21 @@ function Post(props) {
             .catch(error => { console.log(error) })
     }
 
+    function pinPost() {
+        axios({ method: 'put', url: config.environmentURL + '/pinpost', data: { id } })
+        .then(setTimeout(() => {context.getPosts()}, 100))
+        .catch(error => { console.log(error) })
+    }
+
+    function unpinPost() {
+        axios({ method: 'put', url: config.environmentURL + '/unpinpost', data: { id } })
+        .then(setTimeout(() => {context.getPosts()}, 100))
+        .catch(error => { console.log(error) })
+    }
+
     return (
-        <div className="post">
+        <div className={"post " + (pinned != null ? 'pinned-post' : '')} >
+            {pinned != null && <div className="pin-flag"></div>}
             <div className="post-id">{ props.index + 1 }</div>
             <div className="post-body">
                 <div className="post-tags">
@@ -51,7 +64,10 @@ function Post(props) {
                             <div className="delete-icon"/>
                             <span>Delete</span>
                         </div>
-                        {/* <button className="button">Delete</button> */}
+                        <div className="post-interact-item" onClick={pinned === null ? pinPost : unpinPost}>
+                            <div className="pin-icon"/>
+                            <span>{pinned === null ? 'Pin post' : 'Unpin post'}</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -67,6 +83,25 @@ function Post(props) {
                     flex-direction: row;
                     transition-property: background-color;
                     transition-duration: 2s;
+                    position: relative;
+                }
+                .pinned-post {
+                    background-color: #f1f6ff;
+                }
+                .pin-flag {
+                    background-image: url(./icons/pin-01.png);
+                    background-position: center;
+                    background-repeat: no-repeat;
+                    background-size: cover;
+                    background-color: transparent;
+                    border: none;
+                    height: 17px;
+                    width: 17px;
+                    padding: 0;
+                    opacity: 0.4;
+                    margin-right: 5px;
+                    position: absolute;
+                    right: 15px;
                 }
                 .post-id {
                     width: 60px;
@@ -156,6 +191,19 @@ function Post(props) {
                 }
                 .delete-icon {
                     background-image: url(./icons/delete-01.png);
+                    background-position: center;
+                    background-repeat: no-repeat;
+                    background-size: cover;
+                    background-color: transparent;
+                    border: none;
+                    height: 17px;
+                    width: 17px;
+                    padding: 0;
+                    opacity: 0.4;
+                    margin-right: 5px;
+                }
+                .pin-icon {
+                    background-image: url(./icons/pin-01.png);
                     background-position: center;
                     background-repeat: no-repeat;
                     background-size: cover;
