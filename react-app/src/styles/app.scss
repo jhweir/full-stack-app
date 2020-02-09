@@ -128,8 +128,14 @@ input {
         transition-duration: 2s;
     }
 
+    .pinned-post {
+        background-color: rgb(90, 90, 95);
+        transition-property: background-color;
+        transition-duration: 2s;
+    }
+
     .create-post-modal {
-        background-color: rgb(40, 40, 45);
+        background-color: rgb(70, 70, 75);
         transition-property: background-color;
         transition-duration: 2s;
     }

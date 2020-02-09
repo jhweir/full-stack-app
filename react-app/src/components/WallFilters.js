@@ -33,7 +33,8 @@ function WallFilters() {
                     box-shadow: 0 1px 10px 0 rgba(10, 8, 72, 0.2);
                     position: absolute;
                     top: 130px;
-                    left: calc(50% - 20px)
+                    left: calc(50% - 20px);
+                    z-index: 1;
                 }
                 .dropdown-item {
                     height: 40px;

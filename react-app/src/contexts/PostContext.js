@@ -10,7 +10,7 @@ function PostContextProvider(props) {
     const [sortBy, setSortBy] = useState('id')
 
     function getPosts() {
-        axios.get(config.environmentURL) // http://176.34.156.27/api/posts OR http://localhost:5000/api/posts
+        axios.get(config.environmentURL)
             .then(res => { setPosts(res.data) })
             .then(console.log('posts fetched'))
     }

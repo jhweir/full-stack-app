@@ -1,4 +1,5 @@
 import React, { useState, useContext } from 'react'
+import { Link } from 'react-router-dom'
 import axios from 'axios'
 import config from '../config'
 import { PostContext } from '../contexts/PostContext'
@@ -11,8 +12,8 @@ function Post(props) {
     let { id, title, description, creator, date, pinned } = props.post
 
     // Format date from SQL table
-    const t = date.split(/[-.T :]/)
-    const formattedDate = t[3]+':'+t[4]+' on '+t[2]+'-'+t[1]+'-'+t[0]
+    // const t = date.split(/[-.T :]/)
+    // const formattedDate = t[3]+':'+t[4]+' on '+t[2]+'-'+t[1]+'-'+t[0]
       
     function addLike() {
         let newLikes = likes + 1
@@ -42,7 +43,7 @@ function Post(props) {
     return (
         <div className={"post " + (pinned != null ? 'pinned-post' : '')} >
             {pinned != null && <div className="pin-flag"></div>}
-            <div className="post-id">{ props.index + 1 }</div>
+            <div className="post-id">{pinned === null ? props.index + 1 || '' : ''}</div>
             <div className="post-body">
                 <div className="post-tags">
                     <a className="user-thumbnail mr-10"></a>
@@ -50,10 +51,10 @@ function Post(props) {
                     <span className="sub-text mr-10">to</span>
                     <a className="sub-text mr-10">branch</a>
                     <span className="sub-text mr-10">|</span>
-                    <span className="sub-text">{ formattedDate || 'no date' }</span>
+                    <span className="sub-text">{ 'no date' }</span>
                 </div>
                 <div className="post-content">
-                    <div className="post-title">{ title }</div>
+                    <Link to={`/posts/${id}`} className="post-title">{ title }</Link>
                     <div className="post-description">{ description }</div>
                     <div className="post-interact">
                         <div className="post-interact-item" onClick={ addLike }>
@@ -76,6 +77,7 @@ function Post(props) {
                 .post {
                     margin-bottom: 10px;
                     padding: 20px 20px 20px 0;
+                    width: 100%;
                     border-radius: 5px;
                     background-color: white;
                     box-shadow: 0 1px 10px 0 rgba(10, 8, 72, 0.08);
@@ -89,7 +91,7 @@ function Post(props) {
                     background-color: #f1f6ff;
                 }
                 .pin-flag {
-                    background-image: url(./icons/pin-01.png);
+                    background-image: url(/icons/pin-01.png);
                     background-position: center;
                     background-repeat: no-repeat;
                     background-size: cover;
@@ -127,7 +129,7 @@ function Post(props) {
                     align-items: center;
                 }
                 .user-thumbnail {
-                    background-image: url(./icons/user-image-00.jpg);
+                    background-image: url(/icons/user-image-00.jpg);
                     background-position: center;
                     background-size: cover;
                     height: 40px;
@@ -177,7 +179,7 @@ function Post(props) {
                     cursor: pointer;
                 }
                 .like-icon {
-                    background-image: url(./icons/heart-solid.svg);
+                    background-image: url(/icons/heart-solid.svg);
                     background-position: center;
                     background-repeat: no-repeat;
                     background-size: cover;
@@ -190,7 +192,7 @@ function Post(props) {
                     margin-right: 5px;
                 }
                 .delete-icon {
-                    background-image: url(./icons/delete-01.png);
+                    background-image: url(/icons/delete-01.png);
                     background-position: center;
                     background-repeat: no-repeat;
                     background-size: cover;
@@ -203,7 +205,7 @@ function Post(props) {
                     margin-right: 5px;
                 }
                 .pin-icon {
-                    background-image: url(./icons/pin-01.png);
+                    background-image: url(/icons/pin-01.png);
                     background-position: center;
                     background-repeat: no-repeat;
                     background-size: cover;

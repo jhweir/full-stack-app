@@ -13,6 +13,20 @@ router.get('/', (req, res) =>
         .catch(err => console.log(err))
 );
 
+// Get a post
+router.post('/getpost', (req, res) => {
+    console.log(req.body.postId)
+    // res.send('Get a post request made')
+    // const data = req.body
+    // console.log(data)
+    Posts.findOne({ where: { id: req.body.postId }})
+        .then(post => {
+            res.json(post)
+            // console.log(post)
+        })
+        .catch(err => console.log(err))
+});
+
 // Add post
 router.post('/', (req, res) => {
     res.send('Post request made')
@@ -48,7 +62,7 @@ router.put('/pinpost', (req, res) => {
     res.send('Post pinned')
 })
 
-// Unin post
+// Unpin post
 router.put('/unpinpost', (req, res) => {
     Posts.update({ pinned: null }, {
         where: { id: req.body.id }
