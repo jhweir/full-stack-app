@@ -1,18 +1,32 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import axios from 'axios'
+import config from '../config'
+import { PostContext } from '../contexts/PostContext'
 
 function Post(props) {
+    const context = useContext(PostContext);
+
     const [likes, setLikes] = useState(props.post.likes)
 
     let { id, title, description, creator, date } = props.post
+
+    // Format date from SQL table
+    const t = date.split(/[-.T :]/)
+    const formattedDate = t[3]+':'+t[4]+' on '+t[2]+'-'+t[1]+'-'+t[0]
       
     function addLike() {
         let newLikes = likes + 1
         setLikes(newLikes)
-        axios({ method: 'put', url: 'http://localhost:5000/api/posts', data: { id, newLikes } })
-            // Refresh posts if update succesful: .then(response => { if (response.data === 'Post liked') { props.getPosts() }})
+        axios({ method: 'put', url: config.environmentURL, data: { id, newLikes } })
             .catch(error => { console.log(error) })
     }
+
+    function deletePost() {
+        axios({ method: 'delete', url: config.environmentURL, data: { id } })
+            .then(setTimeout(() => {context.getPosts()}, 100))
+            .catch(error => { console.log(error) })
+    }
+
     return (
         <div className="post">
             <div className="post-id">{ props.index + 1 }</div>
@@ -23,15 +37,19 @@ function Post(props) {
                     <span className="sub-text mr-10">to</span>
                     <a className="sub-text mr-10">branch</a>
                     <span className="sub-text mr-10">|</span>
-                    <span className="sub-text">{ date || 'no date' }</span>
+                    <span className="sub-text">{ formattedDate || 'no date' }</span>
                 </div>
                 <div className="post-content">
                     <div className="post-title">{ title }</div>
                     <div className="post-description">{ description }</div>
                     <div className="post-interact">
-                        <div className="post-likes" onClick={ addLike }>
-                            <div className="like-button"/>
+                        <div className="post-interact-item" onClick={ addLike }>
+                            <div className="like-icon"/>
                             <span>{ likes } Likes</span>
+                        </div>
+                        <div className="post-interact-item" onClick={ deletePost }>
+                            <div className="delete-icon"/>
+                            <span>Delete</span>
                         </div>
                         {/* <button className="button">Delete</button> */}
                     </div>
@@ -80,6 +98,7 @@ function Post(props) {
                     height: 40px;
                     width: 40px;
                     border-radius: 50%;
+                    flex-shrink: 0
                 }
                 .sub-text {
                     color: #888;
@@ -111,7 +130,7 @@ function Post(props) {
                     align-items: center;
                     flex-shrink: 0;
                 }
-                .post-likes {
+                .post-interact-item {
                     display: flex;
                     flex-direction: row;
                     align-items: center;
@@ -119,11 +138,27 @@ function Post(props) {
                     margin-right: 10px;
                     color: #888;
                 }
-                .post-likes:hover {
+                .post-interact-item:hover {
                     cursor: pointer;
                 }
-                .like-button {
+                .like-icon {
                     background-image: url(./icons/heart-solid.svg);
+                    background-position: center;
+                    background-repeat: no-repeat;
+                    background-size: cover;
+                    background-color: transparent;
+                    border: none;
+                    height: 17px;
+                    width: 17px;
+                    padding: 0;
+                    opacity: 0.4;
+                    margin-right: 5px;
+                }
+                .delete-icon {
+                    background-image: url(./icons/delete-01.png);
+                    background-position: center;
+                    background-repeat: no-repeat;
+                    background-size: cover;
                     background-color: transparent;
                     border: none;
                     height: 17px;

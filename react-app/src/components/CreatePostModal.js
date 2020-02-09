@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react'
 import { PostContext } from '../contexts/PostContext'
 import axios from 'axios'
+import config from '../config'
 
 function CreatePostModal(props) {
     const context = useContext(PostContext);
@@ -17,10 +18,10 @@ function CreatePostModal(props) {
         if (title && description !== '') {
             let date = new Date()
             let post = { creator, title, description, date }
-            axios({ method: 'post', url: 'http://localhost:5000/api/posts', data: { post } })
+            axios({ method: 'post', url: config.environmentURL, data: { post } })
                 .then(res => { console.log(res) })
                 .then(props.toggleModal)
-                .then(setTimeout(() => {context.getPosts()}, 2000))
+                .then(setTimeout(() => {context.getPosts()}, 100))
         } else if (title === '') {
             setTitleError(true);
         } if (description === '') {

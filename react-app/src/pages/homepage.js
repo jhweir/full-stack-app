@@ -30,11 +30,20 @@ function Homepage() {
                             <ul>
                                 <li><input type="checkbox" checked="checked" readOnly></input> Sort by ID</li>
                                 <li><input type="checkbox" checked="checked" readOnly></input> Sort by Likes</li>
-                                <li><input type="checkbox" checked="" readOnly></input> Sort by Date</li>
+                                <li><input type="checkbox" checked="checked" readOnly></input> Sort by Date</li>
                                 <li><input type="checkbox" checked="" readOnly></input> Sort by Comments</li>
                             </ul>
                         </ul>
                         <li><input type="checkbox" checked="checked" readOnly></input> Posts</li>
+                        <ul>
+                            <li><input type="checkbox" checked="checked" readOnly></input> Like posts</li>
+                            <li><input type="checkbox" checked="checked" readOnly></input> Delete posts</li>
+                            <li><input type="checkbox" checked="" readOnly></input> Pin posts</li>
+                            <li><input type="checkbox" checked="" readOnly></input> Add tags to posts</li>
+                            <li><input type="checkbox" checked="" readOnly></input> Link to unique post page</li>
+                            <li><input type="checkbox" checked="" readOnly></input> Add comments to posts</li>
+                            <li><input type="checkbox" checked="" readOnly></input> Include time stap with date</li>
+                        </ul>
                     </ul>
                     <li><input type="checkbox" checked="" readOnly></input> Branches</li>
                     <li><input type="checkbox" checked="" readOnly></input> Users</li>
@@ -46,12 +55,12 @@ function Homepage() {
             <span className="page-title">To do</span>
             <ul style={{ padding:0 }}>
                 <li><input type="checkbox" checked="checked" readOnly></input> Setup .env on Server</li>
-                <li><input type="checkbox" checked="" readOnly></input> Change class based to function based components</li>
-                <li><input type="checkbox" checked="" readOnly></input> Like fix</li>
+                <li><input type="checkbox" checked="checked" readOnly></input> Change class based to function based components</li>
+                <li><input type="checkbox" checked="checked" readOnly></input> Like fix</li>
                 <li><input type="checkbox" checked="" readOnly></input> Authentication</li>
                 <li><input type="checkbox" checked="" readOnly></input> Users page</li>
                 <li><input type="checkbox" checked="" readOnly></input> Pin posts</li>
-                <li><input type="checkbox" checked="" readOnly></input> Global state managment using context</li>
+                <li><input type="checkbox" checked="checked" readOnly></input> Global state managment using context</li>
                 <li><input type="checkbox" checked="" readOnly></input> Scrape URLs for post data</li>
                 <li><input type="checkbox" checked="" readOnly></input> Resize and save thumbnails</li>
                 <li><input type="checkbox" checked="" readOnly></input> Individual post pages</li>

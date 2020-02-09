@@ -7,8 +7,8 @@ function WallFilters() {
 
     function toggleDropDown() { setDropdown(!dropdown) }
     // function sortById() { context.setSortBy('id'); toggleDropDown() }
-    function sortByLikes() { context.setSortBy('likes'); toggleDropDown() }
-    function sortByDate() { context.setSortBy('date'); toggleDropDown() }
+    function sortByLikes() { toggleDropDown(); context.getPosts(); context.setSortBy('likes') }
+    function sortByDate() { toggleDropDown(); context.getPosts(); context.setSortBy('date') }
     
     return (
         <div className="wall-filters">
