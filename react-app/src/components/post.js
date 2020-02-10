@@ -1,11 +1,11 @@
 import React, { useState, useContext } from 'react'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
-import config from '../config'
+import config from '../Config'
 import { PostContext } from '../contexts/PostContext'
 
 function Post(props) {
-    const context = useContext(PostContext);
+    const { getPosts } = useContext(PostContext);
 
     const [likes, setLikes] = useState(props.post.likes)
 
@@ -13,7 +13,7 @@ function Post(props) {
 
     // Format date from SQL table
     // const t = date.split(/[-.T :]/)
-    // const formattedDate = t[3]+':'+t[4]+' on '+t[2]+'-'+t[1]+'-'+t[0]
+    // let formattedDate = t[3]+':'+t[4]+' on '+t[2]+'-'+t[1]+'-'+t[0]
       
     function addLike() {
         let newLikes = likes + 1
@@ -24,19 +24,19 @@ function Post(props) {
 
     function deletePost() {
         axios({ method: 'delete', url: config.environmentURL, data: { id } })
-            .then(setTimeout(() => {context.getPosts()}, 100))
+            .then(setTimeout(() => { getPosts() }, 100))
             .catch(error => { console.log(error) })
     }
 
     function pinPost() {
         axios({ method: 'put', url: config.environmentURL + '/pinpost', data: { id } })
-        .then(setTimeout(() => {context.getPosts()}, 100))
+        .then(setTimeout(() => { getPosts() }, 100))
         .catch(error => { console.log(error) })
     }
 
     function unpinPost() {
         axios({ method: 'put', url: config.environmentURL + '/unpinpost', data: { id } })
-        .then(setTimeout(() => {context.getPosts()}, 100))
+        .then(setTimeout(() => { getPosts() }, 100))
         .catch(error => { console.log(error) })
     }
 
@@ -52,6 +52,7 @@ function Post(props) {
                     <a className="sub-text mr-10">branch</a>
                     <span className="sub-text mr-10">|</span>
                     <span className="sub-text">{ 'no date' }</span>
+                    {/* <span className="sub-text">{ formattedDate || 'no date' }</span> */}
                 </div>
                 <div className="post-content">
                     <Link to={`/posts/${id}`} className="post-title">{ title }</Link>
@@ -59,6 +60,8 @@ function Post(props) {
                     <div className="post-interact">
                         <div className="post-interact-item" onClick={ addLike }>
                             <div className="like-icon"/>
+                            {/* {props.postPage !== null && <span>{ props.post.likes } Likes</span>}
+                            {props.postPage === null && <span>{ likes } Likes</span>} */}
                             <span>{ likes } Likes</span>
                         </div>
                         <div className="post-interact-item" onClick={ deletePost }>

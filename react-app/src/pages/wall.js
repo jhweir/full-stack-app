@@ -1,28 +1,28 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { PostContext } from '../contexts/PostContext'
 import Post from '../components/Post'
 import WallHeader from '../components/WallHeader';
 
 function Wall() {
-    const context = useContext(PostContext);
+    const { posts, searchFilter, sortBy, getPosts } = useContext(PostContext)
 
     // Filter posts by search text
-    let filteredPosts = context.posts.filter((post) => {
-        return post.title.indexOf(context.searchFilter) !== -1 && post.pinned == null
+    let filteredPosts = posts.filter((post) => {
+        return post.title.indexOf(searchFilter) !== -1 && post.pinned == null
     })
 
     // Sort posts by Likes
-    if (context.sortBy === 'likes') {
+    if (sortBy === 'likes') {
         filteredPosts = filteredPosts.sort((a, b) => b.likes - a.likes)
     }
 
     // Sort posts by Date
-    if (context.sortBy === 'date') {
+    if (sortBy === 'date') {
         filteredPosts = filteredPosts.sort((a, b) => b.date - a.date)
     }
 
     // Pinned posts
-    let pinnedPosts = context.posts.filter((post) => {
+    let pinnedPosts = posts.filter((post) => {
         return post.pinned === 'Global wall'
     })
 
@@ -31,11 +31,11 @@ function Wall() {
             <WallHeader />
 
             <ul className="pinned-posts">
-                {pinnedPosts.map((post, index) => <Post key={post.id} index={index} post={post} getPosts={context.getPosts}/> )} 
+                {pinnedPosts.map((post, index) => <Post key={post.id} index={index} post={post} getPosts={getPosts}/> )} 
             </ul>
 
             <ul className="posts">
-                {filteredPosts.map((post, index) => <Post key={post.id} index={index} post={post} getPosts={context.getPosts}/> )} 
+                {filteredPosts.map((post, index) => <Post key={post.id} index={index} post={post} getPosts={getPosts}/> )} 
             </ul>
 
             <style jsx="true">{`

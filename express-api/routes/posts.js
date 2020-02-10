@@ -11,21 +11,16 @@ router.get('/', (req, res) =>
             //res.sendStatus(200)
         })
         .catch(err => console.log(err))
-);
+)
 
 // Get a post
-router.post('/getpost', (req, res) => {
-    console.log(req.body.postId)
-    // res.send('Get a post request made')
-    // const data = req.body
-    // console.log(data)
-    Posts.findOne({ where: { id: req.body.postId }})
+router.get('/post', (req, res) => {
+    Posts.findOne({ where: { id: req.query.id }})
         .then(post => {
             res.json(post)
-            // console.log(post)
         })
         .catch(err => console.log(err))
-});
+})
 
 // Add post
 router.post('/', (req, res) => {
@@ -36,7 +31,7 @@ router.post('/', (req, res) => {
     Posts.create({ title, description, creator, tags, comments, date, likes, pinned })
         // .then(post => res.redirect('/posts'))
         // .catch(err => console.log(err))
-});
+})
 
 // Delete post
 router.delete('/', (req, res) => {

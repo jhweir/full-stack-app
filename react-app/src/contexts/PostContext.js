@@ -1,6 +1,6 @@
 import React, { createContext, useEffect, useState } from 'react';
 import axios from 'axios'
-import config from '../config'
+import config from '../Config'
 
 export const PostContext = createContext()
 
@@ -12,7 +12,7 @@ function PostContextProvider(props) {
     function getPosts() {
         axios.get(config.environmentURL)
             .then(res => { setPosts(res.data) })
-            .then(console.log('posts fetched'))
+            // .then(console.log('posts fetched'))
     }
 
     useEffect(() => {

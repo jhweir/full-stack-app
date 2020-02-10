@@ -1,7 +1,7 @@
 import React from 'react'
 // import ChildOne from './components/ChildOne'
 import NavBar from './components/NavBar'
-import PostPage from './components/PostPage'
+import PostPage from './pages/PostPage'
 import Homepage from './pages/Homepage'
 import Wall from './pages/Wall'
 import PostContextProvider from './contexts/PostContext'

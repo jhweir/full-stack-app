@@ -1,6 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const Posts = require('./models/posts')
+const Comments = require('./models/Comments')
 // const path = require('path')
 
 // Database
@@ -17,6 +19,9 @@ app.use(cors());
 
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
+
+// Posts.hasMany(Comments, { as: 'Comment'})
+// Comments.belongsTo(Posts, { as: 'Post', foreignKey: 'post_id'})
 
 // // serve static assets normally
 // app.use(express.static(__dirname + '/public'))

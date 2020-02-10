@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react'
 import { PostContext } from '../contexts/PostContext'
 import axios from 'axios'
-import config from '../config'
+import config from '../Config'
 
 function CreatePostModal(props) {
     const context = useContext(PostContext);
