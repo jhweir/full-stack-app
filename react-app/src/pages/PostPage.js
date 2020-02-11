@@ -3,17 +3,21 @@ import axios from 'axios'
 import config from '../Config'
 import Post from '../components/Post'
 
-function PostPage({ match, location }) {
+function PostPage({ match }) {
     const postId = match.params.postId
 
     const [post, setPost] = useState([])
     // const [username, setUsername] = useState('')
     const [comment, setComment] = useState('')
     const [commentError, setCommentError] = useState(false)
+    const [isLoading, setIsLoading] = useState(true)
 
     function getPost() {
         axios({ method: 'get', url: config.environmentURL + `/post?id=${postId}` })
-            .then(res => { setPost(res.data) })
+            .then(res => { 
+                setPost(res.data)
+                setIsLoading(false)
+             })
     }
 
     function submitComment(e) {
@@ -27,7 +31,7 @@ function PostPage({ match, location }) {
 
     return (
         <div className="wall">
-            <Post post={post} postPage={'true'} />
+            <Post post={post} isLoading={isLoading} />
 
             <form  className="create-comment-form" onSubmit={submitComment}> 
                 {/* <input className="input-wrapper modal margin-bottom-20"

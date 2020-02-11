@@ -8,11 +8,14 @@ function PostContextProvider(props) {
     const [posts, setPosts] = useState([])
     const [searchFilter, setSearchFilter] = useState('')
     const [sortBy, setSortBy] = useState('id')
+    const [isLoading, setisLoading] = useState(true)
 
     function getPosts() {
         axios.get(config.environmentURL)
-            .then(res => { setPosts(res.data) })
-            // .then(console.log('posts fetched'))
+            .then(res => { 
+                setPosts(res.data)
+                setisLoading(false)
+            })
     }
 
     useEffect(() => {
@@ -20,7 +23,7 @@ function PostContextProvider(props) {
     }, [])
 
     return (
-        <PostContext.Provider value={{ posts, searchFilter, setSearchFilter, sortBy, setSortBy, getPosts }}>
+        <PostContext.Provider value={{ posts, searchFilter, setSearchFilter, sortBy, setSortBy, getPosts, isLoading }}>
             {props.children}
         </PostContext.Provider>
     )

@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
 import config from '../Config'
@@ -11,9 +11,11 @@ function Post(props) {
 
     let { id, title, description, creator, date, pinned } = props.post
 
-    // Format date from SQL table
-    // const t = date.split(/[-.T :]/)
-    // let formattedDate = t[3]+':'+t[4]+' on '+t[2]+'-'+t[1]+'-'+t[0]
+    useEffect(() => {
+        if (props.isLoading === false) {
+            setLikes(props.post.likes)
+        }
+    }, [props.isLoading])
       
     function addLike() {
         let newLikes = likes + 1
@@ -40,35 +42,44 @@ function Post(props) {
         .catch(error => { console.log(error) })
     }
 
+    function formatDate() {
+        const t = date.split(/[-.T :]/)
+        let formattedDate = t[3]+':'+t[4]+' on '+t[2]+'-'+t[1]+'-'+t[0]
+        return formattedDate
+    }
+
     return (
         <div className={"post " + (pinned != null ? 'pinned-post' : '')} >
             {pinned != null && <div className="pin-flag"></div>}
-            <div className="post-id">{pinned === null ? props.index + 1 || '' : ''}</div>
+            <div className="post-id">{ pinned === null ? props.index + 1 || '' : '' }</div>
             <div className="post-body">
+
                 <div className="post-tags">
                     <a className="user-thumbnail mr-10"></a>
                     <a className="sub-text mr-10">{ creator || 'Anonymous' }</a>
                     <span className="sub-text mr-10">to</span>
                     <a className="sub-text mr-10">branch</a>
                     <span className="sub-text mr-10">|</span>
-                    <span className="sub-text">{ 'no date' }</span>
-                    {/* <span className="sub-text">{ formattedDate || 'no date' }</span> */}
+                    {/* Wait until the post data has finished loading before formatting the date to prevent errors */}
+                    { props.isLoading === false && <span className="sub-text">{ formatDate() || 'no date' }</span> }
                 </div>
+
                 <div className="post-content">
-                    <Link to={`/posts/${id}`} className="post-title">{ title }</Link>
+
+                    <Link to={ `/posts/${id}` } className="post-title">{ title }</Link>
+
                     <div className="post-description">{ description }</div>
+                    
                     <div className="post-interact">
                         <div className="post-interact-item" onClick={ addLike }>
                             <div className="like-icon"/>
-                            {/* {props.postPage !== null && <span>{ props.post.likes } Likes</span>}
-                            {props.postPage === null && <span>{ likes } Likes</span>} */}
                             <span>{ likes } Likes</span>
                         </div>
                         <div className="post-interact-item" onClick={ deletePost }>
                             <div className="delete-icon"/>
                             <span>Delete</span>
                         </div>
-                        <div className="post-interact-item" onClick={pinned === null ? pinPost : unpinPost}>
+                        <div className="post-interact-item" onClick={ pinned === null ? pinPost : unpinPost }>
                             <div className="pin-icon"/>
                             <span>{pinned === null ? 'Pin post' : 'Unpin post'}</span>
                         </div>
