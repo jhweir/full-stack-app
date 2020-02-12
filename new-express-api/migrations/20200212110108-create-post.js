@@ -21,13 +21,15 @@ module.exports = {
         type: Sequelize.STRING
       },
       comments: {
-        type: Sequelize.STRING
+        type: Sequelize.INTEGER,
+        defaultValue: 0
       },
       pins: {
         type: Sequelize.STRING
       },
       likes: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        defaultValue: 0
       },
       createdAt: {
         allowNull: false,

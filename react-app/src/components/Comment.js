@@ -12,8 +12,8 @@ function Comment(props) {
 
     return (
         <>
-            <div className="comment" >
-                <div className="comment-id">{ props.index + 1 || '' }</div>
+            <div className="comment">
+                {/* <div className="comment-id">{ props.index + 1 || '' }</div> */}
                 <div className="comment-body">
 
                     <div className="comment-tags">
@@ -48,7 +48,7 @@ function Comment(props) {
             <style jsx="true">{`
                 .comment {
                     margin-bottom: 10px;
-                    padding: 20px 20px 20px 0;
+                    padding: 20px 20px 20px 40px;
                     width: 100%;
                     border-radius: 5px;
                     background-color: white;
@@ -77,6 +77,7 @@ function Comment(props) {
                 }
                 .comment-tags {
                     height: 40px;
+                    margin-bottom: 10px;
                     display: flex;
                     flex-direction: row;
                     justify-content: flex-start;

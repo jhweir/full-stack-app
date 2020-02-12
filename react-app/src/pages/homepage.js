@@ -36,7 +36,7 @@ function Homepage() {
                                 <li><input type="checkbox" checked="checked" readOnly></input> Sort by ID</li>
                                 <li><input type="checkbox" checked="checked" readOnly></input> Sort by Likes</li>
                                 <li><input type="checkbox" checked="checked" readOnly></input> Sort by Date</li>
-                                <li><input type="checkbox" checked="" readOnly></input> Sort by Comments</li>
+                                <li><input type="checkbox" checked="checked" readOnly></input> Sort by Comments</li>
                             </ul>
                         </ul>
                         <li><input type="checkbox" checked="checked" readOnly></input> Posts</li>
@@ -53,8 +53,8 @@ function Homepage() {
                     <li><input type="checkbox" checked="checked" readOnly></input> Post pages</li>
                     <ul>
                         <li><input type="checkbox" checked="checked" readOnly></input> Display post</li>
-                        <li><input type="checkbox" checked="" readOnly></input> Comment input form</li>
-                        <li><input type="checkbox" checked="" readOnly></input> List comments</li>
+                        <li><input type="checkbox" checked="checked" readOnly></input> Creat comments</li>
+                        <li><input type="checkbox" checked="checked" readOnly></input> List comments</li>
                     </ul>
                     <li><input type="checkbox" checked="" readOnly></input> Branches</li>
                     <li><input type="checkbox" checked="" readOnly></input> Users</li>

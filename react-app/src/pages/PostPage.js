@@ -27,11 +27,14 @@ function PostPage({ match }) {
     function submitComment(e) {
         e.preventDefault();
         if (comment !== '') {
-            // Post comment
             let text = comment
             let comments = post.comments + 1
             axios({ method: 'post', url: config.environmentURL + '/addcomment', data: { text, postId, comments } })
-                .then(res => { console.log(res) })
+                .then(res => { 
+                    console.log(res)
+                    setComment('')
+                    setTimeout(() => { getPost() }, 100)
+                })
                 // .then(setTimeout(() => {context.getPosts()}, 100))
         } else if (comment === '') {
             setCommentError(true);
@@ -91,7 +94,11 @@ function PostPage({ match }) {
                 }
                 .comments {
                     background-color: white;
+                    box-shadow: 0 1px 10px 0 rgba(10, 8, 72, 0.1);
                     width: 100%;
+                    border-radius: 5px;
+                    transition-property: background-color;
+                    transition-duration: 2s;
                 }
             `}</style>
         </div>

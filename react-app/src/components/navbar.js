@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
-// import colors from '../tokens/Colors';
+import { PostContext } from '../contexts/PostContext'
 
 
 function NavBar(props) {
-    // const context = useContext(PostContext);
+    const { getPosts } = useContext(PostContext);
 
     function toggleDarkMode() {
         document.body.classList.toggle("dark-mode");
@@ -13,8 +13,8 @@ function NavBar(props) {
     return (
         <div className="navbar">
             <Link to="/" className="navbar-text">Home</Link> |
-            <Link to="/wall" className="navbar-text"> Wall</Link>
-            <div style={{ marginLeft: 20 }} className="button" onClick={toggleDarkMode}>Dark mode</div>
+            <Link to="/wall" className="navbar-text" onClick={ getPosts }> Wall</Link>
+            <div style={{ marginLeft: 20 }} className="button" onClick={ toggleDarkMode }>Dark mode</div>
 
             <style jsx="true">{`
                 .navbar {

@@ -9,13 +9,11 @@ function Post(props) {
 
     const [likes, setLikes] = useState(props.post.likes)
 
-    let { id, creator, title, description, pins, createdAt } = props.post
+    let { id, user, title, description, comments, pins, createdAt } = props.post
 
     useEffect(() => {
-        if (props.isLoading === false) {
-            setLikes(props.post.likes)
-        }
-    }, [props.isLoading])
+        setLikes(props.post.likes)
+    }, [props])
       
     function addLike() {
         let newLikes = likes + 1
@@ -56,7 +54,7 @@ function Post(props) {
 
                 <div className="post-tags">
                     <a className="user-thumbnail mr-10"></a>
-                    <a className="sub-text mr-10">{ creator || 'Anonymous' }</a>
+                    <a className="sub-text mr-10">{ user || 'Anonymous' }</a>
                     <span className="sub-text mr-10">to</span>
                     <a className="sub-text mr-10">branch</a>
                     <span className="sub-text mr-10">|</span>
@@ -75,6 +73,10 @@ function Post(props) {
                             <div className="like-icon"/>
                             <span>{ likes } Likes</span>
                         </div>
+                        <Link to={ `/posts/${id}` } className="post-interact-item">
+                            <div className="comment-icon"/>
+                            <span>{ comments } Comments</span>
+                        </Link>
                         <div className="post-interact-item" onClick={ deletePost }>
                             <div className="delete-icon"/>
                             <span>Delete</span>
@@ -94,7 +96,7 @@ function Post(props) {
                     width: 100%;
                     border-radius: 5px;
                     background-color: white;
-                    box-shadow: 0 1px 10px 0 rgba(10, 8, 72, 0.08);
+                    box-shadow: 0 1px 10px 0 rgba(10, 8, 72, 0.1);
                     display: flex;
                     flex-direction: row;
                     transition-property: background-color;
@@ -194,6 +196,19 @@ function Post(props) {
                 }
                 .like-icon {
                     background-image: url(/icons/heart-solid.svg);
+                    background-position: center;
+                    background-repeat: no-repeat;
+                    background-size: cover;
+                    background-color: transparent;
+                    border: none;
+                    height: 17px;
+                    width: 17px;
+                    padding: 0;
+                    opacity: 0.4;
+                    margin-right: 5px;
+                }
+                .comment-icon {
+                    background-image: url(/icons/comment-02.svg);
                     background-position: center;
                     background-repeat: no-repeat;
                     background-size: cover;

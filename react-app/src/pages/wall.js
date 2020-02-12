@@ -21,6 +21,11 @@ function Wall() {
         filteredPosts = filteredPosts.sort((a, b) => b.date - a.date)
     }
 
+    // Sort posts by Comments
+    if (sortBy === 'comments') {
+        filteredPosts = filteredPosts.sort((a, b) => b.comments - a.comments)
+    }
+
     // Pinned posts
     let pinnedPosts = posts.filter((post) => {
         return post.pins === 'Global wall'

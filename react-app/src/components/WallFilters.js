@@ -9,14 +9,16 @@ function WallFilters() {
     // function sortById() { context.setSortBy('id'); toggleDropDown() }
     function sortByLikes() { toggleDropDown(); context.getPosts(); context.setSortBy('likes') }
     function sortByDate() { toggleDropDown(); context.getPosts(); context.setSortBy('date') }
+    function sortByComments() { toggleDropDown(); context.getPosts(); context.setSortBy('comments') }
     
     return (
         <div className="wall-filters">
             <button className="button" onClick={toggleDropDown}>Filters</button>
             <div className={"dropdown-content " + (dropdown ? 'visible' : '')}>
                 {/* <div className="dropdown-item" onClick={sortById}>Sort by ID</div> */}
-                <div className="dropdown-item" onClick={sortByLikes}>Sort by Likes</div>
-                <div className="dropdown-item" onClick={sortByDate}>Sort by Date</div>
+                <div className="dropdown-item" onClick={ sortByLikes }>Sort by Likes</div>
+                <div className="dropdown-item" onClick={ sortByDate }>Sort by Date</div>
+                <div className="dropdown-item" onClick={ sortByComments }>Sort by Comments</div>
             </div>
 
             <style jsx="true">{`
@@ -28,9 +30,10 @@ function WallFilters() {
                 .dropdown-content {
                     display: none;
                     width: 200px;
+                    //padding: 0 30px;
                     border-radius: 5px;
                     background-color: white;
-                    box-shadow: 0 1px 10px 0 rgba(10, 8, 72, 0.2);
+                    box-shadow: 0 1px 30px 0 rgba(0,0,0,0.2);
                     position: absolute;
                     top: 130px;
                     left: calc(50% - 20px);
