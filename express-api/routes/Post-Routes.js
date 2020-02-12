@@ -80,13 +80,19 @@ router.post('/addcomment', (req, res) => {
     })
 })
 
-// Like post
-router.put('/', (req, res) => {
-    Posts.update({ likes: req.body.newLikes }, {
-        where: { id: req.body.id }
-    })
-    
-    res.send('Post liked')
-})
-
 module.exports = router;
+
+
+// Post.create({
+//     title: 'Post title'
+// }).then(post => {
+//     post.createComment({
+//         text: 'Comment text...'
+//     }).then(() => console.log('Success!'))
+// });
+
+// Newpost.findAll({
+//     include: [Comment]
+// }).then(posts => {
+//     console.log(posts[0].Comments)
+// })

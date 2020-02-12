@@ -5,20 +5,6 @@ const cors = require('cors')
 const Post = require('./models').Post;
 const Comment = require('./models').Comment;
 
-// Post.create({
-//     title: 'Post title'
-// }).then(post => {
-//     post.createComment({
-//         text: 'Comment text...'
-//     }).then(() => console.log('Success!'))
-// });
-
-// Newpost.findAll({
-//     include: [Comment]
-// }).then(posts => {
-//     console.log(posts[0].Comments)
-// })
-
 const app = express();
 
 app.use(cors())

@@ -53,7 +53,7 @@ function Homepage() {
                     <li><input type="checkbox" checked="checked" readOnly></input> Post pages</li>
                     <ul>
                         <li><input type="checkbox" checked="checked" readOnly></input> Display post</li>
-                        <li><input type="checkbox" checked="checked" readOnly></input> Creat comments</li>
+                        <li><input type="checkbox" checked="checked" readOnly></input> Create comments</li>
                         <li><input type="checkbox" checked="checked" readOnly></input> List comments</li>
                     </ul>
                     <li><input type="checkbox" checked="" readOnly></input> Branches</li>
@@ -69,13 +69,12 @@ function Homepage() {
                 <li><input type="checkbox" checked="checked" readOnly></input> Set up env variables</li>
                 <li><input type="checkbox" checked="checked" readOnly></input> Change class based to function based components</li>
                 <li><input type="checkbox" checked="checked" readOnly></input> Like fix</li>
-                <li><input type="checkbox" checked="" readOnly></input> Fix page routing</li>
+                <li><input type="checkbox" checked="checked" readOnly></input> Fix page routing</li>
                 <li><input type="checkbox" checked="" readOnly></input> Authentication</li>
                 <li><input type="checkbox" checked="" readOnly></input> Users page</li>
                 <li><input type="checkbox" checked="checked" readOnly></input> Global state managment using context</li>
                 <li><input type="checkbox" checked="" readOnly></input> Scrape URLs for post data</li>
                 <li><input type="checkbox" checked="" readOnly></input> Resize and save thumbnails</li>
-                <li><input type="checkbox" checked="" readOnly></input> Comments</li>
             </ul>
             <style jsx="true">{`
                 .homepage {
