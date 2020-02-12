@@ -8,13 +8,13 @@ function PostContextProvider(props) {
     const [posts, setPosts] = useState([])
     const [searchFilter, setSearchFilter] = useState('')
     const [sortBy, setSortBy] = useState('id')
-    const [isLoading, setisLoading] = useState(true)
+    const [isLoading, setIsLoading] = useState(true)
 
     function getPosts() {
         axios.get(config.environmentURL)
             .then(res => { 
                 setPosts(res.data)
-                setisLoading(false)
+                setIsLoading(false)
             })
     }
 

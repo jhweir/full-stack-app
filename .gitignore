@@ -2,4 +2,8 @@
 
 /react-app/node_modules/
 
+/new-express-api/node_modules
+
+/test/node_modules
+
 .env

@@ -9,7 +9,7 @@ function Post(props) {
 
     const [likes, setLikes] = useState(props.post.likes)
 
-    let { id, title, description, creator, date, pinned } = props.post
+    let { id, creator, title, description, pins, createdAt } = props.post
 
     useEffect(() => {
         if (props.isLoading === false) {
@@ -43,15 +43,15 @@ function Post(props) {
     }
 
     function formatDate() {
-        const t = date.split(/[-.T :]/)
+        const t = createdAt.split(/[-.T :]/)
         let formattedDate = t[3]+':'+t[4]+' on '+t[2]+'-'+t[1]+'-'+t[0]
         return formattedDate
     }
 
     return (
-        <div className={"post " + (pinned != null ? 'pinned-post' : '')} >
-            {pinned != null && <div className="pin-flag"></div>}
-            <div className="post-id">{ pinned === null ? props.index + 1 || '' : '' }</div>
+        <div className={"post " + (pins != null ? 'pinned-post' : '')} >
+            {pins != null && <div className="pin-flag"></div>}
+            <div className="post-id">{ pins === null ? props.index + 1 || '' : '' }</div>
             <div className="post-body">
 
                 <div className="post-tags">
@@ -79,9 +79,9 @@ function Post(props) {
                             <div className="delete-icon"/>
                             <span>Delete</span>
                         </div>
-                        <div className="post-interact-item" onClick={ pinned === null ? pinPost : unpinPost }>
+                        <div className="post-interact-item" onClick={ pins === null ? pinPost : unpinPost }>
                             <div className="pin-icon"/>
-                            <span>{pinned === null ? 'Pin post' : 'Unpin post'}</span>
+                            <span>{pins === null ? 'Pin post' : 'Unpin post'}</span>
                         </div>
                     </div>
                 </div>

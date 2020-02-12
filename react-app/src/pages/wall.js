@@ -8,7 +8,7 @@ function Wall() {
 
     // Filter posts by search text
     let filteredPosts = posts.filter((post) => {
-        return post.title.indexOf(searchFilter) !== -1 && post.pinned == null
+        return post.title.indexOf(searchFilter) !== -1 && post.pins == null
     })
 
     // Sort posts by Likes
@@ -23,7 +23,7 @@ function Wall() {
 
     // Pinned posts
     let pinnedPosts = posts.filter((post) => {
-        return post.pinned === 'Global wall'
+        return post.pins === 'Global wall'
     })
 
     return (

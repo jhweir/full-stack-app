@@ -6,7 +6,7 @@ import config from '../Config'
 function CreatePostModal(props) {
     const context = useContext(PostContext);
 
-    const [creator, setCreator] = useState('')
+    const [user, setUser] = useState('')
     const [title, setTitle] = useState('')
     const [description, setDescription] = useState('')
 
@@ -16,8 +16,8 @@ function CreatePostModal(props) {
     function onSubmit(e) {
         e.preventDefault();
         if (title && description !== '') {
-            let date = new Date()
-            let post = { creator, title, description, date }
+            // let date = new Date()
+            let post = { user, title, description }
             axios({ method: 'post', url: config.environmentURL, data: { post } })
                 .then(res => { console.log(res) })
                 .then(props.toggleModal)
@@ -37,9 +37,9 @@ function CreatePostModal(props) {
                     <input className="input-wrapper modal margin-bottom-20"
                         type="text"
                         placeholder="Username..."
-                        name="creator"
-                        value={creator}
-                        onChange={(e) => setCreator(e.target.value)}
+                        name="user"
+                        value={user}
+                        onChange={(e) => setUser(e.target.value)}
                     />
                     <input className={"input-wrapper modal margin-bottom-20 " + (titleError ? 'error' : '')}
                         type="text"

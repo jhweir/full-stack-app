@@ -1,24 +1,34 @@
-const express = require('express');
-const cors = require('cors');
-const bodyParser = require('body-parser');
-const Posts = require('./models/posts')
-const Comments = require('./models/Comments')
-// const path = require('path')
+const express = require('express')
+const cors = require('cors')
+const bodyParser = require('body-parser')
+const path = require('path')
+const Post = require('./models').Post
+const Comment = require('./models').Comment
+const Sequelize = require('sequelize')
+
 
 // Database
-const db = require('./config/database.js');
+// const db = require('./test/Database')
 
 // Test DB
-db.authenticate()
-    .then(() => console.log('Database connected...'))
-    .catch(err => console.log('Error: ' + err))
+// db.authenticate()
+//     .then(() => console.log('Database connected...'))
+//     .catch(err => console.log('Error: ' + err))
 
-const app = express();
+const app = express()
 
-app.use(cors());
+app.use(cors())
 
-app.use(bodyParser.json()); // support json encoded bodies
-app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
+app.use(bodyParser.json()) // support json encoded bodies
+app.use(bodyParser.urlencoded({ extended: true })) // support encoded bodies
+
+// Post.create({
+//     title: 'Test'
+// }).then(post => {
+//     post.createComment({
+//         text: 'Yooo'
+//     }).then(() => console.log('Worked!'))
+// })
 
 // Posts.hasMany(Comments, { as: 'Comment'})
 // Comments.belongsTo(Posts, { as: 'Post', foreignKey: 'post_id'})
@@ -26,16 +36,15 @@ app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 // // serve static assets normally
 // app.use(express.static(__dirname + '/public'))
 
-// // handle every other route with index.html, which will contain
-// // a script tag to your application's JavaScript file(s).
-// app.get('*', function (request, response){
-//     response.sendFile(path.resolve(__dirname, 'public', 'index.html'))
-//   })
+// app.get('/', (req, res) => res.send('INDEX'))
 
-app.get('/', (req, res) => res.send('INDEX'));
+// // Post routes
+// app.use('/api/posts', require('./routes/Posts'))
 
-// Post routes
-app.use('/api/posts', require('./routes/posts'));
+// app.get('*', (req, res) => {
+//     res.redirect('http://new.weco.io/')
+//     // res.sendFile('http://new.weco.io/')
+// })
 
 const PORT = process.env.PORT || 5000;
 

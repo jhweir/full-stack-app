@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 // const db = require('../config/database');
-const Posts = require('../models/posts')
+const Posts = require('../models/Posts')
 
 // Get all posts
 router.get('/', (req, res) => 
@@ -26,9 +26,9 @@ router.get('/post', (req, res) => {
 router.post('/', (req, res) => {
     res.send('Post request made')
     const data = req.body.post
-    let { title, description, creator, tags, comments, date, likes, pinned } = data;
+    let { title, description, creator, tags, comments, likes, pinned } = data;
 
-    Posts.create({ title, description, creator, tags, comments, date, likes, pinned })
+    Posts.create({ title, description, creator, tags, comments, likes, pinned })
         // .then(post => res.redirect('/posts'))
         // .catch(err => console.log(err))
 })

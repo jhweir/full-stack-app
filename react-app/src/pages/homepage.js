@@ -9,15 +9,20 @@ function Homepage() {
                 <ul>
                     <li><input type="checkbox" checked="checked" readOnly></input> NavBar</li>
                     <ul>
+                        <li><input type="checkbox" checked="checked" readOnly></input> Page routing</li>
                         <li><input type="checkbox" checked="checked" readOnly></input> Dark mode</li>
                     </ul>
                     <li><input type="checkbox" checked="checked" readOnly></input> Homepage</li>
+                    <ul>
+                        <li><input type="checkbox" checked="checked" readOnly></input> Todo list</li>
+                    </ul>
                     <li><input type="checkbox" checked="checked" readOnly></input> Wall</li>
                     <ul>
                         <li><input type="checkbox" checked="checked" readOnly></input> WallHeader</li>
                         <ul>
                             <li><input type="checkbox" checked="checked" readOnly></input> CreatePostModal</li>
                             <ul>
+                                <li><input type="checkbox" checked="checked" readOnly></input> Add username</li>
                                 <li><input type="checkbox" checked="checked" readOnly></input> Add title</li>
                                 <li><input type="checkbox" checked="checked" readOnly></input> Add description</li>
                                 <li><input type="checkbox" checked="" readOnly></input> Add tags</li>
@@ -40,13 +45,20 @@ function Homepage() {
                             <li><input type="checkbox" checked="checked" readOnly></input> Delete posts</li>
                             <li><input type="checkbox" checked="checked" readOnly></input> Pin posts</li>
                             <li><input type="checkbox" checked="" readOnly></input> Add tags to posts</li>
-                            <li><input type="checkbox" checked="" readOnly></input> Link to unique post page</li>
+                            <li><input type="checkbox" checked="checked" readOnly></input> Link to unique post page</li>
                             <li><input type="checkbox" checked="" readOnly></input> Add comments to posts</li>
-                            <li><input type="checkbox" checked="" readOnly></input> Include time stap with date</li>
+                            <li><input type="checkbox" checked="checked" readOnly></input> Include time stap with date</li>
                         </ul>
+                    </ul>
+                    <li><input type="checkbox" checked="checked" readOnly></input> Post pages</li>
+                    <ul>
+                        <li><input type="checkbox" checked="checked" readOnly></input> Display post</li>
+                        <li><input type="checkbox" checked="" readOnly></input> Comment input form</li>
+                        <li><input type="checkbox" checked="" readOnly></input> List comments</li>
                     </ul>
                     <li><input type="checkbox" checked="" readOnly></input> Branches</li>
                     <li><input type="checkbox" checked="" readOnly></input> Users</li>
+                    <li><input type="checkbox" checked="" readOnly></input> Auth page</li>
                 </ul>
             </ul>
             <br/>
@@ -54,7 +66,7 @@ function Homepage() {
             <br/>
             <span className="page-title">To do</span>
             <ul style={{ padding:0 }}>
-                <li><input type="checkbox" checked="checked" readOnly></input> Setup .env on Server</li>
+                <li><input type="checkbox" checked="checked" readOnly></input> Set up env variables</li>
                 <li><input type="checkbox" checked="checked" readOnly></input> Change class based to function based components</li>
                 <li><input type="checkbox" checked="checked" readOnly></input> Like fix</li>
                 <li><input type="checkbox" checked="" readOnly></input> Fix page routing</li>
@@ -63,7 +75,6 @@ function Homepage() {
                 <li><input type="checkbox" checked="checked" readOnly></input> Global state managment using context</li>
                 <li><input type="checkbox" checked="" readOnly></input> Scrape URLs for post data</li>
                 <li><input type="checkbox" checked="" readOnly></input> Resize and save thumbnails</li>
-                <li><input type="checkbox" checked="" readOnly></input> Individual post pages</li>
                 <li><input type="checkbox" checked="" readOnly></input> Comments</li>
             </ul>
             <style jsx="true">{`

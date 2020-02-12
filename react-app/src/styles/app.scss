@@ -94,6 +94,10 @@ input {
     margin-bottom: 20px;
 }
 
+.mb-10 {
+    margin-bottom: 10px;
+}
+
 // Animation Keyframes
 @keyframes fade-in {
     from {opacity: 0;}
@@ -141,6 +145,7 @@ input {
     }
 
     .homepage,
+    .empty-page,
     .post-title,
     .page-title, 
     .post-description {
