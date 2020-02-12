@@ -47,8 +47,8 @@ function Post(props) {
     }
 
     return (
-        <div className={"post " + (pins != null ? 'pinned-post' : '')} >
-            {pins != null && <div className="pin-flag"></div>}
+        <div className={"post " + (pins !== null ? 'pinned-post' : '')} >
+            {pins && <div className="pin-flag" onClick={ unpinPost }></div>}
             <div className="post-id">{ pins === null ? props.index + 1 || '' : '' }</div>
             <div className="post-body">
 
@@ -81,10 +81,10 @@ function Post(props) {
                             <div className="delete-icon"/>
                             <span>Delete</span>
                         </div>
-                        <div className="post-interact-item" onClick={ pins === null ? pinPost : unpinPost }>
+                        {!pins && <div className="post-interact-item" onClick={ pinPost }>
                             <div className="pin-icon"/>
-                            <span>{pins === null ? 'Pin post' : 'Unpin post'}</span>
-                        </div>
+                            <span>Pin post</span>
+                        </div> }
                     </div>
                 </div>
             </div>
@@ -120,6 +120,9 @@ function Post(props) {
                     margin-right: 5px;
                     position: absolute;
                     right: 15px;
+                }
+                .pin-flag:hover {
+                    cursor: pointer;
                 }
                 .post-id {
                     width: 60px;
