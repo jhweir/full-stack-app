@@ -47,9 +47,9 @@ function Post(props) {
     }
 
     return (
-        <div className={"post " + (pins !== null ? 'pinned-post' : '')} >
+        <div className={"post " + (pins ? 'pinned-post' : '')} >
             {pins && <div className="pin-flag" onClick={ unpinPost }></div>}
-            <div className="post-id">{ pins === null ? props.index + 1 || '' : '' }</div>
+            {!pins && !props.isPostPage && <div className="post-id">{ props.index + 1 }</div>}
             <div className="post-body">
 
                 <div className="post-tags">
@@ -92,7 +92,7 @@ function Post(props) {
             <style jsx="true">{`
                 .post {
                     margin-bottom: 10px;
-                    padding: 20px 20px 20px 0;
+                    padding: 20px 30px 20px 30px;
                     width: 100%;
                     border-radius: 5px;
                     background-color: white;
@@ -125,13 +125,19 @@ function Post(props) {
                     cursor: pointer;
                 }
                 .post-id {
-                    width: 60px;
+                    //width: 60px;
+                    margin-right: 30px;
                     display: flex;
                     flex-direction: row;
                     justify-content: center;
                     align-items: center;
                     flex-shrink: 0;
                     color: #aaa;
+                }
+                @media screen and (max-width: 700px) {
+                    .post-id {
+                        display: none;
+                    }
                 }
                 .post-body {
                     display: flex;
@@ -141,11 +147,12 @@ function Post(props) {
                     overflow: hidden;
                 }
                 .post-tags {
-                    height: 40px;
+                    //height: 40px;
                     display: flex;
                     flex-direction: row;
                     justify-content: flex-start;
                     align-items: center;
+                    flex-wrap: wrap;
                 }
                 .user-thumbnail {
                     background-image: url(/icons/user-image-00.jpg);
@@ -185,6 +192,7 @@ function Post(props) {
                     flex-direction: row;
                     align-items: center;
                     flex-shrink: 0;
+                    flex-wrap: wrap;
                 }
                 .post-interact-item {
                     display: flex;

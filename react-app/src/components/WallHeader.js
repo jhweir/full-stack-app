@@ -11,12 +11,13 @@ function WallHeader() {
     }
 
     return (
-        <div className="wall-header">
-            <button className="button" onClick={toggleModal}>Create Post</button>
-
-            {modal ? <CreatePostModal toggleModal={toggleModal}/> : ''}
+        <div className="wall-header mt-10">
 
             <WallSearchBar/>
+
+            <button className="button mb-10" onClick={toggleModal}>Create Post</button>
+
+            {modal ? <CreatePostModal toggleModal={toggleModal}/> : ''}
 
             <WallFilters/>
 
@@ -25,7 +26,7 @@ function WallHeader() {
             <style jsx="true">{`
                 .wall-header {
                     width: 100%;
-                    padding: 10px 0;
+                    //padding-top: 10px 0;
                     display: flex;
                     flex-direction: row;
                     align-items: center;

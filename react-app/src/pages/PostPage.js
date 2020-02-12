@@ -48,7 +48,7 @@ function PostPage({ match }) {
 
     return (
         <div className="wall">
-            <Post post={post} isLoading={isLoading} />
+            <Post post={post} isLoading={isLoading} isPostPage={true}/>
 
             <form  className="create-comment-form" onSubmit={submitComment}> 
                 <textarea className={"input-wrapper modal mb-10 " + (commentError ? 'error' : '')}
@@ -61,7 +61,7 @@ function PostPage({ match }) {
                     onChange={(e) => setComment(e.target.value)}
                 />
                 <div className="button-container">
-                    <button className="button">Post comment</button>
+                    <button className="button mb-10">Post comment</button>
                 </div>
             </form>
 
@@ -91,6 +91,7 @@ function PostPage({ match }) {
                     flex-direction: row;
                     //justify-content: center;
                     //align-items: center;
+                    flex-wrap: wrap;
                 }
                 .comments {
                     background-color: white;
@@ -99,6 +100,9 @@ function PostPage({ match }) {
                     border-radius: 5px;
                     transition-property: background-color;
                     transition-duration: 2s;
+                }
+                .error {
+                    box-shadow: 0 0 5px 5px rgba(255, 0, 0, 0.6);
                 }
             `}</style>
         </div>

@@ -12,13 +12,15 @@ function WallFilters() {
     function sortByComments() { toggleDropDown(); context.getPosts(); context.setSortBy('comments') }
     
     return (
-        <div className="wall-filters">
-            <button className="button" onClick={toggleDropDown}>Filters</button>
-            <div className={"dropdown-content " + (dropdown ? 'visible' : '')}>
-                {/* <div className="dropdown-item" onClick={sortById}>Sort by ID</div> */}
-                <div className="dropdown-item" onClick={ sortByLikes }>Sort by Likes</div>
-                <div className="dropdown-item" onClick={ sortByDate }>Sort by Date</div>
-                <div className="dropdown-item" onClick={ sortByComments }>Sort by Comments</div>
+        <>
+            <div className="wall-filters">
+                <button className="button mb-10" onClick={toggleDropDown}>Filters</button>
+
+                {dropdown && <div className="dropdown-content">
+                    <div className="dropdown-item" onClick={ sortByLikes }>Sort by Likes</div>
+                    <div className="dropdown-item" onClick={ sortByDate }>Sort by Date</div>
+                    <div className="dropdown-item" onClick={ sortByComments }>Sort by Comments</div>
+                </div>}
             </div>
 
             <style jsx="true">{`
@@ -28,7 +30,6 @@ function WallFilters() {
                     align-items: center;
                 }
                 .dropdown-content {
-                    display: none;
                     width: 200px;
                     //padding: 0 30px;
                     border-radius: 5px;
@@ -36,7 +37,7 @@ function WallFilters() {
                     box-shadow: 0 1px 30px 0 rgba(0,0,0,0.2);
                     position: absolute;
                     top: 130px;
-                    left: calc(50% - 20px);
+                    left: calc(50% - 30px);
                     z-index: 1;
                 }
                 .dropdown-item {
@@ -50,12 +51,8 @@ function WallFilters() {
                 .dropdown-item:hover {
                     background-color: #eee;
                 }
-                .visible {
-                    display: block;
-                }
-
             `}</style>
-        </div>
+        </>
     )
 }
 

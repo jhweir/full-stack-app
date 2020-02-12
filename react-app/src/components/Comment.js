@@ -48,7 +48,7 @@ function Comment(props) {
             <style jsx="true">{`
                 .comment {
                     margin-bottom: 10px;
-                    padding: 20px 20px 20px 40px;
+                    padding: 20px 20px 20px 30px;
                     width: 100%;
                     border-radius: 5px;
                     background-color: white;
@@ -76,12 +76,12 @@ function Comment(props) {
                     overflow: hidden;
                 }
                 .comment-tags {
-                    height: 40px;
                     margin-bottom: 10px;
                     display: flex;
                     flex-direction: row;
                     justify-content: flex-start;
                     align-items: center;
+                    flex-wrap: wrap;
                 }
                 .user-thumbnail {
                     background-image: url(/icons/user-image-00.jpg);
@@ -103,7 +103,7 @@ function Comment(props) {
                     font-size: 16px;
                     font-weight: 400;
                     text-decoration: none;
-                    padding-bottom: 10px;
+                    //padding-bottom: 10px;
                     transition-property: color;
                     transition-duration: 2s;
                 }

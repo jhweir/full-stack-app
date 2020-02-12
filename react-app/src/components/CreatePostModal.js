@@ -34,21 +34,21 @@ function CreatePostModal(props) {
             <div className="create-post-modal">
                 <span className="page-title">Create a new post</span>
                 <form  className="create-post-form" onSubmit={onSubmit}> 
-                    <input className="input-wrapper modal margin-bottom-20"
+                    <input className="input-wrapper modal mb-20"
                         type="text"
                         placeholder="Username..."
                         name="user"
                         value={user}
                         onChange={(e) => setUser(e.target.value)}
                     />
-                    <input className={"input-wrapper modal margin-bottom-20 " + (titleError ? 'error' : '')}
+                    <input className={"input-wrapper modal mb-20 " + (titleError ? 'error' : '')}
                         type="text"
                         placeholder="Title..."
                         name="title"
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
                     />
-                    <textarea className={"input-wrapper modal margin-bottom-20 " + (descriptionError ? 'error' : '')}
+                    <textarea className={"input-wrapper modal mb-20 " + (descriptionError ? 'error' : '')}
                         style={{ height:'auto', paddingTop:10 }}
                         rows="5"
                         type="text"
@@ -100,6 +100,9 @@ function CreatePostModal(props) {
                     display: flex;
                     flex-direction: row;
                     align-items: center;
+                }
+                .error {
+                    box-shadow: 0 0 5px 5px rgba(255, 0, 0, 0.6);
                 }
             `}</style>
         </div>
