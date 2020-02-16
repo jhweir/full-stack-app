@@ -5,86 +5,100 @@ import config from '../Config'
 import { PostContext } from '../contexts/PostContext'
 
 function Post(props) {
-    const { getPosts } = useContext(PostContext);
-
+    const { getAllPosts } = useContext(PostContext);
     const [likes, setLikes] = useState(props.post.likes)
-
-    let { id, user, title, description, comments, pins, createdAt } = props.post
 
     useEffect(() => {
         setLikes(props.post.likes)
     }, [props])
+
+    const { id, user, title, description, comments, pins, createdAt } = props.post
+
+    function updatePosts() {
+        if (props.isPostPage) { props.getPost() }
+        else { getAllPosts() }
+    }
       
     function addLike() {
-        let newLikes = likes + 1
+        const newLikes = likes + 1
         setLikes(newLikes)
         axios({ method: 'put', url: config.environmentURL, data: { id, newLikes } })
+            // .then(setLikes(newLikes))
             .catch(error => { console.log(error) })
     }
 
     function deletePost() {
         axios({ method: 'delete', url: config.environmentURL, data: { id } })
-            .then(setTimeout(() => { getPosts() }, 100))
+            .then(setTimeout(() => { updatePosts() }, 100))
             .catch(error => { console.log(error) })
     }
 
     function pinPost() {
         axios({ method: 'put', url: config.environmentURL + '/pinpost', data: { id } })
-        .then(setTimeout(() => { getPosts() }, 100))
-        .catch(error => { console.log(error) })
+            .then(setTimeout(() => { updatePosts() }, 100))
+            .catch(error => { console.log(error) })
     }
 
     function unpinPost() {
         axios({ method: 'put', url: config.environmentURL + '/unpinpost', data: { id } })
-        .then(setTimeout(() => { getPosts() }, 100))
-        .catch(error => { console.log(error) })
+            .then(setTimeout(() => { updatePosts() }, 100))
+            .catch(error => { console.log(error) })
     }
 
     function formatDate() {
-        const t = createdAt.split(/[-.T :]/)
-        let formattedDate = t[3]+':'+t[4]+' on '+t[2]+'-'+t[1]+'-'+t[0]
+        const a = createdAt.split(/[-.T :]/)
+        const formattedDate = a[3]+':'+a[4]+' on '+a[2]+'-'+a[1]+'-'+a[0]
         return formattedDate
     }
 
     return (
-        <div className={"post " + (pins ? 'pinned-post' : '')} >
-            {pins && <div className="pin-flag" onClick={ unpinPost }></div>}
-            {!pins && !props.isPostPage && <div className="post-id">{ props.index + 1 }</div>}
-            <div className="post-body">
-
-                <div className="post-tags">
-                    <a className="user-thumbnail mr-10"></a>
-                    <a className="sub-text mr-10">{ user || 'Anonymous' }</a>
-                    <span className="sub-text mr-10">to</span>
-                    <a className="sub-text mr-10">branch</a>
-                    <span className="sub-text mr-10">|</span>
-                    {/* Wait until the post data has finished loading before formatting the date to prevent errors */}
-                    { props.isLoading === false && <span className="sub-text">{ formatDate() || 'no date' }</span> }
-                </div>
-
-                <div className="post-content">
-
-                    <Link to={ `/posts/${id}` } className="post-title">{ title }</Link>
-
-                    <div className="post-description">{ description }</div>
-                    
-                    <div className="post-interact">
-                        <div className="post-interact-item" onClick={ addLike }>
-                            <div className="like-icon"/>
-                            <span>{ likes } Likes</span>
+        <>
+            <div className={"post " + (pins ? 'pinned-post' : '')}>
+                {pins && <div className="pin-flag" onClick={ unpinPost }></div>}
+                {!pins && !props.isPostPage && <div className="post-id">{ props.index + 1 }</div>}
+                <div className="post-body">
+                    <div className="post-tags">
+                        <span className="user-thumbnail mr-10"></span>
+                        <span className="sub-text mr-10">{ user || 'Anonymous' }</span>
+                        <span className="sub-text mr-10">to</span>
+                        <span className="sub-text mr-10">branch</span>
+                        <span className="sub-text mr-10">|</span>
+                        {/* Wait until the post has finished loading before formatting the date to prevent errors */}
+                        {!props.isLoading && 
+                            <span className="sub-text">{ formatDate() || 'no date' }</span>
+                        }
+                    </div>
+                    <div className="post-content">
+                        <Link to={ `/p/${id}` } className="post-title">{ title }</Link>
+                        <div className="post-description">{ description }</div>    
+                        <div className="post-interact">
+                            <div className="post-interact-item" onClick={ addLike }>
+                                <div className="like-icon"/>
+                                <span>{ likes } Likes</span>
+                            </div>
+                            {/* Link removed from PostPage to prevent loading issue with likes */}
+                            {!props.isPostPage && 
+                                <Link to={ `/p/${id}` } className="post-interact-item">
+                                    <div className="comment-icon"/>
+                                    <span>{ comments } Comments</span>
+                                </Link>
+                            }
+                            {/* Replaced with unclickable div */}
+                            {props.isPostPage && 
+                                <div className="post-interact-item">
+                                    <div className="comment-icon"/>
+                                    <span>{ comments } Comments</span>
+                                </div>
+                            }
+                            <div className="post-interact-item" onClick={ deletePost }>
+                                <div className="delete-icon"/>
+                                <span>Delete</span>
+                            </div>
+                            {!pins && <div className="post-interact-item" onClick={ pinPost }>
+                                <div className="pin-icon"/>
+                                <span>Pin post</span>
+                            </div>}
                         </div>
-                        <Link to={ `/posts/${id}` } className="post-interact-item">
-                            <div className="comment-icon"/>
-                            <span>{ comments } Comments</span>
-                        </Link>
-                        <div className="post-interact-item" onClick={ deletePost }>
-                            <div className="delete-icon"/>
-                            <span>Delete</span>
-                        </div>
-                        {!pins && <div className="post-interact-item" onClick={ pinPost }>
-                            <div className="pin-icon"/>
-                            <span>Pin post</span>
-                        </div> }
                     </div>
                 </div>
             </div>
@@ -257,11 +271,8 @@ function Post(props) {
                     opacity: 0.4;
                     margin-right: 5px;
                 }
-                .mr-10 {
-                    margin-right: 10px;
-                }
             `}</style>
-        </div>
+        </>
     )
 }
 

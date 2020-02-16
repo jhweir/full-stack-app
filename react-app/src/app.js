@@ -4,6 +4,7 @@ import NavBar from './components/NavBar'
 import PostPage from './pages/PostPage'
 import Homepage from './pages/Homepage'
 import Wall from './pages/Wall'
+import Branches from './pages/Branches'
 import EmptyPage from './pages/EmptyPage'
 import PostContextProvider from './contexts/PostContext'
 import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom'
@@ -19,7 +20,8 @@ function App() {
             <Switch>
               <Route path="/" exact component={ Homepage }/>
               <Route path="/wall" component={ Wall }/>
-              <Route path="/posts/:postId" component={ PostPage }/>
+              <Route path="/branches" component={ Branches }/>
+              <Route path="/p/:postId" component={ PostPage }/>
               <Redirect from="/test" to="/wall"/>
               <Route component={ EmptyPage }/>
             </Switch>

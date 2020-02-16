@@ -7,11 +7,16 @@ module.exports = (sequelize, DataTypes) => {
     tags: DataTypes.STRING,
     comments: DataTypes.STRING,
     pins: DataTypes.STRING,
-    likes: DataTypes.INTEGER
+    likes: DataTypes.INTEGER,
+    // branches: DataTypes.STRING,
+    visible: DataTypes.BOOLEAN
   }, {});
   Post.associate = function(models) {
-    // Newpost hasMany Comments
     Post.hasMany(models.Comment);
+    Post.belongsToMany(models.Branch, { 
+      through: 'Branch_Post',
+      foreignKey: 'branchId'
+    });
   };
   return Post;
 };

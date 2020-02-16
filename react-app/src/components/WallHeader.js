@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import WallSearchBar from './WallSearchBar';
 import WallFilters from './WallFilters';
-import CreatePostModal from './CreatePostModal';
+import CreatePost from './CreatePost';
 
 function WallHeader() {
     const [modal, setModal] = useState(false);
@@ -11,17 +11,13 @@ function WallHeader() {
     }
 
     return (
-        <div className="wall-header mt-10">
-
-            <WallSearchBar/>
-
-            <button className="button mb-10" onClick={toggleModal}>Create Post</button>
-
-            {modal ? <CreatePostModal toggleModal={toggleModal}/> : ''}
-
-            <WallFilters/>
-
-            {/* <WallFilters SortById={this.props.SortById} SortByLikes={this.props.SortByLikes}/> */}
+        <>
+            <div className="wall-header mt-10">
+                <WallSearchBar/>
+                <button className="button mb-10" onClick={ toggleModal }>Create Post</button>
+                {modal && <CreatePost toggleModal={ toggleModal }/>}
+                <WallFilters/>
+            </div>
 
             <style jsx="true">{`
                 .wall-header {
@@ -33,7 +29,7 @@ function WallHeader() {
                     flex-wrap: wrap;
                 }
             `}</style>
-        </div>
+        </>
     )
 }
 

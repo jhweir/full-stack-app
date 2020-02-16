@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import config from '../Config'
 import Post from '../components/Post'
@@ -17,7 +17,6 @@ function PostPage({ match }) {
     function getPost() {
         axios({ method: 'get', url: config.environmentURL + `/post?id=${postId}` })
             .then(res => { 
-                console.log(res.data.Comments)
                 setPost(res.data)
                 setComments(res.data.Comments)
                 setIsLoading(false)
@@ -25,17 +24,15 @@ function PostPage({ match }) {
     }
 
     function submitComment(e) {
-        e.preventDefault();
+        e.preventDefault()
         if (comment !== '') {
             let text = comment
             let comments = post.comments + 1
             axios({ method: 'post', url: config.environmentURL + '/addcomment', data: { text, postId, comments } })
                 .then(res => { 
-                    console.log(res)
                     setComment('')
                     setTimeout(() => { getPost() }, 100)
                 })
-                // .then(setTimeout(() => {context.getPosts()}, 100))
         } else if (comment === '') {
             setCommentError(true);
         }
@@ -43,33 +40,43 @@ function PostPage({ match }) {
 
     useEffect(() => {
         getPost()
-        // setTimeout(() => {console.log(post)}, 3000)
-    }, [])
+    }, [comment])
 
     return (
-        <div className="wall">
-            <Post post={post} isLoading={isLoading} isPostPage={true}/>
-
-            <form  className="create-comment-form" onSubmit={submitComment}> 
-                <textarea className={"input-wrapper modal mb-10 " + (commentError ? 'error' : '')}
-                    style={{ height:'auto', paddingTop:10 }}
-                    rows="5"
-                    type="text"
-                    placeholder="Leave a comment..."
-                    name="comment"
-                    value={comment}
-                    onChange={(e) => setComment(e.target.value)}
+        <>
+            <div className="wall">
+                <Post 
+                    post={post}
+                    isLoading={isLoading}
+                    isPostPage={true}
+                    getPost={getPost}
                 />
-                <div className="button-container">
-                    <button className="button mb-10">Post comment</button>
+                <form  className="create-comment-form" onSubmit={submitComment}> 
+                    <textarea className={"input-wrapper modal mb-10 " + (commentError ? 'error' : '')}
+                        style={{ height:'auto', paddingTop:10 }}
+                        rows="5"
+                        type="text"
+                        placeholder="Leave a comment..."
+                        name="comment"
+                        value={comment}
+                        onChange={(e) => {
+                            setComment(e.target.value)
+                            setCommentError(false)
+                        }}
+                    />
+                    <div className="button-container">
+                        <button className="button mb-10">Post comment</button>
+                    </div>
+                </form>
+                <div className="comments">
+                    {comments.map((comment, index) => 
+                        <Comment 
+                            key={comment.id}
+                            index={index}
+                            comment={comment} /> 
+                    )}
                 </div>
-            </form>
-
-            <div className="comments">
-                {comments.map((comment, index) => <Comment key={comment.id} index={index} comment={comment} /> )}
             </div>
-
-            {/* List comments */}
             
             <style jsx="true">{`
                 .wall {
@@ -89,8 +96,6 @@ function PostPage({ match }) {
                     width: 100%;
                     display: flex;
                     flex-direction: row;
-                    //justify-content: center;
-                    //align-items: center;
                     flex-wrap: wrap;
                 }
                 .comments {
@@ -105,7 +110,7 @@ function PostPage({ match }) {
                     box-shadow: 0 0 5px 5px rgba(255, 0, 0, 0.6);
                 }
             `}</style>
-        </div>
+        </>
     )
 }
 

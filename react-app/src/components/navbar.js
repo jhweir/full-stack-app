@@ -4,17 +4,20 @@ import { PostContext } from '../contexts/PostContext'
 
 
 function NavBar(props) {
-    const { getPosts } = useContext(PostContext);
+    const { getAllPosts } = useContext(PostContext);
 
     function toggleDarkMode() {
         document.body.classList.toggle("dark-mode");
     }
 
     return (
-        <div className="navbar">
-            <Link to="/" className="navbar-text">Home</Link> |
-            <Link to="/wall" className="navbar-text" onClick={ getPosts }> Wall</Link>
-            <div style={{ marginLeft: 20 }} className="button" onClick={ toggleDarkMode }>Dark mode</div>
+        <>
+            <div className="navbar">
+                <Link to="/" className="navbar-text">Home</Link> |
+                <Link to="/wall" className="navbar-text" onClick={ getAllPosts }>Wall</Link> | 
+                <Link to="/branches" className="navbar-text">Branches</Link>
+                <div style={{ marginLeft: 20 }} className="button" onClick={ toggleDarkMode }>Dark mode</div>
+            </div>
 
             <style jsx="true">{`
                 .navbar {
@@ -37,7 +40,7 @@ function NavBar(props) {
                     padding: 10px;
                 }
             `}</style>
-        </div>
+        </>
     )
 }
 

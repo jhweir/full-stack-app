@@ -7,9 +7,9 @@ function WallFilters() {
 
     function toggleDropDown() { setDropdown(!dropdown) }
     // function sortById() { context.setSortBy('id'); toggleDropDown() }
-    function sortByLikes() { toggleDropDown(); context.getPosts(); context.setSortBy('likes') }
-    function sortByDate() { toggleDropDown(); context.getPosts(); context.setSortBy('date') }
-    function sortByComments() { toggleDropDown(); context.getPosts(); context.setSortBy('comments') }
+    function sortByLikes() { toggleDropDown(); context.getAllPosts(); context.setSortBy('likes') }
+    function sortByDate() { toggleDropDown(); context.getAllPosts(); context.setSortBy('date') }
+    function sortByComments() { toggleDropDown(); context.getAllPosts(); context.setSortBy('comments') }
     
     return (
         <>

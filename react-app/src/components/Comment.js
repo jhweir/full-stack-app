@@ -17,8 +17,8 @@ function Comment(props) {
                 <div className="comment-body">
 
                     <div className="comment-tags">
-                        <a className="user-thumbnail mr-10"></a>
-                        <a className="sub-text mr-10">{ user || 'Anonymous' }</a>
+                        <span className="user-thumbnail mr-10"></span>
+                        <span className="sub-text mr-10">{ user || 'Anonymous' }</span>
                         <span className="sub-text mr-10">|</span>
                         {/* Wait until the post data has finished loading before formatting the date to prevent errors */}
                         <span className="sub-text">{ formatDate() || 'no date' }</span>

@@ -1,9 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const path = require('path');
 const cors = require('cors')
-const Post = require('./models').Post;
-const Comment = require('./models').Comment;
 
 const app = express();
 

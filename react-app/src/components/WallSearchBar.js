@@ -11,17 +11,19 @@ function WallSearchBar(props) {
     }
 
     return (
-        <div className="mb-10">
-            <form className="input-wrapper" onSubmit={applySearch}>
-                <input
-                    className="input"
-                    type="text"
-                    placeholder="Search posts..."
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                />
-                <button className="search-button"></button>
-            </form>
+        <>
+            <div className="mb-10">
+                <form className="input-wrapper" onSubmit={ applySearch }>
+                    <input
+                        className="input"
+                        type="text"
+                        placeholder="Search posts..."
+                        value={ search }
+                        onChange={ (e) => setSearch(e.target.value) }
+                    />
+                    <button className="search-button"></button>
+                </form>
+            </div>
 
             <style jsx="true">{`
                 .search-button {
@@ -34,7 +36,7 @@ function WallSearchBar(props) {
                     opacity: 0.6;
                 }
             `}</style>
-        </div>
+        </>
     )
 }
 

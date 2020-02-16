@@ -9,8 +9,9 @@ module.exports = (sequelize, DataTypes) => {
     likes: DataTypes.INTEGER
   }, {});
   Comment.associate = function(models) {
-    // Comment belongsTo Post
-    Comment.belongsTo(models.Post);
+    Comment.belongsTo(models.Post, {
+      foreignKey: 'postId'
+    })
   };
   return Comment;
 };

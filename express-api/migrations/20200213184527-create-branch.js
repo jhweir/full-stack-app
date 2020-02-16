@@ -1,42 +1,42 @@
 'use strict';
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('Posts', {
+    return queryInterface.createTable('Branches', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      user: {
+      name: {
         type: Sequelize.STRING
       },
-      title: {
+      url: {
         type: Sequelize.STRING
       },
       description: {
         type: Sequelize.STRING
       },
+      creator: {
+        type: Sequelize.STRING
+      },
+      mods: {
+        type: Sequelize.STRING
+      },
+      followers: {
+        type: Sequelize.STRING
+      },
       tags: {
         type: Sequelize.STRING
       },
-      comments: {
-        type: Sequelize.INTEGER,
-        defaultValue: 0
-      },
-      pins: {
+      parent_branches: {
         type: Sequelize.STRING
       },
-      likes: {
-        type: Sequelize.INTEGER,
-        defaultValue: 0
+      total_likes: {
+        type: Sequelize.INTEGER
       },
-      // branches: {
-      //   type: Sequelize.STRING
-      // },
-      visible: {
-        type: Sequelize.BOOLEAN,
-        defaultValue: true
+      total_comments: {
+        type: Sequelize.INTEGER
       },
       createdAt: {
         allowNull: false,
@@ -49,6 +49,6 @@ module.exports = {
     });
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('Posts');
+    return queryInterface.dropTable('Branches');
   }
 };

@@ -1,7 +1,10 @@
-const express = require('express');
-const router = express.Router();
-const Posts = require('../models').Post;
-const Comments = require('../models').Comment;
+const express = require('express')
+const router = express.Router()
+const Posts = require('../models').Post
+const Branches = require('../models').Branch
+const Branch_Post = require('../models').Branch_Post
+const Comments = require('../models').Comment
+const Tags = require('../models').Tag
 
 // Get all posts
 router.get('/', (req, res) => 
@@ -26,18 +29,29 @@ router.get('/post', (req, res) => {
 router.post('/', (req, res) => {
     res.send('Post request made')
     const data = req.body.post
-    let { user, title, description, tags, comments, pins, likes } = data;
+    let { user, title, description, branches, comments, pins, likes } = data
 
-    Posts.create({ user, title, description, tags, comments, pins, likes })
-        // .then(post => res.redirect('/posts'))
-        // .catch(err => console.log(err))
+    function createBranchPost(branch, post) {
+        Branch_Post.create({ branchId: branch.id, postId: post.id })
+    }
+
+    Posts.create({ user, title, description, comments, pins, likes })
+        .then(post => {
+            // console.log(post.id)
+            branches.forEach((branch) => createBranchPost(branch, post))
+        })
 })
 
 // Delete post
 router.delete('/', (req, res) => {
     res.send('Delete request made')
 
-    Posts.destroy({ where: { id: req.body.id }})
+    // Posts.destroy({ where: { id: req.body.id }})
+
+    // Set post visibility to false
+    Posts.update({ visible: false }, {
+        where: { id: req.body.id }
+    })
 })
 
 // Like post
@@ -80,19 +94,13 @@ router.post('/addcomment', (req, res) => {
     })
 })
 
-module.exports = router;
+// Get all branch names
+router.get('/all_branch_names', (req, res) => {
+    Branches.findAll({ attributes: ['id', 'name'] })
+    .then(branchNames => {
+        res.json(branchNames)
+        //res.sendStatus(200)
+    })
+})
 
-
-// Post.create({
-//     title: 'Post title'
-// }).then(post => {
-//     post.createComment({
-//         text: 'Comment text...'
-//     }).then(() => console.log('Success!'))
-// });
-
-// Newpost.findAll({
-//     include: [Comment]
-// }).then(posts => {
-//     console.log(posts[0].Comments)
-// })
+module.exports = router
