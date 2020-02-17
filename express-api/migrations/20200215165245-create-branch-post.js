@@ -1,4 +1,8 @@
 'use strict';
+
+// const Post = require('../models').Post
+// const Branch = require('../models').Branch
+
 module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.createTable('Branch_Posts', {

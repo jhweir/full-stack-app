@@ -6,9 +6,9 @@ const Branch_Post = require('../models').Branch_Post
 const Comments = require('../models').Comment
 const Tags = require('../models').Tag
 
-// Get all posts
+// Get all posts (include the branches it appears within)
 router.get('/', (req, res) => 
-    Posts.findAll()
+    Posts.findAll({ include: [Branches] })
         .then(posts => {
             res.json(posts)
             //res.sendStatus(200)
@@ -16,7 +16,7 @@ router.get('/', (req, res) =>
         .catch(err => console.log(err))
 )
 
-// Get a post
+// Get a post (include its comments)
 router.get('/post', (req, res) => {
     Posts.findOne({ where: { id: req.query.id }, include: [Comments] })
         .then(post => {
@@ -46,12 +46,12 @@ router.post('/', (req, res) => {
 router.delete('/', (req, res) => {
     res.send('Delete request made')
 
-    // Posts.destroy({ where: { id: req.body.id }})
-
     // Set post visibility to false
     Posts.update({ visible: false }, {
         where: { id: req.body.id }
     })
+
+    // Posts.destroy({ where: { id: req.body.id }})
 })
 
 // Like post
@@ -99,6 +99,15 @@ router.get('/all_branch_names', (req, res) => {
     Branches.findAll({ attributes: ['id', 'name'] })
     .then(branchNames => {
         res.json(branchNames)
+        //res.sendStatus(200)
+    })
+})
+
+// Get all branches
+router.get('/branches', (req, res) => {
+    Branches.findAll()
+    .then(branches => {
+        res.json(branches)
         //res.sendStatus(200)
     })
 })

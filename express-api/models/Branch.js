@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
   Branch.associate = function(models) {
     Branch.belongsToMany(models.Post, { 
       through: 'Branch_Post',
-      foreignKey: 'postId'
+      foreignKey: 'branchId'
     });
   };
   return Branch;

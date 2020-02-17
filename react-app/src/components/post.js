@@ -61,7 +61,9 @@ function Post(props) {
                         <span className="user-thumbnail mr-10"></span>
                         <span className="sub-text mr-10">{ user || 'Anonymous' }</span>
                         <span className="sub-text mr-10">to</span>
-                        <span className="sub-text mr-10">branch</span>
+                        <span className="sub-text mr-10">{ }</span>
+                        {props.post.Branches.map(branch => <div>{branch.name}</div>)}
+
                         <span className="sub-text mr-10">|</span>
                         {/* Wait until the post has finished loading before formatting the date to prevent errors */}
                         {!props.isLoading && 

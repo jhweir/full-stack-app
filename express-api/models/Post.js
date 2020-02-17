@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
     Post.hasMany(models.Comment);
     Post.belongsToMany(models.Branch, { 
       through: 'Branch_Post',
-      foreignKey: 'branchId'
+      foreignKey: 'postId'
     });
   };
   return Post;
