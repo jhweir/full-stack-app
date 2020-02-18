@@ -18,7 +18,7 @@ router.get('/', (req, res) =>
 
 // Get a post (include its comments)
 router.get('/post', (req, res) => {
-    Posts.findOne({ where: { id: req.query.id }, include: [Comments] })
+    Posts.findOne({ where: { id: req.query.id }, include: [Comments, Branches] })
         .then(post => {
             res.json(post)
         })

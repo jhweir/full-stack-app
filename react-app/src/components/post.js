@@ -61,9 +61,16 @@ function Post(props) {
                         <span className="user-thumbnail mr-10"></span>
                         <span className="sub-text mr-10">{ user || 'Anonymous' }</span>
                         <span className="sub-text mr-10">to</span>
-                        <span className="sub-text mr-10">{ }</span>
-                        {props.post.Branches.map(branch => <div>{branch.name}</div>)}
-
+                        {/* Wait until the post has finished loading before displaying the branches to prevent errors */}
+                        {!props.isLoading && 
+                            <div className="branch-names">
+                                {props.post.Branches.length >= 1 ? 
+                                    props.post.Branches.map((branch, index) =>
+                                        <Link to={ `/b/${branch.name}` } style={{marginRight: 10}} key={index}>{branch.name}</Link>
+                                    )
+                                    : <div style={{marginRight: 10}}>root</div>}
+                            </div>
+                        }
                         <span className="sub-text mr-10">|</span>
                         {/* Wait until the post has finished loading before formatting the date to prevent errors */}
                         {!props.isLoading && 
@@ -178,6 +185,13 @@ function Post(props) {
                     width: 40px;
                     border-radius: 50%;
                     flex-shrink: 0
+                }
+                .branch-names {
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: flex-start;
+                    align-items: center;
+                    //margin-right: 10px;
                 }
                 .sub-text {
                     color: #888;

@@ -21,7 +21,7 @@ function Branches() {
     return (
         <>
             <div className="wall">
-                <div className="title">Branch page</div>
+                <div className="title">Branches</div>
                 <ul className="branches">
                     {branches.map((branch, index) => 
                         <Branch
