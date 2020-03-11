@@ -1,29 +1,23 @@
-import React, { createContext, useEffect, useState } from 'react'
-import axios from 'axios'
-import config from '../Config'
+import React, { useContext, useEffect } from 'react'
+import { BranchContext } from '../contexts/BranchContext'
+// import axios from 'axios'
+// import config from '../Config'
 import Branch from '../components/Branch'
+import BranchHeader from '../components/BranchHeader'
 
 function Branches() {
-    const [branches, setBranches] = useState([])
-
-    function getAllBranches() {
-        axios.get(config.environmentURL + '/branches')
-            .then(res => { 
-                setBranches(res.data)
-            })
-    }
+    const { setBranch, branchData, globalData, branchBranches, isLoading } = useContext(BranchContext)
 
     useEffect(() => {
-        getAllBranches()
+        //setBranch('root') // Sets the branch in the BranchContext and triggers a call to the database to retrieve the posts
     }, [])
-
 
     return (
         <>
             <div className="wall">
-                <div className="title">Branches</div>
+                <BranchHeader />
                 <ul className="branches">
-                    {branches.map((branch, index) => 
+                    {branchBranches.map((branch, index) => 
                         <Branch
                             branch={branch}
                             index={index}

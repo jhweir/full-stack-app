@@ -1,15 +1,15 @@
 import React, { useState, useContext } from 'react'
-import { PostContext } from '../contexts/PostContext'
+import { BranchContext } from '../contexts/BranchContext'
 
 function WallFilters() {
-    const context = useContext(PostContext);
+    const { getBranchPosts, setSortBy } = useContext(BranchContext);
     const [dropdown, setDropdown] = useState(false)
 
     function toggleDropDown() { setDropdown(!dropdown) }
-    // function sortById() { context.setSortBy('id'); toggleDropDown() }
-    function sortByLikes() { toggleDropDown(); context.getAllPosts(); context.setSortBy('likes') }
-    function sortByDate() { toggleDropDown(); context.getAllPosts(); context.setSortBy('date') }
-    function sortByComments() { toggleDropDown(); context.getAllPosts(); context.setSortBy('comments') }
+
+    function sortByLikes() { toggleDropDown(); getBranchPosts(); setSortBy('likes') }
+    function sortByDate() { toggleDropDown(); getBranchPosts(); setSortBy('date') }
+    function sortByComments() { toggleDropDown(); getBranchPosts(); setSortBy('comments') }
     
     return (
         <>

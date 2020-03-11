@@ -9,7 +9,7 @@ function Branch(props) {
     return (
         <>
             <div className="branch">
-                <Link to={ `/b/${props.branch.id}` } className="branch-title">{props.branch.name}</Link>
+                <Link to={ `/b/${props.branch.handle}` } className="branch-title">{props.branch.name}</Link>
                 <span className="sub-text mr-10">{props.branch.description}</span>
             </div>
 

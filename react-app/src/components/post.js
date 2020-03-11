@@ -2,10 +2,10 @@ import React, { useState, useContext, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
 import config from '../Config'
-import { PostContext } from '../contexts/PostContext'
+import { BranchContext } from '../contexts/BranchContext'
 
 function Post(props) {
-    const { getAllPosts } = useContext(PostContext);
+    const { getBranchPosts } = useContext(BranchContext)
     const [likes, setLikes] = useState(props.post.likes)
 
     useEffect(() => {
@@ -16,14 +16,13 @@ function Post(props) {
 
     function updatePosts() {
         if (props.isPostPage) { props.getPost() }
-        else { getAllPosts() }
+        else { getBranchPosts() }
     }
       
     function addLike() {
         const newLikes = likes + 1
         setLikes(newLikes)
         axios({ method: 'put', url: config.environmentURL, data: { id, newLikes } })
-            // .then(setLikes(newLikes))
             .catch(error => { console.log(error) })
     }
 

@@ -4,7 +4,7 @@ import BranchTag from './BranchTag'
 
 function BranchTagInput(props) {
     const { 
-        allBranchNames,
+        globalData,
         branches,
         newBranch,
         setNewBranch,
@@ -18,7 +18,8 @@ function BranchTagInput(props) {
     } = props
 
     // Find branches that match the search filter
-    const filteredBranches = allBranchNames.filter(branch => (branch.name.includes(newBranch)))
+    const filteredBranches = globalData.filter(branch => (branch.name.includes(newBranch)))
+    
     // Suggest branches that match the search filter and haven't already been added to the post
     const suggestedBranches = filteredBranches.filter(branch => !branches.find(b2 => branch.name === b2.name))
 
@@ -68,6 +69,11 @@ function BranchTagInput(props) {
             <style jsx="true">{`
                 .branch-input-title, .branch-error-message {
                     width: 400px;
+                }
+                @media screen and (max-width: 700px) {
+                    .branch-input-title {
+                        width: auto;
+                    }
                 }
                 .branch-form {
                     display: flex;

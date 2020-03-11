@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react'
 import { BranchContext } from '../contexts/BranchContext'
 
-function WallSearchBar(props) {
+function BranchSearchBar(props) {
     const { setSearchFilter } = useContext(BranchContext);
     const [search, setSearch] = useState('')
 
@@ -17,7 +17,7 @@ function WallSearchBar(props) {
                     <input
                         className="input"
                         type="text"
-                        placeholder="Search posts..."
+                        placeholder="Search branches..."
                         value={ search }
                         onChange={ (e) => setSearch(e.target.value) }
                     />
@@ -64,7 +64,7 @@ function WallSearchBar(props) {
     )
 }
 
-export default WallSearchBar
+export default BranchSearchBar
 
 
 

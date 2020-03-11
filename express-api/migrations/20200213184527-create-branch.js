@@ -8,25 +8,29 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+      creator: {
+        type: Sequelize.STRING
+      },
       name: {
         type: Sequelize.STRING
       },
-      url: {
+      handle: {
+        type: Sequelize.STRING,
+        unique: true
+      },
+      flag_image: {
+        type: Sequelize.STRING
+      },
+      cover_image: {
         type: Sequelize.STRING
       },
       description: {
-        type: Sequelize.STRING
-      },
-      creator: {
         type: Sequelize.STRING
       },
       mods: {
         type: Sequelize.STRING
       },
       followers: {
-        type: Sequelize.STRING
-      },
-      tags: {
         type: Sequelize.STRING
       },
       parent_branches: {

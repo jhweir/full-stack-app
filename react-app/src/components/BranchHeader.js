@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import WallSearchBar from './WallSearchBar';
-import WallFilters from './WallFilters';
-import CreatePost from './CreatePost';
+import BranchSearchBar from './BranchSearchBar';
+import BranchFilters from './BranchFilters';
+import CreateBranch from './CreateBranch';
 
-function WallHeader(props) {
+function BranchHeader() {
     const [modal, setModal] = useState(false);
 
     function toggleModal() {
@@ -12,17 +12,17 @@ function WallHeader(props) {
 
     return (
         <>
-            <div className="wall-header mt-10">
-                <WallSearchBar/>
-                <button className="button mb-10" onClick={ toggleModal }>Create Post</button>
+            <div className="branch-header mt-10">
+                <BranchSearchBar/>
+                <button className="button mb-10" onClick={ toggleModal }>Create Branch</button>
                 {modal && 
-                    <CreatePost toggleModal={ toggleModal }/>
+                    <CreateBranch toggleModal={ toggleModal }/>
                 }
-                <WallFilters/>
+                <BranchFilters/>
             </div>
 
             <style jsx="true">{`
-                .wall-header {
+                .branch-header {
                     width: 100%;
                     //padding-top: 10px 0;
                     display: flex;
@@ -35,7 +35,7 @@ function WallHeader(props) {
     )
 }
 
-export default WallHeader
+export default BranchHeader
 
 
 

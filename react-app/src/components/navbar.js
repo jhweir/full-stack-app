@@ -1,10 +1,10 @@
 import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
-import { PostContext } from '../contexts/PostContext'
+import { BranchContext } from '../contexts/BranchContext'
 
 
-function NavBar(props) {
-    const { getAllPosts } = useContext(PostContext);
+function NavBar() {
+    const { getBranchPosts } = useContext(BranchContext);
 
     function toggleDarkMode() {
         document.body.classList.toggle("dark-mode");
@@ -14,7 +14,7 @@ function NavBar(props) {
         <>
             <div className="navbar">
                 <Link to="/" className="navbar-text">Home</Link> |
-                <Link to="/wall" className="navbar-text" onClick={ getAllPosts }>Wall</Link> | 
+                <Link to="/wall" className="navbar-text" onClick={ getBranchPosts }>Wall</Link> | 
                 <Link to="/branches" className="navbar-text">Branches</Link>
                 <div style={{ marginLeft: 20 }} className="button" onClick={ toggleDarkMode }>Dark mode</div>
             </div>

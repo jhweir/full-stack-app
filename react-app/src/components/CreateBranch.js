@@ -4,80 +4,55 @@ import axios from 'axios'
 import config from '../Config'
 import BranchTagInput from './BranchTagInput'
 
-function CreatePost(props) {
-    const { branchData, globalData, getBranchContent, isLoading } = useContext(BranchContext);
-    const [user, setUser] = useState('')
-    const [title, setTitle] = useState('')
+function CreateBranch(props) {
+    const { branchData, globalData, getBranchBranches, isLoading } = useContext(BranchContext);
+    // const [user, setUser] = useState('')
+    const [name, setName] = useState('')
+    const [handle, setHandle] = useState('')
     const [description, setDescription] = useState('')
-    const [branches, setBranches] = useState([])
-    const [newBranch, setNewBranch] = useState('')
-    const [titleError, setTitleError] = useState(false)
+    const [parentBranchId, setParentBranchId] = useState('')
+    const [nameError, setNameError] = useState(false)
+    const [handleError, setHandleError] = useState(false)
     const [descriptionError, setDescriptionError] = useState(false)
-    const [branchError, setBranchError] = useState(false)
-    const [branchErrorMessage, setBranchErrorMessage] = useState(false)
+    const [parentBranchIdError, setParentBranchIdError] = useState('')
 
-    // Add the branch the user is in to the branch list when the data has loaded
-    useEffect(() => {
-        setBranches([...branches, branchData])
-    }, [isLoading])
-
-    function addBranch(e) {
+    function submitBranch(e) {
         e.preventDefault()
-        const validBranch = globalData.filter(branch => (branch.name === newBranch))
-        if (newBranch === '') {
-            setBranchError(true)
-        } else if (validBranch.length === 0) {
-            setBranchError(true)
-            setBranchErrorMessage(true)
-        } else if (validBranch.length && !branches.includes(validBranch[0]) ) {
-            setBranches([...branches, validBranch[0]])
-            setNewBranch('')
-        }
-    }
-
-    function addSuggestedBranch(branch) {
-        setBranches([...branches, branch])
-    }
-
-    function removeBranch(branch) {
-        const updatedBranches = branches.filter((branches) => {
-            return branches !== branch
-        })
-        setBranches(updatedBranches)
-    }
-
-    function submitPost(e) {
-        e.preventDefault()
-        if (title === '') { setTitleError(true) }
+        if (name === '') { setNameError(true) }
+        if (handle === '') { setHandleError(true) }
         if (description === '') { setDescriptionError(true) }
-        if (title && description !== '') {
-            let post = { user, title, description, branches }
-            axios({ method: 'post', url: config.environmentURL, data: { post } })
-                .then(res => { console.log(res) })
-                .then(props.toggleModal)
-                // .then(setTimeout(() => { getBranchContent() }, 100))
+        if (name && handle && description !== '') {
+            const branchTags = branchData.Tags
+            const branch = { name, handle, description, branchTags, parentBranchId }
+            axios({ method: 'post', url: config.environmentURL + `/createBranch`, data: { branch } })
+                // .then(res => { console.log(res) })
+                .then(props.toggleModal())
+                // .then(setTimeout(() => { getBranchBranches() }, 100))
         }
     }
 
     return (
         <>
             <div className="modal-wrapper">
-                <div className="create-post-modal hide-scrollbars">
-                    <span className="page-title">Create a new post</span>
-                    <form className="create-post-form" onSubmit={ submitPost }> 
-                        <input className="input-wrapper modal mb-20"
+                <div className="create-branch-modal hide-scrollbars">
+                    <span className="post-title">Create a new branch</span>
+                    <form className="create-branch-form" onSubmit={ submitBranch }> 
+                        <input className={"input-wrapper modal mb-20 " + (nameError && 'error')}
                             type="text"
-                            placeholder="Username..."
-                            value={ user }
-                            onChange={(e) => setUser(e.target.value)}
-                        />
-                        <input className={"input-wrapper modal mb-20 " + (titleError && 'error')}
-                            type="text"
-                            placeholder="Title..."
-                            value={ title }
+                            placeholder="Branch name..."
+                            value={ name }
                             onChange={(e) => {
-                                setTitle(e.target.value)
-                                setTitleError(false)
+                                setName(e.target.value)
+                                setNameError(false)
+                            }}
+                        />
+                        <input className={"input-wrapper modal mb-20 " + (handleError && 'error')}
+                            type="text"
+                            placeholder="Unique handle..."
+                            value={ handle }
+                            onChange={(e) => {
+                                setHandle(e.target.value)
+                                setHandleError(false)
                             }}
                         />
                         <textarea className={"input-wrapper modal mb-20 " + (descriptionError && 'error')}
@@ -91,21 +66,19 @@ function CreatePost(props) {
                                 setDescriptionError(false)
                             }}
                         />
-                        <BranchTagInput 
-                            globalData={globalData}
-                            addBranch={addBranch}
-                            removeBranch={removeBranch}
-                            branches={branches}
-                            newBranch={newBranch}
-                            setNewBranch={setNewBranch}
-                            branchError={branchError}
-                            setBranchError={setBranchError}
-                            branchErrorMessage={branchErrorMessage}
-                            setBranchErrorMessage={setBranchErrorMessage}
-                            addSuggestedBranch={addSuggestedBranch}
+                        <textarea className={"input-wrapper modal mb-20 " + (parentBranchIdError && 'error')}
+                            style={{ height:'auto', paddingTop:10 }}
+                            rows="5"
+                            type="text"
+                            placeholder="Parent branch ID..."
+                            value={ parentBranchId }
+                            onChange={(e) => {
+                                setParentBranchId(e.target.value)
+                                setParentBranchIdError(false)
+                            }}
                         />
                         <div className="button-container">
-                            <button className="button">Post</button>
+                            <button className="button">Create Branch</button>
                             <div className="button" onClick={ props.toggleModal }>Cancel</div>
                         </div>
                     </form>
@@ -125,7 +98,7 @@ function CreatePost(props) {
                     animation-name: fade-in;
                     animation-duration: 0.5s;
                 }
-                .create-post-modal {
+                .create-branch-modal {
                     position: absolute;
                     top: 150px;
                     left: calc(50% - 250px);
@@ -153,7 +126,7 @@ function CreatePost(props) {
                         left: auto;
                     }
                 }
-                .create-post-form {
+                .create-branch-form {
                     display: flex;
                     flex-direction: column;
                     justify-content: center;
@@ -205,4 +178,4 @@ function CreatePost(props) {
     )
 }
 
-export default CreatePost
+export default CreateBranch
