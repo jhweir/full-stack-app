@@ -1,24 +1,17 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   const Post = sequelize.define('Post', {
-    creator: DataTypes.STRING,
+    postType: DataTypes.STRING,
+    privacySetting: DataTypes.STRING,
+    creator: DataTypes.INTEGER,
+    note: DataTypes.STRING,
     title: DataTypes.STRING,
     description: DataTypes.STRING,
-    comments: DataTypes.STRING,
-    pins: DataTypes.STRING,
-    likes: DataTypes.INTEGER,
-    visible: DataTypes.BOOLEAN
+    url: DataTypes.STRING,
+    imagePath: DataTypes.STRING
   }, {});
   Post.associate = function(models) {
-    Post.hasMany(models.Comment);
-    // Post.belongsToMany(models.Branch, { 
-    //   through: 'Branch_Post',
-    //   foreignKey: 'postId'
-    // });
-    Post.belongsToMany(models.Tag, { 
-      through: 'PostTag',
-      foreignKey: 'postId'
-    });
+    // associations can be defined here
   };
   return Post;
 };
