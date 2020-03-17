@@ -1,11 +1,11 @@
 import React, { useContext } from 'react'
-import { BranchContext } from '../contexts/BranchContext'
+import { HolonContext } from '../contexts/HolonContext'
 import Post from './Post'
 import WallHeader from './WallHeader'
 
 function Wall() {
-    const { branchData, searchFilter, sortBy, isLoading } = useContext(BranchContext)
-    const posts = branchData.Posts
+    const { holonData, searchFilter, sortBy, isLoading } = useContext(HolonContext)
+    // const posts = holonData.Posts
 
     // Filter posts by search text, remove pinned posts, and remove hidden posts
     // let filteredPosts = posts.filter((post) => {

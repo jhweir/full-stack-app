@@ -1,22 +1,22 @@
 import React from 'react'
 
 function BranchTag(props) {
-    const { branch, added, addSuggestedBranch, removeBranch } = props
+    const { holon, added, addSuggestedBranch, removeBranch } = props
     return (
         <>
-            {/* Suggested branches */}
-            {!added && <div className="suggested-branch-tag" onClick={() => addSuggestedBranch(branch)}>
-                <div className="tag-text mr-10">{ branch.name }</div>
+            {/* Suggested holons */}
+            {!added && <div className="suggested-holon-tag" onClick={() => addSuggestedBranch(holon)}>
+                <div className="tag-text mr-10">{ holon.name }</div>
             </div>}
 
-            {/* Added branches */}
-            {added && <div className="added-branch-tag">
-                <div className="tag-text mr-10">{ branch.name }</div>
-                <div className="close-icon" onClick={() => removeBranch(branch)}></div>
+            {/* Added holons */}
+            {added && <div className="added-holon-tag">
+                <div className="tag-text mr-10">{ holon.name }</div>
+                <div className="close-icon" onClick={() => removeBranch(holon)}></div>
             </div>}
 
             <style jsx="true">{`
-                .suggested-branch-tag {
+                .suggested-holon-tag {
                     display: flex;
                     flex-direction: row;
                     justify-content: center;
@@ -26,10 +26,10 @@ function BranchTag(props) {
                     padding: 10px 10px 10px 15px;
                     margin: 0 10px 10px 0;
                 }
-                .suggested-branch-tag:hover {
+                .suggested-holon-tag:hover {
                     cursor: pointer;
                 }
-                .added-branch-tag {
+                .added-holon-tag {
                     display: flex;
                     flex-direction: row;
                     justify-content: center;

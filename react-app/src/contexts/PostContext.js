@@ -23,8 +23,8 @@ function PostContextProvider(props) {
         axios.get(config.environmentURL + '/all_branch_names')
             .then(res => { 
                 setAllBranchNames(res.data)
-                // setAllBranchNames(res.data.map((branch) => {
-                //     return branch.name
+                // setAllBranchNames(res.data.map((holon) => {
+                //     return holon.name
                 // }))
             })
     }

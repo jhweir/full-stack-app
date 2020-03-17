@@ -1,8 +1,8 @@
 import React, { useState, useContext } from 'react'
-import { BranchContext } from '../contexts/BranchContext'
+import { HolonContext } from '../contexts/HolonContext'
 
 function WallSearchBar(props) {
-    const { setSearchFilter } = useContext(BranchContext);
+    const { setSearchFilter } = useContext(HolonContext);
     const [search, setSearch] = useState('')
 
     function applySearch(e) {

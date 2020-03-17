@@ -8,7 +8,20 @@ module.exports = (sequelize, DataTypes) => {
     coverImagePath: DataTypes.STRING
   }, {});
   Holon.associate = function(models) {
-    // associations can be defined here
+
+    Holon.belongsToMany(models.Holon, { through: models.HolonHolon, as: 'Parent', foreignKey: 'holonAId' });
+    //Holon.belongsToMany(models.Holon, { through: models.HolonHolon, as: 'Siblings', foreignKey: 'holonBId' });
+
+    // Holon.hasMany(models.HolonHolon, {
+    //   foreignKey: 'holonAId'
+    // });
+    // Holon.hasMany(models.HolonHolon, {
+    //   foreignKey: 'holonBId'
+    // });
+    // Holon.belongsToMany(models.Holon, { 
+    //   through: 'HolonHolon',
+    //   foreignKey: 'holonAId'
+    // });
   };
   return Holon;
 };

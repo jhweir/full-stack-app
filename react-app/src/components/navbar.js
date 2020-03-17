@@ -1,10 +1,10 @@
 import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
-import { BranchContext } from '../contexts/BranchContext'
+import { HolonContext } from '../contexts/HolonContext'
 
 
 function NavBar() {
-    const { getBranchPosts } = useContext(BranchContext);
+    const { getHolonPosts } = useContext(HolonContext);
 
     function toggleDarkMode() {
         document.body.classList.toggle("dark-mode");
@@ -14,8 +14,8 @@ function NavBar() {
         <>
             <div className="navbar">
                 <Link to="/" className="navbar-text">Home</Link> |
-                <Link to="/wall" className="navbar-text" onClick={ getBranchPosts }>Wall</Link> | 
-                <Link to="/branches" className="navbar-text">Branches</Link>
+                <Link to="/h/root/wall" className="navbar-text" onClick={ getHolonPosts }>Wall</Link> | 
+                <Link to="/h/root/child-holons" className="navbar-text">Holons</Link>
                 <div style={{ marginLeft: 20 }} className="button" onClick={ toggleDarkMode }>Dark mode</div>
             </div>
 

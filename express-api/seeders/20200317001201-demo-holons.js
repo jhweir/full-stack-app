@@ -6,7 +6,7 @@ module.exports = {
       {
         handle: 'root',
         name: 'RootBranch',
-        description: 'This is the root branch...',
+        description: 'This is the root holon...',
         flagImagePath: null,
         coverImagePath: null,
         createdAt: new Date(),
@@ -15,7 +15,7 @@ module.exports = {
       {
         handle: 'science',
         name: 'Science',
-        description: 'Welcome to the Science branch...',
+        description: 'Welcome to the Science holon...',
         flagImagePath: null,
         coverImagePath: null,
         createdAt: new Date(),

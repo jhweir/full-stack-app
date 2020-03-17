@@ -1,27 +1,27 @@
 import React, { useContext, useEffect } from 'react'
-import { BranchContext } from '../contexts/BranchContext'
+import { HolonContext } from '../contexts/HolonContext'
 // import axios from 'axios'
 // import config from '../Config'
-import Branch from '../components/Branch'
-import BranchHeader from '../components/BranchHeader'
+import Holon from '../components/Holon'
+import BranchHeader from '../components/HolonHeader'
 
-function Branches() {
-    const { setBranch, branchData, globalData, branchBranches, isLoading } = useContext(BranchContext)
+function Holons() {
+    const { setHolon, holonData, globalData, branchBranches, isLoading } = useContext(HolonContext)
 
     useEffect(() => {
-        //setBranch('root') // Sets the branch in the BranchContext and triggers a call to the database to retrieve the posts
+        //setHolon('root') // Sets the holon in the HolonContext and triggers a call to the database to retrieve the posts
     }, [])
 
     return (
         <>
             <div className="wall">
                 <BranchHeader />
-                <ul className="branches">
-                    {branchBranches.map((branch, index) => 
-                        <Branch
-                            branch={branch}
+                <ul className="holons">
+                    {branchBranches.map((holon, index) => 
+                        <Holon
+                            holon={holon}
                             index={index}
-                            key={branch.id}  
+                            key={holon.id}  
                         />
                     )} 
                 </ul>
@@ -57,4 +57,4 @@ function Branches() {
     )
 }
 
-export default Branches
+export default Holons

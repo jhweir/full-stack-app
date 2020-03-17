@@ -1,49 +1,49 @@
 import React, { useContext, useState, useEffect } from 'react'
-import { BranchContext } from '../contexts/BranchContext'
+import { HolonContext } from '../contexts/HolonContext'
 import axios from 'axios'
 import config from '../Config'
-import BranchTagInput from './BranchTagInput'
+import BranchTagInput from './HolonTagInput'
 
 function CreatePost(props) {
-    const { branchData, globalData, getBranchContent, isLoading } = useContext(BranchContext);
+    const { holonData, globalData, getHolonContent, isLoading } = useContext(HolonContext);
     const [user, setUser] = useState('')
     const [title, setTitle] = useState('')
     const [description, setDescription] = useState('')
-    const [branches, setBranches] = useState([])
-    const [newBranch, setNewBranch] = useState('')
+    const [holons, setHolons] = useState([])
+    const [newHolon, setNewHolon] = useState('')
     const [titleError, setTitleError] = useState(false)
     const [descriptionError, setDescriptionError] = useState(false)
-    const [branchError, setBranchError] = useState(false)
-    const [branchErrorMessage, setBranchErrorMessage] = useState(false)
+    const [holonError, setHolonError] = useState(false)
+    const [holonErrorMessage, setHolonErrorMessage] = useState(false)
 
-    // Add the branch the user is in to the branch list when the data has loaded
+    // Add the holon the user is in to the holon list when the data has loaded
     useEffect(() => {
-        setBranches([...branches, branchData])
+        setHolons([...holons, holonData])
     }, [isLoading])
 
     function addBranch(e) {
         e.preventDefault()
-        const validBranch = globalData.filter(branch => (branch.name === newBranch))
-        if (newBranch === '') {
-            setBranchError(true)
+        const validBranch = globalData.filter(holon => (holon.name === newHolon))
+        if (newHolon === '') {
+            setHolonError(true)
         } else if (validBranch.length === 0) {
-            setBranchError(true)
-            setBranchErrorMessage(true)
-        } else if (validBranch.length && !branches.includes(validBranch[0]) ) {
-            setBranches([...branches, validBranch[0]])
-            setNewBranch('')
+            setHolonError(true)
+            setHolonErrorMessage(true)
+        } else if (validBranch.length && !holons.includes(validBranch[0]) ) {
+            setHolons([...holons, validBranch[0]])
+            setNewHolon('')
         }
     }
 
-    function addSuggestedBranch(branch) {
-        setBranches([...branches, branch])
+    function addSuggestedBranch(holon) {
+        setHolons([...holons, holon])
     }
 
-    function removeBranch(branch) {
-        const updatedBranches = branches.filter((branches) => {
-            return branches !== branch
+    function removeBranch(holon) {
+        const updatedBranches = holons.filter((holons) => {
+            return holons !== holon
         })
-        setBranches(updatedBranches)
+        setHolons(updatedBranches)
     }
 
     function submitPost(e) {
@@ -51,7 +51,7 @@ function CreatePost(props) {
         if (title === '') { setTitleError(true) }
         if (description === '') { setDescriptionError(true) }
         if (title && description !== '') {
-            let post = { user, title, description, branches }
+            let post = { user, title, description, holons }
             axios({ method: 'post', url: config.environmentURL, data: { post } })
                 .then(res => { console.log(res) })
                 .then(props.toggleModal)
@@ -95,13 +95,13 @@ function CreatePost(props) {
                             globalData={globalData}
                             addBranch={addBranch}
                             removeBranch={removeBranch}
-                            branches={branches}
-                            newBranch={newBranch}
-                            setNewBranch={setNewBranch}
-                            branchError={branchError}
-                            setBranchError={setBranchError}
-                            branchErrorMessage={branchErrorMessage}
-                            setBranchErrorMessage={setBranchErrorMessage}
+                            holons={holons}
+                            newHolon={newHolon}
+                            setNewHolon={setNewHolon}
+                            holonError={holonError}
+                            setHolonError={setHolonError}
+                            holonErrorMessage={holonErrorMessage}
+                            setHolonErrorMessage={setHolonErrorMessage}
                             addSuggestedBranch={addSuggestedBranch}
                         />
                         <div className="button-container">

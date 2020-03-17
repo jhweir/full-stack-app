@@ -1,11 +1,11 @@
 import React, { useContext, useState, useEffect } from 'react'
-import { BranchContext } from '../contexts/BranchContext'
+import { HolonContext } from '../contexts/HolonContext'
 import axios from 'axios'
 import config from '../Config'
-import BranchTagInput from './BranchTagInput'
+import BranchTagInput from './HolonTagInput'
 
 function CreateBranch(props) {
-    const { branchData, globalData, getBranchBranches, isLoading } = useContext(BranchContext);
+    const { holonData, globalData, getBranchBranches, isLoading } = useContext(HolonContext);
     // const [user, setUser] = useState('')
     const [name, setName] = useState('')
     const [handle, setHandle] = useState('')
@@ -22,9 +22,9 @@ function CreateBranch(props) {
         if (handle === '') { setHandleError(true) }
         if (description === '') { setDescriptionError(true) }
         if (name && handle && description !== '') {
-            const branchTags = branchData.Tags
-            const branch = { name, handle, description, branchTags, parentBranchId }
-            axios({ method: 'post', url: config.environmentURL + `/createBranch`, data: { branch } })
+            const branchTags = holonData.Tags
+            const holon = { name, handle, description, branchTags, parentBranchId }
+            axios({ method: 'post', url: config.environmentURL + `/createBranch`, data: { holon } })
                 // .then(res => { console.log(res) })
                 .then(props.toggleModal())
                 // .then(setTimeout(() => { getBranchBranches() }, 100))
@@ -34,12 +34,12 @@ function CreateBranch(props) {
     return (
         <>
             <div className="modal-wrapper">
-                <div className="create-branch-modal hide-scrollbars">
-                    <span className="post-title">Create a new branch</span>
-                    <form className="create-branch-form" onSubmit={ submitBranch }> 
+                <div className="create-holon-modal hide-scrollbars">
+                    <span className="post-title">Create a new holon</span>
+                    <form className="create-holon-form" onSubmit={ submitBranch }> 
                         <input className={"input-wrapper modal mb-20 " + (nameError && 'error')}
                             type="text"
-                            placeholder="Branch name..."
+                            placeholder="Holon name..."
                             value={ name }
                             onChange={(e) => {
                                 setName(e.target.value)
@@ -70,7 +70,7 @@ function CreateBranch(props) {
                             style={{ height:'auto', paddingTop:10 }}
                             rows="5"
                             type="text"
-                            placeholder="Parent branch ID..."
+                            placeholder="Parent holon ID..."
                             value={ parentBranchId }
                             onChange={(e) => {
                                 setParentBranchId(e.target.value)
@@ -78,7 +78,7 @@ function CreateBranch(props) {
                             }}
                         />
                         <div className="button-container">
-                            <button className="button">Create Branch</button>
+                            <button className="button">Create Holon</button>
                             <div className="button" onClick={ props.toggleModal }>Cancel</div>
                         </div>
                     </form>
@@ -98,7 +98,7 @@ function CreateBranch(props) {
                     animation-name: fade-in;
                     animation-duration: 0.5s;
                 }
-                .create-branch-modal {
+                .create-holon-modal {
                     position: absolute;
                     top: 150px;
                     left: calc(50% - 250px);
@@ -126,7 +126,7 @@ function CreateBranch(props) {
                         left: auto;
                     }
                 }
-                .create-branch-form {
+                .create-holon-form {
                     display: flex;
                     flex-direction: column;
                     justify-content: center;

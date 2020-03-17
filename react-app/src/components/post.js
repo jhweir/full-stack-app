@@ -2,10 +2,10 @@ import React, { useState, useContext, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
 import config from '../Config'
-import { BranchContext } from '../contexts/BranchContext'
+import { HolonContext } from '../contexts/HolonContext'
 
 function Post(props) {
-    const { getBranchPosts } = useContext(BranchContext)
+    const { getHolonPosts } = useContext(HolonContext)
     const [likes, setLikes] = useState(props.post.likes)
 
     useEffect(() => {
@@ -16,7 +16,7 @@ function Post(props) {
 
     function updatePosts() {
         if (props.isPostPage) { props.getPost() }
-        else { getBranchPosts() }
+        else { getHolonPosts() }
     }
       
     function addLike() {
@@ -60,12 +60,12 @@ function Post(props) {
                         <span className="user-thumbnail mr-10"></span>
                         <span className="sub-text mr-10">{ user || 'Anonymous' }</span>
                         <span className="sub-text mr-10">to</span>
-                        {/* Wait until the post has finished loading before displaying the branches to prevent errors */}
+                        {/* Wait until the post has finished loading before displaying the holons to prevent errors */}
                         {!props.isLoading && 
-                            <div className="branch-names">
-                                {props.post.Branches.length >= 1 ? 
-                                    props.post.Branches.map((branch, index) =>
-                                        <Link to={ `/b/${branch.name}` } style={{marginRight: 10}} key={index}>{branch.name}</Link>
+                            <div className="holon-names">
+                                {props.post.Holons.length >= 1 ? 
+                                    props.post.Holons.map((holon, index) =>
+                                        <Link to={ `/b/${holon.name}` } style={{marginRight: 10}} key={index}>{holon.name}</Link>
                                     )
                                     : <div style={{marginRight: 10}}>root</div>}
                             </div>
@@ -185,7 +185,7 @@ function Post(props) {
                     border-radius: 50%;
                     flex-shrink: 0
                 }
-                .branch-names {
+                .holon-names {
                     display: flex;
                     flex-direction: row;
                     justify-content: flex-start;

@@ -7,7 +7,19 @@ module.exports = (sequelize, DataTypes) => {
     holonBId: DataTypes.INTEGER
   }, {});
   HolonHolon.associate = function(models) {
-    // associations can be defined here
+    
+    // HolonHolon.belongsTo(models.Holon, { as: 'Parent', onDelete: 'CASCADE'});
+    // HolonHolon.belongsTo(models.Holon, { as: 'Sibling', onDelete: 'CASCADE' });
+
+    HolonHolon.belongsTo(models.Holon, {
+      // foreignKey: 'holonBId',
+      // targetKey: 'id'
+    })
+    // HolonHolon.hasOne(models.Holon, {
+    //   // foreignKey: {
+    //   //   name: 'id'
+    //   // }
+    // });
   };
   return HolonHolon;
 };

@@ -1,15 +1,15 @@
 import React, { useState, useContext } from 'react'
-import { BranchContext } from '../contexts/BranchContext'
+import { HolonContext } from '../contexts/HolonContext'
 
 function BranchFilters() {
-    const { getBranchPosts, setSortBy } = useContext(BranchContext);
+    const { getHolonPosts, setSortBy } = useContext(HolonContext);
     const [dropdown, setDropdown] = useState(false)
 
     function toggleDropDown() { setDropdown(!dropdown) }
 
-    function sortByLikes() { toggleDropDown(); getBranchPosts(); setSortBy('likes') }
-    function sortByDate() { toggleDropDown(); getBranchPosts(); setSortBy('date') }
-    function sortByComments() { toggleDropDown(); getBranchPosts(); setSortBy('comments') }
+    function sortByLikes() { toggleDropDown(); getHolonPosts(); setSortBy('likes') }
+    function sortByDate() { toggleDropDown(); getHolonPosts(); setSortBy('date') }
+    function sortByComments() { toggleDropDown(); getHolonPosts(); setSortBy('comments') }
     
     return (
         <>

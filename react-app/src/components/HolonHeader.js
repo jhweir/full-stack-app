@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import BranchSearchBar from './BranchSearchBar';
-import BranchFilters from './BranchFilters';
-import CreateBranch from './CreateBranch';
+import BranchSearchBar from './HolonSearchBar';
+import BranchFilters from './HolonFilters';
+import CreateBranch from './CreateHolon';
 
 function BranchHeader() {
     const [modal, setModal] = useState(false);
@@ -12,9 +12,9 @@ function BranchHeader() {
 
     return (
         <>
-            <div className="branch-header mt-10">
+            <div className="holon-header mt-10">
                 <BranchSearchBar/>
-                <button className="button mb-10" onClick={ toggleModal }>Create Branch</button>
+                <button className="button mb-10" onClick={ toggleModal }>Create Holon</button>
                 {modal && 
                     <CreateBranch toggleModal={ toggleModal }/>
                 }
@@ -22,7 +22,7 @@ function BranchHeader() {
             </div>
 
             <style jsx="true">{`
-                .branch-header {
+                .holon-header {
                     width: 100%;
                     //padding-top: 10px 0;
                     display: flex;

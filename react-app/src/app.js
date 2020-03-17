@@ -2,13 +2,13 @@ import React from 'react'
 // import ChildOne from './components/ChildOne'
 import NavBar from './components/NavBar'
 import PostPage from './pages/PostPage'
-import BranchPage from './pages/BranchPage'
+import HolonPage from './pages/HolonPage'
 import Homepage from './pages/Homepage'
 import Wall from './components/Wall'
-import Branches from './pages/Branches'
+import Holons from './pages/Holons'
 import EmptyPage from './pages/EmptyPage'
 // import PostContextProvider from './contexts/PostContext'
-import BranchContextProvider from './contexts/BranchContext'
+import HolonContextProvider from './contexts/HolonContext'
 import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom'
 import { createBrowserHistory } from 'history'
 
@@ -16,21 +16,19 @@ function App() {
   return (
     <>
       <div className="app">
-        <BranchContextProvider>
+        <HolonContextProvider>
           <Router history={ createBrowserHistory }>
             <NavBar/>
             <Switch>
               <Route path="/" exact component={ Homepage }/>
-              <Route path="/wall" component={ BranchPage }/>
-              <Route path="/branches" component={ Branches }/>
               <Route path="/p/:postId" component={ PostPage }/>
-              <Route path="/b/:branchHandle" component={ BranchPage }/>
+              <Route path="/h/:holonHandle" component={ HolonPage }/>
               {/* <Route path="/u/:userHandle" component={ UserPage }/> */}
               <Route component={ EmptyPage }/>
               {/* <Redirect from="/a" to="/b"/> */}
             </Switch>
           </Router>
-        </BranchContextProvider>
+        </HolonContextProvider>
       </div>
 
       <style jsx="true">{`

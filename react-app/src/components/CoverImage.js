@@ -1,9 +1,9 @@
 import React, { useContext } from 'react'
-import { BranchContext } from '../contexts/BranchContext'
+import { HolonContext } from '../contexts/HolonContext'
 
 function CoverImage() {
-    // Pull in branch cover image url when set up in database
-    const {  } = useContext(BranchContext);
+    // Pull in holon cover image url when set up in database
+    const {  } = useContext(HolonContext);
     return (
         <>
             <div className="cover-image"/>

@@ -1,8 +1,8 @@
 import React, { useState, useContext } from 'react'
-import { BranchContext } from '../contexts/BranchContext'
+import { HolonContext } from '../contexts/HolonContext'
 
 function BranchSearchBar(props) {
-    const { setSearchFilter } = useContext(BranchContext);
+    const { setSearchFilter } = useContext(HolonContext);
     const [search, setSearch] = useState('')
 
     function applySearch(e) {
@@ -17,7 +17,7 @@ function BranchSearchBar(props) {
                     <input
                         className="input"
                         type="text"
-                        placeholder="Search branches..."
+                        placeholder="Search holons..."
                         value={ search }
                         onChange={ (e) => setSearch(e.target.value) }
                     />

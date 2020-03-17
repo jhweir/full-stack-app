@@ -4,17 +4,17 @@ import axios from 'axios'
 import config from '../Config'
 import { PostContext } from '../contexts/PostContext'
 
-function Branch(props) {
+function Holon(props) {
 
     return (
         <>
-            <div className="branch">
-                <Link to={ `/b/${props.branch.handle}` } className="branch-title">{props.branch.name}</Link>
-                <span className="sub-text mr-10">{props.branch.description}</span>
+            <div className="holon">
+                <Link to={ `/b/${props.holon.handle}` } className="holon-title">{props.holon.name}</Link>
+                <span className="sub-text mr-10">{props.holon.description}</span>
             </div>
 
             <style jsx="true">{`
-                .branch {
+                .holon {
                     margin-bottom: 10px;
                     padding: 20px 30px 20px 30px;
                     width: 100%;
@@ -32,4 +32,4 @@ function Branch(props) {
     )
 }
 
-export default Branch
+export default Holon

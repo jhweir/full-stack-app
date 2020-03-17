@@ -57,7 +57,7 @@ function Homepage() {
                             <li><input type="checkbox" checked="checked" readOnly></input> Create comments</li>
                             <li><input type="checkbox" checked="checked" readOnly></input> List comments</li>
                         </ul>
-                        <li><input type="checkbox" checked="" readOnly></input> Branches</li>
+                        <li><input type="checkbox" checked="" readOnly></input> Holons</li>
                         <li><input type="checkbox" checked="" readOnly></input> Users</li>
                         <li><input type="checkbox" checked="" readOnly></input> Auth page</li>
                     </ul>
