@@ -25,11 +25,32 @@ router.get('/data', (req, res) => {
     //     .catch(err => console.log(err))
 
     // Holon data:
-    Holons.findOne({ where: { handle: req.query.id }, include: [Holons] }) // include: [{ model: Posts, include: [Holons] }]
+    Holons.findOne({ 
+        where: { 
+            handle: req.query.id
+        },
+        include: [{
+            model: Holons,
+            as: 'child'
+        }]
+    }) // include: [{ model: Posts, include: [Holons] }]
+
         .then(data => {
             res.json(data)
         })
         .catch(err => console.log(err))
+
+
+    // const result = await models.Category.findAll({
+    //     where: {
+    //         parent: null
+    //     },
+    //     include: [{
+    //         model: models.Category,
+    //         as: 'children'
+    //     }]
+    //     });
+    // res.send(result);
 })
 
 
