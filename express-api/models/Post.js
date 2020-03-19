@@ -11,7 +11,10 @@ module.exports = (sequelize, DataTypes) => {
     imagePath: DataTypes.STRING
   }, {});
   Post.associate = function(models) {
-    // associations can be defined here
+    Post.belongsToMany(models.Holon, { 
+      through: models.HolonPost,
+      foreignKey: 'postId'
+    });
   };
   return Post;
 };

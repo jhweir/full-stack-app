@@ -1,6 +1,6 @@
 import React from 'react'
 // import ChildOne from './components/ChildOne'
-import NavBar from './components/NavBar'
+import NavBar from './components/Navbar'
 import PostPage from './pages/PostPage'
 import HolonPage from './pages/HolonPage'
 import Homepage from './pages/Homepage'

@@ -29,10 +29,15 @@ router.get('/data', (req, res) => {
         where: { 
             handle: req.query.id
         },
-        include: [{
-            model: Holons,
-            as: 'child'
-        }]
+        include: [
+            {
+                model: Holons,
+                as: 'child'
+            },
+            {
+                model: Posts
+            }
+        ]
     }) // include: [{ model: Posts, include: [Holons] }]
 
         .then(data => {

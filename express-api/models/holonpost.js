@@ -4,8 +4,6 @@ module.exports = (sequelize, DataTypes) => {
     holonId: DataTypes.INTEGER,
     postId: DataTypes.INTEGER
   }, {});
-  HolonPost.associate = function(models) {
-    // associations can be defined here
-  };
+  HolonPost.associate = function(models) {};
   return HolonPost;
 };

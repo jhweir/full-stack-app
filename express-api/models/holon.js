@@ -18,6 +18,11 @@ module.exports = (sequelize, DataTypes) => {
       as: 'child',
       foreignKey: 'holonAId'
     });
+    //new
+    Holon.belongsToMany(models.Post, { 
+      through: models.HolonPost,
+      foreignKey: 'holonId'
+    });
   };
   return Holon;
 };
