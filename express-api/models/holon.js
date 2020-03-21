@@ -8,19 +8,33 @@ module.exports = (sequelize, DataTypes) => {
     coverImagePath: DataTypes.STRING
   }, {});
   Holon.associate = function(models) {
+    // VHR relationship
     Holon.belongsToMany(models.Holon, {
-      through: models.HolonHolon,
-      as: 'parent',
+      through: models.VerticalHolonRelationship,
+      as: 'DirectParentHolons',
       foreignKey: 'holonBId'
     });
     Holon.belongsToMany(models.Holon, {
-      through: models.HolonHolon,
-      as: 'child',
+      through: models.VerticalHolonRelationship,
+      as: 'DirectChildHolons',
       foreignKey: 'holonAId'
     });
-    //new
+
+    // HolonTag relationship
+    Holon.belongsToMany(models.Holon, {
+      through: models.HolonTag,
+      as: 'A',
+      foreignKey: 'holonBId'
+    });
+    Holon.belongsToMany(models.Holon, {
+      through: models.HolonTag,
+      as: 'TagOwner',
+      foreignKey: 'holonAId'
+    });
+
+    // HolonPost relationship
     Holon.belongsToMany(models.Post, { 
-      through: models.HolonPost,
+      through: models.PostHolon,
       foreignKey: 'holonId'
     });
   };

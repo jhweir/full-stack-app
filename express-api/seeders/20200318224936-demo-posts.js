@@ -11,25 +11,25 @@ module.exports = {
       },
       {
         title: 'Post 2',
-        description: 'Post 2 located in Science...',
+        description: 'Post 2 located in All > Science...',
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
         title: 'Post 3',
-        description: 'Post 3 located in Biology (and Science)...',
+        description: 'Post 3 located in All > Science > Physics...',
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
         title: 'Post 4',
-        description: 'Post 4 located in Physics (and Science)...',
+        description: 'Post 4 located in All > Science > Biology...',
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
         title: 'Post 5',
-        description: 'Post 5 located in Chemistry (and Science)...',
+        description: 'Post 5 located in All > Science > Chemistry...',
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -37,12 +37,6 @@ module.exports = {
   },
 
   down: (queryInterface, Sequelize) => {
-    /*
-      Add reverting commands here.
-      Return a promise to correctly handle asynchronicity.
-
-      Example:
-      return queryInterface.bulkDelete('People', null, {});
-    */
+    return queryInterface.bulkDelete('Posts', null, {});
   }
 };

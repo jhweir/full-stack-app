@@ -1,43 +1,43 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import { HolonContext } from '../contexts/HolonContext'
 import Post from './Post'
 import WallHeader from './WallHeader'
 
 function Wall() {
     const { holonData, searchFilter, sortBy, isLoading } = useContext(HolonContext)
-    // const posts = holonData.Posts
+    const posts = holonData.Posts
 
-    // Filter posts by search text, remove pinned posts, and remove hidden posts
-    // let filteredPosts = posts.filter((post) => {
-    //     return post.title.includes(searchFilter) && post.pins == null && post.visible === true
-    // })
+        // Filter posts by search text (todo: also remove pinned and hidden posts)
+        let filteredPosts = posts.filter(post => {
+            return post.title.includes(searchFilter) //&& post.visible === true //&& post.pins == null && post.visible === true
+        })
 
-    // // Sort posts by Likes
-    // if (sortBy === 'likes') {
-    //     filteredPosts.sort((a, b) => b.likes - a.likes)
-    // }
+        // // Sort posts by Likes
+        // if (sortBy === 'likes') {
+        //     filteredPosts.sort((a, b) => b.likes - a.likes)
+        // }
 
-    // // Sort posts by Date
-    // if (sortBy === 'date') {
-    //     filteredPosts.sort((a, b) => b.date - a.date)
-    // }
+        // // Sort posts by Date
+        // if (sortBy === 'date') {
+        //     filteredPosts.sort((a, b) => b.date - a.date)
+        // }
 
-    // // Sort posts by Comments
-    // if (sortBy === 'comments') {
-    //     filteredPosts.sort((a, b) => b.comments - a.comments)
-    // }
+        // // Sort posts by Comments
+        // if (sortBy === 'comments') {
+        //     filteredPosts.sort((a, b) => b.comments - a.comments)
+        // }
 
-    // // Pinned posts
-    // let pinnedPosts = posts.filter((post) => {
-    //     return post.pins === 'Global wall' && post.visible === true
-    // })
+        // // Pinned posts
+        // let pinnedPosts = posts.filter((post) => {
+        //     return post.pins === 'Global wall' && post.visible === true
+        // })
 
     return (
         <>
             <div className="wall">
                 <WallHeader />
                 {/* <ul className="pinned-posts">
-                    {pinnedPosts.map((post, index) => 
+                    {holonData && pinnedPosts.map((post, index) => 
                         <Post
                             post={post}
                             index={index}
@@ -45,7 +45,7 @@ function Wall() {
                             isLoading={isLoading}
                         /> 
                     )} 
-                </ul>
+                </ul> */}
                 <ul className="posts">
                     {filteredPosts.map((post, index) => 
                         <Post
@@ -55,7 +55,7 @@ function Wall() {
                             isLoading={isLoading}
                         />
                     )} 
-                </ul> */}
+                </ul>
             </div>
 
             <style jsx="true">{`

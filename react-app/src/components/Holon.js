@@ -3,13 +3,15 @@ import { Link } from 'react-router-dom'
 import axios from 'axios'
 import config from '../Config'
 import { PostContext } from '../contexts/PostContext'
+import { HolonContext } from '../contexts/HolonContext'
 
 function Holon(props) {
+    //const { reRender } = useContext(HolonContext)
 
     return (
         <>
             <div className="holon">
-                <Link to={ `/b/${props.holon.handle}` } className="holon-title">{props.holon.name}</Link>
+                <Link to={ `/h/${props.holon.handle}/child-holons` } className="holon-title" onClick={ () => { props.updateContext() } }>{props.holon.name}</Link>
                 <span className="sub-text mr-10">{props.holon.description}</span>
             </div>
 

@@ -5,7 +5,7 @@ module.exports = {
     return queryInterface.bulkInsert('Holons', [
       {
         handle: 'root',
-        name: 'RootBranch',
+        name: 'All',
         description: 'This is the root holon...',
         flagImagePath: null,
         coverImagePath: null,
@@ -43,6 +43,15 @@ module.exports = {
         handle: 'chemistry',
         name: 'Chemistry',
         description: 'Welcome to Chemistry',
+        flagImagePath: null,
+        coverImagePath: null,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        handle: 'qm',
+        name: 'Quantum Mechanics',
+        description: 'Welcome to Quantum Mechanics',
         flagImagePath: null,
         coverImagePath: null,
         createdAt: new Date(),

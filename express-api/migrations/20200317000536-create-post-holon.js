@@ -1,17 +1,26 @@
 'use strict';
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('HolonPosts', {
+    return queryInterface.createTable('PostHolons', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      holonId: {
-        type: Sequelize.INTEGER
+      creator: {
+        type: Sequelize.STRING
+      },
+      relationship: {
+        type: Sequelize.STRING
+      },
+      state: {
+        type: Sequelize.STRING
       },
       postId: {
+        type: Sequelize.INTEGER
+      },
+      holonId: {
         type: Sequelize.INTEGER
       },
       createdAt: {
@@ -25,6 +34,6 @@ module.exports = {
     });
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('HolonPosts');
+    return queryInterface.dropTable('PostHolons');
   }
 };

@@ -2,50 +2,43 @@ import React, { useContext, useState, useEffect } from 'react'
 import { HolonContext } from '../contexts/HolonContext'
 import axios from 'axios'
 import config from '../Config'
-import BranchTagInput from './HolonTagInput'
+import HolonHandleInput from './HolonTagInput'
 
-function CreateBranch(props) {
-    const { holonData, globalData, getBranchBranches, isLoading } = useContext(HolonContext);
+function CreateHolon(props) {
+    const { holonData, reRender, globalData, getChildHolons, getData, isLoading } = useContext(HolonContext);
     // const [user, setUser] = useState('')
     const [name, setName] = useState('')
     const [handle, setHandle] = useState('')
     const [description, setDescription] = useState('')
-    const [parentBranchId, setParentBranchId] = useState('')
+    // const [parentHolonId, setParentHolonId] = useState('')
     const [nameError, setNameError] = useState(false)
     const [handleError, setHandleError] = useState(false)
     const [descriptionError, setDescriptionError] = useState(false)
-    const [parentBranchIdError, setParentBranchIdError] = useState('')
+    // const [parentHolonIdError, setParentHolonIdError] = useState('')
 
-    function submitBranch(e) {
+    function publishHolon(e) {
         e.preventDefault()
         if (name === '') { setNameError(true) }
         if (handle === '') { setHandleError(true) }
         if (description === '') { setDescriptionError(true) }
         if (name && handle && description !== '') {
-            const branchTags = holonData.Tags
-            const holon = { name, handle, description, branchTags, parentBranchId }
-            axios({ method: 'post', url: config.environmentURL + `/createBranch`, data: { holon } })
+            //const branchTags = holonData.Tags
+            let parentHolonId = holonData.id
+            const holon = { name, handle, description, parentHolonId }
+            axios({ method: 'post', url: config.environmentURL + `/createHolon`, data: { holon } })
                 // .then(res => { console.log(res) })
                 .then(props.toggleModal())
-                // .then(setTimeout(() => { getBranchBranches() }, 100))
+                .then(setTimeout(() => { getData() }, 200))
         }
+        //reRender()
     }
 
     return (
         <>
             <div className="modal-wrapper">
                 <div className="create-holon-modal hide-scrollbars">
-                    <span className="post-title">Create a new holon</span>
-                    <form className="create-holon-form" onSubmit={ submitBranch }> 
-                        <input className={"input-wrapper modal mb-20 " + (nameError && 'error')}
-                            type="text"
-                            placeholder="Holon name..."
-                            value={ name }
-                            onChange={(e) => {
-                                setName(e.target.value)
-                                setNameError(false)
-                            }}
-                        />
+                    <span className="modal-title-large mb-20">Create a new holon in '{ holonData.name }'</span>
+                    <form className="create-holon-form" onSubmit={ publishHolon }>
                         <input className={"input-wrapper modal mb-20 " + (handleError && 'error')}
                             type="text"
                             placeholder="Unique handle..."
@@ -53,6 +46,15 @@ function CreateBranch(props) {
                             onChange={(e) => {
                                 setHandle(e.target.value)
                                 setHandleError(false)
+                            }}
+                        />
+                        <input className={"input-wrapper modal mb-20 " + (nameError && 'error')}
+                            type="text"
+                            placeholder="Holon name..."
+                            value={ name }
+                            onChange={(e) => {
+                                setName(e.target.value)
+                                setNameError(false)
                             }}
                         />
                         <textarea className={"input-wrapper modal mb-20 " + (descriptionError && 'error')}
@@ -66,17 +68,18 @@ function CreateBranch(props) {
                                 setDescriptionError(false)
                             }}
                         />
-                        <textarea className={"input-wrapper modal mb-20 " + (parentBranchIdError && 'error')}
+                        {/* <span className="modal-title-medium mb-20">Choose its location (parent holons)</span>
+                        <textarea className={"input-wrapper modal mb-20 " + (parentHolonIdError && 'error')}
                             style={{ height:'auto', paddingTop:10 }}
                             rows="5"
                             type="text"
                             placeholder="Parent holon ID..."
-                            value={ parentBranchId }
+                            value={ parentHolonId }
                             onChange={(e) => {
-                                setParentBranchId(e.target.value)
-                                setParentBranchIdError(false)
+                                setParentHolonId(e.target.value)
+                                setParentHolonIdError(false)
                             }}
-                        />
+                        /> */}
                         <div className="button-container">
                             <button className="button">Create Holon</button>
                             <div className="button" onClick={ props.toggleModal }>Cancel</div>
@@ -178,4 +181,4 @@ function CreateBranch(props) {
     )
 }
 
-export default CreateBranch
+export default CreateHolon

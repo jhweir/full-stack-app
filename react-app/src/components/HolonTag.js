@@ -1,18 +1,18 @@
 import React from 'react'
 
 function BranchTag(props) {
-    const { holon, added, addSuggestedBranch, removeBranch } = props
+    const { holonTag, added, addSuggestedHolonTag, removeHolonTag } = props
     return (
         <>
-            {/* Suggested holons */}
-            {!added && <div className="suggested-holon-tag" onClick={() => addSuggestedBranch(holon)}>
-                <div className="tag-text mr-10">{ holon.name }</div>
+            {/* Suggested holonTags */}
+            {!added && <div className="suggested-holon-tag" onClick={() => addSuggestedHolonTag(holonTag)}>
+                <div className="tag-text mr-10">{ holonTag.handle }</div>
             </div>}
 
-            {/* Added holons */}
+            {/* Added holonTags */}
             {added && <div className="added-holon-tag">
-                <div className="tag-text mr-10">{ holon.name }</div>
-                <div className="close-icon" onClick={() => removeBranch(holon)}></div>
+                <div className="tag-text mr-10">{ holonTag.handle }</div>
+                <div className="close-icon" onClick={() => removeHolonTag(holonTag)}></div>
             </div>}
 
             <style jsx="true">{`

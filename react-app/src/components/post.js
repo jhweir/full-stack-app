@@ -61,7 +61,7 @@ function Post(props) {
                         <span className="sub-text mr-10">{ user || 'Anonymous' }</span>
                         <span className="sub-text mr-10">to</span>
                         {/* Wait until the post has finished loading before displaying the holons to prevent errors */}
-                        {!props.isLoading && 
+                        {/* {!props.isLoading && 
                             <div className="holon-names">
                                 {props.post.Holons.length >= 1 ? 
                                     props.post.Holons.map((holon, index) =>
@@ -69,7 +69,7 @@ function Post(props) {
                                     )
                                     : <div style={{marginRight: 10}}>root</div>}
                             </div>
-                        }
+                        } */}
                         <span className="sub-text mr-10">|</span>
                         {/* Wait until the post has finished loading before formatting the date to prevent errors */}
                         {!props.isLoading && 

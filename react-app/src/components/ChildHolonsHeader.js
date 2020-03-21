@@ -3,7 +3,7 @@ import BranchSearchBar from './HolonSearchBar';
 import BranchFilters from './HolonFilters';
 import CreateBranch from './CreateHolon';
 
-function BranchHeader() {
+function ChildHolonsHeader() {
     const [modal, setModal] = useState(false);
 
     function toggleModal() {
@@ -35,7 +35,7 @@ function BranchHeader() {
     )
 }
 
-export default BranchHeader
+export default ChildHolonsHeader
 
 
 

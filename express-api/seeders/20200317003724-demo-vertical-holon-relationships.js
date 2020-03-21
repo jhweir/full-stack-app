@@ -2,9 +2,8 @@
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.bulkInsert('HolonHolons', [
+    return queryInterface.bulkInsert('VerticalHolonRelationships', [
       {
-        relationship: 'A-direct-parent-of-B',
         state: 'open',
         holonAId: 1,
         holonBId: 2,
@@ -12,7 +11,6 @@ module.exports = {
         updatedAt: new Date()
       },
       {
-        relationship: 'A-direct-parent-of-B',
         state: 'open',
         holonAId: 2,
         holonBId: 3,
@@ -20,7 +18,6 @@ module.exports = {
         updatedAt: new Date()
       },
       {
-        relationship: 'A-direct-parent-of-B',
         state: 'open',
         holonAId: 2,
         holonBId: 4,
@@ -28,10 +25,16 @@ module.exports = {
         updatedAt: new Date()
       },
       {
-        relationship: 'A-direct-parent-of-B',
         state: 'open',
         holonAId: 2,
         holonBId: 5,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        state: 'open',
+        holonAId: 3,
+        holonBId: 6,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -39,6 +42,6 @@ module.exports = {
   },
 
   down: (queryInterface, Sequelize) => {
-    return queryInterface.bulkDelete('HolonHolons', null, {});
+    return queryInterface.bulkDelete('VerticalHolonRelationships', null, {});
   }
 };

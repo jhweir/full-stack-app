@@ -4,7 +4,7 @@ import { HolonContext } from '../contexts/HolonContext'
 
 
 function NavBar() {
-    const { getHolonPosts } = useContext(HolonContext);
+    const { updateContext } = useContext(HolonContext);
 
     function toggleDarkMode() {
         document.body.classList.toggle("dark-mode");
@@ -13,10 +13,33 @@ function NavBar() {
     return (
         <>
             <div className="navbar">
-                <Link to="/" className="navbar-text">Home</Link> |
-                <Link to="/h/root/wall" className="navbar-text" onClick={ getHolonPosts }>Wall</Link> | 
-                <Link to="/h/root/child-holons" className="navbar-text">Holons</Link>
-                <div style={{ marginLeft: 20 }} className="button" onClick={ toggleDarkMode }>Dark mode</div>
+                <div className="navbar-container">
+                    <div className="navbar-container-links">
+                        <Link 
+                            to="/"
+                            className="navbar-text">
+                            Home
+                        </Link> |
+                        <Link 
+                            to="/h/root/wall"
+                            className="navbar-text"
+                            onClick={ updateContext }>
+                            Wall
+                        </Link> | 
+                        <Link 
+                            to="/h/root/child-holons"
+                            className="navbar-text"
+                            onClick={ updateContext }>
+                            Holons
+                        </Link>
+                    </div>
+                    <div 
+                        style={{ marginLeft: 20 }}
+                        className="button"
+                        onClick={ toggleDarkMode }>
+                        Dark mode
+                    </div>
+                </div>
             </div>
 
             <style jsx="true">{`
@@ -31,6 +54,13 @@ function NavBar() {
                     justify-content: center;
                     transition-property: background-color;
                     transition-duration: 2s;
+                }
+                .navbar-container {
+                    width: 600px;
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                    justify-content: space-between;
                 }
                 .navbar-text {
                     color: white;

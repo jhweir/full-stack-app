@@ -2,48 +2,48 @@ import React, { useContext, useState, useEffect } from 'react'
 import { HolonContext } from '../contexts/HolonContext'
 import axios from 'axios'
 import config from '../Config'
-import BranchTagInput from './HolonTagInput'
+import HolonTagInput from './HolonTagInput'
 
 function CreatePost(props) {
     const { holonData, globalData, getHolonContent, isLoading } = useContext(HolonContext);
     const [user, setUser] = useState('')
     const [title, setTitle] = useState('')
     const [description, setDescription] = useState('')
-    const [holons, setHolons] = useState([])
-    const [newHolon, setNewHolon] = useState('')
+    const [holonTags, setHolons] = useState([])
+    const [newHolonTag, setNewHolonTag] = useState('')
     const [titleError, setTitleError] = useState(false)
     const [descriptionError, setDescriptionError] = useState(false)
     const [holonError, setHolonError] = useState(false)
     const [holonErrorMessage, setHolonErrorMessage] = useState(false)
 
-    // Add the holon the user is in to the holon list when the data has loaded
+    // Add the holonTag the user is in to the holonTag list when the data has loaded
     useEffect(() => {
-        setHolons([...holons, holonData])
+        setHolons([...holonTags, holonData])
     }, [isLoading])
 
-    function addBranch(e) {
+    function addHolonTag(e) {
         e.preventDefault()
-        const validBranch = globalData.filter(holon => (holon.name === newHolon))
-        if (newHolon === '') {
+        const validHolonTag = globalData.filter(holonTag => (holonTag.handle === newHolonTag))
+        if (newHolonTag === '') {
             setHolonError(true)
-        } else if (validBranch.length === 0) {
+        } else if (validHolonTag.length === 0) {
             setHolonError(true)
             setHolonErrorMessage(true)
-        } else if (validBranch.length && !holons.includes(validBranch[0]) ) {
-            setHolons([...holons, validBranch[0]])
-            setNewHolon('')
+        } else if (validHolonTag.length && !holonTags.includes(validHolonTag[0]) ) {
+            setHolons([...holonTags, validHolonTag[0]])
+            setNewHolonTag('')
         }
     }
 
-    function addSuggestedBranch(holon) {
-        setHolons([...holons, holon])
+    function addSuggestedHolonTag(holonTag) {
+        setHolons([...holonTags, holonTag])
     }
 
-    function removeBranch(holon) {
-        const updatedBranches = holons.filter((holons) => {
-            return holons !== holon
+    function removeHolonTag(holonTag) {
+        const updatedHolonTags = holonTags.filter((holonTags) => {
+            return holonTags !== holonTag
         })
-        setHolons(updatedBranches)
+        setHolons(updatedHolonTags)
     }
 
     function submitPost(e) {
@@ -51,8 +51,8 @@ function CreatePost(props) {
         if (title === '') { setTitleError(true) }
         if (description === '') { setDescriptionError(true) }
         if (title && description !== '') {
-            let post = { user, title, description, holons }
-            axios({ method: 'post', url: config.environmentURL, data: { post } })
+            let post = { title, description, holonTags }
+            axios({ method: 'post', url: config.environmentURL + `/createPost`, data: { post } })
                 .then(res => { console.log(res) })
                 .then(props.toggleModal)
                 // .then(setTimeout(() => { getBranchContent() }, 100))
@@ -63,7 +63,7 @@ function CreatePost(props) {
         <>
             <div className="modal-wrapper">
                 <div className="create-post-modal hide-scrollbars">
-                    <span className="page-title">Create a new post</span>
+                    <span className="page-title">Create a new post in '{ holonData.name }'</span>
                     <form className="create-post-form" onSubmit={ submitPost }> 
                         <input className="input-wrapper modal mb-20"
                             type="text"
@@ -91,18 +91,18 @@ function CreatePost(props) {
                                 setDescriptionError(false)
                             }}
                         />
-                        <BranchTagInput 
+                        <HolonTagInput 
                             globalData={globalData}
-                            addBranch={addBranch}
-                            removeBranch={removeBranch}
-                            holons={holons}
-                            newHolon={newHolon}
-                            setNewHolon={setNewHolon}
+                            addHolonTag={addHolonTag}
+                            removeHolonTag={removeHolonTag}
+                            holonTags={holonTags}
+                            newHolonTag={newHolonTag}
+                            setNewHolonTag={setNewHolonTag}
                             holonError={holonError}
                             setHolonError={setHolonError}
                             holonErrorMessage={holonErrorMessage}
                             setHolonErrorMessage={setHolonErrorMessage}
-                            addSuggestedBranch={addSuggestedBranch}
+                            addSuggestedHolonTag={addSuggestedHolonTag}
                         />
                         <div className="button-container">
                             <button className="button">Post</button>

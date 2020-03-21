@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {});
   Post.associate = function(models) {
     Post.belongsToMany(models.Holon, { 
-      through: models.HolonPost,
+      through: models.PostHolon,
       foreignKey: 'postId'
     });
   };

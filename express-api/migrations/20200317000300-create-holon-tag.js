@@ -1,28 +1,21 @@
 'use strict';
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('Holons', {
+    return queryInterface.createTable('HolonTags', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      handle: {
-        type: Sequelize.STRING,
-        //unique: true
-      },
-      name: {
+      state: {
         type: Sequelize.STRING
       },
-      description: {
-        type: Sequelize.STRING
+      holonAId: {
+        type: Sequelize.INTEGER
       },
-      flagImagePath: {
-        type: Sequelize.STRING
-      },
-      coverImagePath: {
-        type: Sequelize.STRING
+      holonBId: {
+        type: Sequelize.INTEGER
       },
       createdAt: {
         allowNull: false,
@@ -35,6 +28,6 @@ module.exports = {
     });
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('Holons');
+    return queryInterface.dropTable('HolonTags');
   }
 };

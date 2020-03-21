@@ -5,31 +5,35 @@ import config from '../Config'
 export const HolonContext = createContext()
 
 function HolonContextProvider(props) {
-    const [globalData, setGlobalData] = useState({})
     const [holon, setHolon] = useState('') // setHolon passed down to HolonPage which then sets the holon as soon as the page loads
-    const [holonData, setHolonData] = useState({})
-    // const [posts, setPosts] = useState({})
-    // const [childHolons, setChildHolons] = useState({})
-    // const [users, setUsers] = useState({})
+    const [renderKey, setRenderKey] = useState(0)
+    const [globalData, setGlobalData] = useState({})
+    const [holonData, setHolonData] = useState({
+        DirectChildHolons: [],
+        Posts: []
+    })
+    const [searchFilter, setSearchFilter] = useState('')
+    const [sortBy, setSortBy] = useState('id')
     const [isLoading, setIsLoading] = useState(true)
-    // const [searchFilter, setSearchFilter] = useState('')
-    // const [sortBy, setSortBy] = useState('id')
 
-    // Merge all three requests below into a single request for 'LocalContext'
-
-    function getData() {
-        axios.get(config.environmentURL + `/data?id=${holon}`)
-            .then(res => { 
-                setHolonData(res.data)
-            })
+    function updateContext() { 
+        setRenderKey(renderKey + 1)
+        console.log('reRender function run')
     }
 
-    // function getGlobalData() {
-    //     axios.get(config.environmentURL + '/globalData')
-    //         .then(res => { 
-    //             setGlobalData(res.data)
-    //         })
-    // }
+    // Merge all three requests below into a single request for 'LocalContext' ?
+    function getData() {
+        axios.get(config.environmentURL + `/getData?id=${holon}`).then(res => {
+            setHolonData(res.data)
+            setIsLoading(false)
+        })
+    }
+
+    function getGlobalData() {
+        axios.get(config.environmentURL + '/getGlobalData').then(res => { 
+            setGlobalData(res.data)
+        })
+    }
 
     // function getBranchData() {
     //     axios.get(config.environmentURL + `/holonData?id=${holon}`)
@@ -49,29 +53,32 @@ function HolonContextProvider(props) {
 
     useEffect(() => {
         if (holon) {
-            // await...
+            getGlobalData()
             getData()
-            // .then()
-            setIsLoading(false)
         }
     }, [holon])
 
     return (
-        <HolonContext.Provider value={{ 
+        <HolonContext.Provider key={renderKey} value={{ 
             holon,
             setHolon,
-            // globalData,
+            holonData,
+            updateContext,
+            getData,
+            //getChildHolons,
+            globalData,
             // posts,
             // setPosts,
             // childHolons,
             // setChildHolons,
             // users,
             // setUsers,
-            // searchFilter,
-            // setSearchFilter,
-            // sortBy,
-            // setSortBy,
-            // isLoading
+            searchFilter,
+            setSearchFilter,
+            sortBy,
+            setSortBy,
+            isLoading,
+            setIsLoading
         }}>
             {props.children}
         </HolonContext.Provider>

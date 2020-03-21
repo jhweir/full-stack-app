@@ -1,27 +1,27 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import BranchTag from './HolonTag'
+import HolonTag from './HolonTag'
 
 function BranchTagInput(props) {
     const { 
         globalData,
-        holons,
-        newHolon,
-        setNewHolon,
-        addBranch,
-        removeBranch,
+        holonTags,
+        newHolonTag,
+        setNewHolonTag,
+        addHolonTag,
+        removeHolonTag,
         holonError,
         setHolonError,
         holonErrorMessage,
         setHolonErrorMessage,
-        addSuggestedBranch
+        addSuggestedHolonTag
     } = props
 
     // Find holons that match the search filter
-    const filteredBranches = globalData.filter(holon => (holon.name.includes(newHolon)))
+    const filteredHolonTags = globalData.filter(holonTag => (holonTag.handle.includes(newHolonTag)))
     
     // Suggest holons that match the search filter and haven't already been added to the post
-    const suggestedBranches = filteredBranches.filter(holon => !holons.find(b2 => holon.name === b2.name))
+    const suggestedHolonTags = filteredHolonTags.filter(holonTag => !holonTags.find(b2 => holonTag.handle === b2.handle))
 
     return (
         <>
@@ -31,35 +31,35 @@ function BranchTagInput(props) {
                     <input className={"input-wrapper " + (holonError && 'error')}
                         style={{ width: '100%' }}
                         type="text"
-                        placeholder="Add holons..."
-                        value={ props.newHolon }
+                        placeholder="Add holon tags..."
+                        value={ props.newHolonTag }
                         onChange={(e) => {
-                            setNewHolon(e.target.value)
+                            setNewHolonTag(e.target.value)
                             setHolonError(false)
                             setHolonErrorMessage(false)
                         }}
                     />
-                    <button className="button" style={{ flexShrink: 0 }} onClick={ addBranch }>Add holon</button>
+                    <button className="button" style={{ flexShrink: 0 }} onClick={ addHolonTag }>Add holon</button>
                 </div>
-                {(newHolon !== '' && suggestedBranches.length !== 0) &&
+                {(newHolonTag !== '' && suggestedHolonTags.length !== 0) &&
                     <>
                         <div className="mb-10">Suggested holons: </div>
                         <ul className="holons mb-10">
-                            {suggestedBranches.map((holon, index) => 
-                                <BranchTag holon={holon} key={index} removeBranch={removeBranch} added={false} addSuggestedBranch={addSuggestedBranch}/>
+                            {suggestedHolonTags.map((holonTag, index) => 
+                                <HolonTag holonTag={holonTag} key={index} removeHolonTag={removeHolonTag} added={false} addSuggestedHolonTag={addSuggestedHolonTag}/>
                             )}
                         </ul>
                     </>
                 }
                 {holonErrorMessage && 
-                    <div className="holon-error-message mb-20">Sorry, that holon doesn't exist yet. You'll need to create it first on the <Link to="/holons">Holons</Link> page.</div>
+                    <div className="holon-error-message mb-20">Sorry, that holon doesn't exist yet. You'll need to create it first on the <Link to="/h/root/child-holons">Holons</Link> page.</div>
                 }
-                {holons.length !== 0 &&
+                {holonTags.length !== 0 &&
                     <>
                         <div className="mb-10">Added holons: </div>
                         <ul className="holons mb-20">
-                            {holons.map((holon, index) => 
-                                <BranchTag holon={holon} key={index} removeBranch={removeBranch} added={true}/>
+                            {holonTags.map((holonTag, index) => 
+                                <HolonTag holonTag={holonTag} key={index} removeHolonTag={removeHolonTag} added={true}/>
                             )}
                         </ul>
                     </>

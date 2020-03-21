@@ -2,76 +2,76 @@
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.bulkInsert('Posts', [
+    return queryInterface.bulkInsert('PostHolons', [
       {
-        holonId: 1,
         postId: 1,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
-      {
         holonId: 1,
-        postId: 2,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        holonId: 2,
         postId: 2,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
-      {
         holonId: 1,
-        postId: 3,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
+        postId: 2,
         holonId: 2,
-        postId: 3,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
+        postId: 3,
+        holonId: 1,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        postId: 3,
+        holonId: 2,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        postId: 3,
         holonId: 3,
-        postId: 3,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
+        postId: 4,
         holonId: 1,
-        postId: 4,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
+        postId: 4,
         holonId: 2,
-        postId: 4,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
+        postId: 4,
         holonId: 4,
-        postId: 4,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
+        postId: 5,
         holonId: 1,
-        postId: 5,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
+        postId: 5,
         holonId: 2,
-        postId: 5,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        holonId: 5,
         postId: 5,
+        holonId: 5,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -79,12 +79,6 @@ module.exports = {
   },
 
   down: (queryInterface, Sequelize) => {
-    /*
-      Add reverting commands here.
-      Return a promise to correctly handle asynchronicity.
-
-      Example:
-      return queryInterface.bulkDelete('People', null, {});
-    */
+    return queryInterface.bulkDelete('PostHolons', null, {});
   }
 };
