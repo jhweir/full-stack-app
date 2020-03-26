@@ -1,0 +1,194 @@
+// Page transitions ------------------------------------------------------------//
+$transitionSpeed: 800ms;
+
+//// pageFade: appear
+.pageFade-appear {
+    opacity: 0;
+    transform: scale(1) translateX(0);
+}
+.pageFade-appear.pageFade-appear-active {
+    opacity: 1;
+    transform: scale(1) translateX(0);
+    transition:  all $transitionSpeed;
+}
+.pageFade-appear-done {
+    //opacity: 0;
+}
+
+//// pageFade: enter
+.pageFade-enter {
+    opacity: 0;
+    transform: scale(1) translateX(0);
+}
+.pageFade-enter.pageFade-enter-active {
+    opacity: 1;
+    transform: scale(1) translateX(0);
+    transition:  all $transitionSpeed;
+}
+.pageFade-enter-done {
+    //opacity: 0;
+}
+
+//// pageFade: exit
+.pageFade-exit {
+    opacity: 1;
+    transform: scale(1) translateX(0);
+}
+.pageFade-exit.pageFade-exit-active {
+    opacity: 0;
+    transform: scale(1) translateX(0);
+    transition:  all $transitionSpeed;
+}
+.pageFade-exit-done {
+    //opacity: 0;
+}
+
+
+// Content (post, holon) transitions ------------------------------------------------------------//
+//// contentFade: appear
+// .contentFade-appear {
+//     opacity: 0;
+//     transform: scale(1) translateX(0);
+// }
+// .contentFade-appear.contentFade-appear-active {
+//     opacity: 1;
+//     transform: scale(1) translateX(0);
+//     transition:  all $transitionSpeed;
+// }
+// .contentFade-appear-done {
+//     //opacity: 0;
+// }
+
+//// contentFade: enter
+.contentFade-enter {
+    opacity: 0;
+    transform: scale(1) translateX(0);
+    //z-index: 5;
+}
+.contentFade-enter.contentFade-enter-active {
+    opacity: 1;
+    transform: scale(1) translateX(0);
+    transition:  all $transitionSpeed;
+    //z-index: 5;
+}
+.contentFade-enter-done {
+    //opacity: 0;
+}
+
+//// contentFade: exit
+.contentFade-exit {
+    opacity: 1;
+    transform: scale(1) translateX(0);
+    //z-index: 5;
+}
+.contentFade-exit.contentFade-exit-active {
+    opacity: 0;
+    transform: scale(1) translateX(0);
+    transition:  all $transitionSpeed;
+    //z-index: 5;
+}
+.contentFade-exit-done {
+    //opacity: 0;
+}
+
+
+
+
+// ////Fade1
+// .fade-appear {
+//     opacity: 0;
+//     // z-index: 2;
+// }
+  
+// .fade-appear.fade-appear-active {
+//     opacity: 0;
+//     transition: opacity 500ms ease-in;
+// }
+
+
+// .fade-enter {
+//     opacity: 0;
+//     transform: scale(0.8) translateX(200px);
+//     //transform: scale(0.8);
+//     //z-index: 1;
+//     //z-index: 2;
+// }
+  
+// .fade-enter.fade-enter-active {
+//     opacity: 0;
+//     transform: scale(1) translateX(0);
+//     transition:  opacity 2000ms, transform 2000ms;
+// }
+
+// .fade-enter-done {
+//     opacity: 0;
+//     //display: none;
+//     //z-index: 2;
+// }
+
+// .fade-exit-done {
+//     opacity: 1;
+//     //display: none;
+// }
+
+// //Moving into view
+// .fade-exit {
+//     opacity: 1;
+//     transform: scale(1) translateX(0);
+// }
+  
+// .fade-exit.fade-exit-active {
+//     opacity: 0;
+//     transform: scale(0.8) translateX(200px);
+//     transition:  opacity 2000ms, transform 2000ms;
+// }
+
+
+// // Fade 2:
+// //--------------------------------------------------------------------------
+// ////Fade2
+// .fade2-appear {
+//     opacity: 0;
+//     transform: scale(0.2);
+//     //z-index: 1;
+// }
+  
+// .fade2-appear.fade-appear-active {
+//     opacity: 1;
+//     transform: scale(1);
+//     transition: opacity 500ms, transform 500ms;
+// }
+
+
+// .fade2-enter {
+//     opacity: 1;
+//     transform: scale(0.2);
+//     z-index: 2;
+// }
+  
+// .fade2-enter.fade-enter-active {
+//     opacity: 0;
+//     transform: scale(1);
+//     transition: opacity 500ms, transform 500ms;
+// }
+
+// .fade2-enter-done {
+//     opacity: 1;
+//     //display: none;
+// }
+
+// .fade2-exit-done {
+//     opacity: 0;
+//     //display: none;
+// }
+
+// .fade2-exit {
+//     opacity: 0;
+//     //transition: opacity 2000ms ease-in;
+//     //z-index: 1;
+// }
+  
+// .fade2-exit.fade-exit-active {
+//     opacity: 1;
+//     transition: opacity 500ms ease-in;
+// }

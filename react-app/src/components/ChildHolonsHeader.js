@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
-import BranchSearchBar from './HolonSearchBar';
-import BranchFilters from './HolonFilters';
+import React, { useState, useContext } from 'react';
+import ChildHolonsSearchBar from './ChildHolonsSearchBar';
+import ChildHolonsFilters from './ChildHolonsFilters';
 import CreateBranch from './CreateHolon';
+import { HolonContext } from '../contexts/HolonContext';
 
 function ChildHolonsHeader() {
+    const { isLoading, setIsLoading } = useContext(HolonContext);
     const [modal, setModal] = useState(false);
 
     function toggleModal() {
@@ -13,12 +15,13 @@ function ChildHolonsHeader() {
     return (
         <>
             <div className="holon-header mt-10">
-                <BranchSearchBar/>
+                <ChildHolonsSearchBar/>
                 <button className="button mb-10" onClick={ toggleModal }>Create Holon</button>
                 {modal && 
                     <CreateBranch toggleModal={ toggleModal }/>
                 }
-                <BranchFilters/>
+                <ChildHolonsFilters/>
+                <button className="button mb-10" onClick={() => setIsLoading(!isLoading)}>Loading</button>
             </div>
 
             <style jsx="true">{`

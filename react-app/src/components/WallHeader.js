@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import WallSearchBar from './WallSearchBar';
 import WallFilters from './WallFilters';
 import CreatePost from './CreatePost';
+import { HolonContext } from '../contexts/HolonContext'
 
 function WallHeader(props) {
+    const { isLoading, setIsLoading } = useContext(HolonContext);
     const [modal, setModal] = useState(false);
+    
 
     function toggleModal() {
         setModal(!modal)
@@ -19,6 +22,7 @@ function WallHeader(props) {
                     <CreatePost toggleModal={ toggleModal }/>
                 }
                 <WallFilters/>
+                <button className="button mb-10" onClick={() => setIsLoading(!isLoading)}>Loading</button>
             </div>
 
             <style jsx="true">{`

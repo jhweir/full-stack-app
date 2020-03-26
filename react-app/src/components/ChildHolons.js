@@ -5,52 +5,47 @@ import { HolonContext } from '../contexts/HolonContext'
 // import config from '../Config'
 import Holon from './Holon'
 import ChildHolonsHeader from './ChildHolonsHeader'
+import ChildHolonsPlaceholder from './ChildHolonsPlaceholder'
+
+import { TransitionGroup, CSSTransition } from "react-transition-group";
 
 function ChildHolons() {
-    const { setHolon, updateContext, holonData, globalData, isLoading } = useContext(HolonContext)
-
-    // useEffect(() => {
-    //     if (holonData) { console.log(holonData.child) }
-    //     //setHolon('root') // Sets the holon in the HolonContext and triggers a call to the database to retrieve the posts
-    // }, [holonData])
+    const { setHolon, updateContext, holonData, globalData, isLoading, setIsLoading } = useContext(HolonContext)
 
     return (
         <>
-            <div className="wall">
+            <div className="child-holons">
                 <ChildHolonsHeader />
-                {holonData.DirectChildHolons &&
-                    <ul className="holons">
-                        {holonData.DirectChildHolons.map((holon, index) => 
+                <ChildHolonsPlaceholder />
+                <ul className={"holons " + (!isLoading ? 'visible' : '')}>
+                    {holonData.DirectChildHolons.map((holon, index) =>
+                        <CSSTransition appear key={index} in={!isLoading} timeout={2000} classNames="contentFade">
                             <Holon
                                 holon={holon}
                                 index={index}
                                 key={holon.id}
                                 updateContext={updateContext}
                             />
-                        )} 
-                    </ul>
-                }
+                        </CSSTransition>
+                    )} 
+                </ul>
             </div>
 
             <style jsx="true">{`
-                .title {
-                    
-                }
-                .wall {
+                .child-holons {
                     width: 600px;
-                    padding: 0 10px;
+                    padding: 0 20px;
                     display: flex;
                     flex-direction: column;
                     justify-content: center;
                     align-items: center;
                 }
-                .posts {
-                    padding: 0;
+                .holons {
                     width: 100%;
-                }
-                .pinned-posts {
-                    padding: 0;
-                    width: 100%;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
                 }
                 @media screen and (max-width: 700px) {
                     .wall {

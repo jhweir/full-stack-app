@@ -1,0 +1,72 @@
+// Placeholder shine
+@keyframes ph-shine {
+  0% {
+    transform: translateX(-50px) rotate(0deg);
+  }
+  100% {
+    transform: translateX(500px) rotate(0deg);
+  }
+}
+
+.ph-shine-post {
+  animation: 0.8s ph-shine ease-in-out infinite;
+  position: absolute;
+  top: 0;
+
+  background-color: rgba(255, 255, 255, 1);
+  filter: blur(30px);
+
+  width: 40px;
+  height: 175px;
+}
+
+.ph-shine-holon {
+  animation: 0.8s ph-shine ease-in-out infinite;
+  position: absolute;
+  top: 0;
+
+  background-color: rgba(255, 255, 255, 1);
+  filter: blur(30px);
+
+  width: 40px;
+  height: 175px;
+}
+
+
+
+
+.wall-placeholder {
+  opacity: 0;
+  transition:  all $transitionSpeed;
+
+  &.visible {
+      opacity: 1;
+  }
+}
+
+.posts {
+  opacity: 0;
+  transition:  all $transitionSpeed;
+
+  &.visible {
+      opacity: 1;
+  }
+}
+
+.child-holons-placeholder {
+  opacity: 0;
+  transition:  all $transitionSpeed;
+
+  &.visible {
+      opacity: 1;
+  }
+}
+
+.holons {
+  opacity: 0;
+  transition:  all $transitionSpeed;
+
+  &.visible {
+      opacity: 1;
+  }
+}

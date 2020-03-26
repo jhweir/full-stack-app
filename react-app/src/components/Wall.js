@@ -2,10 +2,21 @@ import React, { useContext, useState, useEffect } from 'react'
 import { HolonContext } from '../contexts/HolonContext'
 import Post from './Post'
 import WallHeader from './WallHeader'
+import WallPlaceholder from './WallPlaceholder'
+import {
+    BrowserRouter,
+    Link,
+    Route,
+    Switch,
+    withRouter
+  } from "react-router-dom";
+import { TransitionGroup, CSSTransition } from "react-transition-group";
 
 function Wall() {
-    const { holonData, searchFilter, sortBy, isLoading } = useContext(HolonContext)
+    const { holonData, searchFilter, sortBy, isLoading, setIsLoading } = useContext(HolonContext)
     const posts = holonData.Posts
+
+    const [inVariable, setInVariable] = useState(true)
 
         // Filter posts by search text (todo: also remove pinned and hidden posts)
         let filteredPosts = posts.filter(post => {
@@ -44,32 +55,41 @@ function Wall() {
                             key={post.id}
                             isLoading={isLoading}
                         /> 
-                    )} 
+                    )}
                 </ul> */}
-                <ul className="posts">
-                    {filteredPosts.map((post, index) => 
-                        <Post
-                            post={post}
-                            index={index}
-                            key={post.id}  
-                            isLoading={isLoading}
-                        />
-                    )} 
-                </ul>
+                <WallPlaceholder />
+                {/* {!isLoading && */}
+                    <ul className={"posts " + (!isLoading ? 'visible' : '')}>
+                        {filteredPosts.map((post, index) =>
+                            <CSSTransition key={index}  in={!isLoading} timeout={2000} classNames="contentFade" appear>
+                            {/* appear={true} unmountOnEnter={true} unmountOnExit={true} */}
+                                <Post
+                                    post={post}
+                                    index={index}
+                                    //key={post.id}  
+                                    isLoading={isLoading}
+                                />
+                            </CSSTransition>
+                        )} 
+                    </ul>
+                {/* } */}
             </div>
 
             <style jsx="true">{`
                 .wall {
                     width: 600px;
-                    padding: 0 10px;
+                    padding: 0 20px;
                     display: flex;
                     flex-direction: column;
                     justify-content: center;
                     align-items: center;
                 }
                 .posts {
-                    padding: 0;
                     width: 100%;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
                 }
                 .pinned-posts {
                     padding: 0;

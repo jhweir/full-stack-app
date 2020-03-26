@@ -38,7 +38,7 @@ function WallSearchBar(props) {
                     display: flex;
                     flex-direction: row;
                     align-items: center;
-                    box-shadow: 0 1px 10px 0 rgba(10, 8, 72, 0.1);
+                    box-shadow: 0 1px 10px 0 rgba(10, 8, 72, 0.05);
                     transition-property: box-shadow, background-color;
                     transition-duration: 0.3s, 2s;
                 }
@@ -51,13 +51,13 @@ function WallSearchBar(props) {
                     border: none;
                 }
                 .search-button {
-                    background-image: url(../icons/search.svg);
+                    background-image: url(/icons/search.svg);
                     background-color: transparent;
                     border: none;
                     height: 20px;
                     width: 20px;
                     padding: 0;
-                    opacity: 0.6;
+                    opacity: 0.4;
                 }
             `}</style>
         </>

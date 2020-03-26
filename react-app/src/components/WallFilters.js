@@ -15,12 +15,13 @@ function WallFilters() {
         <>
             <div className="wall-filters">
                 <button className="button mb-10" onClick={toggleDropDown}>Filters</button>
-
-                {dropdown && <div className="dropdown-content">
-                    <div className="dropdown-item" onClick={ sortByLikes }>Sort by Likes</div>
-                    <div className="dropdown-item" onClick={ sortByDate }>Sort by Date</div>
-                    <div className="dropdown-item" onClick={ sortByComments }>Sort by Comments</div>
-                </div>}
+                {dropdown && 
+                    <div className="dropdown-content">
+                        <div className="dropdown-item" onClick={ sortByLikes }>Sort by Likes</div>
+                        <div className="dropdown-item" onClick={ sortByDate }>Sort by Date</div>
+                        <div className="dropdown-item" onClick={ sortByComments }>Sort by Comments</div>
+                    </div>
+                }
             </div>
 
             <style jsx="true">{`

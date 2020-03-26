@@ -116,9 +116,9 @@ function Post(props) {
                     margin-bottom: 10px;
                     padding: 20px 30px 20px 30px;
                     width: 100%;
-                    border-radius: 5px;
+                    border-radius: 10px;
                     background-color: white;
-                    box-shadow: 0 1px 10px 0 rgba(10, 8, 72, 0.1);
+                    box-shadow: 0 1px 10px 0 rgba(10, 8, 72, 0.05);
                     display: flex;
                     flex-direction: row;
                     transition-property: background-color;
@@ -196,14 +196,15 @@ function Post(props) {
                     color: #888;
                 }
                 .post-content {
-
+                    display: flex;
+                    flex-direction: column;
                 }
                 .post-title {
                     color: black;
                     font-size: 24px;
                     font-weight: 600;
                     text-decoration: none;
-                    padding-bottom: 10px;
+                    margin-bottom: 10px;
                     transition-property: color;
                     transition-duration: 2s;
                 }

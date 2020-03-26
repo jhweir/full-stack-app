@@ -15,7 +15,7 @@ const Notifications = require('../models').Notification
 
 // Get data for holon context
 //// 1. Get holon data
-router.get('/getData', (req, res) => {
+router.get('/getHolonData', (req, res) => {
     Holon.findOne({ 
         where: { handle: req.query.id },
         include: [
