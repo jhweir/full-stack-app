@@ -192,3 +192,45 @@ $transitionSpeed: 800ms;
 //     opacity: 1;
 //     transition: opacity 500ms ease-in;
 // }
+
+//// sideBarFade: appear
+.sideBarFade-appear {
+    opacity: 0;
+    transform: scale(1) translateX(0);
+}
+.sideBarFade-appear.sideBarFade-appear-active {
+    opacity: 1;
+    transform: scale(1) translateX(0);
+    transition:  all $transitionSpeed;
+}
+.sideBarFade-appear-done {
+    //opacity: 0;
+}
+
+//// sideBarFade: enter
+.sideBarFade-enter {
+    opacity: 0;
+    transform: scale(1) translateX(0);
+}
+.sideBarFade-enter.sideBarFade-enter-active {
+    opacity: 1;
+    transform: scale(1) translateX(0);
+    transition:  all $transitionSpeed;
+}
+.sideBarFade-enter-done {
+    //opacity: 0;
+}
+
+//// sideBarFade: exit
+.sideBarFade-exit {
+    opacity: 1;
+    transform: scale(1) translateX(0);
+}
+.sideBarFade-exit.sideBarFade-exit-active {
+    opacity: 0;
+    transform: scale(1) translateX(0);
+    transition:  all $transitionSpeed;
+}
+.sideBarFade-exit-done {
+    //opacity: 0;
+}

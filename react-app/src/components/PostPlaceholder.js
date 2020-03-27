@@ -8,7 +8,7 @@ function PostPlaceholder() {
     return (
         <>
             <div className="ph-post">
-                <div className="ph-shine-post"/>
+                <div className="ph-post-shine"/>
                 <div className="ph-post-id">
                     <div className="ph-post-id-block"/>
                 </div>

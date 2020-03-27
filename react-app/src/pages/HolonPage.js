@@ -33,14 +33,14 @@ function HolonPage(props) {
         <>
             <CoverImage/>
             <Route render={({ location }) => (
-                <div className="page-body">                            
+                <div className="page-body mt-20">
                     <SideBarLeft/>
                     <TransitionGroup className="page-transition-group">
                         <CSSTransition classNames="pageFade"
                             appear={true}
                             timeout={{ appear: 2000, enter: 2000, exit: 2000 }}
                             key={location.key}>
-                            <section className="section-wrapper">
+                            <section className="section-wrapper">         
                                 <Switch location={location}>
                                     <Route path={`${props.match.url}/wall`} component={ Wall } exact/>
                                     <Route path={`${props.match.url}/child-holons`} component={ ChildHolons } exact/>
@@ -60,10 +60,11 @@ function HolonPage(props) {
                     flex-direction: row;
                     justify-content: space-between;
                     align-items: flex-start;
+                    position: relative;
                 }
                 .page-transition-group {
                     position: relative;
-                    width: 50%;
+                    width: 60%;
                 }
                 .section-wrapper {
                     position: absolute;

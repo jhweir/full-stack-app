@@ -47,37 +47,19 @@ function Wall() {
         <>
             <div className="wall">
                 <WallHeader />
-                {/* <ul className="pinned-posts">
-                    {holonData && pinnedPosts.map((post, index) => 
-                        <Post
-                            post={post}
-                            index={index}
-                            key={post.id}
-                            isLoading={isLoading}
-                        /> 
-                    )}
-                </ul> */}
                 <WallPlaceholder />
-                {/* {!isLoading && */}
-                    <ul className={"posts " + (!isLoading ? 'visible' : '')}>
-                        {filteredPosts.map((post, index) =>
-                            <CSSTransition key={index}  in={!isLoading} timeout={2000} classNames="contentFade" appear>
-                            {/* appear={true} unmountOnEnter={true} unmountOnExit={true} */}
-                                <Post
-                                    post={post}
-                                    index={index}
-                                    //key={post.id}  
-                                    isLoading={isLoading}
-                                />
-                            </CSSTransition>
-                        )} 
-                    </ul>
-                {/* } */}
+                <ul className={"posts " + (!isLoading ? 'visible' : '')}>
+                    {filteredPosts.map((post, index) =>
+                        <CSSTransition key={index}  in={!isLoading} timeout={2000} classNames="contentFade" appear>
+                            <Post post={post} index={index} isLoading={isLoading}/>
+                        </CSSTransition>
+                    )} 
+                </ul>
             </div>
 
             <style jsx="true">{`
                 .wall {
-                    width: 600px;
+                    width: 700px;
                     padding: 0 20px;
                     display: flex;
                     flex-direction: column;
@@ -106,3 +88,14 @@ function Wall() {
 }
 
 export default Wall
+
+{/* <ul className="pinned-posts">
+    {holonData && pinnedPosts.map((post, index) => 
+        <Post
+            post={post}
+            index={index}
+            key={post.id}
+            isLoading={isLoading}
+        /> 
+    )}
+</ul> */}

@@ -9,7 +9,9 @@ module.exports = (sequelize, DataTypes) => {
     commentId: DataTypes.INTEGER
   }, {});
   Label.associate = function(models) {
-    // associations can be defined here
+    Label.belongsTo(models.Post, {
+      foreignKey: 'postId'
+    })
   };
   return Label;
 };

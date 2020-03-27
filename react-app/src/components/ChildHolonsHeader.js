@@ -14,7 +14,7 @@ function ChildHolonsHeader() {
 
     return (
         <>
-            <div className="holon-header mt-10">
+            <div className="holon-header">
                 <ChildHolonsSearchBar/>
                 <button className="button mb-10" onClick={ toggleModal }>Create Holon</button>
                 {modal && 

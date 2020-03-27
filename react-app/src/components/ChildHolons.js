@@ -17,7 +17,7 @@ function ChildHolons() {
             <div className="child-holons">
                 <ChildHolonsHeader />
                 <ChildHolonsPlaceholder />
-                <ul className={"holons " + (!isLoading ? 'visible' : '')}>
+                <ul className={"child-holon-list " + (!isLoading ? 'visible' : '')}>
                     {holonData.DirectChildHolons.map((holon, index) =>
                         <CSSTransition appear key={index} in={!isLoading} timeout={2000} classNames="contentFade">
                             <Holon
@@ -33,14 +33,14 @@ function ChildHolons() {
 
             <style jsx="true">{`
                 .child-holons {
-                    width: 600px;
+                    width: 700px;
                     padding: 0 20px;
                     display: flex;
                     flex-direction: column;
                     justify-content: center;
                     align-items: center;
                 }
-                .holons {
+                .child-holon-list {
                     width: 100%;
                     display: flex;
                     flex-direction: column;

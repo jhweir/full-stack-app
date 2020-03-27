@@ -5,7 +5,7 @@ function HolonPlaceholder(props) {
     return (
         <>
             <div className="ph-holon-card">
-                <div className="ph-shine-holon"/>
+                <div className="ph-holon-shine"/>
                 <img className="ph-holon-image" src="/images/holon-flag-image-00.jpg"/>
                 <div className="ph-holon-info">
                     <div className="ph-holon-title mb-10"/>
@@ -17,7 +17,7 @@ function HolonPlaceholder(props) {
             <style jsx="true">{`
                 .ph-holon-card {
                     margin-bottom: 10px;
-                    padding: 20px;
+                    padding: 20px 30px;
                     width: 100%;
                     border-radius: 10px;
                     background-color: white;

@@ -15,7 +15,7 @@ function WallHeader(props) {
 
     return (
         <>
-            <div className="wall-header mt-10">
+            <div className="wall-header">
                 <WallSearchBar/>
                 <button className="button mb-10" onClick={ toggleModal }>Create Post</button>
                 {modal && 

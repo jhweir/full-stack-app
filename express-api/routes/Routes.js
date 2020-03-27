@@ -10,7 +10,7 @@ const User = require('../models').User
 const UserUser = require('../models').UserUser
 const Post = require('../models').Post
 const Comment = require('../models').Comment
-const Labels = require('../models').Label
+const Label = require('../models').Label
 const Notifications = require('../models').Notification
 
 // Get data for holon context
@@ -22,7 +22,7 @@ router.get('/getHolonData', (req, res) => {
             { model: Holon, as: 'DirectChildHolons' },
             { model: Holon, as: 'DirectParentHolons' },
             { model: Holon, as: 'TagOwner' },
-            { model: Post }
+            { model: Post, include: [Holon, Label] }
              // include: [{ model: Post, include: [Holon] }]
         ]
     }).then(data => {
@@ -172,12 +172,15 @@ router.delete('/', (req, res) => {
 })
 
 // Like post
-router.put('/', (req, res) => {
-    Post.update({ likes: req.body.newLikes }, {
-        where: { id: req.body.id }
-    })
-    
-    res.send('Post liked')
+router.put('/addLike', (req, res) => {
+    Label.create({ 
+        type: 'like',
+        value: null,
+        holonId: req.body.holonId,
+        userId: null,
+        postId: req.body.id,
+        commentId: null,
+    }).then(res.send('Post liked'))
 })
 
 // Pin post

@@ -1,53 +1,47 @@
-import React, { useState, useContext, useEffect } from 'react'
+import React, { useContext } from 'react'
 import { Link } from 'react-router-dom'
-// import axios from 'axios'
-// import config from '../Config'
-// import { PostContext } from '../contexts/PostContext'
 import { HolonContext } from '../contexts/HolonContext'
+import SideBarLeftPlaceholder from '../components/SideBarLeftPlaceholder'
+import { TransitionGroup, CSSTransition } from "react-transition-group";
 
 function SideBarLeft(props) {
-    const { holonData, updateHolonContext, redirectTo } = useContext(HolonContext)
+    const { holonData, updateHolonContext, isLoading } = useContext(HolonContext)
 
     return (
         <>
-            <div className="left-side-bar">
-                <div className='holon-location'>
-                    <div className="holon-name">{ holonData.name }</div>
-                    <ul className="parent-holon-names">
-                        in
-                        {holonData.DirectParentHolons.map((holon, index) =>
-                            <li
-                                key={index}
-                                //onClick={() => redirectTo(`/h/${holon.handle}/wall`)}
-                                onClick={ () => { updateHolonContext(holon.handle) } }
-                                >
-                                { holon.name }
-                            </li>
-                            // <Link key={index}
-                            //     to={ `/h/${holon.handle}/wall` }
-                            //     onClick={ () => { updateContext() } }>
-                            //     { holon.name }
-                            // </Link>
-                        )}
-                    </ul>
+            <div className={"ph-side-bar-left " + (isLoading ? 'visible' : '')}>
+                <SideBarLeftPlaceholder/>
+            </div>
+            <div className={"side-bar-left " + (!isLoading ? 'visible' : '')}>
+                <div className="side-bar-left-holon-location">
+                    <div className="side-bar-left-holon-name">{ holonData.name }</div>
+                    {holonData.handle == 'root' && 
+                        <div className="side-bar-left-parent-holon-names-root">
+                            ∞
+                        </div>
+                    }
+                    {holonData.handle !== 'root' && 
+                        <ul className="side-bar-left-parent-holon-names mb-20">
+                            in
+                            {holonData.DirectParentHolons.map((holon, index) =>
+                                <Link key={index}
+                                    to={ `/h/${holon.handle}/wall` }
+                                    onClick={ () => { updateHolonContext(holon.handle) } }>
+                                    {(' ' + holon.name) }
+                                </Link>
+                            )}
+                        </ul>
+                    }
                 </div>
-                <img className="left-side-bar-flag-image" src="/images/holon-flag-image-00.jpg"/>
-                <div className="left-side-bar-nav-buttons">
-                    {/* <li className="left-side-bar-nav-button"
-                        onClick={() => redirectTo(`/h/${holonData.handle}/wall`, `${holonData.handle}`)}>
-                        Wall
-                    </li>
-                    <li className="left-side-bar-nav-button"
-                        onClick={() => redirectTo(`/h/${holonData.handle}/child-holons`, `${holonData.handle}`)}>
-                        Child Holons
-                    </li> */}
-                    <Link className="left-side-bar-nav-button"
+                <img className="side-bar-left-flag-image" src="/icons/holon-flag-image-03.svg"/>
+                <div className="side-bar-left-nav-buttons">
+                    <Link className="side-bar-left-nav-button"
                         to={ `/h/${holonData.handle}/wall` }
                         onClick={ () => { updateHolonContext(holonData.handle) } }
                         >
                         Wall
                     </Link>
-                    <Link className="left-side-bar-nav-button"
+                    <Link className="side-bar-left-nav-button"
                         to={ `/h/${holonData.handle}/child-holons` }
                         onClick={ () => { updateHolonContext(holonData.handle) } }
                         >
@@ -58,38 +52,56 @@ function SideBarLeft(props) {
             </div>
 
             <style jsx="true">{`
-                .left-side-bar {
+                .ph-side-bar-left {
                     width: 200px;
-                    padding: 10px;
+                    padding: 0 20px;
                     display: flex;
                     flex-direction: column;
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    z-index: -1;
+                    overflow: hidden;
                 }
-                .holon-location {
-
+                .side-bar-left {
+                    width: 200px;
+                    padding: 0 20px;
+                    display: flex;
+                    flex-direction: column;
+                    position: relative;
                 }
-                .holon-name {
+                .side-bar-left-holon-location {
+                }
+                .side-bar-left-holon-name {
                     font-size: 22px;
+                    line-height: 22px;
                     margin-bottom: 5px;
                 }
-                .parent-holon-names {
+                .side-bar-left-parent-holon-names-root {
+                    font-size: 20px;
+                    line-height: 16px;
+                    margin-bottom: 25px;
+                    color: rgba(0,0,0,0.3)
+                }
+                .side-bar-left-parent-holon-names {
                     font-size: 16px;
-                    margin-bottom: 20px;
                 }
-                .left-side-bar-flag-image {
-                    width: 100px;
-                    height: 100px;
+                .side-bar-left-flag-image {
+                    width: 120px;
+                    height: 120px;
                     border-radius: 50%;
-                    margin: 0 20px 20px 0;
+                    margin: 0 0 20px 0;
+                    background-color: white;
                 }
-                .left-side-bar-nav-buttons {
+                .side-bar-left-nav-buttons {
                     display: flex;
                     flex-direction: column;
                 }
-                .left-side-bar-nav-button {
+                .side-bar-left-nav-button {
                     display: flex;
                     flex-direction: row;
                 }
-                .holon-info {
+                .side-bar-left-holon-info {
                     display: flex;
                     flex-direction: column;
                 }

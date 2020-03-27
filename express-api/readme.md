@@ -61,5 +61,10 @@ Posts to holon A appear within holon B
 `npx sequelize-cli model:generate --name Message --attributes type:string,state:string,from:integer,to:integer,text:string`
 
 ## Generate Seeders
-`npx sequelize-cli seed:generate --name demo-holon`
-`npx sequelize-cli seed:generate --name demo-user`
+`npx sequelize-cli seed:generate --name demo-holons`
+`npx sequelize-cli seed:generate --name demo-holon-tags`
+`npx sequelize-cli seed:generate --name demo-vertical-holon-relationships`
+`npx sequelize-cli seed:generate --name demo-posts`
+`npx sequelize-cli seed:generate --name demo-post-holons`
+`npx sequelize-cli seed:generate --name demo-labels`
+`npx sequelize-cli seed:generate --name demo-users`

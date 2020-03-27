@@ -21,7 +21,7 @@ function Holon(props) {
                     to={ `/h/${props.holon.handle}/child-holons` }
                     onClick={ () => { updateHolonContext(props.holon.handle) } }
                     >
-                    <img className="holon-image" src="/images/holon-flag-image-00.jpg"/>
+                    <img className="holon-image" src="/icons/holon-flag-image-03.svg"/>
                 </Link>
                 {/* <img className="holon-image" src="/images/holon-flag-image-00.jpg"/> */}
                 <div className='holon-info'>
@@ -38,7 +38,7 @@ function Holon(props) {
             <style jsx="true">{`
                 .holon-card {
                     margin-bottom: 10px;
-                    padding: 20px;
+                    padding: 20px 30px;
                     width: 100%;
                     border-radius: 10px;
                     background-color: white;

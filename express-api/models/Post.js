@@ -15,6 +15,7 @@ module.exports = (sequelize, DataTypes) => {
       through: models.PostHolon,
       foreignKey: 'postId'
     });
+    Post.hasMany(models.Label);
   };
   return Post;
 };

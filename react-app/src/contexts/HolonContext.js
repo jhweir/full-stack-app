@@ -8,7 +8,7 @@ export const HolonContext = createContext()
 
 function HolonContextProvider(props) {
     const [renderKey, setRenderKey] = useState(0)
-    //const [holon, setHolon] = useState('') // setHolon passed down as a prop to HolonPage which sets the holon as soon as the page loads
+
     const [globalData, setGlobalData] = useState({})
     const [holonData, setHolonData] = useState({
         DirectChildHolons: [],
@@ -19,80 +19,27 @@ function HolonContextProvider(props) {
     const [sortBy, setSortBy] = useState('id')
     const [isLoading, setIsLoading] = useState(false)
 
-    let history = useHistory();
-
-    function redirectTo(path, handle) {
-        setIsLoading(true)
-        setTimeout(() => {
-            history.push(path)
-            updateHolonContext(handle)
-        }, 500)
-    }
-
-    // const getData = axios.get(config.environmentURL + `/getData?id=${holon}`)
-    // const getGlobalData = axios.get(config.environmentURL + '/getGlobalData')
-    // const demoDelay = new Promise((resolve) => {
-    //     setTimeout(resolve, 1000);
-    // });
-    
-    // var updateHolon = new Promise(function(resolve, reject) {
-    //     // do a thing, possibly async, then…
-      
-    //     if (/* everything turned out fine */) {
-    //       resolve("Stuff worked!");
-    //     }
-    //     else {
-    //       reject(Error("It broke"));
-    //     }
-    //   });
-
-    // rename to 'updateHolonContext'
     function updateHolonContext(holonHandle) {
-        //if (holon) {
-            setIsLoading(true)
-            //setHolon(holon)
+        setIsLoading(true)
+        const getGlobalData = axios.get(config.environmentURL + '/getGlobalData')
+        const getHolonData = axios.get(config.environmentURL + `/getHolonData?id=${holonHandle}`)
+        const demoDelay = new Promise((resolve) => {
+            setTimeout(resolve, 1000);
+        });
 
-            const getGlobalData = axios.get(config.environmentURL + '/getGlobalData')
-            const getHolonData = axios.get(config.environmentURL + `/getHolonData?id=${holonHandle}`)
-            const demoDelay = new Promise((resolve) => {
-                setTimeout(resolve, 1000);
-            });
-
-            //setHolon(newHolon)
-            Promise.all([getGlobalData, getHolonData, demoDelay]).then((values) => {
-                setGlobalData(values[0].data)
-                setHolonData(values[1].data)
-                setIsLoading(false)
-                console.log('updateHolonContext function run...')
-            })
-        //}
+        Promise.all([getGlobalData, getHolonData, demoDelay]).then((values) => {
+            setGlobalData(values[0].data)
+            setHolonData(values[1].data)
+            setIsLoading(false)
+            console.log('updateHolonContext function run...')
+        })
     }
-
-    function updateContext() {
-        //setRenderKey(renderKey + 1)
-    }
-
-    // useEffect(() => {
-    //     updateHolonContext()
-    //     console.log('HolonContext UseEffect run...')
-    // }, [holon]) //remove holon!
 
     return (
         <HolonContext.Provider key={renderKey} value={{ 
-            //holon,
-            //setHolon,
             holonData,
-            //getData,
-            //getChildHolons,
             globalData,
             updateHolonContext,
-            redirectTo,
-            // posts,
-            // setPosts,
-            // childHolons,
-            // setChildHolons,
-            // users,
-            // setUsers,
             searchFilter,
             setSearchFilter,
             sortBy,
@@ -107,7 +54,7 @@ function HolonContextProvider(props) {
 
 export default HolonContextProvider
 
-
+    //const [holon, setHolon] = useState('') // setHolon passed down as a prop to HolonPage which sets the holon as soon as the page loads
 
     // function demoAsyncCall() {
     //     return new Promise((resolve) => setTimeout(() => resolve(), 5000));
@@ -155,3 +102,41 @@ export default HolonContextProvider
     //             setHolonTags(res.data.Holons)
     //         })
     // }
+
+
+    //let history = useHistory();
+
+    // function redirectTo(path, handle) {
+    //     setIsLoading(true)
+    //     setTimeout(() => {
+    //         history.push(path)
+    //         updateHolonContext(handle)
+    //     }, 500)
+    // }
+
+    // const getData = axios.get(config.environmentURL + `/getData?id=${holon}`)
+    // const getGlobalData = axios.get(config.environmentURL + '/getGlobalData')
+    // const demoDelay = new Promise((resolve) => {
+    //     setTimeout(resolve, 1000);
+    // });
+    
+    // var updateHolon = new Promise(function(resolve, reject) {
+    //     // do a thing, possibly async, then…
+      
+    //     if (/* everything turned out fine */) {
+    //       resolve("Stuff worked!");
+    //     }
+    //     else {
+    //       reject(Error("It broke"));
+    //     }
+    //   });
+
+
+        // function updateContext() {
+    //     //setRenderKey(renderKey + 1)
+    // }
+
+    // useEffect(() => {
+    //     updateHolonContext()
+    //     console.log('HolonContext UseEffect run...')
+    // }, [holon]) //remove holon!

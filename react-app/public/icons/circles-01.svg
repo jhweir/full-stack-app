@@ -1,0 +1,25 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+<svg width="625" height="600" viewBox="0 0 600 576" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+<title>Borromean Rings (basic monochrome depiction)</title>
+<g transform="translate(-12.5,588) scale(1,-1)" style="fill:none">
+<circle style="stroke-width:37.5;stroke:#ffffff" cx="222" cy="222.0576" r="180"/>
+<circle style="stroke-width:24;stroke:#000000" cx="222" cy="222.0576" r="180"/>
+<circle style="stroke-width:37.5;stroke:#ffffff" cx="402" cy="222.0576" r="180"/>
+<circle style="stroke-width:24;stroke:#000000" cx="402" cy="222.0576" r="180"/>
+<circle style="stroke-width:37.5;stroke:#ffffff" cx="402" cy="222.0576" r="180"/>
+<circle style="stroke-width:24;stroke:#000000" cx="402" cy="222.0576" r="180"/>
+<circle style="stroke-width:37.5;stroke:#ffffff" cx="312" cy="377.9422" r="180"/>
+<circle style="stroke-width:24;stroke:#000000" cx="312" cy="377.9422" r="180"/>
+<path style="stroke-width:37.5;stroke:#ffffff" d="M175.413 395.924
+C144.893 387.747 117.063 371.679 94.7209 349.337
+M395.867 175.47
+C399.938 190.665 402 206.327 402 222.0576
+C402 237.788 399.938 253.451 395.867 268.645"/>
+<path style="stroke-width:24;stroke:#000000" d="M178.454 396.711
+C145.727 388.551 115.95 371.359 92.519 347.096
+M395.027 172.443
+C399.653 188.575 402 205.275 402 222.0576
+C402 238.84 399.653 255.54 395.027 271.672"/>
+</g>
+</svg>

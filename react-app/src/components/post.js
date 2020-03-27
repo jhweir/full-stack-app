@@ -5,42 +5,43 @@ import config from '../Config'
 import { HolonContext } from '../contexts/HolonContext'
 
 function Post(props) {
-    const { getHolonPosts } = useContext(HolonContext)
-    const [likes, setLikes] = useState(props.post.likes)
+    const { updateHolonContext, holonData } = useContext(HolonContext)
+    const [likes, setLikes] = useState(0)
+    const [reactionsModalOpen, setReactionsModalOpen] = useState(false)
 
     useEffect(() => {
-        setLikes(props.post.likes)
+        setLikes(props.post.Labels.filter((label) => label.type === 'like').length)
     }, [props])
 
-    const { id, user, title, description, comments, pins, createdAt } = props.post
-
-    function updatePosts() {
-        if (props.isPostPage) { props.getPost() }
-        else { getHolonPosts() }
-    }
+    const { id, user, title, description, comments, pins, createdAt, Labels } = props.post
       
     function addLike() {
         const newLikes = likes + 1
+        const holonId = holonData.id
         setLikes(newLikes)
-        axios({ method: 'put', url: config.environmentURL, data: { id, newLikes } })
+        axios({ method: 'put', url: config.environmentURL + '/addLike', data: { id, holonId } })
             .catch(error => { console.log(error) })
+    }
+
+    function toggleReactionsModal() { 
+        setReactionsModalOpen(!reactionsModalOpen)
     }
 
     function deletePost() {
         axios({ method: 'delete', url: config.environmentURL, data: { id } })
-            .then(setTimeout(() => { updatePosts() }, 100))
+            //.then(setTimeout(() => { updatePosts() }, 100))
             .catch(error => { console.log(error) })
     }
 
     function pinPost() {
         axios({ method: 'put', url: config.environmentURL + '/pinpost', data: { id } })
-            .then(setTimeout(() => { updatePosts() }, 100))
+            //.then(setTimeout(() => { updatePosts() }, 100))
             .catch(error => { console.log(error) })
     }
 
     function unpinPost() {
         axios({ method: 'put', url: config.environmentURL + '/unpinpost', data: { id } })
-            .then(setTimeout(() => { updatePosts() }, 100))
+            //.then(setTimeout(() => { updatePosts() }, 100))
             .catch(error => { console.log(error) })
     }
 
@@ -50,6 +51,7 @@ function Post(props) {
         return formattedDate
     }
 
+    // TODO: Check is isLoading conditionals required any more (on both walls and post pages)
     return (
         <>
             <div className={"post " + (pins ? 'pinned-post' : '')}>
@@ -60,19 +62,22 @@ function Post(props) {
                         <span className="user-thumbnail mr-10"></span>
                         <span className="sub-text mr-10">{ user || 'Anonymous' }</span>
                         <span className="sub-text mr-10">to</span>
-                        {/* Wait until the post has finished loading before displaying the holons to prevent errors */}
-                        {/* {!props.isLoading && 
+                        {!props.isLoading &&  /* Wait until the post has finished loading before displaying the holons to prevent errors */
                             <div className="holon-names">
                                 {props.post.Holons.length >= 1 ? 
                                     props.post.Holons.map((holon, index) =>
-                                        <Link to={ `/b/${holon.name}` } style={{marginRight: 10}} key={index}>{holon.name}</Link>
+                                        <Link to={ `/h/${holon.handle}/wall` }
+                                            onClick={ () => { updateHolonContext(holon.handle) } }
+                                            style={{marginRight: 10}}
+                                            key={index}>
+                                            {holon.handle}
+                                        </Link>
                                     )
                                     : <div style={{marginRight: 10}}>root</div>}
                             </div>
-                        } */}
+                        }
                         <span className="sub-text mr-10">|</span>
-                        {/* Wait until the post has finished loading before formatting the date to prevent errors */}
-                        {!props.isLoading && 
+                        {!props.isLoading && /* Wait until the post has finished loading before formatting the date to prevent errors */
                             <span className="sub-text">{ formatDate() || 'no date' }</span>
                         }
                     </div>
@@ -80,19 +85,30 @@ function Post(props) {
                         <Link to={ `/p/${id}` } className="post-title">{ title }</Link>
                         <div className="post-description">{ description }</div>    
                         <div className="post-interact">
-                            <div className="post-interact-item" onClick={ addLike }>
+                            <div className="post-interact-item" onClick={() => toggleReactionsModal()}> {/* onClick={ addLike } */}
                                 <div className="like-icon"/>
-                                <span>{ likes } Likes</span>
+                                <span>{ likes } Reactions</span>
                             </div>
-                            {/* Link removed from PostPage to prevent loading issue with likes */}
-                            {!props.isPostPage && 
-                                <Link to={ `/p/${id}` } className="post-interact-item">
+
+
+
+                            {reactionsModalOpen && 
+                                <div className="post-reactions-modal">
+                                    <div className="post-reactions-modal-close-button"/>
+                                    <div className="">Post reactions...</div>
+                                </div>
+                            }
+
+
+
+                            {!props.isPostPage && /* Link removed from PostPage to prevent loading issue with Labels */
+                                <Link className="post-interact-item" 
+                                    to={ `/p/${id}` }>
                                     <div className="comment-icon"/>
                                     <span>{ comments } Comments</span>
                                 </Link>
                             }
-                            {/* Replaced with unclickable div */}
-                            {props.isPostPage && 
+                            {props.isPostPage && /* Replaced with unclickable div */
                                 <div className="post-interact-item">
                                     <div className="comment-icon"/>
                                     <span>{ comments } Comments</span>
@@ -114,7 +130,7 @@ function Post(props) {
             <style jsx="true">{`
                 .post {
                     margin-bottom: 10px;
-                    padding: 20px 30px 20px 30px;
+                    padding: 20px 30px;
                     width: 100%;
                     border-radius: 10px;
                     background-color: white;
@@ -234,6 +250,15 @@ function Post(props) {
                 }
                 .post-interact-item:hover {
                     cursor: pointer;
+                }
+                .post-reactions-modal {
+                    width: 300px;
+                    height: 100px;
+                    background-color: white;
+                    border-radius: 10px;
+                    position: absolute;
+                    box-shadow: 0 1px 10px 0 rgba(10, 8, 72, 0.15);
+                    z-index: 5;
                 }
                 .like-icon {
                     background-image: url(/icons/heart-solid.svg);
