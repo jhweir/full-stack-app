@@ -22,8 +22,7 @@ router.get('/getHolonData', (req, res) => {
             { model: Holon, as: 'DirectChildHolons' },
             { model: Holon, as: 'DirectParentHolons' },
             { model: Holon, as: 'TagOwner' },
-            { model: Post, include: [Holon, Label] }
-             // include: [{ model: Post, include: [Holon] }]
+            { model: Post, include: [Holon, Label, Comment] }
         ]
     }).then(data => {
             res.json(data)
@@ -101,7 +100,7 @@ router.post('/createPost', (req, res) => {
         )}).catch(err => console.log(err))
     }
 
-    Post.create({ title, description }).then(post => {
+    Post.create({ title, description, globalState: 'visible' }).then(post => {
         holonTags.forEach((holonTag) => createNewHolonTags(holonTag, post))
     })
 
@@ -150,21 +149,21 @@ router.post('/createPost', (req, res) => {
 })
 
 // Get a post (include its comments and holons)
-router.get('/post', (req, res) => {
+router.get('/getPost', (req, res) => {
     Post.findOne({ 
-        where: { id: req.query.id }, 
-        include: [Comment, Holon] 
+        where: { id: req.query.id },
+        include: [Holon, Label, Comment] 
+        // include: [Comment, Holon, Label]
     }).then(post => {
+        //console.log('post from routes: ', post)
         res.json(post)
     }).catch(err => console.log(err))
 })
 
 // Delete post
-router.delete('/', (req, res) => {
-    res.send('Delete request made')
-
-    // Set post visibility to false
-    Post.update({ visible: false }, {
+router.delete('/deletePost', (req, res) => {
+    //console.log(req.body.id)
+    Post.update({ globalState: 'hidden' }, {
         where: { id: req.body.id }
     })
 
@@ -224,18 +223,18 @@ router.put('/addRating', (req, res) => {
 // })
 
 // Create comment
-router.post('/addcomment', (req, res) => {
+router.post('/addComment', (req, res) => {
     res.send('Comment request made')
-    let { postId, text, comments } = req.body
-
+    let { postId, newComment } = req.body
+    let text = newComment
     // Create new comment in Comments table
     Comment.create({ postId, text })
         .catch(err => console.log(err))
 
-    // Update number of comments on post in Post table
-    Post.update({ comments: comments }, {
-        where: { id: postId }
-    })
+    // // Update number of comments on post in Post table
+    // Post.update({ comments: comments }, {
+    //     where: { id: postId }
+    // })
 })
 
 

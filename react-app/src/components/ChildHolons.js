@@ -10,7 +10,13 @@ import ChildHolonsPlaceholder from './ChildHolonsPlaceholder'
 import { TransitionGroup, CSSTransition } from "react-transition-group";
 
 function ChildHolons() {
-    const { setHolon, updateContext, holonData, globalData, isLoading, setIsLoading } = useContext(HolonContext)
+    const { updateContext, holonData, isLoading, holonSearchFilter } = useContext(HolonContext)
+    const holons = holonData.DirectChildHolons
+
+    // Apply search filter to holons
+    let filteredHolons = holons.filter(holon => {
+        return holon.name.includes(holonSearchFilter) //&& holon.globalState === 'visible'
+    })
 
     return (
         <>
@@ -18,15 +24,15 @@ function ChildHolons() {
                 <ChildHolonsHeader />
                 <ChildHolonsPlaceholder />
                 <ul className={"child-holon-list " + (!isLoading ? 'visible' : '')}>
-                    {holonData.DirectChildHolons.map((holon, index) =>
-                        <CSSTransition appear key={index} in={!isLoading} timeout={2000} classNames="contentFade">
+                    {filteredHolons.map((holon, index) =>
+                        // <CSSTransition appear key={index} in={!isLoading} timeout={2000} classNames="contentFade">
                             <Holon
                                 holon={holon}
                                 index={index}
                                 key={holon.id}
                                 updateContext={updateContext}
                             />
-                        </CSSTransition>
+                        // </CSSTransition>
                     )} 
                 </ul>
             </div>

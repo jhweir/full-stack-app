@@ -2,7 +2,8 @@
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.bulkInsert('HolonTags', [
+    return queryInterface.bulkInsert('HolonTags', [ 
+      // Posts to holon A appear within holon B
       {
         state: 'open',
         holonAId: 1,
@@ -112,6 +113,34 @@ module.exports = {
         state: 'open',
         holonAId: 6,
         holonBId: 6,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        state: 'open',
+        holonAId: 7,
+        holonBId: 1,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        state: 'open',
+        holonAId: 7,
+        holonBId: 7,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        state: 'open',
+        holonAId: 8,
+        holonBId: 1,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        state: 'open',
+        holonAId: 8,
+        holonBId: 8,
         createdAt: new Date(),
         updatedAt: new Date()
       },

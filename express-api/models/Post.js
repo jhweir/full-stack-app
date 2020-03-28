@@ -2,6 +2,7 @@
 module.exports = (sequelize, DataTypes) => {
   const Post = sequelize.define('Post', {
     postType: DataTypes.STRING,
+    globalState: DataTypes.STRING,
     privacySetting: DataTypes.STRING,
     creator: DataTypes.INTEGER,
     note: DataTypes.STRING,
@@ -16,6 +17,7 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'postId'
     });
     Post.hasMany(models.Label);
+    Post.hasMany(models.Comment);
   };
   return Post;
 };

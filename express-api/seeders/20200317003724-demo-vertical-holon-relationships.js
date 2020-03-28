@@ -3,6 +3,7 @@
 module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.bulkInsert('VerticalHolonRelationships', [
+      // Holon A is a direct parent of holon B
       {
         state: 'open',
         holonAId: 1,
@@ -35,6 +36,20 @@ module.exports = {
         state: 'open',
         holonAId: 3,
         holonBId: 6,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        state: 'open',
+        holonAId: 1,
+        holonBId: 7,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        state: 'open',
+        holonAId: 1,
+        holonBId: 8,
         createdAt: new Date(),
         updatedAt: new Date()
       },

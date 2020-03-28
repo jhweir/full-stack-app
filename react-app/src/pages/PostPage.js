@@ -7,69 +7,68 @@ import Comment from '../components/Comment'
 function PostPage({ match }) {
     const postId = match.params.postId
 
-    const [post, setPost] = useState([])
-    // const [username, setUsername] = useState('')
-    const [comment, setComment] = useState('')
-    const [comments, setComments] = useState([])
+    const [post, setPost] = useState({
+        Holons: [],
+        Labels: [],
+        Comments: []
+    })
+    const [newComment, setNewComment] = useState('')
     const [commentError, setCommentError] = useState(false)
-    const [isLoading, setIsLoading] = useState(true)
+    const [postPageLoading, setPostPageLoading] = useState(true)
 
     function getPost() {
-        axios({ method: 'get', url: config.environmentURL + `/post?id=${postId}` })
-            .then(res => { 
-                setPost(res.data)
-                setComments(res.data.Comments)
-                setIsLoading(false)
-             })
+        axios.get(config.environmentURL + `/getPost?id=${postId}`).then(res => { 
+            setPost(res.data)
+            setPostPageLoading(false)
+        })
     }
 
     function submitComment(e) {
         e.preventDefault()
-        if (comment !== '') {
-            let text = comment
+        if (newComment !== '') {
+            //let text = newComment
             let comments = post.comments + 1
-            axios({ method: 'post', url: config.environmentURL + '/addcomment', data: { text, postId, comments } })
+            axios({ method: 'post', url: config.environmentURL + '/addComment', data: { newComment, postId } })
                 .then(res => { 
-                    setComment('')
+                    setNewComment('')
                     setTimeout(() => { getPost() }, 100)
                 })
-        } else if (comment === '') {
+        } else if (newComment === '') {
             setCommentError(true);
         }
     }
 
     useEffect(() => {
         getPost()
-    }, [comment])
+    }, [])
 
     return (
         <>
-            <div className="wall">
+            <div className="post-page">
                 <Post 
                     post={post}
-                    isLoading={isLoading}
+                    postPageLoading={postPageLoading}
                     isPostPage={true}
-                    getPost={getPost}
                 />
                 <form  className="create-comment-form" onSubmit={submitComment}> 
-                    <textarea className={"input-wrapper modal mb-10 " + (commentError ? 'error' : '')}
-                        style={{ height:'auto', paddingTop:10 }}
-                        rows="5"
+                    <textarea className={"create-comment-form-text-area " + (commentError ? 'error' : '')}
+                        //style={{ height:'auto', paddingTop:10 }}
+                        rows="1"
                         type="text"
                         placeholder="Leave a comment..."
-                        name="comment"
-                        value={comment}
+                        name="newComment"
+                        value={newComment}
                         onChange={(e) => {
-                            setComment(e.target.value)
+                            setNewComment(e.target.value)
                             setCommentError(false)
                         }}
                     />
                     <div className="button-container">
-                        <button className="button mb-10">Post comment</button>
+                        <button className="create-comment-form-button">Post comment</button>
                     </div>
                 </form>
                 <div className="comments">
-                    {comments.map((comment, index) => 
+                    {post.Comments.map((comment, index) => 
                         <Comment 
                             key={comment.id}
                             index={index}
@@ -79,8 +78,9 @@ function PostPage({ match }) {
             </div>
             
             <style jsx="true">{`
-                .wall {
-                    width: 600px;
+                .post-page {
+                    margin-top: 60px;
+                    width: 700px;
                     padding: 10px;
                     display: flex;
                     flex-direction: column;
@@ -96,13 +96,42 @@ function PostPage({ match }) {
                     width: 100%;
                     display: flex;
                     flex-direction: row;
-                    flex-wrap: wrap;
+                    //flex-wrap: wrap;
+                    justify-content: space-between;
+                    margin-bottom: 10px;
+                }
+                .create-comment-form-text-area {
+                    display: flex;
+                    width: 100%;
+                    margin-right: 10px;
+                    outline: none;
+                    border: 1px solid rgba(0,0,0,0.1);
+                    padding: 10px;
+                    border-radius: 5px;
+                }
+                .create-comment-form-button {
+                    background-color: #3a88f0;
+                    width: 150px;
+                    color: white;
+                    height: 40px;
+                    border-radius: 5px;
+                    padding: 0px 15px;
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: center;
+                    align-items: center;
+                    box-shadow: 0 1px 10px 0 rgba(10, 8, 72, 0.1);
+                    border: none;
+                    font-size: 14px;
+                    font-weight: 800;
+                    transition-property: box-shadow, background-color;
+                    transition-duration: 0.3s, 2s;
                 }
                 .comments {
-                    background-color: white;
-                    box-shadow: 0 1px 10px 0 rgba(10, 8, 72, 0.1);
+                    //background-color: white;
+                    //box-shadow: 0 1px 10px 0 rgba(10, 8, 72, 0.05);
                     width: 100%;
-                    border-radius: 5px;
+                    //border-radius: 10px;
                     transition-property: background-color;
                     transition-duration: 2s;
                 }

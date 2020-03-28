@@ -2,24 +2,26 @@ import React, { useState, useContext } from 'react'
 import { HolonContext } from '../contexts/HolonContext'
 
 function WallFilters() {
-    const { getHolonPosts, setSortBy } = useContext(HolonContext);
+    const { holonData, updateHolonContext, setPostSortByFilter } = useContext(HolonContext);
     const [dropdown, setDropdown] = useState(false)
 
-    function toggleDropDown() { setDropdown(!dropdown) }
-
-    function sortByLikes() { toggleDropDown(); getHolonPosts(); setSortBy('likes') }
-    function sortByDate() { toggleDropDown(); getHolonPosts(); setSortBy('date') }
-    function sortByComments() { toggleDropDown(); getHolonPosts(); setSortBy('comments') }
+    function updateFilter(filter) {
+        setDropdown(!dropdown)
+        setPostSortByFilter(filter)
+        updateHolonContext(holonData.handle)
+    }
     
     return (
         <>
             <div className="wall-filters">
-                <button className="button mb-10" onClick={toggleDropDown}>Filters</button>
+                <button className="button mb-10" onClick={() => setDropdown(!dropdown)}>Filters</button>
                 {dropdown && 
                     <div className="dropdown-content">
-                        <div className="dropdown-item" onClick={ sortByLikes }>Sort by Likes</div>
-                        <div className="dropdown-item" onClick={ sortByDate }>Sort by Date</div>
-                        <div className="dropdown-item" onClick={ sortByComments }>Sort by Comments</div>
+                        <div className="dropdown-title">Sort by:</div>
+                        <div className="dropdown-item" onClick={ () => updateFilter('reactions') }>Reactions</div>
+                        <div className="dropdown-item" onClick={ () => updateFilter('likes') }>Likes</div>
+                        <div className="dropdown-item" onClick={ () => updateFilter('date') }>Date</div>
+                        <div className="dropdown-item" onClick={ () => updateFilter('comments') }>Comments</div>
                     </div>
                 }
             </div>
@@ -32,14 +34,20 @@ function WallFilters() {
                 }
                 .dropdown-content {
                     width: 200px;
-                    //padding: 0 30px;
+                    padding: 10px;
                     border-radius: 5px;
                     background-color: white;
                     box-shadow: 0 1px 30px 0 rgba(0,0,0,0.2);
                     position: absolute;
-                    top: 130px;
-                    left: calc(50% - 30px);
-                    z-index: 1;
+                    top: 60px;
+                    left: calc(50% - 70px);
+                    z-index: 5;
+                }
+                .dropdown-title {
+                    font-weight: 800;
+                    width: 100%;
+                    text-align: center;
+                    margin: 5px 0;
                 }
                 .dropdown-item {
                     height: 40px;

@@ -4,7 +4,7 @@ import { HolonContext } from '../contexts/HolonContext'
 
 
 function NavBar(props) {
-    const { updateHolonContext } = useContext(HolonContext);
+    const { updateHolonContext, isLoading, setIsLoading } = useContext(HolonContext);
 
     function toggleDarkMode() {
         document.body.classList.toggle("dark-mode");
@@ -37,11 +37,17 @@ function NavBar(props) {
                             <div className="navbar-text">Spaces</div>
                         </Link>
                     </div>
-                    <div 
+                    {/* <div 
                         style={{ marginLeft: 20 }}
                         className="button"
                         onClick={ toggleDarkMode }>
                         Dark mode
+                    </div> */}
+                    <div 
+                        style={{ marginLeft: 20 }}
+                        className="button"
+                        onClick={ () => setIsLoading(!isLoading) }>
+                        Toggle loading
                     </div>
                 </div>
             </div>

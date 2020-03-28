@@ -3,9 +3,19 @@ import { Link } from 'react-router-dom'
 import axios from 'axios'
 import config from '../Config'
 import { HolonContext } from '../contexts/HolonContext'
-import { TransitionGroup, CSSTransition } from "react-transition-group";
 
 function Post(props) {
+    const { 
+        id,
+        user,
+        title,
+        description,
+        pins,
+        createdAt,
+        Labels,
+        Comments
+    } = props.post
+
     const { updateHolonContext, holonData } = useContext(HolonContext)
     const [reactionsModalOpen, setReactionsModalOpen] = useState(false)
     const [ratingModalOpen, setRatingModalOpen] = useState(false)
@@ -17,27 +27,18 @@ function Post(props) {
     const [newRatingError, setNewRatingError] = useState(false)
     const [totalRatingPoints, setTotalRatingPoints] = useState(0)
 
-    const { 
-        id,
-        user,
-        title,
-        description,
-        comments,
-        pins,
-        createdAt,
-        Labels
-    } = props.post
-
     useEffect(() => {
         setReactions(Labels.length)
-        setLikes(Labels.filter((label) => label.type === 'like').length)
-        setHearts(Labels.filter((label) => label.type === 'heart').length)
-        setRatings(Labels.filter((label) => label.type === 'rating').length)
+        function findNumberofLabels(labelType) { 
+            return Labels.filter((label) => label.type === labelType).length
+        }
+        setLikes(findNumberofLabels('like'))
+        setHearts(findNumberofLabels('heart'))
+        setRatings(findNumberofLabels('rating'))
         setTotalRatingPoints(Labels
-            .filter((label) => label.type === 'rating')
-            .map((rating) => parseInt(rating.value, 10))
-            .reduce((a, b) => a + b, 0)
-        )
+            .filter((label) => label.type === 'rating') // find all the posts ratings
+            .map((rating) => parseInt(rating.value, 10)) // convert rating values to numbers (stored as strings in DB)
+            .reduce((a, b) => a + b, 0)) // add all ratings values together
     }, [props])
     
     const holonId = holonData.id
@@ -45,30 +46,29 @@ function Post(props) {
     function addLike() {
         setLikes(likes + 1)
         setReactions(reactions + 1)
-        axios({ method: 'put', url: config.environmentURL + '/addLike', data: { id, holonId } })
+        axios.put(config.environmentURL + '/addLike', { id, holonId })
             .catch(error => { console.log(error) })
     }
 
     function addHeart() {
         setHearts(hearts + 1)
         setReactions(reactions + 1)
-        axios({ method: 'put', url: config.environmentURL + '/addHeart', data: { id, holonId } })
+        axios.put(config.environmentURL + '/addHeart', { id, holonId })
             .catch(error => { console.log(error) })
     }
 
     function addRating() {
         if (!isNaN(newRating) && newRating !== '' && newRating <= 100) {
-            setRatings(ratings + 1)
+            setRatings(ratings + 1) //try +=
             setReactions(reactions + 1)
             setTotalRatingPoints(totalRatingPoints + parseInt(newRating, 10))
-            axios({ method: 'put', url: config.environmentURL + '/addRating', data: { id, holonId, newRating } })
+            axios.put(config.environmentURL + '/addRating', { id, holonId, newRating })
                 .then(setNewRating(''))
-                //.then(updateHolonContext(holonData.handle))
                 .catch(error => { console.log(error) })
         } else { setNewRatingError(true) }
     }
 
-    function toggleReactionsModal() { 
+    function toggleReactionsModal() { //change 'reactions' to 'reaction'
         setReactionsModalOpen(!reactionsModalOpen)
     }
 
@@ -76,11 +76,12 @@ function Post(props) {
         setRatingModalOpen(!ratingModalOpen)
     }
 
-    // function deletePost() {
-    //     axios({ method: 'delete', url: config.environmentURL, data: { id } })
-    //         //.then(setTimeout(() => { updatePosts() }, 100))
-    //         .catch(error => { console.log(error) })
-    // }
+    function deletePost() {
+        //console.log(id)
+        axios.delete(config.environmentURL  + '/deletePost', { data: { id } })
+            //.then(setTimeout(() => { updatePosts() }, 100))
+            .catch(error => { console.log(error) })
+    }
 
     // function pinPost() {
     //     axios({ method: 'put', url: config.environmentURL + '/pinpost', data: { id } })
@@ -101,17 +102,9 @@ function Post(props) {
     }
 
     function totalRatingScore() {
-        return (totalRatingPoints / ratings).toFixed(2)
+        if (ratings) { return (totalRatingPoints / ratings).toFixed(2) + '%'
+        } else { return 'N/A' }
     }
-
-    // function totalRatingScore() {
-    //     const totalRatingPoints = Labels
-    //         .filter((label) => label.type === 'rating')
-    //         .map((rating) => parseInt(rating.value, 10))
-    //         .reduce((a, b) => a + b, 0)
-    //     const totalRatingScore = (totalRatingPoints / ratings).toFixed(2)
-    //     return totalRatingScore
-    // }
 
     // TODO: Check is isLoading conditionals required any more (on both walls and post pages)
     return (
@@ -124,7 +117,7 @@ function Post(props) {
                         <span className="user-thumbnail mr-10"></span>
                         <span className="sub-text mr-10">{ user || 'Anonymous' }</span>
                         <span className="sub-text mr-10">to</span>
-                        {!props.isLoading &&  /* Wait until the post has finished loading before displaying the holons to prevent errors */
+                        {!props.postPageLoading &&  /* Wait until the post has finished loading before displaying the holons to prevent errors */
                             <div className="holon-names">
                                 {props.post.Holons.length >= 1 ? 
                                     props.post.Holons.map((holon, index) =>
@@ -139,7 +132,7 @@ function Post(props) {
                             </div>
                         }
                         <span className="sub-text mr-10">|</span>
-                        {!props.isLoading && /* Wait until the post has finished loading before formatting the date to prevent errors */
+                        {!props.postPageLoading && /* Wait until the post has finished loading before formatting the date to prevent errors */
                             <span className="sub-text">{ formatDate() || 'no date' }</span>
                         }
                     </div>
@@ -175,7 +168,10 @@ function Post(props) {
 
                                 <div className={"post-rating-modal " + (ratingModalOpen && 'visible') }>
                                     <div className="post-rating-modal-total-score">
-                                        {totalRatingScore()}
+                                        <div className="post-rating-modal-total-score-bar">
+                                            <div className="post-rating-modal-total-score-percentage" style={{width: totalRatingScore()}}/>
+                                            <div className="post-rating-modal-total-score-text">{totalRatingScore()}</div>
+                                        </div>
                                     </div>
                                     <div className="post-rating-modal-input-wrapper">
                                         <input className={"post-rating-modal-input " + (newRatingError ? 'error' : '')}
@@ -199,22 +195,32 @@ function Post(props) {
                                     <img className="post-icon" src="/icons/tags-solid.svg"/>
                                     <div className="">{ Labels.filter((label)=> label.type === 'label').length } Labels</div>
                                 </div>
+
+                                <div className="post-reactions-modal-item opacity-50">
+                                    <img className="post-icon" src="/icons/flag-solid.svg"/>
+                                    <div className="">{ Labels.filter((label)=> label.type === 'flag').length } Flags</div>
+                                </div>
+
+                                <div className="post-reactions-modal-item opacity-50">
+                                    <img className="post-icon" src="/icons/link-solid.svg"/>
+                                    <div className="">{ Labels.filter((label)=> label.type === 'link').length } Links</div>
+                                </div>
                             </div>
 
                             {!props.isPostPage && /* Link removed from PostPage to prevent loading issue with Labels */
                                 <Link className="post-interact-item" 
                                     to={ `/p/${id}` }>
                                     <img className="post-icon" src="/icons/comment-solid.svg"/>
-                                    <span>{ comments } Comments</span>
+                                    <span>{ Comments.length } Comments</span>
                                 </Link>
                             }
                             {props.isPostPage && /* Replaced with unclickable div */
                                 <div className="post-interact-item">
                                     <img className="post-icon" src="/icons/comment-solid.svg"/>
-                                    <span>{ comments } Comments</span>
+                                    <span>{ Comments.length } Comments</span>
                                 </div>
                             }
-                            <div className="post-interact-item opacity-50">{/* onClick={ deletePost } */}
+                            <div className="post-interact-item" onClick={ deletePost }>
                                 <img className="post-icon" src="/icons/trash-alt-solid.svg"/>
                                 <span>Delete</span>
                             </div>
@@ -238,7 +244,7 @@ function Post(props) {
                     display: flex;
                     flex-direction: row;
                     transition-property: background-color;
-                    transition-duration: 2s;
+                    //transition-duration: 2s;
                     position: relative;
                     //z-index: 1;
                     opacity: 1;
@@ -362,7 +368,7 @@ function Post(props) {
                     top: 170px;
                     left: 50px;
                     box-shadow: 0 1px 10px 0 rgba(10, 8, 72, 0.15);
-                    //z-index: 2;
+                    z-index: -1;
                     opacity: 0;
                 }
                 .post-reactions-modal.visible {
@@ -413,6 +419,26 @@ function Post(props) {
                 .post-rating-modal.visible {
                     display: flex;
                     z-index: 1;
+                }
+                .post-rating-modal-total-score {
+                    width: 100%;
+                    margin-bottom: 8px;
+                }
+                .post-rating-modal-total-score-bar {
+                    width: 100%;
+                    height: 30px;
+                    background-color: #eaeaea;
+                    position: relative;
+                }
+                .post-rating-modal-total-score-percentage {
+                    height: 30px;
+                    background-color: #9ed5ff;
+                }
+                .post-rating-modal-total-score-text {
+                    position: absolute;
+                    top: 3px;
+                    width: 100%;
+                    text-align: center;
                 }
                 .post-rating-modal-input-wrapper {
                     display: flex;

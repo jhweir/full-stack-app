@@ -7,7 +7,6 @@ import Homepage from './pages/Homepage'
 import Wall from './components/Wall'
 import ChildHolons from './components/ChildHolons'
 import EmptyPage from './pages/EmptyPage'
-// import PostContextProvider from './contexts/PostContext'
 import HolonContextProvider from './contexts/HolonContext'
 // import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom'
 import {
@@ -38,8 +37,7 @@ function App() {
   return (
     <>
       <div className="app">
-        
-          <BrowserRouter history={ createBrowserHistory }>
+        <BrowserRouter history={ createBrowserHistory }>
           <HolonContextProvider>
             <NavBar history={ createBrowserHistory }/>
             {/* <AnimatedSwitch /> */}
@@ -49,8 +47,8 @@ function App() {
               <Route path="/h/:holonHandle" component={ HolonPage }/>
               <Route component={ EmptyPage }/>
             </Switch>
-            </HolonContextProvider>
-          </BrowserRouter>
+          </HolonContextProvider>
+        </BrowserRouter>
         
       </div>
 

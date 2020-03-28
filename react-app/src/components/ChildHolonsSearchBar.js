@@ -2,12 +2,12 @@ import React, { useState, useContext } from 'react'
 import { HolonContext } from '../contexts/HolonContext'
 
 function BranchSearchBar(props) {
-    const { setSearchFilter } = useContext(HolonContext);
-    const [search, setSearch] = useState('')
+    const { setHolonSearchFilter } = useContext(HolonContext);
+    const [newSearch, setNewSearch] = useState('')
 
     function applySearch(e) {
         e.preventDefault()
-        setSearchFilter(search)
+        setHolonSearchFilter(newSearch)
     }
 
     return (
@@ -18,8 +18,8 @@ function BranchSearchBar(props) {
                         className="input"
                         type="text"
                         placeholder="Search holons..."
-                        value={ search }
-                        onChange={ (e) => setSearch(e.target.value) }
+                        value={ newSearch }
+                        onChange={ (e) => setNewSearch(e.target.value) }
                     />
                     <button className="search-button"></button>
                 </form>

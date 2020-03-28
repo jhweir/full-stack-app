@@ -1,42 +1,39 @@
-import React, { useContext, useState, useEffect } from 'react'
+import React, { useContext } from 'react'
 import { HolonContext } from '../contexts/HolonContext'
 import Post from './Post'
 import WallHeader from './WallHeader'
 import WallPlaceholder from './WallPlaceholder'
-import {
-    BrowserRouter,
-    Link,
-    Route,
-    Switch,
-    withRouter
-  } from "react-router-dom";
-import { TransitionGroup, CSSTransition } from "react-transition-group";
 
 function Wall() {
-    const { holonData, searchFilter, sortBy, isLoading, setIsLoading } = useContext(HolonContext)
+    const { holonData, postSearchFilter, postSortByFilter, isLoading, setIsLoading } = useContext(HolonContext)
     const posts = holonData.Posts
 
-    const [inVariable, setInVariable] = useState(true)
-
-        // Filter posts by search text (todo: also remove pinned and hidden posts)
+        // Apply search filter to posts
         let filteredPosts = posts.filter(post => {
-            return post.title.includes(searchFilter) //&& post.visible === true //&& post.pins == null && post.visible === true
+            return post.title.includes(postSearchFilter) && post.globalState === 'visible'
+            //&& post.pins == null
         })
 
-        // // Sort posts by Likes
-        // if (sortBy === 'likes') {
-        //     filteredPosts.sort((a, b) => b.likes - a.likes)
-        // }
+        // Sort posts by Reactions
+        if (postSortByFilter === 'reactions') {
+            filteredPosts.sort((a, b) => b.Labels.length - a.Labels.length)
+        }
 
-        // // Sort posts by Date
-        // if (sortBy === 'date') {
-        //     filteredPosts.sort((a, b) => b.date - a.date)
-        // }
+        // Sort posts by Likes
+        if (postSortByFilter === 'likes') {
+            function findNumberOfLikes(post) { return post.Labels.filter((label) => label.type === 'like').length  }
+            filteredPosts.sort((a, b) => findNumberOfLikes(b) - findNumberOfLikes(a))
+        }
 
-        // // Sort posts by Comments
-        // if (sortBy === 'comments') {
-        //     filteredPosts.sort((a, b) => b.comments - a.comments)
-        // }
+        // Sort posts by Date
+        if (postSortByFilter === 'date') {
+            filteredPosts.sort((a, b) => b.createdAt - a.createdAt)
+        }
+
+        // Sort posts by Comments
+        if (postSortByFilter === 'comments') {
+            filteredPosts.sort((a, b) => b.Comments.length - a.Comments.length)
+        }
 
         // // Pinned posts
         // let pinnedPosts = posts.filter((post) => {
@@ -48,7 +45,7 @@ function Wall() {
             <div className="wall">
                 <WallHeader />
                 <WallPlaceholder />
-                <ul className={"posts " + (!isLoading ? 'visible' : '')}>
+                <ul className={"posts " + (isLoading ? 'hidden' : '')}>
                     {filteredPosts.map((post, index) =>
                         // <CSSTransition key={index}  in={!isLoading} timeout={500} classNames="contentFade" appear>
                             <Post post={post} key={post.id} index={index} isLoading={isLoading}/>
@@ -72,6 +69,13 @@ function Wall() {
                     flex-direction: column;
                     justify-content: center;
                     align-items: center;
+                    z-index: 1;
+                    opacity: 1;
+                    transition: all 800ms;
+                }
+                .posts.hidden {
+                    //z-index: 0;
+                    opacity: 0;
                 }
                 .pinned-posts {
                     padding: 0;

@@ -11,6 +11,9 @@ module.exports = {
       postType: {
         type: Sequelize.STRING
       },
+      globalState: {
+        type: Sequelize.STRING
+      },
       privacySetting: {
         type: Sequelize.STRING
       },

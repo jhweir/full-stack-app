@@ -2,12 +2,12 @@ import React, { useState, useContext } from 'react'
 import { HolonContext } from '../contexts/HolonContext'
 
 function WallSearchBar(props) {
-    const { setSearchFilter } = useContext(HolonContext);
-    const [search, setSearch] = useState('')
+    const { setPostSearchFilter } = useContext(HolonContext);
+    const [newSearch, setNewSearch] = useState('')
 
     function applySearch(e) {
         e.preventDefault()
-        setSearchFilter(search)
+        setPostSearchFilter(newSearch)
     }
 
     return (
@@ -18,8 +18,8 @@ function WallSearchBar(props) {
                         className="input"
                         type="text"
                         placeholder="Search posts..."
-                        value={ search }
-                        onChange={ (e) => setSearch(e.target.value) }
+                        value={ newSearch }
+                        onChange={ (e) => setNewSearch(e.target.value) }
                     />
                     <button className="search-button"></button>
                 </form>

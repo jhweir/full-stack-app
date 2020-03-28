@@ -50,9 +50,9 @@ function Comment(props) {
                     margin-bottom: 10px;
                     padding: 20px 20px 20px 30px;
                     width: 100%;
-                    border-radius: 5px;
+                    border-radius: 10px;
                     background-color: white;
-                    //box-shadow: 0 1px 10px 0 rgba(10, 8, 72, 0.08);
+                    box-shadow: 0 1px 10px 0 rgba(10, 8, 72, 0.05);
                     display: flex;
                     flex-direction: row;
                     transition-property: background-color;

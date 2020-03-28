@@ -63,13 +63,13 @@ $transitionSpeed: 800ms;
 .contentFade-enter {
     opacity: 0;
     transform: scale(1) translateX(0);
-    //z-index: 1;
+    //z-index: -1;
 }
 .contentFade-enter.contentFade-enter-active {
     opacity: 1;
     transform: scale(1) translateX(0);
     transition:  all $transitionSpeed;
-    //z-index: 0;
+    //z-index: -1;
 }
 .contentFade-enter-done {
     //opacity: 0;
@@ -91,7 +91,7 @@ $transitionSpeed: 800ms;
 }
 .contentFade-exit-done {
     //opacity: 0;
-    //z-index: 1;
+    //z-index: -1;
 }
 
 

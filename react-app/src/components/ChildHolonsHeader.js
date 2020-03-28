@@ -21,7 +21,6 @@ function ChildHolonsHeader() {
                     <CreateBranch toggleModal={ toggleModal }/>
                 }
                 <ChildHolonsFilters/>
-                <button className="button mb-10" onClick={() => setIsLoading(!isLoading)}>Loading</button>
             </div>
 
             <style jsx="true">{`

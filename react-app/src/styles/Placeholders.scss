@@ -57,7 +57,7 @@
 }
 
 
-
+$transitionSpeed: 800ms;
 
 .ph-side-bar-left {
   opacity: 0;
@@ -109,14 +109,14 @@
   }
 }
 
-.posts {
-  opacity: 0;
-  transition:  all $transitionSpeed;
+// .posts {
+//   opacity: 0;
+//   transition:  all $transitionSpeed;
 
-  &.visible {
-      opacity: 1;
-  }
-}
+//   &.visible {
+//       opacity: 1;
+//   }
+// }
 
 .ph-child-holons {
   opacity: 0;

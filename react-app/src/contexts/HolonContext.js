@@ -1,6 +1,4 @@
-
 import React, { createContext, useEffect, useState } from 'react';
-import { Link, useHistory } from 'react-router-dom';
 import axios from 'axios'
 import config from '../Config'
 
@@ -13,8 +11,10 @@ function HolonContextProvider(props) {
         DirectParentHolons: [],
         Posts: []
     })
-    const [searchFilter, setSearchFilter] = useState('')
-    const [sortBy, setSortBy] = useState('id')
+    const [postSearchFilter, setPostSearchFilter] = useState('')
+    const [postSortByFilter, setPostSortByFilter] = useState('date')
+    const [holonSearchFilter, setHolonSearchFilter] = useState('')
+    const [holonSortByFilter, setHolonSortByFilter] = useState('date')
     const [isLoading, setIsLoading] = useState(false)
 
     function updateHolonContext(holonHandle) {
@@ -23,13 +23,11 @@ function HolonContextProvider(props) {
         const demoDelay = new Promise((resolve) => {
             setTimeout(resolve, 1000);
         });
-
         setIsLoading(true)
-        Promise.all([getGlobalData, getHolonData, demoDelay]).then((values) => {
+        Promise.all([getGlobalData, getHolonData]).then((values) => {
             setGlobalData(values[0].data)
             setHolonData(values[1].data)
             setIsLoading(false)
-            //console.log('updateHolonContext function run...')
         })
     }
 
@@ -38,10 +36,14 @@ function HolonContextProvider(props) {
             holonData,
             globalData,
             updateHolonContext,
-            searchFilter,
-            setSearchFilter,
-            sortBy,
-            setSortBy,
+            postSearchFilter,
+            setPostSearchFilter,
+            postSortByFilter,
+            setPostSortByFilter,
+            holonSearchFilter,
+            setHolonSearchFilter,
+            holonSortByFilter,
+            setHolonSortByFilter,
             isLoading,
             setIsLoading
         }}>

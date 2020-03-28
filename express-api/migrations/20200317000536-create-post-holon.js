@@ -14,7 +14,7 @@ module.exports = {
       relationship: {
         type: Sequelize.STRING
       },
-      state: {
+      localState: {
         type: Sequelize.STRING
       },
       postId: {
