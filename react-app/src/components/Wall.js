@@ -50,9 +50,9 @@ function Wall() {
                 <WallPlaceholder />
                 <ul className={"posts " + (!isLoading ? 'visible' : '')}>
                     {filteredPosts.map((post, index) =>
-                        <CSSTransition key={index}  in={!isLoading} timeout={2000} classNames="contentFade" appear>
-                            <Post post={post} index={index} isLoading={isLoading}/>
-                        </CSSTransition>
+                        // <CSSTransition key={index}  in={!isLoading} timeout={500} classNames="contentFade" appear>
+                            <Post post={post} key={post.id} index={index} isLoading={isLoading}/>
+                        // </CSSTransition>
                     )} 
                 </ul>
             </div>

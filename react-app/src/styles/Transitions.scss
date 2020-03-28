@@ -63,16 +63,17 @@ $transitionSpeed: 800ms;
 .contentFade-enter {
     opacity: 0;
     transform: scale(1) translateX(0);
-    //z-index: 5;
+    //z-index: 1;
 }
 .contentFade-enter.contentFade-enter-active {
     opacity: 1;
     transform: scale(1) translateX(0);
     transition:  all $transitionSpeed;
-    //z-index: 5;
+    //z-index: 0;
 }
 .contentFade-enter-done {
     //opacity: 0;
+    //z-index: 1;
 }
 
 //// contentFade: exit
@@ -80,15 +81,17 @@ $transitionSpeed: 800ms;
     opacity: 1;
     transform: scale(1) translateX(0);
     //z-index: 5;
+    //z-index: 1;
 }
 .contentFade-exit.contentFade-exit-active {
     opacity: 0;
     transform: scale(1) translateX(0);
     transition:  all $transitionSpeed;
-    //z-index: 5;
+    //z-index: 1;
 }
 .contentFade-exit-done {
     //opacity: 0;
+    //z-index: 1;
 }
 
 
@@ -233,4 +236,51 @@ $transitionSpeed: 800ms;
 }
 .sideBarFade-exit-done {
     //opacity: 0;
+}
+
+
+
+
+
+
+// modalFade: appear
+// .modalFade-appear {
+//     opacity: 0;
+//     transform: scale(1) translateX(0);
+// }
+// .modalFade-appear.modalFade-appear-active {
+//     opacity: 0;
+//     transform: scale(1) translateX(0);
+//     transition:  all $transitionSpeed;
+// }
+// .modalFade-appear-done {
+//     opacity: 0;
+// }
+
+//// pageFade: enter
+.modalFade-enter {
+    opacity: 0;
+    transform: scale(1) translateX(0);
+}
+.modalFade-enter.modalFade-enter-active {
+    opacity: 1;
+    transform: scale(1) translateX(0);
+    transition:  all $transitionSpeed;
+}
+.modalFade-enter-done {
+    opacity: 1;
+}
+
+//// pageFade: exit
+.modalFade-exit {
+    opacity: 1;
+    transform: scale(1) translateX(0);
+}
+.modalFade-exit.modalFade-exit-active {
+    opacity: 0;
+    transform: scale(1) translateX(0);
+    transition:  all $transitionSpeed;
+}
+.modalFade-exit-done {
+    opacity: 0;
 }

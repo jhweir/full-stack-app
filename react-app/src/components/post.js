@@ -3,47 +3,96 @@ import { Link } from 'react-router-dom'
 import axios from 'axios'
 import config from '../Config'
 import { HolonContext } from '../contexts/HolonContext'
+import { TransitionGroup, CSSTransition } from "react-transition-group";
 
 function Post(props) {
     const { updateHolonContext, holonData } = useContext(HolonContext)
-    const [likes, setLikes] = useState(0)
     const [reactionsModalOpen, setReactionsModalOpen] = useState(false)
+    const [ratingModalOpen, setRatingModalOpen] = useState(false)
+    const [reactions, setReactions] = useState(0)
+    const [likes, setLikes] = useState(0)
+    const [hearts, setHearts] = useState(0)
+    const [ratings, setRatings] = useState(0)
+    const [newRating, setNewRating] = useState('')
+    const [newRatingError, setNewRatingError] = useState(false)
+    const [totalRatingPoints, setTotalRatingPoints] = useState(0)
+
+    const { 
+        id,
+        user,
+        title,
+        description,
+        comments,
+        pins,
+        createdAt,
+        Labels
+    } = props.post
 
     useEffect(() => {
-        setLikes(props.post.Labels.filter((label) => label.type === 'like').length)
+        setReactions(Labels.length)
+        setLikes(Labels.filter((label) => label.type === 'like').length)
+        setHearts(Labels.filter((label) => label.type === 'heart').length)
+        setRatings(Labels.filter((label) => label.type === 'rating').length)
+        setTotalRatingPoints(Labels
+            .filter((label) => label.type === 'rating')
+            .map((rating) => parseInt(rating.value, 10))
+            .reduce((a, b) => a + b, 0)
+        )
     }, [props])
+    
+    const holonId = holonData.id
 
-    const { id, user, title, description, comments, pins, createdAt, Labels } = props.post
-      
     function addLike() {
-        const newLikes = likes + 1
-        const holonId = holonData.id
-        setLikes(newLikes)
+        setLikes(likes + 1)
+        setReactions(reactions + 1)
         axios({ method: 'put', url: config.environmentURL + '/addLike', data: { id, holonId } })
             .catch(error => { console.log(error) })
+    }
+
+    function addHeart() {
+        setHearts(hearts + 1)
+        setReactions(reactions + 1)
+        axios({ method: 'put', url: config.environmentURL + '/addHeart', data: { id, holonId } })
+            .catch(error => { console.log(error) })
+    }
+
+    function addRating() {
+        if (!isNaN(newRating) && newRating !== '' && newRating <= 100) {
+            setRatings(ratings + 1)
+            setReactions(reactions + 1)
+            setTotalRatingPoints(totalRatingPoints + parseInt(newRating, 10))
+            axios({ method: 'put', url: config.environmentURL + '/addRating', data: { id, holonId, newRating } })
+                .then(setNewRating(''))
+                //.then(updateHolonContext(holonData.handle))
+                .catch(error => { console.log(error) })
+        } else { setNewRatingError(true) }
     }
 
     function toggleReactionsModal() { 
         setReactionsModalOpen(!reactionsModalOpen)
     }
 
-    function deletePost() {
-        axios({ method: 'delete', url: config.environmentURL, data: { id } })
-            //.then(setTimeout(() => { updatePosts() }, 100))
-            .catch(error => { console.log(error) })
+    function toggleRatingModal() {
+        setRatingModalOpen(!ratingModalOpen)
     }
 
-    function pinPost() {
-        axios({ method: 'put', url: config.environmentURL + '/pinpost', data: { id } })
-            //.then(setTimeout(() => { updatePosts() }, 100))
-            .catch(error => { console.log(error) })
-    }
+    // function deletePost() {
+    //     axios({ method: 'delete', url: config.environmentURL, data: { id } })
+    //         //.then(setTimeout(() => { updatePosts() }, 100))
+    //         .catch(error => { console.log(error) })
+    // }
 
-    function unpinPost() {
-        axios({ method: 'put', url: config.environmentURL + '/unpinpost', data: { id } })
-            //.then(setTimeout(() => { updatePosts() }, 100))
-            .catch(error => { console.log(error) })
-    }
+    // function pinPost() {
+    //     axios({ method: 'put', url: config.environmentURL + '/pinpost', data: { id } })
+    //         //.then(setTimeout(() => { updatePosts() }, 100))
+    //         .catch(error => { console.log(error) })
+    // }
+
+    // function unpinPost() {
+    //     axios({ method: 'put', url: config.environmentURL + '/unpinpost', data: { id } })
+    //         //.then(setTimeout(() => { updatePosts() }, 100))
+    //         .catch(error => { console.log(error) })
+    // }
 
     function formatDate() {
         const a = createdAt.split(/[-.T :]/)
@@ -51,11 +100,24 @@ function Post(props) {
         return formattedDate
     }
 
+    function totalRatingScore() {
+        return (totalRatingPoints / ratings).toFixed(2)
+    }
+
+    // function totalRatingScore() {
+    //     const totalRatingPoints = Labels
+    //         .filter((label) => label.type === 'rating')
+    //         .map((rating) => parseInt(rating.value, 10))
+    //         .reduce((a, b) => a + b, 0)
+    //     const totalRatingScore = (totalRatingPoints / ratings).toFixed(2)
+    //     return totalRatingScore
+    // }
+
     // TODO: Check is isLoading conditionals required any more (on both walls and post pages)
     return (
         <>
             <div className={"post " + (pins ? 'pinned-post' : '')}>
-                {pins && <div className="pin-flag" onClick={ unpinPost }></div>}
+                {/* {pins && <div className="pin-flag" onClick={ unpinPost }></div>} */}
                 {!pins && !props.isPostPage && <div className="post-id">{ props.index + 1 }</div>}
                 <div className="post-body">
                     <div className="post-tags">
@@ -86,40 +148,78 @@ function Post(props) {
                         <div className="post-description">{ description }</div>    
                         <div className="post-interact">
                             <div className="post-interact-item" onClick={() => toggleReactionsModal()}> {/* onClick={ addLike } */}
-                                <div className="like-icon"/>
-                                <span>{ likes } Reactions</span>
+                                <img className="post-icon" src="/icons/fire-alt-solid.svg"/>
+                                <span>{ reactions } Reactions</span>
                             </div>
 
+                            <div className={"post-reactions-modal " + (reactionsModalOpen ? 'visible' : '') }>
 
+                                <img className="post-reactions-modal-close-button"
+                                    src="/icons/close-01.svg"
+                                    onClick={() => toggleReactionsModal()}/>
 
-                            {reactionsModalOpen && 
-                                <div className="post-reactions-modal">
-                                    <div className="post-reactions-modal-close-button"/>
-                                    <div className="">Post reactions...</div>
+                                <div className="post-reactions-modal-item" onClick={() => addLike()}>
+                                    <img className="post-icon" src="/icons/thumbs-up-solid.svg"/>
+                                    <div className="">{ likes } Likes</div>
                                 </div>
-                            }
 
+                                <div className="post-reactions-modal-item" onClick={() => addHeart()}>
+                                    <img className="post-icon" src="/icons/heart-solid.svg"/>
+                                    <div className="">{ hearts } Hearts</div>
+                                </div>
 
+                                <div className="post-reactions-modal-item" onClick={() => toggleRatingModal()}>
+                                    <img className="post-icon" src="/icons/star-solid.svg"/>
+                                    <div className="">{ ratings } Ratings</div>
+                                </div>
+
+                                <div className={"post-rating-modal " + (ratingModalOpen && 'visible') }>
+                                    <div className="post-rating-modal-total-score">
+                                        {totalRatingScore()}
+                                    </div>
+                                    <div className="post-rating-modal-input-wrapper">
+                                        <input className={"post-rating-modal-input " + (newRatingError ? 'error' : '')}
+                                            type="text"
+                                            value={ newRating }
+                                            onChange={(e) => {setNewRating(e.target.value); setNewRatingError(false)}}/>
+                                        <div className="">/ 100</div>
+                                    </div>
+                                    <div className="post-rating-modal-button"
+                                        onClick={() => addRating()}>
+                                        Add rating
+                                    </div>
+                                </div>
+
+                                <div className="post-reactions-modal-item opacity-50">
+                                    <img className="post-icon" src="/icons/hashtag-solid.svg"/>
+                                    <div className="">{ Labels.filter((label)=> label.type === 'tag').length } Tags</div>
+                                </div>
+
+                                <div className="post-reactions-modal-item opacity-50">
+                                    <img className="post-icon" src="/icons/tags-solid.svg"/>
+                                    <div className="">{ Labels.filter((label)=> label.type === 'label').length } Labels</div>
+                                </div>
+                            </div>
 
                             {!props.isPostPage && /* Link removed from PostPage to prevent loading issue with Labels */
                                 <Link className="post-interact-item" 
                                     to={ `/p/${id}` }>
-                                    <div className="comment-icon"/>
+                                    <img className="post-icon" src="/icons/comment-solid.svg"/>
                                     <span>{ comments } Comments</span>
                                 </Link>
                             }
                             {props.isPostPage && /* Replaced with unclickable div */
                                 <div className="post-interact-item">
-                                    <div className="comment-icon"/>
+                                    <img className="post-icon" src="/icons/comment-solid.svg"/>
                                     <span>{ comments } Comments</span>
                                 </div>
                             }
-                            <div className="post-interact-item" onClick={ deletePost }>
-                                <div className="delete-icon"/>
+                            <div className="post-interact-item opacity-50">{/* onClick={ deletePost } */}
+                                <img className="post-icon" src="/icons/trash-alt-solid.svg"/>
                                 <span>Delete</span>
                             </div>
-                            {!pins && <div className="post-interact-item" onClick={ pinPost }>
-                                <div className="pin-icon"/>
+                            {!pins && <div className="post-interact-item opacity-50">{/* onClick={ pinPost } */}
+                                <img className="post-icon" src="/icons/thumbtack-solid.svg"/>
                                 <span>Pin post</span>
                             </div>}
                         </div>
@@ -140,6 +240,8 @@ function Post(props) {
                     transition-property: background-color;
                     transition-duration: 2s;
                     position: relative;
+                    //z-index: 1;
+                    opacity: 1;
                 }
                 .pinned-post {
                     background-color: #f1f6ff;
@@ -245,72 +347,109 @@ function Post(props) {
                     flex-direction: row;
                     align-items: center;
                     flex-shrink: 0;
-                    margin-right: 10px;
+                    margin-right: 15px;
                     color: #888;
                 }
                 .post-interact-item:hover {
                     cursor: pointer;
                 }
                 .post-reactions-modal {
-                    width: 300px;
-                    height: 100px;
+                    width: 160px;
                     background-color: white;
                     border-radius: 10px;
+                    padding: 10px 20px;
                     position: absolute;
+                    top: 170px;
+                    left: 50px;
                     box-shadow: 0 1px 10px 0 rgba(10, 8, 72, 0.15);
-                    z-index: 5;
+                    //z-index: 2;
+                    opacity: 0;
                 }
-                .like-icon {
-                    background-image: url(/icons/heart-solid.svg);
-                    background-position: center;
-                    background-repeat: no-repeat;
-                    background-size: cover;
-                    background-color: transparent;
-                    border: none;
+                .post-reactions-modal.visible {
+                    opacity: 1;
+                    z-index: 2;
+                }
+                .post-reactions-modal-close-button {
                     height: 17px;
                     width: 17px;
                     padding: 0;
-                    opacity: 0.4;
-                    margin-right: 5px;
+                    opacity: 0.2;
+                    position: absolute;
+                    top: 10px;
+                    right: 10px;
                 }
-                .comment-icon {
-                    background-image: url(/icons/comment-02.svg);
-                    background-position: center;
-                    background-repeat: no-repeat;
-                    background-size: cover;
-                    background-color: transparent;
-                    border: none;
-                    height: 17px;
-                    width: 17px;
-                    padding: 0;
+                .post-reactions-modal-close-button:hover {
+                    cursor: pointer;
                     opacity: 0.4;
-                    margin-right: 5px;
                 }
-                .delete-icon {
-                    background-image: url(/icons/delete-01.png);
-                    background-position: center;
-                    background-repeat: no-repeat;
-                    background-size: cover;
-                    background-color: transparent;
-                    border: none;
-                    height: 17px;
-                    width: 17px;
-                    padding: 0;
-                    opacity: 0.4;
-                    margin-right: 5px;
+                .post-reactions-modal-item {
+                    height: 30px;
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
                 }
-                .pin-icon {
-                    background-image: url(/icons/pin-01.png);
-                    background-position: center;
-                    background-repeat: no-repeat;
-                    background-size: cover;
-                    background-color: transparent;
-                    border: none;
-                    height: 17px;
-                    width: 17px;
-                    padding: 0;
-                    opacity: 0.4;
+                .post-reactions-modal-item:hover {
+                    cursor: pointer;
+                }
+                .post-icon {
+                    width: 20px;
+                    height: 20px;
                     margin-right: 5px;
+                    opacity: 0.3;
+                }
+                .post-icon:hover {
+                    opacity: 0.5;
+                }
+                .opacity-50 {
+                    opacity: 0.5;
+                }
+                .post-rating-modal {
+                    z-index: 0;
+                    display: none;
+                    flex-direction: column;
+                    //align-items: center;
+                    margin: 5px 0;
+                }
+                .post-rating-modal.visible {
+                    display: flex;
+                    z-index: 1;
+                }
+                .post-rating-modal-input-wrapper {
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                    height: 30px;
+                    margin-bottom: 7px;
+                }
+                .post-rating-modal-input {
+                    width: 40px;
+                    height: 30px;
+                    outline: none;
+                    border: 1px solid rgba(0,0,0,0.1);
+                    margin-right: 10px;
+                    padding: 0 3px;
+                    font-size: 16px;
+                    text-align: center;
+                }
+                .post-rating-modal-input.error {
+                    box-shadow: 0 0 5px 5px rgba(255, 0, 0, 0.6);
+                }
+                .post-rating-modal-button {
+                    background-color: #3a88f0;
+                    color: white;
+                    height: 40px;
+                    border-radius: 5px;
+                    padding: 0px 15px;
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: center;
+                    align-items: center;
+                    box-shadow: 0 1px 10px 0 rgba(10, 8, 72, 0.1);
+                    border: none;
+                    font-size: 14px;
+                    font-weight: 800;
+                    transition-property: box-shadow, background-color;
+                    transition-duration: 0.3s, 2s;
                 }
             `}</style>
         </>

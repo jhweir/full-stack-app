@@ -7,8 +7,6 @@ import config from '../Config'
 export const HolonContext = createContext()
 
 function HolonContextProvider(props) {
-    const [renderKey, setRenderKey] = useState(0)
-
     const [globalData, setGlobalData] = useState({})
     const [holonData, setHolonData] = useState({
         DirectChildHolons: [],
@@ -20,23 +18,23 @@ function HolonContextProvider(props) {
     const [isLoading, setIsLoading] = useState(false)
 
     function updateHolonContext(holonHandle) {
-        setIsLoading(true)
         const getGlobalData = axios.get(config.environmentURL + '/getGlobalData')
         const getHolonData = axios.get(config.environmentURL + `/getHolonData?id=${holonHandle}`)
         const demoDelay = new Promise((resolve) => {
             setTimeout(resolve, 1000);
         });
 
+        setIsLoading(true)
         Promise.all([getGlobalData, getHolonData, demoDelay]).then((values) => {
             setGlobalData(values[0].data)
             setHolonData(values[1].data)
             setIsLoading(false)
-            console.log('updateHolonContext function run...')
+            //console.log('updateHolonContext function run...')
         })
     }
 
     return (
-        <HolonContext.Provider key={renderKey} value={{ 
+        <HolonContext.Provider value={{ //key={renderKey}
             holonData,
             globalData,
             updateHolonContext,
@@ -54,6 +52,9 @@ function HolonContextProvider(props) {
 
 export default HolonContextProvider
 
+
+
+    //const [renderKey, setRenderKey] = useState(0)
     //const [holon, setHolon] = useState('') // setHolon passed down as a prop to HolonPage which sets the holon as soon as the page loads
 
     // function demoAsyncCall() {

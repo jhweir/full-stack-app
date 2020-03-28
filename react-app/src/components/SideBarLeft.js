@@ -9,10 +9,10 @@ function SideBarLeft(props) {
 
     return (
         <>
-            <div className={"ph-side-bar-left " + (isLoading ? 'visible' : '')}>
+            <div className={"ph-side-bar-left " + (isLoading && 'visible')}>
                 <SideBarLeftPlaceholder/>
             </div>
-            <div className={"side-bar-left " + (!isLoading ? 'visible' : '')}>
+            <div className={"side-bar-left " + (!isLoading && 'visible')}>
                 <div className="side-bar-left-holon-location">
                     <div className="side-bar-left-holon-name">{ holonData.name }</div>
                     {holonData.handle == 'root' && 

@@ -171,7 +171,7 @@ router.delete('/', (req, res) => {
     // Post.destroy({ where: { id: req.body.id }})
 })
 
-// Like post
+// Add like label
 router.put('/addLike', (req, res) => {
     Label.create({ 
         type: 'like',
@@ -180,24 +180,48 @@ router.put('/addLike', (req, res) => {
         userId: null,
         postId: req.body.id,
         commentId: null,
-    }).then(res.send('Post liked'))
+    }).then(res.send('Post successfully liked'))
 })
 
-// Pin post
-router.put('/pinpost', (req, res) => {
-    Post.update({ pins: 'Global wall' }, {
-        where: { id: req.body.id }
-    })
-    res.send('Post pinned')
+// Add heart label
+router.put('/addHeart', (req, res) => {
+    Label.create({ 
+        type: 'heart',
+        value: null,
+        holonId: req.body.holonId,
+        userId: null,
+        postId: req.body.id,
+        commentId: null,
+    }).then(res.send('Post successfully hearted'))
 })
 
-// Unpin post
-router.put('/unpinpost', (req, res) => {
-    Post.update({ pins: null }, {
-        where: { id: req.body.id }
-    })
-    res.send('Post unpinned')
+// Add heart label
+router.put('/addRating', (req, res) => {
+    Label.create({ 
+        type: 'rating',
+        value: req.body.newRating,
+        holonId: req.body.holonId,
+        userId: null,
+        postId: req.body.id,
+        commentId: null,
+    }).then(res.send('Post successfully rated'))
 })
+
+// // Pin post
+// router.put('/pinpost', (req, res) => {
+//     Post.update({ pins: 'Global wall' }, {
+//         where: { id: req.body.id }
+//     })
+//     res.send('Post pinned')
+// })
+
+// // Unpin post
+// router.put('/unpinpost', (req, res) => {
+//     Post.update({ pins: null }, {
+//         where: { id: req.body.id }
+//     })
+//     res.send('Post unpinned')
+// })
 
 // Create comment
 router.post('/addcomment', (req, res) => {
@@ -216,13 +240,13 @@ router.post('/addcomment', (req, res) => {
 
 
 
-// Get all holons
-router.get('/holons', (req, res) => {
-    Holon.findAll()
-    .then(holons => {
-        res.json(holons)
-        //res.sendStatus(200)
-    })
-})
+// // Get all holons
+// router.get('/holons', (req, res) => {
+//     Holon.findAll()
+//     .then(holons => {
+//         res.json(holons)
+//         //res.sendStatus(200)
+//     })
+// })
 
 module.exports = router
