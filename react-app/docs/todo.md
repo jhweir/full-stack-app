@@ -1,6 +1,7 @@
 # Todos
 Last updated: 29-03-2020
 
+- Take down remaining EC2-ELB services on AWS
 - Merge title and description into one text field character limit around 3000 ?
 - Add privacy setting to labels (public, anonymous etc.)
 - Make UI responisve for small screens

@@ -1,0 +1,57 @@
+
+@import '../Colors.scss';
+
+.navbar {
+    background-color: #212937;
+    color: #fff;
+    width: 100%;
+    height: 60px;
+    position: fixed;
+    top: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    transition-property: background-color;
+    transition-duration: 2s;
+    z-index: 10;
+}
+.navbarContainer {
+    width: 1200px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    
+    @media screen and (max-width: 1200px) {
+        width: 100%;
+    }
+
+    @media screen and (max-width: 800px) {
+        background-color: $blueGrey;
+    }
+}
+.navbarContainerLinks {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.navbarLink {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.navbarText {
+    color: #fff;
+    font-size: 24px;
+    font-weight: 400;
+    text-decoration: none;
+    padding: 10px;
+}
+.navbarIcon {
+    width: 28px;
+    height: 28px;
+    margin-left: 10px;
+    opacity: 1;
+    filter: invert(100%);
+}

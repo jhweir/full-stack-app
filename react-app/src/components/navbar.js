@@ -1,9 +1,11 @@
 import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { HolonContext } from '../contexts/HolonContext'
+import styles from '../styles/components/NavBar.module.scss';
+//import '../styles/components/NavBar.module.scss'
 
 
-function NavBar(props) {
+function NavBar() {
     const { updateHolonContext, isLoading, setIsLoading } = useContext(HolonContext);
 
     function toggleDarkMode() {
@@ -12,29 +14,29 @@ function NavBar(props) {
 
     return (
         <>
-            <div className="navbar">
-                <div className="navbar-container">
-                    <div className="navbar-container-links">
-                        <Link className="navbar-link"
+            <div className={styles['navbar']}>
+                <div className={styles.navbarContainer}>
+                    <div className={styles.navbarContainerLinks}>
+                        <Link className={styles.navbarLink}
                             to="/"
                             onClick={ () => { updateHolonContext('root') } }
                             >
-                            <img className="navbar-icon" src="/icons/home-solid.svg"/>
-                            <div className="navbar-text">Home</div>
+                            <img className={styles.navbarIcon} src="/icons/home-solid.svg"/>
+                            <div className={styles.navbarText}>Home</div>
                         </Link> |
-                        <Link className="navbar-link"
+                        <Link className={styles.navbarLink}
                             to="/h/root/wall"
                             onClick={ () => { updateHolonContext('root') } }
                             >
-                            <img className="navbar-icon" src="/icons/globe-americas-solid.svg"/>
-                            <div className="navbar-text">Wall</div>
+                            <img className={styles.navbarIcon} src="/icons/globe-americas-solid.svg"/>
+                            <div className={styles.navbarText}>Wall</div>
                         </Link> | 
-                        <Link  className="navbar-link"
+                        <Link  className={styles.navbarLink}
                             to="/h/root/child-holons"
                             onClick={ () => { updateHolonContext('root') } }
                             >
-                            <img className="navbar-icon" src="/icons/overlapping-circles-thick.svg"/>
-                            <div className="navbar-text">Spaces</div>
+                            <img className={styles.navbarIcon} src="/icons/overlapping-circles-thick.svg"/>
+                            <div className={styles.navbarText}>Spaces</div>
                         </Link>
                     </div>
                     {/* <div 
@@ -52,7 +54,7 @@ function NavBar(props) {
                 </div>
             </div>
 
-            <style jsx="true">{`
+            {/* <style jsx="true">{`
                 .navbar {
                     background-color: #212937;
                     color: #fff;
@@ -99,7 +101,7 @@ function NavBar(props) {
                     opacity: 1;
                     filter: invert(100%);
                 }
-            `}</style>
+            `}</style> */}
         </>
     )
 }
