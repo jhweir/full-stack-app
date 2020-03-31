@@ -1,12 +1,12 @@
-import React, { useContext } from 'react'
-import { HolonContext } from '../contexts/HolonContext'
+import React from 'react'
 
-function HolonPlaceholder(props) {
+function HolonPlaceholder() {
     return (
         <>
             <div className="ph-holon-card">
                 <div className="ph-holon-shine"/>
-                <img className="ph-holon-image" src="/images/holon-flag-image-00.jpg"/>
+                <div className="ph-holon-image"/>
+                {/* <img className="ph-holon-image" src="/images/holon-flag-image-00.jpg"/> */}
                 <div className="ph-holon-info">
                     <div className="ph-holon-title mb-10"/>
                     <div className="ph-holon-description-1 mb-10"/>
@@ -33,13 +33,15 @@ function HolonPlaceholder(props) {
                     border-radius: 50%;
                     margin-right: 20px;
                     opacity: 0.5;
+                    outline: none;
+                    background-color: rgba(0,0,0,0.06);
                 }
                 .ph-holon-info {
                     display: flex;
                     flex-direction: column;
                 }
                 .ph-holon-title {
-                    width: 200px;
+                    width: 150px;
                     height: 30px;
                     background-color: rgba(0,0,0,0.06);
                 }

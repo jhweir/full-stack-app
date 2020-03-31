@@ -8,20 +8,25 @@ function SideBarRightPlaceholder() {
         <>
             <div className="ph-side-bar-right-shine"/>
             <ul className="ph-side-bar-right-child-holons">
+                <div className="ph-side-bar-right-child-holons-title"/>
                 <div className="ph-side-bar-right-child-holon mb-10">
-                    <img className="ph-side-bar-right-child-holon-image" src="/images/holon-flag-image-00.jpg"/>
+                    <div className="ph-side-bar-right-child-holon-image"/>
+                    {/* <img className="ph-side-bar-right-child-holon-image" src="/images/holon-flag-image-00.jpg"/> */}
                     <div className="ph-side-bar-right-child-holon-name-1"/>
                 </div>
                 <div className="ph-side-bar-right-child-holon mb-10">
-                    <img className="ph-side-bar-right-child-holon-image" src="/images/holon-flag-image-00.jpg"/>
+                    <div className="ph-side-bar-right-child-holon-image"/>
+                    {/* <img className="ph-side-bar-right-child-holon-image" src="/images/holon-flag-image-00.jpg"/> */}
                     <div className="ph-side-bar-right-child-holon-name-2"/>
                 </div>
                 <div className="ph-side-bar-right-child-holon mb-10">
-                    <img className="ph-side-bar-right-child-holon-image" src="/images/holon-flag-image-00.jpg"/>
+                    <div className="ph-side-bar-right-child-holon-image"/>
+                    {/* <img className="ph-side-bar-right-child-holon-image" src="/images/holon-flag-image-00.jpg"/> */}
                     <div className="ph-side-bar-right-child-holon-name-3"/>
                 </div>
                 <div className="ph-side-bar-right-child-holon mb-10">
-                    <img className="ph-side-bar-right-child-holon-image" src="/images/holon-flag-image-00.jpg"/>
+                    <div className="ph-side-bar-right-child-holon-image"/>
+                    {/* <img className="ph-side-bar-right-child-holon-image" src="/images/holon-flag-image-00.jpg"/> */}
                     <div className="ph-side-bar-right-child-holon-name-4"/>
                 </div>
             </ul>
@@ -31,6 +36,12 @@ function SideBarRightPlaceholder() {
                     display: flex;
                     flex-direction: column;
                     align-items: flex-start;
+                }
+                .ph-side-bar-right-child-holons-title {
+                    width: 70px;
+                    height: 22px;
+                    margin-bottom: 10px;
+                    background-color: rgba(0,0,0,0.05);
                 }
                 .ph-side-bar-right-child-holon {
                     display: flex;
@@ -42,6 +53,7 @@ function SideBarRightPlaceholder() {
                     background-size: cover;
                     height: 40px;
                     width: 40px;
+                    background-color: rgba(0,0,0,0.06);
                     border-radius: 50%;
                     flex-shrink: 0;
                     margin-right: 10px;
