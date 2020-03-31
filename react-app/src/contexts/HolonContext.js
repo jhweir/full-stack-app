@@ -12,7 +12,7 @@ function HolonContextProvider(props) {
         Posts: []
     })
     const [postSearchFilter, setPostSearchFilter] = useState('')
-    const [postSortByFilter, setPostSortByFilter] = useState('date')
+    const [postSortByFilter, setPostSortByFilter] = useState('reactions')
     const [holonSearchFilter, setHolonSearchFilter] = useState('')
     const [holonSortByFilter, setHolonSortByFilter] = useState('date')
     const [isLoading, setIsLoading] = useState(false)

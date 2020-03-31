@@ -38,7 +38,7 @@ function HolonPage(props) {
                     <TransitionGroup className="page-transition-group">
                         <CSSTransition classNames="pageFade"
                             appear={true}
-                            timeout={{ appear: 2000, enter: 2000, exit: 2000 }}
+                            timeout={{ appear: 200, enter: 200, exit: 200 }}
                             key={location.key}>
                             <section className="section-wrapper">         
                                 <Switch location={location}>

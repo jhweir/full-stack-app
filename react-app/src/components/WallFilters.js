@@ -8,7 +8,7 @@ function WallFilters() {
     function updateFilter(filter) {
         setDropdown(!dropdown)
         setPostSortByFilter(filter)
-        updateHolonContext(holonData.handle)
+        //updateHolonContext(holonData.handle)
     }
     
     return (

@@ -41,7 +41,7 @@ function Post(props) {
             .reduce((a, b) => a + b, 0)) // add all ratings values together
     }, [props])
     
-    const holonId = holonData.id
+    const holonId = holonData.id // Re-named to match the column name in the database
 
     function addLike() {
         setLikes(likes + 1)

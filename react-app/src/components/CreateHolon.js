@@ -28,7 +28,7 @@ function CreateHolon(props) {
             axios({ method: 'post', url: config.environmentURL + `/createHolon`, data: { holon } })
                 // .then(res => { console.log(res) })
                 .then(props.toggleModal())
-                .then(setTimeout(() => { getData() }, 200))
+                //.then(setTimeout(() => { getData() }, 200))
         }
         //reRender()
     }

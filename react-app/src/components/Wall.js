@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { HolonContext } from '../contexts/HolonContext'
 import Post from './Post'
 import WallHeader from './WallHeader'
@@ -6,39 +6,39 @@ import WallPlaceholder from './WallPlaceholder'
 
 function Wall() {
     const { holonData, postSearchFilter, postSortByFilter, isLoading, setIsLoading } = useContext(HolonContext)
-    const posts = holonData.Posts
 
-        // Apply search filter to posts
-        let filteredPosts = posts.filter(post => {
-            return post.title.includes(postSearchFilter) && post.globalState === 'visible'
-            //&& post.pins == null
-        })
+    // Apply search filter to posts
+    const filteredPosts = holonData.Posts.filter(post => {
+        return post.title.includes(postSearchFilter) && post.globalState === 'visible'
+        //&& post.pins == null
+    })
 
-        // Sort posts by Reactions
-        if (postSortByFilter === 'reactions') {
-            filteredPosts.sort((a, b) => b.Labels.length - a.Labels.length)
-        }
+    // Sort posts by Reactions
+    if (postSortByFilter === 'reactions') {
+        filteredPosts.sort((a, b) => b.Labels.length - a.Labels.length)
+    }
 
-        // Sort posts by Likes
-        if (postSortByFilter === 'likes') {
-            function findNumberOfLikes(post) { return post.Labels.filter((label) => label.type === 'like').length  }
-            filteredPosts.sort((a, b) => findNumberOfLikes(b) - findNumberOfLikes(a))
-        }
+    // Sort posts by Likes
+    if (postSortByFilter === 'likes') {
+        function findNumberOfLikes(post) { return post.Labels.filter((label) => label.type === 'like').length  }
+        filteredPosts.sort((a, b) => findNumberOfLikes(b) - findNumberOfLikes(a))
+    }
 
-        // Sort posts by Date
-        if (postSortByFilter === 'date') {
-            filteredPosts.sort((a, b) => b.createdAt - a.createdAt)
-        }
+    // Sort posts by Date
+    if (postSortByFilter === 'date') {
+        function formatDate(post) { return new Date(post.createdAt) }
+        filteredPosts.sort((a, b) => formatDate(b) - formatDate(a))
+    }
 
-        // Sort posts by Comments
-        if (postSortByFilter === 'comments') {
-            filteredPosts.sort((a, b) => b.Comments.length - a.Comments.length)
-        }
+    // Sort posts by Comments
+    if (postSortByFilter === 'comments') {
+        filteredPosts.sort((a, b) => b.Comments.length - a.Comments.length)
+    }
 
-        // // Pinned posts
-        // let pinnedPosts = posts.filter((post) => {
-        //     return post.pins === 'Global wall' && post.visible === true
-        // })
+    // // Pinned posts
+    // let pinnedPosts = posts.filter((post) => {
+    //     return post.pins === 'Global wall' && post.visible === true
+    // })
 
     return (
         <>
@@ -71,7 +71,7 @@ function Wall() {
                     align-items: center;
                     z-index: 1;
                     opacity: 1;
-                    transition: all 800ms;
+                    transition: all 300ms;
                 }
                 .posts.hidden {
                     //z-index: 0;
