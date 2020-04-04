@@ -1,11 +1,13 @@
 import React, { useContext, useEffect } from 'react'
 import { HolonContext } from '../contexts/HolonContext'
+import styles from '../styles/components/Wall.module.scss'
 import Post from './Post'
 import WallHeader from './WallHeader'
 import WallPlaceholder from './WallPlaceholder'
 
 function Wall() {
     const { holonData, postSearchFilter, postSortByFilter, isLoading, setIsLoading } = useContext(HolonContext)
+    const { wall, posts, hidden, pinnedPosts } = styles
 
     // Apply search filter to posts
     const filteredPosts = holonData.Posts.filter(post => {
@@ -13,6 +15,7 @@ function Wall() {
         //&& post.pins == null
     })
 
+    // TODO: Move these filters below into a switch/case format?
     // Sort posts by Reactions
     if (postSortByFilter === 'reactions') {
         filteredPosts.sort((a, b) => b.Labels.length - a.Labels.length)
@@ -41,59 +44,23 @@ function Wall() {
     // })
 
     return (
-        <>
-            <div className="wall">
-                <WallHeader />
-                <WallPlaceholder />
-                <ul className={"posts " + (isLoading ? 'hidden' : '')}>
-                    {filteredPosts.map((post, index) =>
-                        // <CSSTransition key={index}  in={!isLoading} timeout={500} classNames="contentFade" appear>
-                            <Post post={post} key={post.id} index={index} isLoading={isLoading}/>
-                        // </CSSTransition>
-                    )} 
-                </ul>
-            </div>
-
-            <style jsx="true">{`
-                .wall {
-                    width: 700px;
-                    padding: 0 20px;
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: center;
-                    align-items: center;
-                }
-                .posts {
-                    width: 100%;
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: center;
-                    align-items: center;
-                    z-index: 1;
-                    opacity: 1;
-                    transition: all 300ms;
-                }
-                .posts.hidden {
-                    //z-index: 0;
-                    opacity: 0;
-                }
-                .pinned-posts {
-                    padding: 0;
-                    width: 100%;
-                }
-                @media screen and (max-width: 700px) {
-                    .wall {
-                        width: 100%;
-                    }
-                }
-            `}</style>
-        </>
+        <div className={wall}>
+            <WallHeader/>
+            <WallPlaceholder/>
+            <ul className={`${posts}` + (isLoading ? `${hidden}` : '')}>
+                {filteredPosts.map((post, index) =>
+                    // <CSSTransition key={index}  in={!isLoading} timeout={500} classNames="contentFade" appear>
+                        <Post post={post} key={post.id} index={index} isLoading={isLoading}/>
+                    // </CSSTransition>
+                )} 
+            </ul>
+        </div>
     )
 }
 
 export default Wall
 
-{/* <ul className="pinned-posts">
+{/* <ul className={pinnedPosts}>
     {holonData && pinnedPosts.map((post, index) => 
         <Post
             post={post}

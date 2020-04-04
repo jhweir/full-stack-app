@@ -1,79 +1,49 @@
-import React, { useContext, useState, useEffect } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { HolonContext } from '../contexts/HolonContext'
-// import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom'
-// import { TransitionGroup, CSSTransition } from 'react-transition-group'
-
-import {
-    BrowserRouter,
-    Link,
-    Route,
-    Switch,
-    withRouter
-  } from "react-router-dom";
+import {Route, Switch } from "react-router-dom";
 import { TransitionGroup, CSSTransition } from "react-transition-group";
-
-import CoverImage from '../components/CoverImage'
+import styles from '../styles/pages/HolonPage.module.scss'
 import Wall from '../components/Wall'
 import ChildHolons from '../components/ChildHolons'
 import SideBarLeft from '../components/SideBarLeft'
+import SideBarLeftPlaceholder from '../components/SideBarLeftPlaceholder'
 import SideBarRight from '../components/SideBarRight'
 import EmptyPage from './EmptyPage'
 
 function HolonPage(props) {
     const { holonHandle } = props.match.params
-    const { setHolon, isLoading, updateContext, updateHolonContext } = useContext(HolonContext)
+    const { updateHolonContext } = useContext(HolonContext)
+    const { pageBody, pageTransitionGroup, sectionWrapper } = styles
 
     useEffect(() => {
-        //setHolon(holon)
         updateHolonContext(holonHandle)
-        //updateContext() // Sets the holon in the HolonContext and triggers a call to the database to retrieve holon data
     }, [])
 
     return (
-        <>
-            <CoverImage/>
-            <Route render={({ location }) => (
-                <div className="page-body mt-20">
+        <Route render={({ location }) => (
+            <>
+                <div className="coverImage"/>
+                <div className={pageBody}>
                     <SideBarLeft/>
-                    <TransitionGroup className="page-transition-group">
+                    <SideBarLeftPlaceholder/>
+                    <TransitionGroup className={pageTransitionGroup}>
                         <CSSTransition classNames="pageFade"
                             appear={true}
                             timeout={{ appear: 200, enter: 200, exit: 200 }}
                             key={location.key}>
-                            <section className="section-wrapper">         
+                            <section className={sectionWrapper}>         
                                 <Switch location={location}>
                                     <Route path={`${props.match.url}/wall`} component={ Wall } exact/>
                                     <Route path={`${props.match.url}/child-holons`} component={ ChildHolons } exact/>
-                                    <Route component={ EmptyPage }/>
+                                    <Route component={ EmptyPage }/> {/* TODO: Check if this needs to be doubled up on the App.js component */}
                                 </Switch>
                             </section>
                         </CSSTransition>
                     </TransitionGroup>
                     <SideBarRight/>
                 </div>
-            )} />
-
-            <style jsx="true">{`
-                .page-body {
-                    width: 1200px;
-                    display: flex;
-                    flex-direction: row;
-                    justify-content: space-between;
-                    align-items: flex-start;
-                    position: relative;
-                }
-                .page-transition-group {
-                    position: relative;
-                    width: 60%;
-                }
-                .section-wrapper {
-                    position: absolute;
-                    width: 100%;
-                    top: 0;
-                    left: 0;
-                }
-            `}</style>
-        </>
+            </>
+        )}/>
     )
 }
 

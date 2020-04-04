@@ -1,5 +1,5 @@
 // Placeholder shine
-@keyframes ph-shine {
+@keyframes PHShine {
   0% {
     transform: translateX(-50px) rotate(0deg);
   }
@@ -7,6 +7,27 @@
     transform: translateX(500px) rotate(0deg);
   }
 }
+
+.PHSideBarLeftShine {
+  animation: 0.8s PHShine ease-in-out infinite;
+  position: absolute;
+  top: 0;
+
+  background-color: #f7f7f9;
+  filter: blur(30px);
+
+  width: 40px;
+  height: 400px;
+}
+
+
+
+
+
+
+
+
+
 
 .ph-post-shine {
   animation: 0.8s ph-shine ease-in-out infinite;
@@ -32,17 +53,8 @@
   height: 175px;
 }
 
-.ph-side-bar-left-shine {
-  animation: 0.8s ph-shine ease-in-out infinite;
-  position: absolute;
-  top: 0;
 
-  background-color: #f7f7f9;
-  filter: blur(30px);
 
-  width: 40px;
-  height: 400px;
-}
 
 .ph-side-bar-right-shine {
   animation: 0.8s ph-shine ease-in-out infinite;
@@ -59,23 +71,7 @@
 
 $transitionSpeed: 300ms;
 
-.ph-side-bar-left {
-  opacity: 0;
-  transition:  all $transitionSpeed;
 
-  &.visible {
-      opacity: 1;
-  }
-}
-
-.side-bar-left {
-  opacity: 0;
-  transition:  all $transitionSpeed;
-
-  &.visible {
-      opacity: 1;
-  }
-}
 
 .ph-side-bar-right {
   opacity: 0;

@@ -13,12 +13,41 @@
 html {
     overflow: -moz-scrollbars-vertical; 
     overflow-y: scroll;
+    width: 100%;
+    height: 100%;
 }
 
 body {
     background-color: #f7f7f9; //#eee;
+    width: 100%;
+    height: 100%;
     // transition-property: background-color;
     // transition-duration: 2s;
+}
+
+#root {
+    width: 100%;
+    height: 100%;
+}
+
+.app {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.coverImageWrapper {
+    width: 100%;
+    height: 200px;
+    //background-color: rgba(0, 0, 0, 0.05)
+}
+.coverImage {
+    width: 100%;
+    height: 200px;
+    background-image: linear-gradient(141deg, #9fb8ad 0%, #1fc8db 51%, #2cb5e8 75%); 
+    // linear-gradient(180deg, #0b7285 0%, #0ca678 75%); //linear-gradient(#0b7285, #0ca678); 
 }
 
 a {
@@ -95,3 +124,5 @@ input {
         display: none;
     }
 }
+
+

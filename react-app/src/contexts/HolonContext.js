@@ -11,6 +11,7 @@ function HolonContextProvider(props) {
         DirectParentHolons: [],
         Posts: []
     })
+    // Change to wallSearchFilter and childHolonSearchFilter ?
     const [postSearchFilter, setPostSearchFilter] = useState('')
     const [postSortByFilter, setPostSortByFilter] = useState('reactions')
     const [holonSearchFilter, setHolonSearchFilter] = useState('')
@@ -18,7 +19,7 @@ function HolonContextProvider(props) {
     const [isLoading, setIsLoading] = useState(false)
 
     function updateHolonContext(holonHandle) {
-        const getGlobalData = axios.get(config.environmentURL + '/getGlobalData')
+        const getGlobalData = axios.get(config.environmentURL + '/getGlobalData') //remove getGlobalData and move to seperate function (or context)?
         const getHolonData = axios.get(config.environmentURL + `/getHolonData?id=${holonHandle}`)
         const demoDelay = new Promise((resolve) => {
             setTimeout(resolve, 1000);
@@ -28,6 +29,7 @@ function HolonContextProvider(props) {
             setGlobalData(values[0].data)
             setHolonData(values[1].data)
             setIsLoading(false)
+            console.log('HolonContext updated')
         })
     }
 

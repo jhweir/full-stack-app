@@ -1,23 +1,41 @@
 import React from 'react'
-// import ChildOne from './components/ChildOne'
-import NavBar from './components/NavBar'
-import PostPage from './pages/PostPage'
-import HolonPage from './pages/HolonPage'
-import Homepage from './pages/Homepage'
-import Wall from './components/Wall'
-import ChildHolons from './components/ChildHolons'
-import EmptyPage from './pages/EmptyPage'
-import HolonContextProvider from './contexts/HolonContext'
-// import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom'
-import {
-  BrowserRouter,
-  Link,
-  Route,
-  Switch,
-  withRouter
-} from "react-router-dom";
-import { TransitionGroup, CSSTransition } from "react-transition-group";
+import { BrowserRouter, Route, Switch } from 'react-router-dom'
 import { createBrowserHistory } from 'history'
+import HolonContextProvider from './contexts/HolonContext'
+import Homepage from './pages/Homepage'
+import HolonPage from './pages/HolonPage'
+import PostPage from './pages/PostPage'
+import EmptyPage from './pages/EmptyPage'
+import NavBar from './components/NavBar'
+
+function App() {
+  return (
+    <div className="app">
+      <BrowserRouter history={createBrowserHistory}>
+        <HolonContextProvider>
+          <NavBar history={createBrowserHistory}/>
+          {/* <div style={{width: "300px", height: "100%", backgroundColor: "#4F5361", position: "absolute", left: 0, top: 0}}></div> */}
+          <Switch>
+            <Route path="/" exact component={Homepage}/>
+            <Route path="/h/:holonHandle" component={HolonPage}/>
+            <Route path="/p/:postId" component={PostPage}/>
+            <Route component={EmptyPage}/>
+          </Switch>
+        </HolonContextProvider>
+      </BrowserRouter>
+    </div>
+  )
+}
+
+export default App;
+
+//  Side bar/burger menu test
+{/* <div style={{width: "300px", height: "100%", backgroundColor: "#4F5361", position: "absolute", left: 0, top: 0}}></div> */}
+
+
+// import { TransitionGroup, CSSTransition } from "react-transition-group";
+
+// import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom'
 
 // const AnimatedSwitch = withRouter(({ location }) => (
 //   <TransitionGroup>
@@ -33,36 +51,4 @@ import { createBrowserHistory } from 'history'
 //   </TransitionGroup>
 // ));
 
-function App() {
-  return (
-    <>
-      <div className="app">
-        <BrowserRouter history={ createBrowserHistory }>
-          <HolonContextProvider>
-            <NavBar history={ createBrowserHistory }/>
-            {/* <AnimatedSwitch /> */}
-            <Switch>
-              <Route path="/" exact component={ Homepage }/>
-              <Route path="/p/:postId" component={ PostPage }/>
-              <Route path="/h/:holonHandle" component={ HolonPage }/>
-              <Route component={ EmptyPage }/>
-            </Switch>
-          </HolonContextProvider>
-        </BrowserRouter>
-        
-      </div>
-
-      <style jsx="true">{`
-        .app {
-          width: 100%;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-        }
-      `}</style>
-    </>
-  )
-}
-
-export default App;
+// <AnimatedSwitch />

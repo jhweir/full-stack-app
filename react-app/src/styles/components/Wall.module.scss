@@ -1,0 +1,31 @@
+.wall {
+    width: 700px;
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.posts {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
+    opacity: 1;
+    transition: all 300ms;
+}
+.posts.hidden {
+    //z-index: 0;
+    opacity: 0;
+}
+.pinnedPosts {
+    padding: 0;
+    width: 100%;
+}
+@media screen and (max-width: 700px) {
+    .wall {
+        width: 100%;
+    }
+}

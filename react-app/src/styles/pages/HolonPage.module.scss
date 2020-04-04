@@ -1,0 +1,21 @@
+.pageBody {
+    width: 1200px;
+    padding-top: 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    //position: relative;
+}
+
+.pageTransitionGroup {
+    position: relative;
+    width: 60%;
+}
+
+.sectionWrapper {
+    position: absolute;
+    width: 100%;
+    top: 0;
+    left: 0;
+}

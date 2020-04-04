@@ -1,0 +1,46 @@
+@import '../Transitions.scss';
+// TODO: change to importing a variables file including transition speeds etc.
+
+.sideBarLeft {
+    width: 200px;
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    opacity: 0;
+    transition:  all $transitionSpeed;
+    &.visible { opacity: 1 }
+}
+.sideBarLeftHolonName {
+    font-size: 22px;
+    line-height: 22px;
+    margin-bottom: 5px;
+}
+.sideBarLeftParentHolonNamesRoot {
+    font-size: 20px;
+    line-height: 16px;
+    margin-bottom: 25px;
+    color: rgba(0,0,0,0.3)
+}
+.sideBarLeftParentHolonNames {
+    font-size: 16px;
+}
+.sideBarLeftFlagImage {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    margin: 0 0 20px 0;
+    background-color: #aaa;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 60%;
+    opacity: 0.2;
+}
+.sideBarLeftNavButtons {
+    display: flex;
+    flex-direction: column;
+}
+.sideBarLeftNavButton {
+    display: flex;
+    flex-direction: row;
+}

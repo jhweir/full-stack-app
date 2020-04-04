@@ -1,0 +1,72 @@
+// 'PHShine' animation class in 'styles/Placeholder.scss'
+@import '../Transitions.scss';
+
+.PHSideBarLeft {
+    width: 200px;
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    overflow: hidden;
+    opacity: 0;
+    transition:  all $transitionSpeed;
+    &.visible { opacity: 1 }
+}
+.PHSideBarLeftHolonName {
+    width: 80px;
+    height: 23px;
+    background-color: rgba(0,0,0,0.05);
+    margin-bottom: 10px;
+}
+.PHSideBarLeftParentHolonNames {
+    width: 100px;
+    height: 15px;
+    background-color: rgba(0,0,0,0.03);
+    margin-bottom: 20px;
+}
+.PHSideBarLeftFlagImage {
+    width: 120px;
+    height: 120px;
+    background-color: rgba(0,0,0,0.06);
+    border-radius: 50%;
+    margin: 0 0 25px 0;
+    opacity: 0.5;
+    z-index: -1;
+}
+.PHSideBarLeftNavButtons {
+    display: flex;
+    flex-direction: column;
+}
+.PHSideBarLeftNavButton1 {
+    width: 50px;
+    height: 15px;
+    background-color: rgba(0,0,0,0.05);
+    margin-bottom: 10px;
+}
+.PHSideBarLeftNavButton2 {
+    width: 70px;
+    height: 15px;
+    background-color: rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+}
+.PHSideBarLeftHolonDescription1 {
+    width: 160px;
+    height: 20px;
+    background-color: rgba(0,0,0,0.03);
+    margin-bottom: 10px;
+}
+.PHSideBarLeftHolonDescription2 {
+    width: 160px;
+    height: 20px;
+    background-color: rgba(0,0,0,0.03);
+    margin-bottom: 10px;
+}
+.PHSideBarLeftHolonDescription3 {
+    width: 120px;
+    height: 20px;
+    background-color: rgba(0,0,0,0.03);
+    margin-bottom: 10px;
+}
