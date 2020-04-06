@@ -1,13 +1,13 @@
 @import '../Transitions.scss';
 // TODO: change to importing a variables file including transition speeds etc.
 
-.wall {
-    width: 100%;
+.childHolonsWrapper {
+    width: 700px;
     padding: 0 20px;
     display: flex;
     flex-direction: column;
 }
-.posts {
+.childHolons {
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -16,8 +16,4 @@
     &.hidden {
         opacity: 0;
     }
-}
-.pinnedPosts {
-    padding: 0;
-    width: 100%;
 }

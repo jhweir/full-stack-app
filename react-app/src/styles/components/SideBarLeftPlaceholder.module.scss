@@ -2,30 +2,19 @@
 @import '../Transitions.scss';
 
 .PHSideBarLeft {
-    width: 200px;
-    padding: 0 20px;
     display: flex;
     flex-direction: column;
     position: absolute;
-    top: 0;
-    left: 0;
     z-index: -1;
-    overflow: hidden;
-    opacity: 0;
     transition:  all $transitionSpeed;
+    opacity: 0;
     &.visible { opacity: 1 }
 }
 .PHSideBarLeftHolonName {
-    width: 80px;
+    width: 100px;
     height: 23px;
     background-color: rgba(0,0,0,0.05);
-    margin-bottom: 10px;
-}
-.PHSideBarLeftParentHolonNames {
-    width: 100px;
-    height: 15px;
-    background-color: rgba(0,0,0,0.03);
-    margin-bottom: 20px;
+    margin: 5px 0 22px 0;
 }
 .PHSideBarLeftFlagImage {
     width: 120px;

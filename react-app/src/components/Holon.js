@@ -1,71 +1,27 @@
 import React, { useState, useContext, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import axios from 'axios'
-import config from '../Config'
 import { HolonContext } from '../contexts/HolonContext'
+import styles from '../styles/components/Holon.module.scss'
 
 function Holon(props) {
-    const { setIsLoading, updateContext, updateHolonContext } = useContext(HolonContext)
-
-    // function navigate() {
-    //     updateHolonContext(props.holon.handle)
-    //     //setIsLoading(true)
-    //     //updateContext()
-    // }
+    const { updateHolonContext } = useContext(HolonContext)
 
     return (
-        <>
-            <div className="holon-card">
-                <Link className="holon-image"
+        <div className={styles.holon}>
+            <Link className={styles.holonImage}
+                to={ `/h/${props.holon.handle}/child-holons` }
+                onClick={ () => { updateHolonContext(props.holon.handle) } }>
+                <img className={styles.holonImage} src="/icons/holon-flag-image-03.svg"/>
+            </Link>
+            <div className={styles.holonInfo}>
+                <Link className={styles.holonTitle}
                     to={ `/h/${props.holon.handle}/child-holons` }
-                    onClick={ () => { updateHolonContext(props.holon.handle) } }
-                    >
-                    <img className="holon-image" src="/icons/holon-flag-image-03.svg"/>
+                    onClick={ () => { updateHolonContext(props.holon.handle) } }>
+                    {props.holon.name}
                 </Link>
-                {/* <img className="holon-image" src="/images/holon-flag-image-00.jpg"/> */}
-                <div className='holon-info'>
-                    <Link className="holon-title"
-                        to={ `/h/${props.holon.handle}/child-holons` }
-                        onClick={ () => { updateHolonContext(props.holon.handle) } }
-                        >
-                        {props.holon.name}
-                    </Link>
-                    <span className="sub-text mr-10">{props.holon.description}</span>
-                </div>
+                <span className={styles.holonDescription}>{props.holon.description}</span>
             </div>
-
-            <style jsx="true">{`
-                .holon-card {
-                    margin-bottom: 10px;
-                    padding: 20px 30px;
-                    width: 100%;
-                    border-radius: 10px;
-                    background-color: white;
-                    box-shadow: 0 1px 10px 0 rgba(10, 8, 72, 0.05);
-                    display: flex;
-                    flex-direction: row;
-                    transition-property: background-color;
-                    transition-duration: 2s;
-                    position: relative;
-                }
-                .holon-image {
-                    width: 100px;
-                    height: 100px;
-                    border-radius: 50%;
-                    margin-right: 20px;
-                }
-                .holon-info {
-                    display: flex;
-                    flex-direction: column;
-                }
-                .holon-title {
-                    font-size: 24px;
-                }
-                .holon-title:visited {
-                    color: black;
-                }
-            `}</style>
-        </>
+        </div>
     )
 }
 

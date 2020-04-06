@@ -1,45 +1,52 @@
-// Placeholder shine
-@keyframes PHShine {
-  0% {
-    transform: translateX(-50px) rotate(0deg);
-  }
-  100% {
-    transform: translateX(500px) rotate(0deg);
-  }
-}
-
-.PHSideBarLeftShine {
-  animation: 0.8s PHShine ease-in-out infinite;
-  position: absolute;
-  top: 0;
-
-  background-color: #f7f7f9;
-  filter: blur(30px);
-
+.PHSideBarShine {
   width: 40px;
   height: 400px;
-}
-
-
-
-
-
-
-
-
-
-
-.ph-post-shine {
-  animation: 0.8s ph-shine ease-in-out infinite;
   position: absolute;
   top: 0;
-
-  background-color: rgba(255, 255, 255, 1);
+  background-color: #f7f7f9;
   filter: blur(30px);
+  animation: 0.8s PHSideBarShine ease-in-out infinite;
+  @keyframes PHSideBarShine {
+    0% { transform: translateX(-50px) rotate(0deg) }
+    100% { transform: translateX(500px) rotate(0deg) }
+  }
+}
 
+.PHPostShine {
   width: 40px;
   height: 175px;
+  animation: 0.8s PHPostShine ease-in-out infinite;
+  position: absolute;
+  top: 0;
+  background-color: rgba(255, 255, 255, 1);
+  filter: blur(30px);
+  @keyframes PHPostShine {
+    0% { transform: translateX(-50px) rotate(0deg) }
+    100% { transform: translateX(500px) rotate(0deg) }
+  }
 }
+
+.PHHolonShine {
+  width: 40px;
+  height: 175px;
+  animation: 0.8s PHHolonShine ease-in-out infinite;
+  position: absolute;
+  top: 0;
+  background-color: rgba(255, 255, 255, 1);
+  filter: blur(30px);
+  @keyframes PHHolonShine {
+    0% { transform: translateX(-50px) rotate(0deg) }
+    100% { transform: translateX(500px) rotate(0deg) }
+  }
+}
+
+
+
+
+
+
+
+
 
 .ph-holon-shine {
   animation: 0.8s ph-shine ease-in-out infinite;
@@ -54,65 +61,8 @@
 }
 
 
-
-
-.ph-side-bar-right-shine {
-  animation: 0.8s ph-shine ease-in-out infinite;
-  position: absolute;
-  top: 0;
-
-  background-color: #f7f7f9;
-  filter: blur(30px);
-
-  width: 40px;
-  height: 400px;
-}
-
-
 $transitionSpeed: 300ms;
 
-
-
-.ph-side-bar-right {
-  opacity: 0;
-  transition:  all $transitionSpeed;
-
-  &.visible {
-      opacity: 1;
-  }
-}
-
-.side-bar-right {
-  opacity: 0;
-  transition:  all $transitionSpeed;
-
-  &.visible {
-      opacity: 1;
-  }
-}
-
-
-
-
-.ph-wall {
-  opacity: 0;
-  z-index: -1;
-  transition:  all $transitionSpeed;
-
-  &.visible {
-      opacity: 1;
-      z-index: 1;
-  }
-}
-
-// .posts {
-//   opacity: 0;
-//   transition:  all $transitionSpeed;
-
-//   &.visible {
-//       opacity: 1;
-//   }
-// }
 
 .ph-child-holons {
   opacity: 0;

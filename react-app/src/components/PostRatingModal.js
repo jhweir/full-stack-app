@@ -11,36 +11,23 @@ function PostRatingModal(props) {
         setNewRatingError,
         addRating
     } = props
-
-    const {
-        postRatingModal,
-        visible,
-        postRatingModalTotalScore,
-        postRatingModalTotalScoreBar,
-        postRatingModalTotalScorePercentage,
-        postRatingModalTotalScoreText,
-        postRatingModalInputWrapper,
-        postRatingModalInput,
-        error,
-        postRatingModalButton,
-    } = styles
-
+    
     return (
-        <div className={`${postRatingModal}` + (ratingModalOpen ? ` ${visible}` : '') }>
-            <div className={postRatingModalTotalScore}>
-                <div className={postRatingModalTotalScoreBar}>
-                    <div className={postRatingModalTotalScorePercentage} style={{width: totalRatingScore()}}/>
-                    <div className={postRatingModalTotalScoreText}>{totalRatingScore()}</div>
+        <div className={`${styles.postRatingModal} ${(ratingModalOpen && styles.visible)}`}>
+            <div className={styles.postRatingModalTotalScore}>
+                <div className={styles.postRatingModalTotalScoreBar}>
+                    <div className={styles.postRatingModalTotalScorePercentage} style={{width: totalRatingScore()}}/>
+                    <div className={styles.postRatingModalTotalScoreText}>{ totalRatingScore() }</div>
                 </div>
             </div>
-            <div className={postRatingModalInputWrapper}>
-                <input className={`${postRatingModalInput}` + (newRatingError ? ` ${error}` : '')}
+            <div className={styles.postRatingModalInputWrapper}>
+                <input className={`${styles.postRatingModalInput} ${(newRatingError && styles.error)}`}
                     type="text"
                     value={ newRating }
-                    onChange={(e) => {setNewRating(e.target.value); setNewRatingError(false)}}/>
-                <div className="">/ 100</div>
+                    onChange={(e) => { setNewRating(e.target.value); setNewRatingError(false) }}/>
+                <div>/ 100</div>
             </div>
-            <div className={postRatingModalButton}
+            <div className={styles.postRatingModalButton}
                 onClick={() => addRating()}>
                 Add rating
             </div>

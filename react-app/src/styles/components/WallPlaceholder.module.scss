@@ -1,0 +1,30 @@
+@import '../Transitions.scss';
+// TODO: change to importing a variables file including transition speeds etc.
+
+.PHWall {
+    width: 100%;
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 50px;
+    left: 0;
+    opacity: 0;
+    z-index: -1;
+    transition: opacity $transitionSpeed;
+    &.visible {
+        opacity: 1;
+        z-index: 1;
+    }
+}
+.PHWallGradientWrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 1000px;
+    background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(247,247,249,1));
+    z-index: 1;
+}

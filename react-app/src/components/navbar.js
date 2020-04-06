@@ -5,33 +5,33 @@ import styles from '../styles/components/NavBar.module.scss'
 
 function NavBar() {
     const { updateHolonContext, isLoading, setIsLoading } = useContext(HolonContext);
-    const { navbar, navbarContainer, blue, navbarContainerLinks, navbarLink, navbarIcon, navbarText } = styles
+    const { navBar, navBarContainer, navBarLinks, navBarLink, navBarIcon, navBarText } = styles
 
     function toggleDarkMode() {
         document.body.classList.toggle("dark-mode"); // look into useRef
     }
 
     return (
-        <div className={navbar}>
-            <div className={navbarContainer}>
-                <div className={navbarContainerLinks}>
+        <div className={navBar}>
+            <div className={navBarContainer}>
+                <div className={navBarLinks}>
                     <Link to="/"
-                        className={navbarLink}
+                        className={navBarLink}
                         onClick={() => { updateHolonContext('root') }}>
-                        <img className={navbarIcon} src="/icons/home-solid.svg"/>
-                        <div className={navbarText}>Home</div>
+                        <img className={navBarIcon} src="/icons/home-solid.svg"/>
+                        <div className={navBarText}>Home</div>
                     </Link> |
                     <Link to="/h/root/wall"
-                        className={navbarLink}
+                        className={navBarLink}
                         onClick={() => { updateHolonContext('root') }}>
-                        <img className={navbarIcon} src="/icons/globe-americas-solid.svg"/>
-                        <div className={navbarText}>Wall</div>
+                        <img className={navBarIcon} src="/icons/globe-americas-solid.svg"/>
+                        <div className={navBarText}>Wall</div>
                     </Link> | 
                     <Link to="/h/root/child-holons"
-                        className={navbarLink}
+                        className={navBarLink}
                         onClick={() => { updateHolonContext('root') }}>
-                        <img className={navbarIcon} src="/icons/overlapping-circles-thick.svg"/>
-                        <div className={navbarText}>Spaces</div>
+                        <img className={navBarIcon} src="/icons/overlapping-circles-thick.svg"/>
+                        <div className={navBarText}>Spaces</div>
                     </Link>
                 </div>
                 <div 
@@ -56,11 +56,11 @@ export default NavBar
 
 
 
-{/* <div className="navbar-text" 
+{/* <div className="navBar-text" 
         onClick={() => redirectTo('/h/root/wall', 'root')}>
         Wall
     </div> |
-    <div className="navbar-text"
+    <div className="navBar-text"
         onClick={() => redirectTo('/h/root/child-holons', 'root')}>
         Child-holons
     </div> */}

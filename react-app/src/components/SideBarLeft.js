@@ -2,33 +2,26 @@ import React, { useContext } from 'react'
 import { Link } from 'react-router-dom'
 import { HolonContext } from '../contexts/HolonContext'
 import styles from '../styles/components/SideBarLeft.module.scss'
+import SideBarLeftPlaceholder from '../components/SideBarLeftPlaceholder'
 
 function SideBarLeft() {
     const { holonData, updateHolonContext, isLoading } = useContext(HolonContext)
-    const { 
-        sideBarLeft,
-        visible,
-        sideBarLeftHolonName,
-        sideBarLeftFlagImage,
-        sideBarLeftNavButtons,
-        sideBarLeftNavButton,
-    } = styles
 
     return (
-        <>
-            {/* <div className={`${phSideBarLeft} ${(isLoading && visible)}`}>
-                <SideBarLeftPlaceholder/>
-            </div> */}
-            <div className={`${sideBarLeft} ${(!isLoading && visible)}`}>
-                <div className={sideBarLeftHolonName}>{ holonData.name }</div>
-                <div className={sideBarLeftFlagImage} style={{backgroundImage: "url('/icons/users-solid.svg')"}}/>
-                <div className={sideBarLeftNavButtons}>
-                    <Link className={sideBarLeftNavButton}
+        <div className={styles.sideBarLeft}>
+            <SideBarLeftPlaceholder/>
+            <div className={`${styles.sideBarLeftContent} ${(!isLoading && styles.visible)}`}>
+                <div className={styles.sideBarLeftHolonName}>{ holonData.name }</div>
+                <div className={styles.sideBarLeftFlagImageWrapper}>
+                    <img className={styles.sideBarLeftFlagImagePlaceholder} src='/icons/users-solid.svg'/>
+                </div>
+                <div className={styles.sideBarLeftNavButtons}>
+                    <Link className={styles.sideBarLeftNavButton}
                         to={ `/h/${holonData.handle}/wall` }
                         onClick={ () => { updateHolonContext(holonData.handle) } }>
                         Wall
                     </Link>
-                    <Link className={sideBarLeftNavButton}
+                    <Link className={styles.sideBarLeftNavButton}
                         to={ `/h/${holonData.handle}/child-holons` }
                         onClick={ () => { updateHolonContext(holonData.handle) } }>
                         Child Holons
@@ -36,12 +29,11 @@ function SideBarLeft() {
                     <span className="sub-text mt-20">{holonData.description}</span>
                 </div>
             </div>
-        </>
+        </div>
     )
 }
 
 export default SideBarLeft
-
 
 
 {/* {holonData.handle === 'root' && 

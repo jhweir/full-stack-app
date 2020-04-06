@@ -1,6 +1,6 @@
 @import '../Colors.scss';
 
-.navbar {
+.navBar {
     background-color: #202129; //#212937;
     color: rgb(99, 99, 99); //#222;
     width: 100%;
@@ -16,7 +16,7 @@
     z-index: 10;
 }
 
-.navbarContainer {
+.navBarContainer {
     width: 1200px;
     display: flex;
     flex-direction: row;
@@ -26,38 +26,41 @@
     @media screen and (max-width: 1200px) {
         width: 100%;
     }
-
-    // @media screen and (max-width: 800px) {
-    //     background-color: $blueGrey;
-    // }
 }
 
-.navbarContainerLinks {
+.navBarLinks {
     display: flex;
     flex-direction: row;
     align-items: center;
 }
 
-.navbarLink {
+.navBarLink {
     display: flex;
     flex-direction: row;
     align-items: center;
     &:hover { .navbarIcon { opacity: 1 } }
+    margin-left: 15px;
+    @media screen and (max-width: 600px) {
+        margin-right: 15px;
+    }
 }
 
-.navbarText {
+.navBarText {
     color: #fff; //#9DA1A8; //rgb(218, 218, 218);
     font-size: 20px;
     font-weight: 400;
     text-decoration: none;
     padding: 0 15px;
     opacity: 1;
+    @media screen and (max-width: 600px) {
+        display: none;
+    }
 }
 
-.navbarIcon {
+.navBarIcon {
     width: 28px;
     height: 28px;
-    margin-left: 15px;
+    // margin-left: 15px;
     opacity: 0.4;
     filter: invert(100%);
     transition: opacity 0.5s;

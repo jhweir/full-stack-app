@@ -1,0 +1,32 @@
+.holon {
+    margin-bottom: 10px;
+    padding: 20px 30px;
+    width: 100%;
+    border-radius: 10px;
+    background-color: white;
+    box-shadow: 0 1px 10px 0 rgba(10, 8, 72, 0.05);
+    display: flex;
+    flex-direction: row;
+    transition-property: background-color;
+    transition-duration: 2s;
+    position: relative;
+}
+.holonImage {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin-right: 20px;
+}
+.holonInfo {
+    display: flex;
+    flex-direction: column;
+}
+.holonTitle {
+    font-size: 24px;
+    &:visited {
+        color: black;
+    }
+}
+.holonDescription {
+    font-size: 16px;
+}

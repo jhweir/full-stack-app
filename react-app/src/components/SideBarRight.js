@@ -1,32 +1,29 @@
 
-import React, { useState, useContext, useEffect } from 'react'
+import React, { useContext } from 'react'
 import { Link } from 'react-router-dom'
-import SideBarRightPlaceholder from '../components/SideBarRightPlaceholder'
-// import axios from 'axios'
-// import config from '../Config'
-// import { PostContext } from '../contexts/PostContext'
 import { HolonContext } from '../contexts/HolonContext'
+import styles from '../styles/components/SideBarRight.module.scss'
+import SideBarRightPlaceholder from '../components/SideBarRightPlaceholder'
 
-function SideBarRight(props) {
+function SideBarRight() {
     const { holonData, updateHolonContext, isLoading } = useContext(HolonContext)
 
     return (
-        <>
-            <div className={"ph-side-bar-right " + (isLoading ? 'visible' : '')}>
-                <SideBarRightPlaceholder/>   
-            </div>
-            <div className={"side-bar-right " + (!isLoading ? 'visible' : '')}>
+        <div className={styles.sideBarRight}>
+            <SideBarRightPlaceholder/>
+            <div className={`${styles.sideBarRightContent} ${(!isLoading && styles.visible)}`}>
                 {holonData.DirectParentHolons.length !== 0 &&
                     <>
-                        <span className="side-bar-right-text mb-10">Parent spaces:</span>
-                        <ul className="side-bar-right-child-holons mb-20">
+                        <span className={styles.sideBarRightText}>Parent spaces:</span>
+                        <ul className={styles.sideBarRightHolons}>
                             {holonData.DirectParentHolons.map((holon, index) => 
-                                <Link className="side-bar-right-child-holon mb-10"
+                                <Link className={styles.sideBarRightHolon}
                                     to={ `/h/${holon.handle}/wall` }
                                     key={index}
-                                    onClick={ () => { updateHolonContext(holon.handle) } }
-                                    >
-                                    <img className="side-bar-right-child-holon-image" src="/images/holon-flag-image-00.jpg"/>
+                                    onClick={ () => { updateHolonContext(holon.handle) } }>
+                                    <div className={styles.sideBarRightHolonImageWrapper}>
+                                        <img className={styles.sideBarRightHolonImage} src="/icons/users-solid.svg"/>
+                                    </div>
                                     { holon.name }
                                 </Link>
                             )} 
@@ -35,15 +32,16 @@ function SideBarRight(props) {
                 }
                 {holonData.DirectChildHolons.length !== 0 &&
                     <>
-                        <span className="side-bar-right-text mb-10">Child spaces:</span>
-                        <ul className="side-bar-right-child-holons">
+                        <span className={styles.sideBarRightText}>Child spaces:</span>
+                        <ul className={styles.sideBarRightHolons}>
                             {holonData.DirectChildHolons.map((holon, index) => 
-                                <Link className="side-bar-right-child-holon mb-10"
+                                <Link className={styles.sideBarRightHolon}
                                     to={ `/h/${holon.handle}/wall` }
                                     key={index}
-                                    onClick={ () => { updateHolonContext(holon.handle) } }
-                                    >
-                                    <img className="side-bar-right-child-holon-image" src="/images/holon-flag-image-00.jpg"/>
+                                    onClick={ () => { updateHolonContext(holon.handle) } }>
+                                    <div className={styles.sideBarRightHolonImageWrapper}>
+                                        <img className={styles.sideBarRightHolonImage} src="/icons/users-solid.svg"/>
+                                    </div>
                                     { holon.name }
                                 </Link>
                             )}
@@ -51,49 +49,7 @@ function SideBarRight(props) {
                     </>
                 }
             </div>
-
-            <style jsx="true">{`
-                .ph-side-bar-right {
-                    width: 200px;
-                    padding: 0 20px;
-                    display: flex;
-                    flex-direction: column;
-                    position: absolute;
-                    top: 0;
-                    right: 0;
-                    z-index: -1;
-                    overflow: hidden;
-                }
-                .side-bar-right {
-                    width: 200px;
-                    padding: 0 20px;
-                    display: flex;
-                    flex-direction: column;
-                }
-                .side-bar-right-child-holons {
-                    display: flex;
-                    flex-direction: column;
-                    align-items: flex-start;
-                }
-                .side-bar-right-child-holon {
-                    display: flex;
-                    flex-direction: row;
-                    align-items: center;
-                }
-                .side-bar-right-child-holon-image {
-                    background-position: center;
-                    background-size: cover;
-                    height: 40px;
-                    width: 40px;
-                    border-radius: 50%;
-                    flex-shrink: 0;
-                    margin-right: 10px;
-                }
-                .side-bar-right-child-holon-name:visited {
-                    color: black;
-                }
-            `}</style>
-        </>
+        </div>
     )
 }
 

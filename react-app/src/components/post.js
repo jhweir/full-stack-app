@@ -14,6 +14,7 @@ function Post(props) {
     const [likes, setLikes] = useState(0)
     const [hearts, setHearts] = useState(0)
     const [ratings, setRatings] = useState(0)
+    // TODO: Move the rating state below to the Post rating modal component
     const [newRating, setNewRating] = useState('')
     const [newRatingError, setNewRatingError] = useState(false)
     const [totalRatingPoints, setTotalRatingPoints] = useState(0)
@@ -26,40 +27,20 @@ function Post(props) {
         pins,
         createdAt,
         Labels,
-        Comments
+        Comments,
+        Holons
     } = props.post
-
-    const {
-        post,
-        pinnedPost,
-        pinFlag,
-        postId,
-        postBody,
-        postTags,
-        userThumbnail,
-        holonNames,
-        postSubText,
-        postContent,
-        postTitle,
-        postDescription,
-        postInteract,
-        postInteractItem,
-        postIcon,
-        opacity50,
-    } = styles
 
     useEffect(() => {
         setReactions(Labels.length)
-        function findNumberofLabels(labelType) { 
-            return Labels.filter((label) => label.type === labelType).length
-        }
+        function findNumberofLabels(labelType) { return Labels.filter((label) => label.type === labelType).length }
         setLikes(findNumberofLabels('like'))
         setHearts(findNumberofLabels('heart'))
         setRatings(findNumberofLabels('rating'))
         setTotalRatingPoints(Labels
             .filter((label) => label.type === 'rating') // find all the posts ratings
             .map((rating) => parseInt(rating.value, 10)) // convert rating values to numbers (stored as strings in DB)
-            .reduce((a, b) => a + b, 0)) // add all ratings values together
+            .reduce((a, b) => a + b, 0)) // add up all rating values
     }, [props])
     
     const holonId = holonData.id // Re-named to match the column name in the database
@@ -121,46 +102,47 @@ function Post(props) {
         return formattedDate
     }
 
-    function totalRatingScore() {
-        if (ratings) { return (totalRatingPoints / ratings).toFixed(2) + '%'
-        } else { return 'N/A' }
+    function totalRatingScore() { // TODO: Move to rating component
+        if (ratings) { return (totalRatingPoints / ratings).toFixed(2) + '%' }
+        else { return 'N/A' }
     }
 
-    // TODO: Check if isLoading conditionals required any more (on both walls and post pages)
-    return (
-        <div className={`${post}` + (pins ? ` ${pinnedPost}` : '')}>
-            {/* {pins && <div className={pinFlag} onClick={ unpinPost }></div>} */}
-            {!pins && !props.isPostPage && <div className={postId}>{ props.index + 1 }</div>}
-            <div className={postBody}>
-                <div className={postTags}>
-                    <span className={userThumbnail}></span>
-                    <span className={postSubText}>{ user || 'Anonymous' }</span>
-                    <span className={postSubText}>to</span>
-                    {!props.postPageLoading &&  /* Wait until the post has finished loading before displaying the holons to prevent errors */
-                        <div className={holonNames}>
-                            {props.post.Holons.length >= 1 ? 
-                                props.post.Holons.map((holon, index) =>
-                                    <Link to={ `/h/${holon.handle}/wall` }
-                                        onClick={ () => { updateHolonContext(holon.handle) } }
-                                        style={{marginRight: 10}}
-                                        key={index}>
-                                        {holon.handle}
-                                    </Link>
-                                )
-                                : <div style={{marginRight: 10}}>root</div>}
-                        </div>
-                    }
-                    <span className={postSubText}>|</span>
+    return ( 
+        <div className={`${styles.post} ${(pins && styles.pinnedPost)}`}>
+            {/* {pins && <div className={styles.pinFlag} onClick={ unpinPost }></div>} */}
+            {!pins && !props.isPostPage && 
+                <div className={styles.postId}>{ props.index + 1 }</div>
+            }
+            <div className={styles.postBody}>
+                <div className={styles.postTags}>
+                    <div className={styles.userImageWrapper}>
+                        <img className={styles.userImagePlaceholder} src='/icons/user-solid.svg'/>
+                    </div>
+                    <span className={styles.postSubText}>{ user || 'Anonymous' }</span>
+                    <span className={styles.postSubText}>to</span>
+                    <div className={styles.holonNames}>
+                        {Holons.length >= 1 ? 
+                            Holons.map((holon, index) =>
+                                <Link to={ `/h/${holon.handle}/wall` }
+                                    onClick={ () => { updateHolonContext(holon.handle) } }
+                                    style={{marginRight: 10}}
+                                    key={index}>
+                                    {holon.handle}
+                                </Link>
+                            )
+                            : <div style={{marginRight: 10}}>root</div>}
+                    </div>
+                    <span className={styles.postSubText}>|</span>
                     {!props.postPageLoading && /* Wait until the post has finished loading before formatting the date to prevent errors */
-                        <span className={postSubText}>{ formatDate() || 'no date' }</span>
+                        <span className={styles.postSubText}>{ formatDate() || 'no date' }</span>
                     }
                 </div>
-                <div className={postContent}>
-                    <Link to={ `/p/${id}` } className={postTitle}>{ title }</Link>
-                    <div className={postDescription}>{ description }</div>    
-                    <div className={postInteract}>
-                        <div className={postInteractItem} onClick={() => toggleReactionModal()}> {/* onClick={ addLike } */}
-                            <img className={postIcon} src="/icons/fire-alt-solid.svg"/>
+                <div className={styles.postContent}>
+                    <Link to={ `/p/${id}` } className={styles.postTitle}>{ title }</Link>
+                    <div className={styles.postDescription}>{ description }</div>    
+                    <div className={styles.postInteract}>
+                        <div className={styles.postInteractItem} onClick={() => toggleReactionModal()}>
+                            <img className={styles.postIcon} src="/icons/fire-alt-solid.svg"/>
                             <span>{ reactions } Reactions</span>
                         </div>
                         <PostReactionModal
@@ -171,6 +153,7 @@ function Post(props) {
                             toggleReactionModal={toggleReactionModal}
                             addLike={addLike}
                             addHeart={addHeart}
+                            // TODO: Move rating state to Rating Modal component
                             ratingModalOpen={ratingModalOpen}
                             toggleRatingModal={toggleRatingModal}
                             totalRatingScore={totalRatingScore}
@@ -181,25 +164,17 @@ function Post(props) {
                             addRating={addRating}
                             Labels={Labels}
                         />
-                        {!props.isPostPage && /* Link removed from PostPage to prevent loading issue with Labels */
-                            <Link className={postInteractItem} 
-                                to={ `/p/${id}` }>
-                                <img className={postIcon} src="/icons/comment-solid.svg"/>
-                                <span>{ Comments.length } Comments</span>
-                            </Link>
-                        }
-                        {props.isPostPage && /* Replaced with unclickable div */
-                            <div className={postInteractItem}>
-                                <img className={postIcon} src="/icons/comment-solid.svg"/>
-                                <span>{ Comments.length } Comments</span>
-                            </div>
-                        }
-                        <div className={postInteractItem} onClick={ deletePost }>
-                            <img className={postIcon} src="/icons/trash-alt-solid.svg"/>
+                        <Link className={styles.postInteractItem} 
+                            to={ `/p/${id}` }>
+                            <img className={styles.postIcon} src="/icons/comment-solid.svg"/>
+                            <span>{ Comments.length } Comments</span>
+                        </Link>
+                        <div className={styles.postInteractItem} onClick={ deletePost }>
+                            <img className={styles.postIcon} src="/icons/trash-alt-solid.svg"/>
                             <span>Delete</span>
                         </div>
-                        {!pins && <div className={`${postInteractItem} ${opacity50}`}>{/* onClick={ pinPost } */}
-                            <img className={postIcon} src="/icons/thumbtack-solid.svg"/>
+                        {!pins && <div className={`${styles.postInteractItem} ${styles.opacity50}`}>{/* onClick={ pinPost } */}
+                            <img className={styles.postIcon} src="/icons/thumbtack-solid.svg"/>
                             <span>Pin post</span>
                         </div>}
                     </div>
@@ -210,3 +185,34 @@ function Post(props) {
 }
 
 export default Post
+
+
+// {!props.postPageLoading &&  /* Wait until the post has finished loading before displaying the holons to prevent errors (possibly no longer needed) */
+//     <div className={styles.holonNames}>
+//         {props.post.Holons.length >= 1 ? 
+//             props.post.Holons.map((holon, index) =>
+//                 <Link to={ `/h/${holon.handle}/wall` }
+//                     onClick={ () => { updateHolonContext(holon.handle) } }
+//                     style={{marginRight: 10}}
+//                     key={index}>
+//                     {holon.handle}
+//                 </Link>
+//             )
+//             : <div style={{marginRight: 10}}>root</div>}
+//     </div>
+// }
+
+
+// {!props.isPostPage && /* Link removed from PostPage to prevent loading issue with Labels */
+//     <Link className={styles.postInteractItem} 
+//         to={ `/p/${id}` }>
+//         <img className={styles.postIcon} src="/icons/comment-solid.svg"/>
+//         <span>{ Comments.length } Comments</span>
+//     </Link>
+// }
+// {props.isPostPage && /* Replaced with unclickable div */
+//     <div className={styles.postInteractItem}>
+//         <img className={styles.postIcon} src="/icons/comment-solid.svg"/>
+//         <span>{ Comments.length } Comments</span>
+//     </div>
+// }

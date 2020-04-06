@@ -7,7 +7,6 @@ import WallPlaceholder from './WallPlaceholder'
 
 function Wall() {
     const { holonData, postSearchFilter, postSortByFilter, isLoading, setIsLoading } = useContext(HolonContext)
-    const { wall, posts, hidden, pinnedPosts } = styles
 
     // Apply search filter to posts
     const filteredPosts = holonData.Posts.filter(post => {
@@ -44,14 +43,17 @@ function Wall() {
     // })
 
     return (
-        <div className={wall}>
+        <div className={styles.wall}>
             <WallHeader/>
             <WallPlaceholder/>
-            <ul className={`${posts}` + (isLoading ? `${hidden}` : '')}>
+            <ul className={`${styles.posts} ${(isLoading && styles.hidden)}`}>
                 {filteredPosts.map((post, index) =>
-                    // <CSSTransition key={index}  in={!isLoading} timeout={500} classNames="contentFade" appear>
-                        <Post post={post} key={post.id} index={index} isLoading={isLoading}/>
-                    // </CSSTransition>
+                    <Post
+                        post={post}
+                        key={post.id}
+                        index={index}
+                        isLoading={isLoading}
+                    />
                 )} 
             </ul>
         </div>
