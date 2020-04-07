@@ -38,8 +38,8 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    &:hover { .navbarIcon { opacity: 1 } }
     margin-left: 15px;
+    &:hover { .navBarIcon { opacity: 1 } }
     @media screen and (max-width: 600px) {
         margin-right: 15px;
     }

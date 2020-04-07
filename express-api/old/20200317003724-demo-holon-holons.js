@@ -43,7 +43,6 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date()
       },
-      //new
       {
         relationship: 'include-posts-to-A-within-B',
         state: null,

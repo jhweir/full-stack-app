@@ -18,10 +18,12 @@
     opacity: 0.5;
     outline: none;
     background-color: rgba(0,0,0,0.06);
+    flex-shrink: 0;
 }
 .PHHolonInfo {
     display: flex;
     flex-direction: column;
+    overflow: hidden;
 }
 .PHHolonTitle {
     width: 150px;

@@ -9,12 +9,18 @@
     width: 100%;
     height: 200px;
     //background-color: rgba(0, 0, 0, 0.05)
+    @media screen and (max-width: 700px) {
+        height: 130px;
+    }
 }
 .coverImage {
     width: 100%;
     height: 200px;
     background-image: linear-gradient(141deg, #9fb8ad 0%, #1fc8db 51%, #2cb5e8 75%); 
-    // linear-gradient(180deg, #0b7285 0%, #0ca678 75%); //linear-gradient(#0b7285, #0ca678); 
+    // linear-gradient(180deg, #0b7285 0%, #0ca678 75%); //linear-gradient(#0b7285, #0ca678);
+    @media screen and (max-width: 700px) {
+        height: 130px;
+    }
 }
 
 .holonPageContainer {
@@ -31,6 +37,7 @@
 
 .holonPageCenterPanel {
     width: 700px;
+    margin: 0 10px;
     position: relative;
     display: flex;
     @media screen and (max-width: 1200px) {

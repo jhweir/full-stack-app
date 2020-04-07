@@ -81,7 +81,7 @@ router.post('/createPost', (req, res) => {
 
     console.log('holonTags: ', holonTags)
 
-    // Find a holons tags and copy those tags to the new holon
+    // Find the holons tags
     function createNewHolonTags(tag, post) {
         Holon.findOne({ 
             where: { id: tag.id },
@@ -100,55 +100,13 @@ router.post('/createPost', (req, res) => {
         )}).catch(err => console.log(err))
     }
 
+    // Create the post and all its holon tags
     Post.create({ title, description, globalState: 'visible' }).then(post => {
         holonTags.forEach((holonTag) => createNewHolonTags(holonTag, post))
     })
-
-    // holonTags.forEach((holonTag) => createNewHolonTags(holonTag, post))
-
-    // // Find all the tagged holons tags
-    // holonTags.forEach((holonTag) => Holon.findOne({ 
-    //     where: { id: holonTag.id },
-    //     include: [
-    //         { model: Holon, as: 'TagOwner' },
-    //     ]
-    // }).then(data => {
-    //     // Add each tag to the post
-    //     data.TagOwner.forEach((holonTag) => PostHolon.create({
-    //         creator: null, // to be set up when user tables ready
-    //         relationship: 'post',
-    //         state: 'visible',
-    //         postId: post.id,
-    //         holonId: holonTag.id,
-    //     })
-    // )}).catch(err => console.log(err)))
-
-
-    // .then(post => {
-    //     holonTags.forEach((holonTag) => PostHolon.create({
-    //         creator: null, // to be set up when user tables ready
-    //         relationship: 'post',
-    //         state: 'visible',
-    //         postId: post.id,
-    //         holonId: holonTag.id,
-    //     })
-    // )})
-
-
-    // console.log('holons: ', holons)
-
-    // function createPostTag(post, tag) {
-    //     PostTag.create({ postId: post.id, tagName: tag })
-    // }
-
-    // Post.create({ user, title, description, comments, pins, likes })
-    //     .then(post => {
-    //         // console.log(post.id)
-    //         holons.forEach((holon) => createPostTag(post, holon.name))
-    //     })
 })
 
-// Get a post (include its comments and holons)
+// Get a post (include its comments, holons, and lables)
 router.get('/getPost', (req, res) => {
     Post.findOne({ 
         where: { id: req.query.id },
@@ -194,7 +152,7 @@ router.put('/addHeart', (req, res) => {
     }).then(res.send('Post successfully hearted'))
 })
 
-// Add heart label
+// Add rating label
 router.put('/addRating', (req, res) => {
     Label.create({ 
         type: 'rating',

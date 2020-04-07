@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext } from 'react'
 import { HolonContext } from '../contexts/HolonContext'
 import styles from '../styles/components/Wall.module.scss'
 import Post from './Post'
@@ -10,11 +10,11 @@ function Wall() {
 
     // Apply search filter to posts
     const filteredPosts = holonData.Posts.filter(post => {
-        return post.title.includes(postSearchFilter) && post.globalState === 'visible'
+        return post.title.toUpperCase().includes(postSearchFilter.toUpperCase()) && post.globalState === 'visible'
         //&& post.pins == null
     })
 
-    // TODO: Move these filters below into a switch/case format?
+    // TODO: Move the filters below into switch statement?
     // Sort posts by Reactions
     if (postSortByFilter === 'reactions') {
         filteredPosts.sort((a, b) => b.Labels.length - a.Labels.length)

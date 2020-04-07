@@ -12,7 +12,7 @@ function ChildHolons() {
 
     // Apply search filter to holons
     let filteredHolons = holons.filter(holon => {
-        return holon.name.includes(holonSearchFilter) //&& holon.globalState === 'visible'
+        return holon.name.toUpperCase().includes(holonSearchFilter.toUpperCase()) //&& holon.globalState === 'visible'
     })
 
     return (

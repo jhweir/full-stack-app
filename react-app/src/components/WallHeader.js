@@ -6,11 +6,11 @@ import { HolonContext } from '../contexts/HolonContext'
 
 function WallHeader(props) {
     const { isLoading, setIsLoading } = useContext(HolonContext);
-    const [modal, setModal] = useState(false);
+    const [modalOpen, setModalOpen] = useState(false);
     
 
     function toggleModal() {
-        setModal(!modal)
+        if (!isLoading) { setModalOpen(!modalOpen) }
     }
 
     return (
@@ -18,7 +18,7 @@ function WallHeader(props) {
             <div className="wall-header">
                 <WallSearchBar/>
                 <button className="button mb-10" onClick={ toggleModal }>Create Post</button>
-                {modal && 
+                {modalOpen && 
                     <CreatePost toggleModal={ toggleModal }/>
                 }
                 <WallFilters/>

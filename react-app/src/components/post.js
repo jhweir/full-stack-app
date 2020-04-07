@@ -14,7 +14,7 @@ function Post(props) {
     const [likes, setLikes] = useState(0)
     const [hearts, setHearts] = useState(0)
     const [ratings, setRatings] = useState(0)
-    // TODO: Move the rating state below to the Post rating modal component
+    // TODO: Move the rating state below to the PostRatingModal component
     const [newRating, setNewRating] = useState('')
     const [newRatingError, setNewRatingError] = useState(false)
     const [totalRatingPoints, setTotalRatingPoints] = useState(0)
@@ -32,6 +32,7 @@ function Post(props) {
     } = props.post
 
     useEffect(() => {
+        // console.log('Use effect run in post component')
         setReactions(Labels.length)
         function findNumberofLabels(labelType) { return Labels.filter((label) => label.type === labelType).length }
         setLikes(findNumberofLabels('like'))
@@ -41,7 +42,7 @@ function Post(props) {
             .filter((label) => label.type === 'rating') // find all the posts ratings
             .map((rating) => parseInt(rating.value, 10)) // convert rating values to numbers (stored as strings in DB)
             .reduce((a, b) => a + b, 0)) // add up all rating values
-    }, [props])
+    }, [])
     
     const holonId = holonData.id // Re-named to match the column name in the database
 

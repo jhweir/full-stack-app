@@ -20,7 +20,7 @@ function ChildHolonsHeader() {
                 {modal && 
                     <CreateBranch toggleModal={ toggleModal }/>
                 }
-                <ChildHolonsFilters/>
+                {/* <ChildHolonsFilters/> */}
             </div>
 
             <style jsx="true">{`

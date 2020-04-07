@@ -18,6 +18,7 @@ function HolonPage(props) {
 
     return (
         <div className={styles.holonPage}>
+            {/* TODO: Create new cover component and pass in required holon props */}
             <div className={styles.coverImageWrapper}>
                 <div className={styles.coverImage}/>
             </div>
