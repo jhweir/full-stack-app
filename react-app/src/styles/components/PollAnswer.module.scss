@@ -1,0 +1,25 @@
+.pollAnswer {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    background-color: #fff;
+    border-radius: 5px;
+    padding: 10px 10px 10px 15px;
+    margin: 0 10px 10px 0;
+    &:hover {
+        cursor: pointer;
+    }
+    &.answerSelected {
+        background-color: rgb(214, 233, 255);
+    }
+}
+.pollAnswerCheckBox {
+    margin-right: 20px;
+    width: 40px;
+    height: 40px;
+    opacity: 0.2;
+}
+.pollAnswerText {
+
+}

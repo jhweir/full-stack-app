@@ -1,0 +1,61 @@
+.pollAnswerForm {
+    width: 100%;
+    margin-bottom: 20px;
+    //height: 500px;
+}
+.pollAnswerFormTop {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+}
+.pollAnswerFormInput {
+    font-size: 14px;
+    height: 40px;
+    width: 100%;
+    border-radius: 5px;
+    padding: 10px 15px;
+    margin-bottom: 20px;
+    outline: none;
+    border: none;
+    // display: flex;
+    // flex-direction: row;
+    // align-items: center;
+    background-color: white;
+    box-shadow: 0 1px 10px 0 rgba(10, 8, 72, 0.1);
+    transition-property: box-shadow, background-color;
+    transition-duration: 0.3s, 2s;
+}
+.pollAnswerFormButton {
+    background-color: #3a88f0;
+    color: white;
+    height: 40px;
+    border-radius: 5px;
+    padding: 0px 15px;
+    margin-left: 10px;
+    width: 120px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 1px 10px 0 rgba(10, 8, 72, 0.1);
+    border: none;
+    font-size: 14px;
+    font-weight: 800;
+    transition-property: box-shadow, background-color;
+    transition-duration: 0.3s, 2s;
+ 
+    &:hover { 
+        outline: none;
+        filter: brightness(110%);
+        cursor: pointer;
+    }
+    
+    &:focus { outline: none }
+}
+.pollAnswerFormSubTitle {
+    font-size: 24px;
+}
+.pollAnswers {
+    margin-top: 10px;
+}

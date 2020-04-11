@@ -7,15 +7,13 @@ function HolonTagInput(props) {
     const { 
         globalData,
         holonTags,
+        setHolonTags,
         newHolonTag,
         setNewHolonTag,
-        addHolonTag,
-        removeHolonTag,
         holonError,
         setHolonError,
         holonErrorMessage,
         setHolonErrorMessage,
-        addSuggestedHolonTag
     } = props
 
     // Find holons that match the search filter
@@ -23,6 +21,29 @@ function HolonTagInput(props) {
     
     // Suggest holons that match the search filter and haven't already been added to the post
     const suggestedHolonTags = filteredHolonTags.filter(holonTag => !holonTags.find(b2 => holonTag.handle === b2.handle))
+
+    function addHolonTag(e) {
+        e.preventDefault()
+        const validHolonTag = globalData.filter(holonTag => (holonTag.handle === newHolonTag))
+        if (newHolonTag === '') {
+            setHolonError(true)
+        } else if (validHolonTag.length === 0) {
+            setHolonError(true)
+            setHolonErrorMessage(true)
+        } else if (validHolonTag.length && !holonTags.includes(validHolonTag[0]) ) {
+            setHolonTags([...holonTags, validHolonTag[0]])
+            setNewHolonTag('')
+        }
+    }
+
+    function addSuggestedHolonTag(holonTag) {
+        setHolonTags([...holonTags, holonTag])
+    }
+
+    function removeHolonTag(holonTag) {
+        const updatedHolonTags = holonTags.filter((holonTags) => { return holonTags !== holonTag })
+        setHolonTags(updatedHolonTags)
+    }
 
     return (
         <div className={styles.holonTagInput}>
@@ -49,7 +70,13 @@ function HolonTagInput(props) {
                     <div className={styles.holonTagInputSubTitle}>Suggested spaces: </div>
                     <ul className={styles.holonTagInputHolons}>
                         {suggestedHolonTags.map((holonTag, index) => 
-                            <HolonTag holonTag={holonTag} key={index} removeHolonTag={removeHolonTag} added={false} addSuggestedHolonTag={addSuggestedHolonTag}/>
+                            <HolonTag 
+                                key={index}
+                                holonTag={holonTag}
+                                removeHolonTag={removeHolonTag}
+                                added={false}
+                                addSuggestedHolonTag={addSuggestedHolonTag}
+                            />
                         )}
                     </ul>
                 </>

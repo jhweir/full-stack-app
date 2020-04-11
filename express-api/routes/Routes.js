@@ -11,6 +11,7 @@ const UserUser = require('../models').UserUser
 const Post = require('../models').Post
 const Comment = require('../models').Comment
 const Label = require('../models').Label
+const PollAnswer = require('../models').PollAnswer
 const Notifications = require('../models').Notification
 
 // Get data for holon context
@@ -77,7 +78,7 @@ router.post('/createHolon', (req, res) => {
 // Create a new post
 router.post('/createPost', (req, res) => {
     res.send('Post request made')
-    const { title, description, holonTags } = req.body.post
+    const { type, title, description, url, holonTags, pollAnswers } = req.body.post
 
     console.log('holonTags: ', holonTags)
 
@@ -100,17 +101,22 @@ router.post('/createPost', (req, res) => {
         )}).catch(err => console.log(err))
     }
 
+    function createNewPollAnswer(answer, post) {
+        PollAnswer.create({ text: answer, postId: post.id })
+    }
+
     // Create the post and all its holon tags
-    Post.create({ title, description, globalState: 'visible' }).then(post => {
-        holonTags.forEach((holonTag) => createNewHolonTags(holonTag, post))
+    Post.create({ type, title, description, url, globalState: 'visible' }).then(post => {
+        holonTags.forEach((tag) => createNewHolonTags(tag, post))
+        pollAnswers.forEach((answer) => createNewPollAnswer(answer, post))
     })
 })
 
-// Get a post (include its comments, holons, and lables)
+// Get a post (include its comments, holons, lables, and poll answers)
 router.get('/getPost', (req, res) => {
     Post.findOne({ 
         where: { id: req.query.id },
-        include: [Holon, Label, Comment] 
+        include: [Holon, Label, Comment, PollAnswer] 
         // include: [Comment, Holon, Label]
     }).then(post => {
         //console.log('post from routes: ', post)
@@ -124,7 +130,6 @@ router.delete('/deletePost', (req, res) => {
     Post.update({ globalState: 'hidden' }, {
         where: { id: req.body.id }
     })
-
     // Post.destroy({ where: { id: req.body.id }})
 })
 
@@ -164,6 +169,44 @@ router.put('/addRating', (req, res) => {
     }).then(res.send('Post successfully rated'))
 })
 
+// Create comment
+router.post('/addComment', (req, res) => {
+    let { postId, text } = req.body
+    Comment.create({ postId, text })
+        .catch(err => console.log(err))
+
+    // // Update number of comments on post in Post table
+    // Post.update({ comments: comments }, {
+    //     where: { id: postId }
+    // })
+})
+
+// Cast vote
+router.post('/castVote', (req, res) => {
+    req.body.voteData.selectedPollAnswers.forEach((answer) => {
+        Label.create({ 
+            type: 'vote',
+            value: 1,
+            pollAnswerId: answer.id,
+        })
+    })
+    // Label.create({ 
+    //     type: 'vote',
+    //     value: null,
+    //     holonId: req.body.holonId,
+    //     userId: null,
+    //     postId: req.body.id,
+    //     commentId: null,
+    // }).then(res.send('Post successfully hearted'))
+})
+
+
+
+module.exports = router
+
+
+
+
 // // Pin post
 // router.put('/pinpost', (req, res) => {
 //     Post.update({ pins: 'Global wall' }, {
@@ -179,31 +222,3 @@ router.put('/addRating', (req, res) => {
 //     })
 //     res.send('Post unpinned')
 // })
-
-// Create comment
-router.post('/addComment', (req, res) => {
-    res.send('Comment request made')
-    let { postId, newComment } = req.body
-    let text = newComment
-    // Create new comment in Comments table
-    Comment.create({ postId, text })
-        .catch(err => console.log(err))
-
-    // // Update number of comments on post in Post table
-    // Post.update({ comments: comments }, {
-    //     where: { id: postId }
-    // })
-})
-
-
-
-// // Get all holons
-// router.get('/holons', (req, res) => {
-//     Holon.findAll()
-//     .then(holons => {
-//         res.json(holons)
-//         //res.sendStatus(200)
-//     })
-// })
-
-module.exports = router

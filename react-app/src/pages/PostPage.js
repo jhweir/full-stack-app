@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import config from '../Config'
+import styles from '../styles/pages/PostPage.module.scss'
 import Post from '../components/Post'
 import Comment from '../components/Comment'
+import PollAnswer from '../components/PollAnswer'
 
 function PostPage({ match }) {
     const postId = match.params.postId
@@ -10,11 +12,14 @@ function PostPage({ match }) {
     const [post, setPost] = useState({
         Holons: [],
         Labels: [],
-        Comments: []
+        Comments: [],
+        PollAnswers: []
     })
     const [newComment, setNewComment] = useState('')
     const [commentError, setCommentError] = useState(false)
     const [postPageLoading, setPostPageLoading] = useState(true)
+    const [pollSection, setPollSection] = useState('vote')
+    const [selectedPollAnswers, setSelectedPollAnswers] = useState([])
 
     function getPost() {
         axios.get(config.environmentURL + `/getPost?id=${postId}`).then(res => { 
@@ -25,16 +30,20 @@ function PostPage({ match }) {
 
     function submitComment(e) {
         e.preventDefault()
+        if (newComment === '') { setCommentError(true) }
         if (newComment !== '') {
-            //let text = newComment
-            let comments = post.comments + 1
-            axios({ method: 'post', url: config.environmentURL + '/addComment', data: { newComment, postId } })
-                .then(res => { 
-                    setNewComment('')
-                    setTimeout(() => { getPost() }, 100)
-                })
-        } else if (newComment === '') {
-            setCommentError(true);
+            axios.post(config.environmentURL + '/addComment', { text: newComment, postId })
+                .then(setNewComment(''))
+                .then(setTimeout(() => { getPost() }, 100))
+        }
+    }
+
+    function castVote() {
+        if (selectedPollAnswers.length !== 0) {
+            let voteData = { selectedPollAnswers }
+            axios.post(config.environmentURL + '/castVote', { voteData })
+                .then(setSelectedPollAnswers([]))
+                // .then(setTimeout(() => { getPost() }, 100))
         }
     }
 
@@ -43,103 +52,87 @@ function PostPage({ match }) {
     }, [])
 
     return (
-        <>
-            <div className="post-page">
-                <Post 
-                    post={post}
-                    postPageLoading={postPageLoading}
-                    isPostPage={true}
-                />
-                <form  className="create-comment-form" onSubmit={submitComment}> 
-                    <textarea className={"create-comment-form-text-area " + (commentError ? 'error' : '')}
-                        //style={{ height:'auto', paddingTop:10 }}
-                        rows="1"
-                        type="text"
-                        placeholder="Leave a comment..."
-                        name="newComment"
-                        value={newComment}
-                        onChange={(e) => {
-                            setNewComment(e.target.value)
-                            setCommentError(false)
-                        }}
-                    />
-                    <div className="button-container">
-                        <button className="create-comment-form-button">Post comment</button>
+        <div className={styles.postPage}>
+            <Post 
+                post={post}
+                postPageLoading={postPageLoading}
+                isPostPage={true}
+            />
+            {post.type !== 'poll' &&
+                <>
+                    <form className={styles.commentForm} onSubmit={submitComment}> 
+                        <textarea className={`${styles.commentFormTextArea} ${(commentError && styles.error)}`}
+                            placeholder="Leave a comment..."
+                            rows="1" type="text" name="newComment" value={newComment}
+                            onChange={(e) => { setNewComment(e.target.value); setCommentError(false) }}
+                        />
+                        <div className="button-container">
+                            <button className={styles.commentFormButton}>Post comment</button>
+                        </div>
+                    </form>
+                    <div className={styles.comments}>
+                        {post.Comments.map((comment, index) => 
+                            <Comment 
+                                key={comment.id}
+                                index={index}
+                                comment={comment}
+                            /> 
+                        )}
                     </div>
-                </form>
-                <div className="comments">
-                    {post.Comments.map((comment, index) => 
-                        <Comment 
-                            key={comment.id}
-                            index={index}
-                            comment={comment} /> 
-                    )}
-                </div>
-            </div>
-            
-            <style jsx="true">{`
-                .post-page {
-                    margin-top: 60px;
-                    width: 700px;
-                    padding: 10px;
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: center;
-                    align-items: center;
-                }
-                @media screen and (max-width: 700px) {
-                    .wall {
-                        width: 100%;
+                </>
+            }
+            {post.type === 'poll' &&
+                <>
+                    <div className={styles.pollSectionSelector}>
+                        <div className={styles.pollSectionSelectorButton} onClick={() => {setPollSection('vote')}}>Vote</div>
+                        <div className={styles.pollSectionSelectorButton} onClick={() => {setPollSection('comments')}}>Comments</div>
+                        <div className={styles.pollSectionSelectorButton} onClick={() => {setPollSection('results')}}>Results</div>
+                    </div>
+
+                    {pollSection === 'vote' &&
+                        <div className={styles.pollVoteSection}>
+                            <div className={styles.castVoteButton} onClick={() => { castVote() }}>Cast your vote</div>
+                            {post.PollAnswers.map((answer, index) => 
+                                <PollAnswer 
+                                    key={index} 
+                                    answer={answer}
+                                    selectedPollAnswers={selectedPollAnswers}
+                                    setSelectedPollAnswers={setSelectedPollAnswers}/>
+                            )}
+                        </div>
                     }
-                }
-                .create-comment-form {
-                    width: 100%;
-                    display: flex;
-                    flex-direction: row;
-                    //flex-wrap: wrap;
-                    justify-content: space-between;
-                    margin-bottom: 10px;
-                }
-                .create-comment-form-text-area {
-                    display: flex;
-                    width: 100%;
-                    margin-right: 10px;
-                    outline: none;
-                    border: 1px solid rgba(0,0,0,0.1);
-                    padding: 10px;
-                    border-radius: 5px;
-                }
-                .create-comment-form-button {
-                    background-color: #3a88f0;
-                    width: 150px;
-                    color: white;
-                    height: 40px;
-                    border-radius: 5px;
-                    padding: 0px 15px;
-                    display: flex;
-                    flex-direction: row;
-                    justify-content: center;
-                    align-items: center;
-                    box-shadow: 0 1px 10px 0 rgba(10, 8, 72, 0.1);
-                    border: none;
-                    font-size: 14px;
-                    font-weight: 800;
-                    transition-property: box-shadow, background-color;
-                    transition-duration: 0.3s, 2s;
-                }
-                .comments {
-                    //background-color: white;
-                    //box-shadow: 0 1px 10px 0 rgba(10, 8, 72, 0.05);
-                    width: 100%;
-                    //border-radius: 10px;
-                    transition-property: background-color;
-                    transition-duration: 2s;
-                }
-                .error {
-                    box-shadow: 0 0 5px 5px rgba(255, 0, 0, 0.6);
-                }
-            `}</style>
-        </>
+                    {pollSection === 'comments' &&
+                        <>
+                            <form className={styles.commentForm} onSubmit={submitComment}> 
+                                <textarea className={`${styles.commentFormTextArea} ${(commentError && styles.error)}`}
+                                    placeholder="Leave a comment..."
+                                    rows="1" type="text" name="newComment" value={newComment}
+                                    onChange={(e) => { setNewComment(e.target.value); setCommentError(false) }}
+                                />
+                                <div className="button-container">
+                                    <button className={styles.commentFormButton}>Post comment</button>
+                                </div>
+                            </form>
+                            <div className={styles.comments}>
+                                {post.Comments.map((comment, index) => 
+                                    <Comment 
+                                        key={comment.id}
+                                        index={index}
+                                        comment={comment}
+                                    /> 
+                                )}
+                            </div>
+                        </>
+                    }
+                    {pollSection === 'results' &&
+                        <div className={styles.pollResultsSection}>
+                            pollResultsSection
+                        </div>
+                    }
+                </>
+            }
+
+        </div>
     )
 }
 

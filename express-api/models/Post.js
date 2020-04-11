@@ -1,7 +1,7 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   const Post = sequelize.define('Post', {
-    postType: DataTypes.STRING,
+    type: DataTypes.STRING,
     globalState: DataTypes.STRING,
     privacySetting: DataTypes.STRING,
     creator: DataTypes.INTEGER,
@@ -18,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
     });
     Post.hasMany(models.Label);
     Post.hasMany(models.Comment);
+    Post.hasMany(models.PollAnswer);
   };
   return Post;
 };

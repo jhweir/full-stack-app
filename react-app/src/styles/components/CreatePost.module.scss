@@ -11,7 +11,6 @@
     // animation-name: fade-in;
     // animation-duration: 0.5s;
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
 }
@@ -40,12 +39,15 @@
     }
 }
 .createPostModalForm {
-    width: 100%;
+    width: 500px;
     padding-bottom: 20px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    @media screen and (max-width: 1000px) {
+        width: 100%;
+    }
 }
 .createPostModalTitle {
     font-size: 30px;
@@ -63,7 +65,7 @@
 .createPostModalFormInput {
     font-size: 14px;
     height: 40px;
-    width: 700px;
+    width: 100%;
     border-radius: 5px;
     padding: 0px 15px;
     margin-bottom: 20px;
@@ -96,22 +98,22 @@
     align-items: center;
 }
 
-// .createPostModalTypeSelector {
-//     width: 100%;
-//     height: 80px;
-//     display: flex;
-//     flex-direction: row;
-//     justify-content: center;
-// }
-// .createPostModalTypeSelectorButton {
-//     width: 150px;
-//     height: 50px;
-//     border-radius: 10px;
-//     background-color: #3a88f0;
-//     margin-right: 10px;
-//     display: flex;
-//     flex-direction: row;
-//     justify-content: center;
-//     align-items: center;
-//     color: white;
-// }
+.createPostModalTypeSelector {
+    width: 100%;
+    height: 80px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+.createPostModalTypeSelectorButton {
+    width: 150px;
+    height: 50px;
+    border-radius: 10px;
+    background-color: #3a88f0;
+    margin-right: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    color: white;
+}

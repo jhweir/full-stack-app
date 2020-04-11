@@ -24,6 +24,7 @@ function Post(props) {
         user,
         title,
         description,
+        url,
         pins,
         createdAt,
         Labels,
@@ -42,7 +43,7 @@ function Post(props) {
             .filter((label) => label.type === 'rating') // find all the posts ratings
             .map((rating) => parseInt(rating.value, 10)) // convert rating values to numbers (stored as strings in DB)
             .reduce((a, b) => a + b, 0)) // add up all rating values
-    }, [])
+    }, [props])
     
     const holonId = holonData.id // Re-named to match the column name in the database
 
@@ -139,7 +140,10 @@ function Post(props) {
                     }
                 </div>
                 <div className={styles.postContent}>
-                    <Link to={ `/p/${id}` } className={styles.postTitle}>{ title }</Link>
+                    {url 
+                        ? <a href={url} className={styles.postTitle}>{ title }</a>
+                        : <Link to={ `/p/${id}` } className={styles.postTitle}>{ title }</Link>
+                    }
                     <div className={styles.postDescription}>{ description }</div>    
                     <div className={styles.postInteract}>
                         <div className={styles.postInteractItem} onClick={() => toggleReactionModal()}>

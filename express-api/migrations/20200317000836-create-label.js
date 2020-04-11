@@ -26,6 +26,9 @@ module.exports = {
       commentId: {
         type: Sequelize.INTEGER
       },
+      pollAnswerId: {
+        type: Sequelize.INTEGER
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

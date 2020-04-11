@@ -36,14 +36,14 @@ Posts to holon A appear within holon B
 ### HolonUser
 `npx sequelize-cli model:generate --name HolonUser --attributes relationship:string,holonId:integer,userId:integer`
 
-### PostHolon (*)
+### PostHolon
 `npx sequelize-cli model:generate --name PostHolon --attributes creator:integer,relationship:string,state:string,postId:integer,holonId:integer`
 
 ### User
 `npx sequelize-cli model:generate --name User --attributes handle:string,name:string,bio:string,profileImagePath:string,coverImagePath:string`
 
 ### Post
-`npx sequelize-cli model:generate --name Post --attributes postType:string,privacySetting:string,creator:integer,note:string,title:string,description:string,url:string,imagePath:string`
+`npx sequelize-cli model:generate --name Post --attributes type:string,privacySetting:string,creator:integer,note:string,title:string,description:string,url:string,imagePath:string`
 
 ### UserUser
 `npx sequelize-cli model:generate --name UserUser --attributes relationship:string,userAId:integer,userBId:integer`
@@ -59,6 +59,9 @@ Posts to holon A appear within holon B
 
 ### Message
 `npx sequelize-cli model:generate --name Message --attributes type:string,state:string,from:integer,to:integer,text:string`
+
+### PollAnswer
+`npx sequelize-cli model:generate --name PollAnswer --attributes creator:integer,text:string,postId:integer`
 
 ## Generate Seeders
 `npx sequelize-cli seed:generate --name demo-holons`

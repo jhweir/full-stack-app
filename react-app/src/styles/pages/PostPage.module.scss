@@ -1,0 +1,96 @@
+.postPage {
+    margin-top: 60px;
+    width: 700px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    @media screen and (max-width: 700px) {
+        width: 100%;
+    }
+}
+.commentForm {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    //flex-wrap: wrap;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+.commentFormTextArea {
+    display: flex;
+    width: 100%;
+    margin-right: 10px;
+    outline: none;
+    border: 1px solid rgba(0,0,0,0.1);
+    padding: 10px;
+    border-radius: 5px;
+    &.error {
+        box-shadow: 0 0 5px 5px rgba(255, 0, 0, 0.6);
+    }
+}
+.commentFormButton {
+    background-color: #3a88f0;
+    width: 150px;
+    color: white;
+    height: 40px;
+    border-radius: 5px;
+    padding: 0px 15px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 1px 10px 0 rgba(10, 8, 72, 0.1);
+    border: none;
+    font-size: 14px;
+    font-weight: 800;
+    transition-property: box-shadow, background-color;
+    transition-duration: 0.3s, 2s;
+}
+.comments {
+    //background-color: white;
+    //box-shadow: 0 1px 10px 0 rgba(10, 8, 72, 0.05);
+    width: 100%;
+    //border-radius: 10px;
+    transition-property: background-color;
+    transition-duration: 2s;
+}
+.pollSectionSelector {
+    margin-top: 20px;
+    width: 100%;
+    height: 80px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+.pollSectionSelectorButton {
+    width: 150px;
+    height: 50px;
+    border-radius: 10px;
+    background-color: rgba(13, 16, 46, 0.2);
+    margin-right: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    color: white;
+}
+.pollVoteSection {
+    width: 100%;
+}
+.castVoteButton {
+    width: 150px;
+    height: 50px;
+    border-radius: 10px;
+    background-color: #3a88f0;
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    color: white;
+}
+// .pollCommentsSection {
+//     width: 100%;
+// }

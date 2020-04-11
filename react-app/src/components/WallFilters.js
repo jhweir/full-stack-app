@@ -20,6 +20,7 @@ function WallFilters() {
                         <div className="dropdown-title">Sort by:</div>
                         <div className="dropdown-item" onClick={ () => updateFilter('reactions') }>Reactions</div>
                         <div className="dropdown-item" onClick={ () => updateFilter('likes') }>Likes</div>
+                        <div className="dropdown-item" onClick={ () => updateFilter('hearts') }>Hearts</div>
                         <div className="dropdown-item" onClick={ () => updateFilter('date') }>Date</div>
                         <div className="dropdown-item" onClick={ () => updateFilter('comments') }>Comments</div>
                     </div>

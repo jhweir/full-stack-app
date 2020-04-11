@@ -1,7 +1,7 @@
 import React from 'react'
 import styles from '../styles/components/HolonTag.module.scss'
 
-function BranchTag(props) {
+function HolonTag(props) {
     const { holonTag, added, addSuggestedHolonTag, removeHolonTag } = props
     return (
         <>
@@ -19,4 +19,4 @@ function BranchTag(props) {
     )
 }
 
-export default BranchTag
+export default HolonTag

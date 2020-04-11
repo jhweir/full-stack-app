@@ -20,10 +20,18 @@ function Wall() {
         filteredPosts.sort((a, b) => b.Labels.length - a.Labels.length)
     }
 
+    function findNumberOfLabels(post, labelType) { return post.Labels.filter((label) => label.type === labelType).length  }
+
     // Sort posts by Likes
     if (postSortByFilter === 'likes') {
-        function findNumberOfLikes(post) { return post.Labels.filter((label) => label.type === 'like').length  }
-        filteredPosts.sort((a, b) => findNumberOfLikes(b) - findNumberOfLikes(a))
+        filteredPosts.sort((a, b) => findNumberOfLabels(b, 'like') - findNumberOfLabels(a, 'like'))
+        // function findNumberOfLikes(post) { return post.Labels.filter((label) => label.type === 'like').length  }
+        // filteredPosts.sort((a, b) => findNumberOfLikes(b) - findNumberOfLikes(a))
+    }
+
+    // Sort posts by Likes
+    if (postSortByFilter === 'hearts') {
+        filteredPosts.sort((a, b) => findNumberOfLabels(b, 'heart') - findNumberOfLabels(a, 'heart'))
     }
 
     // Sort posts by Date
