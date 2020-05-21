@@ -26,14 +26,14 @@ router.get('/getHolonData', (req, res) => {
             { model: Post, include: [Holon, Label, Comment] }
         ]
     }).then(data => {
-            res.json(data)
+        res.json(data)
     }).catch(err => console.log(err))
 })
 //// 2. Get global data
 router.get('/getGlobalData', (req, res) => {
     //// Get all holon names
     Holon.findAll({ 
-        attributes: ['id', 'handle'] 
+        attributes: ['id', 'handle']
     }).then(data => {
         res.json(data)
     }).catch(err => console.log(err))
@@ -112,12 +112,16 @@ router.post('/createPost', (req, res) => {
     })
 })
 
-// Get a post (include its comments, holons, lables, and poll answers)
+// Get a post (include its comments, holons, lables, poll answers (and their labels))
 router.get('/getPost', (req, res) => {
     Post.findOne({ 
         where: { id: req.query.id },
-        include: [Holon, Label, Comment, PollAnswer] 
-        // include: [Comment, Holon, Label]
+        include: [
+            Holon,
+            Label,
+            Comment,
+            { model: PollAnswer, include: [Label] }
+        ]
     }).then(post => {
         //console.log('post from routes: ', post)
         res.json(post)

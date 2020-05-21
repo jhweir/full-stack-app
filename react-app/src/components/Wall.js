@@ -15,32 +15,30 @@ function Wall() {
     })
 
     // TODO: Move the filters below into switch statement?
-    // Sort posts by Reactions
+    // Sort by Reactions
     if (postSortByFilter === 'reactions') {
         filteredPosts.sort((a, b) => b.Labels.length - a.Labels.length)
     }
 
     function findNumberOfLabels(post, labelType) { return post.Labels.filter((label) => label.type === labelType).length  }
 
-    // Sort posts by Likes
+    // Sort by Likes
     if (postSortByFilter === 'likes') {
         filteredPosts.sort((a, b) => findNumberOfLabels(b, 'like') - findNumberOfLabels(a, 'like'))
-        // function findNumberOfLikes(post) { return post.Labels.filter((label) => label.type === 'like').length  }
-        // filteredPosts.sort((a, b) => findNumberOfLikes(b) - findNumberOfLikes(a))
     }
 
-    // Sort posts by Likes
+    // Sort by Likes
     if (postSortByFilter === 'hearts') {
         filteredPosts.sort((a, b) => findNumberOfLabels(b, 'heart') - findNumberOfLabels(a, 'heart'))
     }
 
-    // Sort posts by Date
+    // Sort by Date
     if (postSortByFilter === 'date') {
         function formatDate(post) { return new Date(post.createdAt) }
         filteredPosts.sort((a, b) => formatDate(b) - formatDate(a))
     }
 
-    // Sort posts by Comments
+    // Sort by Comments
     if (postSortByFilter === 'comments') {
         filteredPosts.sort((a, b) => b.Comments.length - a.Comments.length)
     }
