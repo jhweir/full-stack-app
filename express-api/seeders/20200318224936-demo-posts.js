@@ -1,9 +1,11 @@
-'use strict';
+'use strict'
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.bulkInsert('Posts', [
       {
+        id: 1,
+        type: 'text',
         globalState: 'visible',
         title: 'Post 1',
         description: 'Post 1 located in Root...',
@@ -11,6 +13,8 @@ module.exports = {
         updatedAt: new Date()
       },
       {
+        id: 2,
+        type: 'text',
         globalState: 'visible',
         title: 'Post 2',
         description: 'Post 2 located in All > Science...',
@@ -18,6 +22,8 @@ module.exports = {
         updatedAt: new Date()
       },
       {
+        id: 3,
+        type: 'text',
         globalState: 'visible',
         title: 'Post 3',
         description: 'Post 3 located in All > Science > Physics...',
@@ -25,6 +31,8 @@ module.exports = {
         updatedAt: new Date()
       },
       {
+        id: 4,
+        type: 'text',
         globalState: 'visible',
         title: 'Post 4',
         description: 'Post 4 located in All > Science > Biology...',
@@ -32,16 +40,27 @@ module.exports = {
         updatedAt: new Date()
       },
       {
+        id: 5,
+        type: 'text',
         globalState: 'visible',
         title: 'Post 5',
         description: 'Post 5 located in All > Science > Chemistry...',
         createdAt: new Date(),
         updatedAt: new Date()
       },
-    ]);
+      {
+        id: 6,
+        type: 'poll',
+        globalState: 'visible',
+        title: 'Example Poll',
+        description: 'Vote on your favourite answer...',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+    ])
   },
 
   down: (queryInterface, Sequelize) => {
-    return queryInterface.bulkDelete('Posts', null, {});
+    return queryInterface.bulkDelete('Posts', null, {})
   }
-};
+}

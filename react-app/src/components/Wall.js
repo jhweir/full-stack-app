@@ -6,10 +6,10 @@ import WallHeader from './WallHeader'
 import WallPlaceholder from './WallPlaceholder'
 
 function Wall() {
-    const { holonData, postSearchFilter, postSortByFilter, isLoading, setIsLoading } = useContext(HolonContext)
+    const { holonPosts, postSearchFilter, postSortByFilter, isLoading } = useContext(HolonContext)
 
     // Apply search filter to posts
-    const filteredPosts = holonData.Posts.filter(post => {
+    const filteredPosts = holonPosts.filter(post => {
         return post.title.toUpperCase().includes(postSearchFilter.toUpperCase()) && post.globalState === 'visible'
         //&& post.pins == null
     })
@@ -17,19 +17,17 @@ function Wall() {
     // TODO: Move the filters below into switch statement?
     // Sort by Reactions
     if (postSortByFilter === 'reactions') {
-        filteredPosts.sort((a, b) => b.Labels.length - a.Labels.length)
+        filteredPosts.sort((a, b) => b.total_reactions - a.total_reactions)
     }
-
-    function findNumberOfLabels(post, labelType) { return post.Labels.filter((label) => label.type === labelType).length  }
 
     // Sort by Likes
     if (postSortByFilter === 'likes') {
-        filteredPosts.sort((a, b) => findNumberOfLabels(b, 'like') - findNumberOfLabels(a, 'like'))
+        filteredPosts.sort((a, b) => b.total_likes - a.total_likes)
     }
 
-    // Sort by Likes
+    // Sort by Hearts
     if (postSortByFilter === 'hearts') {
-        filteredPosts.sort((a, b) => findNumberOfLabels(b, 'heart') - findNumberOfLabels(a, 'heart'))
+        filteredPosts.sort((a, b) => b.total_hearts - a.total_hearts)
     }
 
     // Sort by Date
@@ -40,7 +38,7 @@ function Wall() {
 
     // Sort by Comments
     if (postSortByFilter === 'comments') {
-        filteredPosts.sort((a, b) => b.Comments.length - a.Comments.length)
+        filteredPosts.sort((a, b) => b.total_comments - a.total_comments)
     }
 
     // // Pinned posts
@@ -56,7 +54,7 @@ function Wall() {
                 {filteredPosts.map((post, index) =>
                     <Post
                         post={post}
-                        key={post.id}
+                        key={index}
                         index={index}
                         isLoading={isLoading}
                     />

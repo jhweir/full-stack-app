@@ -10,15 +10,18 @@ module.exports = (sequelize, DataTypes) => {
     description: DataTypes.STRING,
     url: DataTypes.STRING,
     imagePath: DataTypes.STRING
-  }, {});
+  }, {})
   Post.associate = function(models) {
     Post.belongsToMany(models.Holon, { 
       through: models.PostHolon,
+      as: 'PostHolons',
       foreignKey: 'postId'
-    });
-    Post.hasMany(models.Label);
-    Post.hasMany(models.Comment);
-    Post.hasMany(models.PollAnswer);
-  };
-  return Post;
-};
+    })
+    Post.hasMany(models.Label)
+    Post.hasMany(models.Comment, {
+      foreignKey: 'postId'
+    })
+    Post.hasMany(models.PollAnswer)
+  }
+  return Post
+}

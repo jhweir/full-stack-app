@@ -19,7 +19,7 @@ function HolonTagInput(props) {
     // Find holons that match the search filter
     const filteredHolonTags = globalData.filter(holonTag => (holonTag.handle.includes(newHolonTag)))
     
-    // Suggest holons that match the search filter and haven't already been added to the post
+    // Suggest holons that haven't already been added to the post
     const suggestedHolonTags = filteredHolonTags.filter(holonTag => !holonTags.find(b2 => holonTag.handle === b2.handle))
 
     function addHolonTag(e) {

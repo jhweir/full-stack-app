@@ -11,6 +11,6 @@ app.use(bodyParser.json());
 app.get('/', (req, res) => res.send('INDEX'))
 
 // Post routes
-app.use('/api/posts', require('./routes/Routes'))
+app.use('/api', require('./routes/Routes'))
 
 app.listen(5000, () => console.log('Listening on port 5000'))

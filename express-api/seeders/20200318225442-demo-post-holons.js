@@ -99,6 +99,14 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date()
       },
+      {
+        localState: 'visible',
+        relationship: 'post',
+        postId: 6,
+        holonId: 1,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
     ]);
   },
 

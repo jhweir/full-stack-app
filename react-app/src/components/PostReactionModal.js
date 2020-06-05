@@ -4,9 +4,9 @@ import PostRatingModal from './PostRatingModal'
 
 function PostReactionModal(props) {
     const {
-        likes,
-        hearts,
-        ratings,
+        totalLikes,
+        totalHearts,
+        totalRatings,
         reactionModalOpen,
         toggleReactionModal,
         addLike,
@@ -31,17 +31,17 @@ function PostReactionModal(props) {
 
             <div className={styles.postReactionModalItem} onClick={() => addLike()}>
                 <img className={styles.postIcon} src="/icons/thumbs-up-solid.svg"/>
-                <div>{ likes } Likes</div>
+                <div>{ totalLikes } Likes</div>
             </div>
 
             <div className={styles.postReactionModalItem} onClick={() => addHeart()}>
                 <img className={styles.postIcon} src="/icons/heart-solid.svg"/>
-                <div>{ hearts } Hearts</div>
+                <div>{ totalHearts } Hearts</div>
             </div>
 
             <div className={styles.postReactionModalItem} onClick={() => toggleRatingModal()}>
                 <img className={styles.postIcon} src="/icons/star-solid.svg"/>
-                <div>{ ratings } Ratings</div>
+                <div>{ totalRatings } Ratings</div>
             </div>
 
             <PostRatingModal
@@ -52,7 +52,7 @@ function PostReactionModal(props) {
                 setNewRating={setNewRating}
                 setNewRatingError={setNewRatingError}
                 addRating={addRating}/>
-
+{/* 
             <div className={`${styles.postReactionModalItem} ${styles.opacity50}`}>
                 <img className={styles.postIcon} src="/icons/hashtag-solid.svg"/>
                 <div>{ Labels.filter((label)=> label.type === 'tag').length } Tags</div>
@@ -71,7 +71,7 @@ function PostReactionModal(props) {
             <div className={`${styles.postReactionModalItem} ${styles.opacity50}`}>
                 <img className={styles.postIcon} src="/icons/link-solid.svg"/>
                 <div>{ Labels.filter((label)=> label.type === 'link').length } Links</div>
-            </div>
+            </div> */}
 
         </div>
     )

@@ -35,6 +35,21 @@ module.exports = {
       imagePath: {
         type: Sequelize.STRING
       },
+      // totalComments: {
+      //   type: Sequelize.INTEGER
+      // },
+      // totalLikes: {
+      //   type: Sequelize.INTEGER
+      // },
+      // totalHearts: {
+      //   type: Sequelize.INTEGER
+      // },
+      // totalRatings: {
+      //   type: Sequelize.INTEGER
+      // },
+      // totalRatingScore: {
+      //   type: Sequelize.INTEGER
+      // },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

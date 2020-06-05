@@ -10,10 +10,11 @@ function Post(props) {
     const { updateHolonContext, holonData } = useContext(HolonContext)
     const [reactionModalOpen, setReactionModalOpen] = useState(false)
     const [ratingModalOpen, setRatingModalOpen] = useState(false)
-    const [reactions, setReactions] = useState(0)
-    const [likes, setLikes] = useState(0)
-    const [hearts, setHearts] = useState(0)
-    const [ratings, setRatings] = useState(0)
+    const [totalComments, setTotalComments] = useState(0)
+    const [totalReactions, setTotalReactions] = useState(0)
+    const [totalLikes, setTotalLikes] = useState(0)
+    const [totalHearts, setTotalHearts] = useState(0)
+    const [totalRatings, setTotalRatings] = useState(0)
     // TODO: Move the rating state below to the PostRatingModal component
     const [newRating, setNewRating] = useState('')
     const [newRatingError, setNewRatingError] = useState(false)
@@ -25,46 +26,47 @@ function Post(props) {
         title,
         description,
         url,
-        pins,
         createdAt,
-        Labels,
-        Comments,
-        Holons
+        total_comments,
+        total_reactions,
+        total_likes,
+        total_hearts,
+        total_ratings,
+        total_rating_points,
+        pins,
+        Post_Holons
     } = props.post
 
     useEffect(() => {
-        // console.log('Use effect run in post component')
-        setReactions(Labels.length)
-        function findNumberofLabels(labelType) { return Labels.filter((label) => label.type === labelType).length }
-        setLikes(findNumberofLabels('like'))
-        setHearts(findNumberofLabels('heart'))
-        setRatings(findNumberofLabels('rating'))
-        setTotalRatingPoints(Labels
-            .filter((label) => label.type === 'rating') // find all the posts ratings
-            .map((rating) => parseInt(rating.value, 10)) // convert rating values to numbers (stored as strings in DB)
-            .reduce((a, b) => a + b, 0)) // add up all rating values
+        // Is this necissary? It could all be moved into a single object. Or why not just take the values directly from the props?
+        setTotalComments(total_comments)
+        setTotalReactions(total_reactions)
+        setTotalLikes(total_likes)
+        setTotalHearts(total_hearts)
+        setTotalRatings(total_ratings)
+        setTotalRatingPoints(total_rating_points)
     }, [props])
     
     const holonId = holonData.id // Re-named to match the column name in the database
 
     function addLike() {
-        setLikes(likes + 1)
-        setReactions(reactions + 1)
+        setTotalLikes(totalLikes + 1)
+        setTotalReactions(totalReactions + 1)
         axios.put(config.environmentURL + '/addLike', { id, holonId })
             .catch(error => { console.log(error) })
     }
 
     function addHeart() {
-        setHearts(hearts + 1)
-        setReactions(reactions + 1)
+        setTotalHearts(totalHearts + 1)
+        setTotalReactions(totalReactions + 1)
         axios.put(config.environmentURL + '/addHeart', { id, holonId })
             .catch(error => { console.log(error) })
     }
 
     function addRating() {
         if (!isNaN(newRating) && newRating !== '' && newRating <= 100) {
-            setRatings(ratings + 1)
-            setReactions(reactions + 1)
+            setTotalRatings(totalRatings + 1)
+            setTotalReactions(totalReactions + 1)
             setTotalRatingPoints(totalRatingPoints + parseInt(newRating, 10))
             axios.put(config.environmentURL + '/addRating', { id, holonId, newRating })
                 .then(setNewRating(''))
@@ -72,7 +74,7 @@ function Post(props) {
         } else { setNewRatingError(true) }
     }
 
-    function toggleReactionModal() { //change 'reactions' to 'reaction'
+    function toggleReactionModal() {
         setReactionModalOpen(!reactionModalOpen)
     }
 
@@ -105,7 +107,7 @@ function Post(props) {
     }
 
     function totalRatingScore() { // TODO: Move to rating component
-        if (ratings) { return (totalRatingPoints / ratings).toFixed(2) + '%' }
+        if (totalRatings) { return (totalRatingPoints / totalRatings).toFixed(2) + '%' }
         else { return 'N/A' }
     }
 
@@ -123,16 +125,15 @@ function Post(props) {
                     <span className={styles.postSubText}>{ user || 'Anonymous' }</span>
                     <span className={styles.postSubText}>to</span>
                     <div className={styles.holonNames}>
-                        {Holons.length >= 1 ? 
-                            Holons.map((holon, index) =>
-                                <Link to={ `/h/${holon.handle}/wall` }
-                                    onClick={ () => { updateHolonContext(holon.handle) } }
+                        {Post_Holons && Post_Holons.length >= 1 ? 
+                            Post_Holons.map((holon, index) =>
+                                <Link to={ `/h/${holon}/wall` }
+                                    onClick={ () => { updateHolonContext(holon) } }
                                     style={{marginRight: 10}}
                                     key={index}>
-                                    {holon.handle}
+                                    {holon}
                                 </Link>
-                            )
-                            : <div style={{marginRight: 10}}>root</div>}
+                            ) : <div style={{marginRight: 10}}>root</div>}
                     </div>
                     <span className={styles.postSubText}>|</span>
                     {!props.postPageLoading && /* Wait until the post has finished loading before formatting the date to prevent errors */
@@ -148,12 +149,12 @@ function Post(props) {
                     <div className={styles.postInteract}>
                         <div className={styles.postInteractItem} onClick={() => toggleReactionModal()}>
                             <img className={styles.postIcon} src="/icons/fire-alt-solid.svg"/>
-                            <span>{ reactions } Reactions</span>
+                            <span>{ totalReactions } Reactions</span>
                         </div>
                         <PostReactionModal
-                            likes={likes}
-                            hearts={hearts}
-                            ratings={ratings}
+                            totalLikes={totalLikes}
+                            totalHearts={totalHearts}
+                            totalRatings={totalRatings}
                             reactionModalOpen={reactionModalOpen}
                             toggleReactionModal={toggleReactionModal}
                             addLike={addLike}
@@ -167,12 +168,12 @@ function Post(props) {
                             newRatingError={newRatingError}
                             setNewRatingError={setNewRatingError}
                             addRating={addRating}
-                            Labels={Labels}
+                            //Labels={Labels}
                         />
                         <Link className={styles.postInteractItem} 
                             to={ `/p/${id}` }>
                             <img className={styles.postIcon} src="/icons/comment-solid.svg"/>
-                            <span>{ Comments.length } Comments</span>
+                            <span>{ totalComments } Comments</span>
                         </Link>
                         <div className={styles.postInteractItem} onClick={ deletePost }>
                             <img className={styles.postIcon} src="/icons/trash-alt-solid.svg"/>
@@ -221,3 +222,17 @@ export default Post
 //         <span>{ Comments.length } Comments</span>
 //     </div>
 // }
+
+
+// useEffect(() => {
+//     // console.log('Use effect run in post component')
+//     setTotalReactions(Labels.length)
+//     function findNumberofLabels(labelType) { return Labels.filter((label) => label.type === labelType).length }
+//     setTotalLikes(findNumberofLabels('like'))
+//     setTotalHearts(findNumberofLabels('heart'))
+//     setTotalRatings(findNumberofLabels('rating'))
+//     setTotalRatingPoints(Labels
+//         .filter((label) => label.type === 'rating') // find all the posts totalRatings
+//         .map((rating) => parseInt(rating.value, 10)) // convert rating values to numbers (stored as strings in DB)
+//         .reduce((a, b) => a + b, 0)) // add up all rating values
+// }, [props])

@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useState } from 'react';
+import React, { createContext, useState } from 'react'
 import axios from 'axios'
 import config from '../Config'
 
@@ -9,34 +9,36 @@ function HolonContextProvider(props) {
     const [holonData, setHolonData] = useState({
         DirectChildHolons: [],
         DirectParentHolons: [],
-        Posts: []
     })
-    // Change to wallSearchFilter and childHolonSearchFilter ?
+    const [holonPosts, setHolonPosts] = useState([])
     const [postSearchFilter, setPostSearchFilter] = useState('')
     const [postSortByFilter, setPostSortByFilter] = useState('reactions')
     const [holonSearchFilter, setHolonSearchFilter] = useState('')
     const [holonSortByFilter, setHolonSortByFilter] = useState('date')
     const [isLoading, setIsLoading] = useState(false)
 
+    //TODO: create seperate functions for updating globalData, holonData, and holonPosts
+
     function updateHolonContext(holonHandle) {
-        const getGlobalData = axios.get(config.environmentURL + '/getGlobalData') //remove getGlobalData and move to seperate function (or context)?
-        const getHolonData = axios.get(config.environmentURL + `/getHolonData?id=${holonHandle}`)
-        const demoDelay = new Promise((resolve) => {
-            setTimeout(resolve, 1000);
-        });
         setIsLoading(true)
-        Promise.all([getGlobalData, getHolonData]).then((values) => {
+        const getGlobalData = axios.get(config.environmentURL + '/global-data') //remove getGlobalData and move to seperate function (or context)?
+        const getHolonData = axios.get(config.environmentURL + `/holon-data?handle=${holonHandle}`)
+        const getHolonPosts = axios.get(config.environmentURL + `/holon-posts?handle=${holonHandle}`)
+        // const demoDelay = new Promise((resolve) => { setTimeout(resolve, 1000) })
+        Promise.all([getGlobalData, getHolonData, getHolonPosts]).then((values) => {
             setGlobalData(values[0].data)
             setHolonData(values[1].data)
+            setHolonPosts(values[2].data)
             setIsLoading(false)
             console.log('HolonContext updated')
         })
     }
 
     return (
-        <HolonContext.Provider value={{ //key={renderKey}
-            holonData,
+        <HolonContext.Provider value={{
             globalData,
+            holonData,
+            holonPosts,
             updateHolonContext,
             postSearchFilter,
             setPostSearchFilter,
@@ -79,15 +81,15 @@ export default HolonContextProvider
     //   });
 
 
-    // function getGlobalData() {
-    //     axios.get(config.environmentURL + '/getGlobalData').then(res => { 
+    // function globalData() {
+    //     axios.get(config.environmentURL + '/globalData').then(res => { 
     //         setGlobalData(res.data)
     //     })
     // }
 
     // async function getAllData() {
     //     getData()
-    //     getGlobalData()
+    //     globalData()
     // }
     
 
@@ -120,7 +122,7 @@ export default HolonContextProvider
     // }
 
     // const getData = axios.get(config.environmentURL + `/getData?id=${holon}`)
-    // const getGlobalData = axios.get(config.environmentURL + '/getGlobalData')
+    // const globalData = axios.get(config.environmentURL + '/getGlobalData')
     // const demoDelay = new Promise((resolve) => {
     //     setTimeout(resolve, 1000);
     // });

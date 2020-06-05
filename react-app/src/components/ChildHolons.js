@@ -24,7 +24,7 @@ function ChildHolons() {
                     <Holon
                         holon={holon}
                         index={index}
-                        key={holon.id}
+                        key={index}
                         updateContext={updateContext}
                     />
                 )} 

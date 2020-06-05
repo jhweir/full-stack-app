@@ -13,30 +13,29 @@ module.exports = (sequelize, DataTypes) => {
       through: models.VerticalHolonRelationship,
       as: 'DirectParentHolons',
       foreignKey: 'holonBId'
-    });
+    })
     Holon.belongsToMany(models.Holon, {
       through: models.VerticalHolonRelationship,
       as: 'DirectChildHolons',
       foreignKey: 'holonAId'
-    });
-
-    // HolonTag relationship
+    })
+    // HolonTags relationship
     Holon.belongsToMany(models.Holon, {
       through: models.HolonTag,
       as: 'A',
       foreignKey: 'holonBId'
-    });
+    })
     Holon.belongsToMany(models.Holon, {
       through: models.HolonTag,
-      as: 'TagOwner',
+      as: 'HolonTags',
       foreignKey: 'holonAId'
-    });
-
-    // HolonPost relationship
+    })
+    // HolonPosts relationship
     Holon.belongsToMany(models.Post, { 
       through: models.PostHolon,
+      as: 'HolonPosts',
       foreignKey: 'holonId'
-    });
-  };
+    })
+  }
   return Holon;
-};
+}

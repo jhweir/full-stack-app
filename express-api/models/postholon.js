@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 module.exports = (sequelize, DataTypes) => {
   const PostHolon = sequelize.define('PostHolon', {
     creator: DataTypes.STRING,
@@ -6,7 +6,7 @@ module.exports = (sequelize, DataTypes) => {
     localState: DataTypes.STRING,
     postId: DataTypes.INTEGER,
     holonId: DataTypes.INTEGER
-  }, {});
-  PostHolon.associate = function(models) {};
+  }, {})
+  PostHolon.associate = function(models) {}
   return PostHolon;
 };

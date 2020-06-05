@@ -26,7 +26,7 @@ function PostPageCommentSection(props) {
             <div className={styles.comments}>
                 {post && post.Comments.map((comment, index) => 
                     <Comment 
-                        key={comment.id}
+                        key={index}
                         index={index}
                         comment={comment}
                     /> 

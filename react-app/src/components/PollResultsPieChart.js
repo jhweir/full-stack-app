@@ -1,51 +1,36 @@
-import * as React from "react";
-import * as d3 from "d3";
-
-// const data = [1, 2, 3, 4];
+import * as React from "react"
+import * as d3 from "d3"
 
 function PollResultsPieChart(props) {
-    const height = 300;
-    const width = 300;
-
+    const height = 300
+    const width = 300
     const data = props.pollAnswers.map((answer) => answer.Labels.length)
 
-    let pie = d3.pie()(data);
+    let pieChart = d3.pie()(data)
 
     let arc = d3
         .arc()
         .innerRadius(0)
-        .outerRadius(100);
+        .outerRadius(100)
 
-    let interpolate = d3.interpolateRgb("#eaaf79", "#bc3358");
+    d3.select("path").append("text")
+        .attr("transform", function(d) {return "translate(" + arc.centroid(d) + ")"})
+        .attr("dy", ".35em")
+        .style("text-anchor", "middle")
+        .style("opacity", 1)
+        .text(function(d) { return 'test'})
 
     return (
         <svg height={height} width={width}>
             <g transform={`translate(${width / 2},${height / 2})`}>
-                {pie.map((slice, index) => {
-                    let sliceColor = interpolate(index / (pie.length - 1))
+                {pieChart.map((slice, index) => {
+                    let sliceColor = d3.interpolateRgb("#eaaf79", "#bc3358")(index / (pieChart.length - 1))
                     return <path key={index} d={arc(slice)} fill={sliceColor} />
                 })}
             </g>
         </svg>
     )
 }
-
-// const Slice = props => {
-//   let { pie } = props;
-
-//   let arc = d3
-//     .arc()
-//     .innerRadius(0)
-//     .outerRadius(100);
-
-//   let interpolate = d3.interpolateRgb("#eaaf79", "#bc3358");
-
-//   return pie.map((slice, index) => {
-//     let sliceColor = interpolate(index / (pie.length - 1));
-
-//     return <path d={arc(slice)} fill={sliceColor} />;
-//   });
-// };
 
 export default PollResultsPieChart
 

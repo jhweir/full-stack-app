@@ -10,9 +10,10 @@ import PostPagePollResultsSection from '../components/PostPagePollResultsSection
 
 function PostPage({ match }) {
     const postId = match.params.postId
+    //console.log('postId: ', postId)
     const [post, setPost] = useState({
         Holons: [],
-        Labels: [],
+        // Labels: [],
         Comments: [],
         PollAnswers: []
     })
@@ -21,15 +22,15 @@ function PostPage({ match }) {
     const [postPageLoading, setPostPageLoading] = useState(true)
     const [pageSection, setPageSection] = useState('comments')
     const [selectedPollAnswers, setSelectedPollAnswers] = useState([])
-    const [totalPollAnswers, setTotalPollAnswers] = useState(0)
+    // const [totalPollAnswers, setTotalPollAnswers] = useState(0)
     const [totalPollVotes, setTotalPollVotes] = useState(0)
 
-    // TODO: is there a better way to achieve .map((a)=>a) here?
     const pollAnswersSortedByScore = post.PollAnswers.map((a)=>a).sort((a, b) => b.Labels.length - a.Labels.length) 
     const pollAnswersSortedById = post.PollAnswers.map((a)=>a).sort((a, b) => a.id - b.id)
+    // TODO: is there a better way to achieve .map((a)=>a) here?
 
     function getPost() {
-        axios.get(config.environmentURL + `/getPost?id=${postId}`).then(res => { 
+        axios.get(config.environmentURL + `/post?id=${postId}`).then(res => { 
             setPost(res.data)
             setPostPageLoading(false)
         })
@@ -59,7 +60,7 @@ function PostPage({ match }) {
     }, [])
 
     useEffect(() => {
-        setTotalPollAnswers(post.PollAnswers.length)
+        // setTotalPollAnswers(post.PollAnswers.length)
         const totalVotesOnAnswer = post.PollAnswers.map((answer) => { return answer.Labels.length })
         const totalVotes = totalVotesOnAnswer.reduce((a, b) => a + b, 0)
         setTotalPollVotes(totalVotes)

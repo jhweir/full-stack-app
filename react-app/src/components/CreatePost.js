@@ -29,9 +29,11 @@ function CreatePost(props) {
 
     function submitPost(e) {
         e.preventDefault()
+        console.log('post sumbitted')
         let invalidTitle = title.length === 0 || title.length > 200
         let invalidDescription = description.length > 20000
         let invalidHolons = holonTags.length === 0
+        console.log('invalidHolons: ', invalidHolons)
         if (invalidTitle) { setTitleError(true) }
         if (invalidDescription) { setDescriptionError(true) }
         if (invalidHolons) { setHolonError(true) }
