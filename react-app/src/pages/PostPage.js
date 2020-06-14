@@ -25,7 +25,7 @@ function PostPage({ match }) {
     // const [totalPollAnswers, setTotalPollAnswers] = useState(0)
     const [totalPollVotes, setTotalPollVotes] = useState(0)
 
-    const pollAnswersSortedByScore = post.PollAnswers.map((a)=>a).sort((a, b) => b.Labels.length - a.Labels.length) 
+    const pollAnswersSortedByScore = post.PollAnswers.map((a)=>a).sort((a, b) => b.total_votes - a.total_votes) 
     const pollAnswersSortedById = post.PollAnswers.map((a)=>a).sort((a, b) => a.id - b.id)
     // TODO: is there a better way to achieve .map((a)=>a) here?
 
@@ -51,7 +51,7 @@ function PostPage({ match }) {
             let voteData = { selectedPollAnswers }
             axios.post(config.environmentURL + '/castVote', { voteData })
                 .then(setSelectedPollAnswers([]))
-                // .then(setTimeout(() => { getPost() }, 100))
+                .then(setTimeout(() => { getPost() }, 100))
         }
     }
 
@@ -61,7 +61,7 @@ function PostPage({ match }) {
 
     useEffect(() => {
         // setTotalPollAnswers(post.PollAnswers.length)
-        const totalVotesOnAnswer = post.PollAnswers.map((answer) => { return answer.Labels.length })
+        const totalVotesOnAnswer = post.PollAnswers.map((answer) => { return answer.total_votes })
         const totalVotes = totalVotesOnAnswer.reduce((a, b) => a + b, 0)
         setTotalPollVotes(totalVotes)
     }, [post])

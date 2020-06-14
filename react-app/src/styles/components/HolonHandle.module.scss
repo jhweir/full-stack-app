@@ -1,4 +1,4 @@
-.suggestedHolonTag {
+.suggestedHolonHandle {
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -11,10 +11,10 @@
         cursor: pointer;
     }
 }
-.tagText {
+.handleText {
     margin-right: 10px;
 }
-.addedHolonTag {
+.addedHolonHandle {
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -24,7 +24,7 @@
     padding: 10px 10px 10px 15px;
     margin: 0 10px 10px 0;
 }
-.holonTagCloseIcon {
+.holonHandleCloseIcon {
     background-image: url(/icons/close-01.svg);
     background-position: center;
     background-repeat: no-repeat;

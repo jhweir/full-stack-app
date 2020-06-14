@@ -3,7 +3,7 @@ import { HolonContext } from '../contexts/HolonContext'
 import axios from 'axios'
 import config from '../Config'
 import styles from '../styles/components/CreateHolon.module.scss'
-// import HolonHandleInput from './HolonTagInput'
+// import HolonHandleInput from './HolonHandleInput'
 
 function CreateHolon(props) {
     const { holonData } = useContext(HolonContext);
@@ -23,7 +23,7 @@ function CreateHolon(props) {
         if (name && handle && description !== '') {
             let parentHolonId = holonData.id
             const holon = { name, handle, description, parentHolonId }
-            axios({ method: 'post', url: config.environmentURL + `/createHolon`, data: { holon } })
+            axios({ method: 'post', url: config.environmentURL + `/create-holon`, data: { holon } })
                 .then(props.toggleModal())
                 //.then(setTimeout(() => { getData() }, 200))
         }

@@ -3,18 +3,19 @@ import { HolonContext } from '../contexts/HolonContext'
 import axios from 'axios'
 import config from '../Config'
 import styles from '../styles/components/CreatePost.module.scss'
-import HolonTagInput from './HolonTagInput'
+import HolonHandleInput from './HolonHandleInput'
 import PollAnswerForm from './PollAnswerForm'
 
 function CreatePost(props) {
     const { holonData, globalData, isLoading } = useContext(HolonContext)
+    const { toggleModal } = props
     const [type, setPostType] = useState('')
     // const [user, setUser] = useState('')
     const [title, setTitle] = useState('')
     const [description, setDescription] = useState('')
     const [url, setUrl] = useState('')
-    const [holonTags, setHolonTags] = useState([])
-    const [newHolonTag, setNewHolonTag] = useState('')
+    const [holonHandles, setHolonHandles] = useState([])
+    const [newHolonHandle, setNewHolonHandle] = useState('')
     const [pollAnswers, setPollAnswers] = useState([])
     const [newPollAnswer, setNewPollAnswer] = useState('')
     const [titleError, setTitleError] = useState(false)
@@ -22,26 +23,24 @@ function CreatePost(props) {
     const [holonError, setHolonError] = useState(false)
     const [holonErrorMessage, setHolonErrorMessage] = useState(false)
 
-    // TODO: look into whether it would be better to strip out the unnecissary data included in 'HolonData' when passing it into the holonTags:
+    // TODO: look into whether it would be better to strip out the unnecissary data included in 'HolonData' when passing it into the holonHandles:
     useEffect(() => {
-        setHolonTags([...holonTags, holonData])
+        setHolonHandles([...holonHandles, holonData.handle]) //holonData.HolonTags...
     }, [isLoading])
 
     function submitPost(e) {
         e.preventDefault()
-        console.log('post sumbitted')
         let invalidTitle = title.length === 0 || title.length > 200
         let invalidDescription = description.length > 20000
-        let invalidHolons = holonTags.length === 0
-        console.log('invalidHolons: ', invalidHolons)
+        let invalidHolons = holonHandles.length === 0
         if (invalidTitle) { setTitleError(true) }
         if (invalidDescription) { setDescriptionError(true) }
         if (invalidHolons) { setHolonError(true) }
         if (!invalidTitle && !invalidDescription && !invalidHolons) {
-            let post = { type, title, description, url, holonTags, pollAnswers }
-            axios.post(config.environmentURL + '/createPost', { post })
+            let post = { type, title, description, url, holonHandles, pollAnswers }
+            axios.post(config.environmentURL + '/create-post', { post })
                 .then(res => { console.log(res) })
-                .then(props.toggleModal)
+                .then(toggleModal)
                 // .then(setTimeout(() => { getBranchContent() }, 100))
         }
     }
@@ -79,12 +78,12 @@ function CreatePost(props) {
                             type="text" value={url}
                             onChange={(e) => { setUrl(e.target.value) }}
                         />
-                        <HolonTagInput 
+                        <HolonHandleInput 
                             globalData={globalData}
-                            holonTags={holonTags}
-                            setHolonTags={setHolonTags}
-                            newHolonTag={newHolonTag}
-                            setNewHolonTag={setNewHolonTag}
+                            holonHandles={holonHandles}
+                            setHolonHandles={setHolonHandles}
+                            newHolonHandle={newHolonHandle}
+                            setNewHolonHandle={setNewHolonHandle}
                             holonError={holonError}
                             setHolonError={setHolonError}
                             holonErrorMessage={holonErrorMessage}

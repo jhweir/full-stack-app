@@ -21,13 +21,13 @@ module.exports = (sequelize, DataTypes) => {
     })
     // HolonTags relationship
     Holon.belongsToMany(models.Holon, {
-      through: models.HolonTag,
+      through: models.HolonHandle,
       as: 'A',
       foreignKey: 'holonBId'
     })
     Holon.belongsToMany(models.Holon, {
-      through: models.HolonTag,
-      as: 'HolonTags',
+      through: models.HolonHandle,
+      as: 'HolonHandles',
       foreignKey: 'holonAId'
     })
     // HolonPosts relationship

@@ -1,34 +1,66 @@
-import * as React from "react"
+import React, { useEffect } from 'react'
 import * as d3 from "d3"
 
 function PollResultsPieChart(props) {
-    const height = 300
-    const width = 300
-    const data = props.pollAnswers.map((answer) => answer.Labels.length)
+    const { pollAnswers, totalPollVotes } = props
+    useEffect(() => {
+        // var data = pollAnswers
 
-    let pieChart = d3.pie()(data)
+        var width = 400,
+        height = 340,
+        radius = 150
 
-    let arc = d3
-        .arc()
-        .innerRadius(0)
-        .outerRadius(100)
+        var arc = d3.arc()
+            .outerRadius(radius - 20)
+            .innerRadius(80)
 
-    d3.select("path").append("text")
-        .attr("transform", function(d) {return "translate(" + arc.centroid(d) + ")"})
-        .attr("dy", ".35em")
+        var pie = d3.pie()
+            //.sort(null)
+            .value(function(d) {
+                return d.total_votes
+            })
+
+        var svg = d3.select('.chart').append("svg")
+            .attr("width", width)
+            .attr("height", height)
+            .append("g")
+            .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")")
+
+        var g = svg.selectAll()
+            .data(pie(pollAnswers))
+            .enter().append("g").attr("class", "test")
+
+        //let colorScale = d3.scale.category10()
+        //let sliceColor = d3.interpolateRgb("#eaaf79", "#bc3358")(index / (pieChart.length - 1))
+        g.append("path")
+            .attr("d", arc)
+            .style("fill", function(d,i) {
+                //return colorScale(i)
+                return d3.interpolateRgb("#000", "#bc3358")(i)
+            })
+
+        g.append("text")
+            .attr("transform", function(d) {
+                var _d = arc.centroid(d)
+                _d[0] *= 1.7
+                _d[1] *= 1.5
+                return "translate(" + _d + ")"
+            })
+        .attr("dy", ".50em")
         .style("text-anchor", "middle")
-        .style("opacity", 1)
-        .text(function(d) { return 'test'})
-
+        .text(function(d) {
+            if (((d.data.total_votes / totalPollVotes) * 100).toFixed(2) < 5) { return '' }
+            return ((d.data.total_votes / totalPollVotes) * 100).toFixed(2) + '%'
+        })
+      
+        g.append("text")
+            .attr("text-anchor", "middle")
+            .attr('font-size', '4em')
+            .attr('y', 20)
+            .text(totalPollVotes)
+    }, [])
     return (
-        <svg height={height} width={width}>
-            <g transform={`translate(${width / 2},${height / 2})`}>
-                {pieChart.map((slice, index) => {
-                    let sliceColor = d3.interpolateRgb("#eaaf79", "#bc3358")(index / (pieChart.length - 1))
-                    return <path key={index} d={arc(slice)} fill={sliceColor} />
-                })}
-            </g>
-        </svg>
+        <div className="chart" style={{width: "400px", margin: "0 auto 20px auto"}}></div>
     )
 }
 
@@ -36,11 +68,86 @@ export default PollResultsPieChart
 
 
 
+// import React, { useEffect } from 'react'
+// import * as d3 from "d3"
+
+// function PollResultsPieChart(props) {
+//     const height = 300
+//     const width = 300
+//     const data = [3, 6, 26, 1, 2]// props.pollAnswers.map((answer) => answer.total_votes)
+
+//     useEffect(() => {
+//         let svg = d3.select(".chart").append("svg")
+//             .attr("width", 300)
+//             .attr("height", 300)
+            
+//         svg.append("rect")
+//             .attr("x", 0)
+//             .attr("y", 0)
+//             .attr("width", 220)
+//             .attr("height", 120)
+//             .style('fill', 'orange')
+
+//         let pieChart = d3.pie()(data)
+        
+//         let arc = d3
+//             .arc()
+//             .innerRadius(0)
+//             .outerRadius(100)
+
+//     }, [])
+
+//     return (
+//         <div className="chart" style={{width: "300px", height: "300px"}}></div>
+        
+//     )
+// }
+
+// export default PollResultsPieChart
+
+
+// import * as React from "react"
+// import * as d3 from "d3"
+
+// function PollResultsPieChart(props) {
+//     const height = 300
+//     const width = 300
+//     const data = props.pollAnswers.map((answer) => answer.total_votes)//[3, 6, 26, 1, 2]// props.pollAnswers.map((answer) => answer.total_votes)
+
+//     let pieChart = d3.pie()(data)
+
+//     let arc = d3
+//         .arc()
+//         .innerRadius(0)
+//         .outerRadius(100)
+
+//     // d3.select("path").append("text")
+//     //     // .attr("transform", function(d) {return "translate(" + arc.centroid(d) + ")"})
+//     //     // .attr("dy", ".35em")
+//     //     .style("text-anchor", "middle")
+//     //     .style("color", "black")
+//     //     .style("opacity", 1)
+//     //     .text(function(d) { return 'test'})
+
+//     return (
+//         <svg height={height} width={width}>
+//             <g transform={`translate(${width / 2},${height / 2})`}>
+//                 {pieChart.map((slice, index) => {
+//                     let sliceColor = d3.interpolateRgb("#eaaf79", "#bc3358")(index / (pieChart.length - 1))
+//                     return <path key={index} d={arc(slice)} fill={sliceColor} />
+//                 })}
+//             </g>
+//         </svg>
+//     )
+// }
+
+// export default PollResultsPieChart
+
+
+
 // import React, { useRef, useState, useEffect } from 'react'
 // import * as d3 from "d3";
 // import styles from '../styles/components/PollResultsPieChart.module.scss'
-
-
 
 // function PollResultsPieChart(props) {
 //     const ref = useRef()

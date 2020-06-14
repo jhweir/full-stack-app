@@ -2,7 +2,7 @@
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.bulkInsert('HolonTags', [ 
+    return queryInterface.bulkInsert('HolonHandles', [ 
       // Posts to holon A appear within holon B
       {
         state: 'open',
@@ -148,6 +148,6 @@ module.exports = {
   },
 
   down: (queryInterface, Sequelize) => {
-    return queryInterface.bulkDelete('HolonTags', null, {});
+    return queryInterface.bulkDelete('HolonHandles', null, {});
   }
 };

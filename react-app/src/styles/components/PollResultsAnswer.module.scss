@@ -14,11 +14,17 @@
     height: 40px;
     border-radius: 5px;
     background-color: rgb(240, 240, 240);
-    margin-right: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
     //opacity: 0.5;
+}
+.pollAnswerScoreRatio {
+    width: 80px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 .pollAnswerScore {
     margin-right: 20px;
@@ -31,10 +37,6 @@
     //width: 40%;
     height: 40px;
     background-color: #9ed5ff;
-}
-.pollAnswerScoreRatio {
-    margin-right: 20px;
-    font-weight: 800;
 }
 .pollAnswerScoreText {
     position: absolute;

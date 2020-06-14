@@ -4,8 +4,8 @@ import styles from '../styles/components/PollResultsAnswer.module.scss'
 function PollResultsAnswer(props) {
     const { answer, index, totalPollVotes } = props
 
-    const pollAnswerScore = ((answer.Labels.length / totalPollVotes) * 100).toFixed(2)
-    const pollAnswerVotes = answer.Labels.length
+    const pollAnswerScore = ((answer.total_votes / totalPollVotes) * 100).toFixed(2)
+    const pollAnswerVotes = answer.total_votes
 
     return (
         <div className={styles.pollAnswer}>

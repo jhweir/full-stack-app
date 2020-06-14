@@ -11,7 +11,7 @@ function PostPagePollResultsSection(props) {
     } = props
     return (
         <div className={styles.pollResultsSection}>
-            <PollResultsPieChart pollAnswers={pollAnswers}/>
+            <PollResultsPieChart pollAnswers={pollAnswers} totalPollVotes={totalPollVotes}/>
             {pollAnswersSortedByScore.map((answer, index) => 
                 <PollResultsAnswer
                     key={index}

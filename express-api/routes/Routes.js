@@ -5,7 +5,7 @@ const Op = sequelize.Op;
 
 const Holon = require('../models').Holon
 const VerticalHolonRelationship = require('../models').VerticalHolonRelationship
-const HolonTag = require('../models').HolonTag
+const HolonHandle = require('../models').HolonHandle
 // const HolonUser = require('../models').HolonUser
 const PostHolon = require('../models').PostHolon
 // const User = require('../models').User
@@ -45,7 +45,8 @@ const postAttributes = [
 ]
 
 router.get('/global-data', (req, res) => {
-    Holon.findAll({ attributes: ['id', 'handle'] })
+    Holon.findAll({ attributes: ['handle'] })
+    .then(handles => { return handles.map(h => h.handle) })
     .then(data => { res.json(data) })
     .catch(err => console.log(err))
 })
@@ -69,7 +70,7 @@ router.get('/holon-data', (req, res) => {
             },
             {
                 model: Holon,
-                as: 'HolonTags',
+                as: 'HolonHandles',
                 attributes: ['handle', 'name'],
                 through: { attributes: [] }
             }
@@ -93,8 +94,8 @@ router.get('/holon-posts', (req, res) => {
             attributes: [],
             through: { attributes: [] }
         }],
-        //limit: 3,
-        //offset: 1,
+        // limit: 3,
+        // offset: 1,
         subQuery: false
     })
     .then(posts => {
@@ -140,12 +141,12 @@ router.get('/post', (req, res) => {
             },
             {
                 model: PollAnswer,
-                attributes: ['id', 'text'],
-                include: [
-                    {
-                        model: Label,
-                        attributes: ['value']
-                    }
+                attributes: [
+                    'id', 'text',
+                    [sequelize.literal(
+                        `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.pollAnswerId = PollAnswers.id )`
+                        ),'total_votes'
+                    ],
                 ]
             }
         ]
@@ -161,7 +162,7 @@ router.get('/post', (req, res) => {
 })
 
 // Create a new holon
-router.post('/createHolon', (req, res) => {
+router.post('/create-holon', (req, res) => {
     const { name, handle, description, parentHolonId } = req.body.holon
     Holon.create({ name, handle, description }).then((newHolon) => {
         // Attach new holon to parent holon(s)
@@ -180,12 +181,10 @@ router.post('/createHolon', (req, res) => {
         //// 1. Work out parent holons tags
         Holon.findOne({
             where: { id: parentHolonId },
-            include: [
-                { model: Holon, as: 'HolonTags' }
-            ]
+            include: [{ model: Holon, as: 'HolonHandles' }]
         }).then(data => {
         //// 2. Add them to the new holon
-            data.HolonTags.forEach((tag) => {
+            data.HolonHandles.forEach((tag) => {
                 HolonTag.create({
                     state: 'open',
                     holonAId: newHolon.id,
@@ -197,38 +196,52 @@ router.post('/createHolon', (req, res) => {
 })
 
 // Create a new post
-router.post('/createPost', (req, res) => {
-    const { type, title, description, url, holonTags, pollAnswers } = req.body.post
-    res.send('post created!')
-    // Find the holons tags
-    function createNewHolonTags(tag, post) {
-        Holon.findOne({ 
-            where: { id: tag.id },
-            include: [
-                { model: Holon, as: 'HolonTags' },
-            ]
-        }).then((data) => {
-            // Add each tag to the post
-            data.HolonTags.forEach((holon) => PostHolon.create({
-                creator: null, // to be set up when user tables ready
-                relationship: 'post',
-                localState: 'visible',
-                postId: post.id,
-                holonId: holon.id,
-                holonHandle: holon.handle //TODO: check if this property is included...
-            })
-        )}).catch(err => console.log(err))
+router.post('/create-post', (req, res) => {
+    const { type, title, description, url, holonHandles, pollAnswers } = req.body.post
+    let holonIds = []
+
+    async function asyncForEach(array, callback) {
+        for (let index = 0; index < array.length; index++) {
+          await callback(array[index], index, array)
+        }
     }
 
-    function createNewPollAnswer(answer, post) {
-        PollAnswer.create({ text: answer, postId: post.id })
+    async function findIncludedHolonIds(handle) {
+        await Holon.findOne({
+            where: { handle: handle },
+            include: [{ model: Holon, as: 'HolonHandles', attributes: ['id'], through: { attributes: [] } }]
+        })
+        .then(holon => {
+            holonIds.push(...holon.HolonHandles.map(holon => holon.id))
+        })
+    }
+    
+    async function createNewPostHolons(post) {
+        await asyncForEach(holonHandles, async(handle) => {
+            await findIncludedHolonIds(handle)
+        })
+        var filteredHolonIds = Array.from(new Set(holonIds))
+        filteredHolonIds.forEach(id => PostHolon.create({
+            relationship: 'post',
+            localState: 'visible',
+            postId: post.id,
+            holonId: id
+        }))
     }
 
-    // Create the post and all its holon tags
-    Post.create({ type, title, description, url, globalState: 'visible' }).then(post => {
-        holonTags.forEach((tag) => createNewHolonTags(tag, post))
-        pollAnswers.forEach((answer) => createNewPollAnswer(answer, post))
+    function createNewPollAnswers(post) {
+        pollAnswers.forEach(answer => PollAnswer.create({ text: answer, postId: post.id }))
+    }
+
+    // Create the post and all of its assosiated content
+    Post.create({
+        type, title, description, url, globalState: 'visible'
     })
+    .then(post => {
+        createNewPostHolons(post)
+        createNewPollAnswers(post)
+    })
+    .then(res.send('Post successfully created'))
 })
 
 // Delete post
