@@ -152,21 +152,26 @@ router.get('/post', (req, res) => {
                         ),'total_score'
                     ],
                 ],
-                include: [
-                    { 
-                        model: Label,
-                        //as: 'PostHolons',
-                        attributes: ['pollAnswerId', 'value', 'createdAt']
-                        //through: { attributes: [] }
-                    }
-                ]
+                // include: [
+                //     { 
+                //         model: Label,
+                //         as: 'Votes',
+                //         attributes: ['value', 'createdAt']
+                //     }
+                // ]
             }
         ]
     })
     .then(post => {
-        const newPostHolons = post.PostHolons.map(ph => ph.handle)
-        post.setDataValue("Post_Holons", newPostHolons)
+        // replace PostHolons array of objects with simpler Post_Holons array of strings
+        const Post_Holons = post.PostHolons.map(ph => ph.handle)
+        post.setDataValue("Post_Holons", Post_Holons)
         delete post.dataValues.PostHolons
+        // replace raw createdAt dates in PollAnswer.Labels with parsed number strings
+        // post.PollAnswers.forEach(answer => answer.Votes.forEach(label => {
+        //     label.setDataValue("parsedCreatedAt", Date.parse(label.createdAt))
+        //     delete label.dataValues.createdAt
+        // }))
         return post
     })
     .then(post => { res.json(post) })

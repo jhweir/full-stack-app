@@ -15,7 +15,7 @@ function PostPage(props) {
     const postId = props.match.params.postId
     const pageUrl = props.match.url
     const parsedQuery = queryString.parse(props.location.search)
-    //console.log('props.match', props.match)
+
     const [post, setPost] = useState({
         Post_Holons: [],
         Comments: [],
@@ -25,26 +25,24 @@ function PostPage(props) {
     const [newComment, setNewComment] = useState('')
     const [commentError, setCommentError] = useState(false)
     const [postPageLoading, setPostPageLoading] = useState(true)
-    const [pageSection, setPageSection] = useState('comments')
     const [selectedPollAnswers, setSelectedPollAnswers] = useState([])
-    // const [totalPollAnswers, setTotalPollAnswers] = useState(0)
-    const [totalPollVotes, setTotalPollVotes] = useState(0)
 
+    // TODO: is there a better way to achieve the effect of .map((a)=>a) here?
     const pollAnswersSortedByScore = post.PollAnswers.map((a)=>a).sort((a, b) => b.total_votes - a.total_votes) 
     const pollAnswersSortedById = post.PollAnswers.map((a)=>a).sort((a, b) => a.id - b.id)
-    // TODO: is there a better way to achieve the effect of .map((a)=>a) here?
+    const totalPollVotes = post.PollAnswers.map((answer) => { return answer.total_votes }).reduce((a, b) => a + b, 0)
 
     function getPost() {
-        axios.get(config.environmentURL + `/post?id=${postId}`).then(res => { 
-            setPost(res.data)
-            setPostPageLoading(false)
-        })
+        axios.get(config.environmentURL + `/post?id=${postId}`)
+            .then(res => { 
+                setPost(res.data)
+                setPostPageLoading(false)
+            })
     }
 
     function submitComment(e) {
         e.preventDefault()
-        if (newComment === '') { setCommentError(true) }
-        if (newComment !== '') {
+        if (newComment === '') { setCommentError(true) } else {
             axios.post(config.environmentURL + '/addComment', { text: newComment, postId })
                 .then(setNewComment(''))
                 .then(setTimeout(() => { getPost() }, 100))
@@ -62,16 +60,8 @@ function PostPage(props) {
 
     useEffect(() => {
         getPost()
-        console.log('getPost run')
+        console.log('getPost run on PostPage')
     }, [])
-
-    useEffect(() => {
-        // setTotalPollAnswers(post.PollAnswers.length)
-        const totalVotesOnAnswer = post.PollAnswers.map((answer) => { return answer.total_votes })
-        const totalVotes = totalVotesOnAnswer.reduce((a, b) => a + b, 0)
-        setTotalPollVotes(totalVotes)
-        console.log('second use effect run')
-    }, [post])
 
     return (
         <div className={styles.postPage}>
@@ -119,38 +109,37 @@ function PostPage(props) {
                 } exact />
                 <Route component={ EmptyPage }/>
             </Switch> 
-
-            {/* {pageSection === 'comments' &&
-                <PostPageComments
-                    submitComment={submitComment}
-                    commentError={commentError}
-                    newComment={newComment}
-                    setNewComment={setNewComment}
-                    setCommentError={setCommentError}
-                    post={post}
-                />
-            } */}
-
-            {/* {pageSection === 'poll-vote' &&
-                <PostPagePollVote
-                    castVote={castVote}
-                    pollAnswersSortedById={pollAnswersSortedById}
-                    selectedPollAnswers={selectedPollAnswers}
-                    setSelectedPollAnswers={setSelectedPollAnswers}
-                />
-            } */}
-
-            {/* {pageSection === 'poll-results' &&
-                <PostPagePollResults
-                    postId={postId}
-                    pollAnswers={post.PollAnswers}
-                    pollAnswersSortedByScore={pollAnswersSortedByScore}
-                    totalPollVotes={totalPollVotes}
-                />
-            } */}
-
         </div>
     )
 }
 
 export default PostPage
+
+{/* {pageSection === 'comments' &&
+    <PostPageComments
+        submitComment={submitComment}
+        commentError={commentError}
+        newComment={newComment}
+        setNewComment={setNewComment}
+        setCommentError={setCommentError}
+        post={post}
+    />
+} */}
+
+{/* {pageSection === 'poll-vote' &&
+    <PostPagePollVote
+        castVote={castVote}
+        pollAnswersSortedById={pollAnswersSortedById}
+        selectedPollAnswers={selectedPollAnswers}
+        setSelectedPollAnswers={setSelectedPollAnswers}
+    />
+} */}
+
+{/* {pageSection === 'poll-results' &&
+    <PostPagePollResults
+        postId={postId}
+        pollAnswers={post.PollAnswers}
+        pollAnswersSortedByScore={pollAnswersSortedByScore}
+        totalPollVotes={totalPollVotes}
+    />
+} */}

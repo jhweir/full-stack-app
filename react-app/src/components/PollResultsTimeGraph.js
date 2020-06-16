@@ -4,68 +4,35 @@ import config from '../Config'
 import * as d3 from "d3"
 
 function PollResultsTimeGraph(props) {
-    //const { postId, pollAnswers, totalPollVotes, pollAnswersSortedByScore } = props
+    const { postId, pollAnswers, totalPollVotes, pollAnswersSortedByScore } = props
     const [pollVotes, setPollVotes] = useState([])
-    const [pollLines, setPollLines] = useState([])
+    // const [pollLines, setPollLines] = useState([])
     
     const height = 300
     const width = 500
 
-    const pollAnswers = [
-        {
-            id: 1,
-            text: "Answer 1...",
-            total_votes: 5,
-            total_score: 5
-        },
-        {
-            id: 2,
-            text: "Answer 2...",
-            total_votes: 2,
-            total_score: 2
-        },
-        {
-            id: 3,
-            text: "Answer 3...",
-            total_votes: 3,
-            total_score: 3
-        }
-    ]
+    function getPollVotes() {
+        axios.get(config.environmentURL + `/poll-votes?postId=${postId}`)
+        .then(res => { setPollVotes(res.data) })
+    }
 
-    const data = [
-        { answer: 1, date: 1579103238000, value: 0 },
-        { answer: 1, date: 1581781638000, value: 1 },
-        { answer: 1, date: 1584287238000, value: 5 },
-        { answer: 1, date: 1586965638000, value: 2 },
-        { answer: 1, date: 1589557638000, value: 8 },
-        { answer: 2, date: 1579103238000, value: 2 },
-        { answer: 2, date: 1581781638000, value: 3 },
-        { answer: 2, date: 1584287238000, value: 1 },
-        { answer: 2, date: 1586965638000, value: 3 },
-        { answer: 2, date: 1589557638000, value: 4 },
-        { answer: 3, date: 1584287238000, value: 8 },
-        { answer: 3, date: 1586965638000, value: 7 },
-        { answer: 3, date: 1589557638000, value: 9 }
-    ]
+    useEffect(() => {
+        getPollVotes()
+    }, [])
 
-    var groupedData = []
+    var pollVotesByAnswer = d3.nest()
+        .key(function(d) { return d.pollAnswerId })
+        .entries(pollVotes)
 
-    pollAnswers.forEach(pollAnswer => {
-        let answerVotes = data.filter(({ answer }) => { return answer === pollAnswer.id })
-        groupedData = [...groupedData, answerVotes]
-    })
-
-    console.log('groupedData: ', groupedData)
-
-    // const allVotes = data.map(a => a.votes)
-    // console.log('allVotes: ', allVotes)
+    console.log('pollVotes', pollVotes)
+    console.log('pollVotesByAnswer', pollVotesByAnswer)
 
     // X axis (horizontal) = time
-    const minX = d3.min(data.map(vote => vote.date))
-    const maxX = d3.max(data.map(vote => vote.date))
+    const minX = d3.min(pollVotes.map(vote => vote.parsedCreatedAt))
+    const maxX = d3.max(pollVotes.map(vote => vote.parsedCreatedAt))
     // Y axis (vertical) = points
     const minY = 0 //d3.min(data.map(vote => vote.value))
-    const maxY = d3.max(data.map(vote => vote.value))
+    const maxY = d3.max(pollVotes.map(vote => vote.value))
 
     let x = d3
         .scaleLinear()
@@ -79,30 +46,31 @@ function PollResultsTimeGraph(props) {
 
     var line = d3
         .line()
-        .x(function(d) { return x(d.date) })
+        .x(function(d) { return x(d.parsedCreatedAt) })
         .y(function(d) { return y(d.value) })
 
-    useEffect(() => {
-        let aline = d3.selectAll("#line");
-        var totalLength = aline.node().getTotalLength();
-        console.log(totalLength);
-        aline
-        .attr("stroke-dasharray", totalLength)
-        .attr("stroke-dashoffset", totalLength)
-        .attr("stroke-width", 10)
-        //.attr("stroke", "#6788ad")
-        .transition()
-        .duration(3000)
-        .attr("stroke-width", 3)
-        .attr("stroke-dashoffset", 0);
-    },[])
+
+    // useEffect(() => {
+    //     let line2 = d3.selectAll("#line");
+    //     var totalLength = line2.node().getTotalLength();
+    //     console.log(totalLength);
+    //     line2
+    //     .attr("stroke-dasharray", totalLength)
+    //     .attr("stroke-dashoffset", totalLength)
+    //     .attr("stroke-width", 10)
+    //     //.attr("stroke", "#6788ad")
+    //     .transition()
+    //     .duration(3000)
+    //     .attr("stroke-width", 3)
+    //     .attr("stroke-dashoffset", 0)
+    // },[])
 
     return (
         // <div className="chart" style={{width: width}}></div>
         <div>
             <svg height={height} width={width}>
                 <g id={"xAxis"}>
-                    {groupedData.map((answer, i) =>
+                    {/* {groupedData.map((answer, i) =>
                         <path
                             key={i}
                             id={"line"}
@@ -111,14 +79,14 @@ function PollResultsTimeGraph(props) {
                             stroke={d3.interpolateRgb("#9ed5ff", "#00b978")(i)}
                             strokeWidth={3}
                         />
-                    )}
-                    {/* <path
+                    )} */}
+                    <path
                         id={"line"}
-                        d={line(data)}
+                        d={line(pollVotes)}
                         fill={"transparent"}
                         stroke={"blue"}
                         strokeWidth={3}
-                    /> */}
+                    />
                 </g>
             </svg>
         </div>
@@ -127,6 +95,58 @@ function PollResultsTimeGraph(props) {
 
 export default PollResultsTimeGraph
 
+// var allAnswers = []
+// pollAnswers.forEach(answer => allAnswers = [...allAnswers, ...answer.Votes])
+// console.log('allAnswers', allAnswers)
+
+//var groupedData = []
+
+// pollAnswers.forEach(pollAnswer => {
+//     let answerVotes = data.filter(({ answer }) => { return answer === pollAnswer.id })
+//     groupedData = [...groupedData, answerVotes]
+// })
+
+//console.log('groupedData: ', groupedData)
+
+// const allVotes = data.map(a => a.votes)
+// console.log('allVotes: ', allVotes)
+
+// const pollAnswers = [
+//     {
+//         id: 1,
+//         text: "Answer 1...",
+//         total_votes: 5,
+//         total_score: 5
+//     },
+//     {
+//         id: 2,
+//         text: "Answer 2...",
+//         total_votes: 2,
+//         total_score: 2
+//     },
+//     {
+//         id: 3,
+//         text: "Answer 3...",
+//         total_votes: 3,
+//         total_score: 3
+//     }
+// ]
+
+// const data = [
+//     { answer: 1, date: 1579103238000, value: 0 },
+//     { answer: 1, date: 1581781638000, value: 1 },
+//     { answer: 1, date: 1584287238000, value: 5 },
+//     { answer: 1, date: 1586965638000, value: 2 },
+//     { answer: 1, date: 1589557638000, value: 8 },
+//     { answer: 2, date: 1579103238000, value: 2 },
+//     { answer: 2, date: 1581781638000, value: 3 },
+//     { answer: 2, date: 1584287238000, value: 1 },
+//     { answer: 2, date: 1586965638000, value: 3 },
+//     { answer: 2, date: 1589557638000, value: 4 },
+//     { answer: 3, date: 1584287238000, value: 8 },
+//     { answer: 3, date: 1586965638000, value: 7 },
+//     { answer: 3, date: 1589557638000, value: 9 }
+// ]
 
 // {
 //     answer: 1,
