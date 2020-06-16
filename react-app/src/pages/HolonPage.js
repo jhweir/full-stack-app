@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from 'react'
 import { HolonContext } from '../contexts/HolonContext'
-import {Route, Switch } from "react-router-dom";
+import { Route, Switch, Redirect } from "react-router-dom"
 import styles from '../styles/pages/HolonPage.module.scss'
 import Wall from '../components/Wall'
 import ChildHolons from '../components/ChildHolons'
@@ -26,8 +26,9 @@ function HolonPage(props) {
                 <SideBarLeft/>
                 <div className={styles.holonPageCenterPanel}>
                     <Switch>
+                        <Redirect from={`${props.match.url}`} to={`${props.match.url}/wall`} exact/>
                         <Route path={`${props.match.url}/wall`} component={ Wall } exact/>
-                        <Route path={`${props.match.url}/child-holons`} component={ ChildHolons } exact/>
+                        <Route path={`${props.match.url}/child-spaces`} component={ ChildHolons } exact/>
                         <Route component={ EmptyPage }/> {/* TODO: Check if this needs to be doubled up on the App.js component */}
                     </Switch>
                 </div>
@@ -49,7 +50,7 @@ export default HolonPage
     <section className={sectionWrapper}>         
         <Switch location={location}>
             <Route path={`${props.match.url}/wall`} component={ Wall } exact/>
-            <Route path={`${props.match.url}/child-holons`} component={ ChildHolons } exact/>
+            <Route path={`${props.match.url}/child-spaces`} component={ ChildHolons } exact/>
             <Route component={ EmptyPage }/>
         </Switch>
     </section>
@@ -80,7 +81,7 @@ export default HolonPage
 //         <CSSTransition key={location.key} classNames="fade" timeout={1000} mountOnEnter={true} unmountOnExit={true}>
 //             <Switch location={location}>
 //                 <Route path={`${props.match.url}/wall`} component={ Wall } exact/>
-//                 <Route path={`${props.match.url}/child-holons`} component={ ChildHolons } exact/>
+//                 <Route path={`${props.match.url}/child-spaces`} component={ ChildHolons } exact/>
 //                 {/* <Route path="/" component={Home} exact />
 //                 <Route path="/first" component={First} />
 //                 <Route path="/second" component={Second} /> */}

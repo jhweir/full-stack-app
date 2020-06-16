@@ -1,8 +1,8 @@
 import React from 'react'
-import styles from '../styles/components/PostPageCommentSection.module.scss'
+import styles from '../styles/components/PostPageComments.module.scss'
 import Comment from './Comment'
 
-function PostPageCommentSection(props) {
+function PostPageComments(props) {
     const {
         submitComment,
         commentError,
@@ -36,4 +36,4 @@ function PostPageCommentSection(props) {
     )
 }
 
-export default PostPageCommentSection
+export default PostPageComments

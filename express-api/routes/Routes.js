@@ -23,7 +23,7 @@ const postAttributes = [
         ),'total_comments'
     ],
     [sequelize.literal(
-        `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id)`
+        `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.type != "vote")`
         ),'total_reactions'
     ],
     [sequelize.literal(
@@ -147,6 +147,18 @@ router.get('/post', (req, res) => {
                         `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.pollAnswerId = PollAnswers.id )`
                         ),'total_votes'
                     ],
+                    [sequelize.literal(
+                        `(SELECT SUM(value) FROM Labels AS Label WHERE Label.pollAnswerId = PollAnswers.id)`
+                        ),'total_score'
+                    ],
+                ],
+                include: [
+                    { 
+                        model: Label,
+                        //as: 'PostHolons',
+                        attributes: ['pollAnswerId', 'value', 'createdAt']
+                        //through: { attributes: [] }
+                    }
                 ]
             }
         ]
@@ -159,6 +171,21 @@ router.get('/post', (req, res) => {
     })
     .then(post => { res.json(post) })
     .catch(err => console.log(err))
+})
+
+router.get('/poll-votes', (req, res) => {
+    Label.findAll({ 
+        where: { type: 'vote', postId: req.query.postId },
+        attributes: ['pollAnswerId', 'value', 'createdAt']
+    })
+    .then(labels => {
+        labels.forEach(label => {
+            label.setDataValue("parsedCreatedAt", Date.parse(label.createdAt))
+            delete label.dataValues.createdAt
+        })
+        return labels
+    })
+    .then(labels => { res.json(labels) })
 })
 
 // Create a new holon
@@ -220,7 +247,7 @@ router.post('/create-post', (req, res) => {
         await asyncForEach(holonHandles, async(handle) => {
             await findIncludedHolonIds(handle)
         })
-        var filteredHolonIds = Array.from(new Set(holonIds))
+        let filteredHolonIds = Array.from(new Set(holonIds))
         filteredHolonIds.forEach(id => PostHolon.create({
             relationship: 'post',
             localState: 'visible',
@@ -303,21 +330,15 @@ router.post('/addComment', (req, res) => {
 
 // Cast vote
 router.post('/castVote', (req, res) => {
-    req.body.voteData.selectedPollAnswers.forEach((answer) => {
+    const { selectedPollAnswers, postId } = req.body.voteData
+    selectedPollAnswers.forEach((answer) => {
         Label.create({ 
             type: 'vote',
             value: 1,
+            postId: postId,
             pollAnswerId: answer.id,
         })
     })
-    // Label.create({ 
-    //     type: 'vote',
-    //     value: null,
-    //     holonId: req.body.holonId,
-    //     userId: null,
-    //     postId: req.body.id,
-    //     commentId: null,
-    // }).then(res.send('Post successfully hearted'))
 })
 
 

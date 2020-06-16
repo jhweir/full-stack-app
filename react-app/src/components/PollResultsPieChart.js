@@ -2,33 +2,35 @@ import React, { useEffect } from 'react'
 import * as d3 from "d3"
 
 function PollResultsPieChart(props) {
-    const { pollAnswers, totalPollVotes } = props
+    const { pollAnswers, totalPollVotes, pollAnswersSortedByScore } = props
+    let width = 450,
+    height = 340,
+    radius = 150
     useEffect(() => {
-        // var data = pollAnswers
-
-        var width = 400,
-        height = 340,
-        radius = 150
-
-        var arc = d3.arc()
+        console.log('pollAnswers: ', pollAnswers)
+        console.log('pollAnswersSortedByScore: ', pollAnswersSortedByScore)
+        let arc = d3.arc()
             .outerRadius(radius - 20)
             .innerRadius(80)
 
-        var pie = d3.pie()
+        let pie = d3.pie()
             //.sort(null)
             .value(function(d) {
                 return d.total_votes
             })
 
-        var svg = d3.select('.chart').append("svg")
+        let svg = d3.select('.chart')
+            .append("svg")
             .attr("width", width)
             .attr("height", height)
             .append("g")
             .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")")
 
-        var g = svg.selectAll()
+        let g = svg.selectAll()
             .data(pie(pollAnswers))
-            .enter().append("g").attr("class", "test")
+            .enter()
+            .append("g")
+            .attr("class", "test")
 
         //let colorScale = d3.scale.category10()
         //let sliceColor = d3.interpolateRgb("#eaaf79", "#bc3358")(index / (pieChart.length - 1))
@@ -36,31 +38,50 @@ function PollResultsPieChart(props) {
             .attr("d", arc)
             .style("fill", function(d,i) {
                 //return colorScale(i)
-                return d3.interpolateRgb("#000", "#bc3358")(i)
+                return d3.interpolateRgb("#9ed5ff", "#00b978")(i)
             })
 
         g.append("text")
             .attr("transform", function(d) {
-                var _d = arc.centroid(d)
+                let _d = arc.centroid(d)
                 _d[0] *= 1.7
                 _d[1] *= 1.5
                 return "translate(" + _d + ")"
             })
-        .attr("dy", ".50em")
-        .style("text-anchor", "middle")
-        .text(function(d) {
-            if (((d.data.total_votes / totalPollVotes) * 100).toFixed(2) < 5) { return '' }
-            return ((d.data.total_votes / totalPollVotes) * 100).toFixed(2) + '%'
-        })
+            .attr("dy", ".50em")
+            .style("text-anchor", "middle")
+            .text(function(d) {
+                if (((d.data.total_votes / totalPollVotes) * 100).toFixed(2) < 5) { return '' }
+                return ((d.data.total_votes / totalPollVotes) * 100).toFixed(2) + '%'
+            })
+
+        // g.append("text")
+        //     .attr("transform", function(d) {
+        //         let _d = arc.centroid(d)
+        //         _d[0] += 0
+        //         _d[1] += 2
+        //         return "translate(" + _d + ")"
+        //     })
+        //     .attr("dy", ".50em")
+        //     .style("text-anchor", "middle")
+        //     .text(function(d) {
+        //         if (((d.data.total_votes / totalPollVotes) * 100).toFixed(2) < 5) { return '' }
+        //         return d.data.text
+        //     })
+        g.append("text")
+            .attr("text-anchor", "middle")
+            .attr('font-size', '1em')
+            .attr('y', -20)
+            .text('Total Votes:')
       
         g.append("text")
             .attr("text-anchor", "middle")
-            .attr('font-size', '4em')
-            .attr('y', 20)
+            .attr('font-size', '3em')
+            .attr('y', 30)
             .text(totalPollVotes)
     }, [])
     return (
-        <div className="chart" style={{width: "400px", margin: "0 auto 20px auto"}}></div>
+        <div className="chart" style={{width: width}}></div>
     )
 }
 
@@ -187,7 +208,7 @@ export default PollResultsPieChart
 // const d3Container = useRef(null);
 // useEffect(
 //     () => {
-//         var svg = d3.select(d3Container.current)
+//         let svg = d3.select(d3Container.current)
 
 //     },[])
 

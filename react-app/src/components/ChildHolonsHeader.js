@@ -16,7 +16,7 @@ function ChildHolonsHeader() {
         <>
             <div className="holon-header">
                 <ChildHolonsSearchBar/>
-                <button className="button mb-10" onClick={ toggleModal }>Create Holon</button>
+                <button className="button mb-10" onClick={ toggleModal }>Create Space</button>
                 {modal && 
                     <CreateBranch toggleModal={ toggleModal }/>
                 }

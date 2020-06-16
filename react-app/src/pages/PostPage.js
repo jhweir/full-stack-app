@@ -1,21 +1,26 @@
 import React, { useState, useEffect } from 'react'
+import { Route, Switch, Redirect } from "react-router-dom"
+import queryString from 'query-string'
 import axios from 'axios'
 import config from '../Config'
 import styles from '../styles/pages/PostPage.module.scss'
+import EmptyPage from '../pages/EmptyPage'
 import Post from '../components/Post'
 import PageSectionSelector from '../components/PageSectionSelector'
-import PostPageCommentSection from '../components/PostPageCommentSection'
-import PostPagePollVoteSection from '../components/PostPagePollVoteSection'
-import PostPagePollResultsSection from '../components/PostPagePollResultsSection'
+import PostPageComments from '../components/PostPageComments'
+import PostPagePollVote from '../components/PostPagePollVote'
+import PostPagePollResults from '../components/PostPagePollResults'
 
-function PostPage({ match }) {
-    const postId = match.params.postId
-    //console.log('postId: ', postId)
+function PostPage(props) {
+    const postId = props.match.params.postId
+    const pageUrl = props.match.url
+    const parsedQuery = queryString.parse(props.location.search)
+    //console.log('props.match', props.match)
     const [post, setPost] = useState({
-        Holons: [],
-        // Labels: [],
+        Post_Holons: [],
         Comments: [],
-        PollAnswers: []
+        PollAnswers: [],
+        PollVotes: []
     })
     const [newComment, setNewComment] = useState('')
     const [commentError, setCommentError] = useState(false)
@@ -27,7 +32,7 @@ function PostPage({ match }) {
 
     const pollAnswersSortedByScore = post.PollAnswers.map((a)=>a).sort((a, b) => b.total_votes - a.total_votes) 
     const pollAnswersSortedById = post.PollAnswers.map((a)=>a).sort((a, b) => a.id - b.id)
-    // TODO: is there a better way to achieve .map((a)=>a) here?
+    // TODO: is there a better way to achieve the effect of .map((a)=>a) here?
 
     function getPost() {
         axios.get(config.environmentURL + `/post?id=${postId}`).then(res => { 
@@ -48,7 +53,7 @@ function PostPage({ match }) {
 
     function castVote() {
         if (selectedPollAnswers.length !== 0) {
-            let voteData = { selectedPollAnswers }
+            let voteData = { postId, selectedPollAnswers }
             axios.post(config.environmentURL + '/castVote', { voteData })
                 .then(setSelectedPollAnswers([]))
                 .then(setTimeout(() => { getPost() }, 100))
@@ -57,6 +62,7 @@ function PostPage({ match }) {
 
     useEffect(() => {
         getPost()
+        console.log('getPost run')
     }, [])
 
     useEffect(() => {
@@ -64,6 +70,7 @@ function PostPage({ match }) {
         const totalVotesOnAnswer = post.PollAnswers.map((answer) => { return answer.total_votes })
         const totalVotes = totalVotesOnAnswer.reduce((a, b) => a + b, 0)
         setTotalPollVotes(totalVotes)
+        console.log('second use effect run')
     }, [post])
 
     return (
@@ -75,11 +82,46 @@ function PostPage({ match }) {
             />
 
             {post.type === 'poll' &&
-                <PageSectionSelector setPageSection={setPageSection}/>
+                <PageSectionSelector pageUrl={pageUrl}/>
             }
 
-            {pageSection === 'comments' &&
-                <PostPageCommentSection
+            <Switch>
+                <Redirect from={`${props.match.url}`} to={`${props.match.url}/comments`} exact/>
+                <Route path={`${props.match.url}/comments`} render={() =>
+                    <PostPageComments
+                        submitComment={submitComment}
+                        commentError={commentError}
+                        newComment={newComment}
+                        setNewComment={setNewComment}
+                        setCommentError={setCommentError}
+                        post={post}
+                    />
+                } exact />
+
+                <Route path={`${props.match.url}/vote`} component={() => 
+                    <PostPagePollVote
+                        castVote={castVote}
+                        pollAnswersSortedById={pollAnswersSortedById}
+                        selectedPollAnswers={selectedPollAnswers}
+                        setSelectedPollAnswers={setSelectedPollAnswers}
+                    />
+                } exact />
+
+                <Route path={`${props.match.url}/results`} component={() => 
+                    <PostPagePollResults
+                        postId={postId}
+                        pageUrl={pageUrl}
+                        parsedQuery={parsedQuery}
+                        pollAnswers={post.PollAnswers}
+                        pollAnswersSortedByScore={pollAnswersSortedByScore}
+                        totalPollVotes={totalPollVotes}
+                    />
+                } exact />
+                <Route component={ EmptyPage }/>
+            </Switch> 
+
+            {/* {pageSection === 'comments' &&
+                <PostPageComments
                     submitComment={submitComment}
                     commentError={commentError}
                     newComment={newComment}
@@ -87,24 +129,25 @@ function PostPage({ match }) {
                     setCommentError={setCommentError}
                     post={post}
                 />
-            }
+            } */}
 
-            {pageSection === 'poll-vote' &&
-                <PostPagePollVoteSection
+            {/* {pageSection === 'poll-vote' &&
+                <PostPagePollVote
                     castVote={castVote}
                     pollAnswersSortedById={pollAnswersSortedById}
                     selectedPollAnswers={selectedPollAnswers}
                     setSelectedPollAnswers={setSelectedPollAnswers}
                 />
-            }
+            } */}
 
-            {pageSection === 'poll-results' &&
-                <PostPagePollResultsSection
+            {/* {pageSection === 'poll-results' &&
+                <PostPagePollResults
+                    postId={postId}
                     pollAnswers={post.PollAnswers}
                     pollAnswersSortedByScore={pollAnswersSortedByScore}
                     totalPollVotes={totalPollVotes}
                 />
-            }
+            } */}
 
         </div>
     )

@@ -1,5 +1,6 @@
 import React, { useState, useContext } from 'react'
 import { HolonContext } from '../contexts/HolonContext'
+import styles from '../styles/components/WallFilters.module.scss'
 
 function WallFilters() {
     const { holonData, updateHolonContext, setPostSortByFilter } = useContext(HolonContext);
@@ -12,57 +13,19 @@ function WallFilters() {
     }
     
     return (
-        <>
-            <div className="wall-filters">
-                <button className="button mb-10" onClick={() => setDropdown(!dropdown)}>Filters</button>
-                {dropdown && 
-                    <div className="dropdown-content">
-                        <div className="dropdown-title">Sort by:</div>
-                        <div className="dropdown-item" onClick={ () => updateFilter('reactions') }>Reactions</div>
-                        <div className="dropdown-item" onClick={ () => updateFilter('likes') }>Likes</div>
-                        <div className="dropdown-item" onClick={ () => updateFilter('hearts') }>Hearts</div>
-                        <div className="dropdown-item" onClick={ () => updateFilter('date') }>Date</div>
-                        <div className="dropdown-item" onClick={ () => updateFilter('comments') }>Comments</div>
-                    </div>
-                }
-            </div>
-
-            <style jsx="true">{`
-                .wall-filters {
-                    display: flex;
-                    flex-direction: row;
-                    align-items: center;
-                }
-                .dropdown-content {
-                    width: 200px;
-                    padding: 10px;
-                    border-radius: 5px;
-                    background-color: white;
-                    box-shadow: 0 1px 30px 0 rgba(0,0,0,0.2);
-                    position: absolute;
-                    top: 60px;
-                    left: calc(50% - 70px);
-                    z-index: 5;
-                }
-                .dropdown-title {
-                    font-weight: 800;
-                    width: 100%;
-                    text-align: center;
-                    margin: 5px 0;
-                }
-                .dropdown-item {
-                    height: 40px;
-                    border-radius: 5px;
-                    display: flex;
-                    flex-direction: row;
-                    align-items: center;
-                    justify-content: center;
-                }
-                .dropdown-item:hover {
-                    background-color: #eee;
-                }
-            `}</style>
-        </>
+        <div className={styles.wallFilters}>
+            <button className="button mb-10" onClick={() => setDropdown(!dropdown)}>Filters</button>
+            {dropdown && 
+                <div className={styles.dropDownContent}>
+                    <div className={styles.dropDownTitle}>Sort by:</div>
+                    <div className={styles.dropDownItem} onClick={ () => updateFilter('reactions') }>Reactions</div>
+                    <div className={styles.dropDownItem} onClick={ () => updateFilter('likes') }>Likes</div>
+                    <div className={styles.dropDownItem} onClick={ () => updateFilter('hearts') }>Hearts</div>
+                    <div className={styles.dropDownItem} onClick={ () => updateFilter('date') }>Date</div>
+                    <div className={styles.dropDownItem} onClick={ () => updateFilter('comments') }>Comments</div>
+                </div>
+            }
+        </div>
     )
 }
 

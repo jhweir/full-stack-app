@@ -17,7 +17,7 @@ function BranchSearchBar(props) {
                     <input
                         className="input"
                         type="text"
-                        placeholder="Search holons..."
+                        placeholder="Search spaces..."
                         value={ newSearch }
                         onChange={ (e) => setNewSearch(e.target.value) }
                     />

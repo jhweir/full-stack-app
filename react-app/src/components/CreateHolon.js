@@ -32,7 +32,7 @@ function CreateHolon(props) {
     return (
         <div className={styles.createHolonModalWrapper}>
             <div className={styles.createHolonModal}>
-                <span className={styles.createHolonTitle}>Create a new holon in '{ holonData.name }'</span>
+                <span className={styles.createHolonTitle}>Create a new space in '{ holonData.name }'</span>
                 <form className={styles.createHolonForm} onSubmit={ publishHolon }>
 
                     <input className={`${styles.createHolonFormInput} ${(handleError && styles.error)}`}

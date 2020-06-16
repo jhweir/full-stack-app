@@ -9,13 +9,13 @@ function Holon(props) {
     return (
         <div className={styles.holon}>
             <Link className={styles.holonImage}
-                to={ `/h/${props.holon.handle}/child-holons` }
+                to={ `/h/${props.holon.handle}` }
                 onClick={ () => { updateHolonContext(props.holon.handle) } }>
                 <img className={styles.holonImage} src="/icons/holon-flag-image-03.svg"/>
             </Link>
             <div className={styles.holonInfo}>
                 <Link className={styles.holonTitle}
-                    to={ `/h/${props.holon.handle}/child-holons` }
+                    to={ `/h/${props.holon.handle}` }
                     onClick={ () => { updateHolonContext(props.holon.handle) } }>
                     {props.holon.name}
                 </Link>

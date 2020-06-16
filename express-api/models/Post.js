@@ -18,6 +18,9 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'postId'
     })
     Post.hasMany(models.Label)
+    // Post.hasMany(models.Label, {
+    //   as: 'PollVotes'
+    // })
     Post.hasMany(models.Comment, {
       foreignKey: 'postId'
     })

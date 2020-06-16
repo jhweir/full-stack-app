@@ -17,14 +17,14 @@ function SideBarLeft() {
                 </div>
                 <div className={styles.sideBarLeftNavButtons}>
                     <Link className={styles.sideBarLeftNavButton}
-                        to={ `/h/${holonData.handle}/wall` }
+                        to={ `/h/${holonData.handle}` }
                         onClick={ () => { updateHolonContext(holonData.handle) } }>
                         Wall
                     </Link>
                     <Link className={styles.sideBarLeftNavButton}
-                        to={ `/h/${holonData.handle}/child-holons` }
+                        to={ `/h/${holonData.handle}/child-spaces` }
                         onClick={ () => { updateHolonContext(holonData.handle) } }>
-                        Child Holons
+                        Child Spaces
                     </Link>
                     <span className="sub-text mt-20">{holonData.description}</span>
                 </div>
@@ -46,7 +46,7 @@ export default SideBarLeft
         in
         {holonData.DirectParentHolons.map((holon, index) =>
             <Link key={index}
-                to={ `/h/${holon.handle}/wall` }
+                to={ `/h/${holon.handle}` }
                 onClick={ () => { updateHolonContext(holon.handle) } }>
                 {(' ' + holon.name) }
             </Link>

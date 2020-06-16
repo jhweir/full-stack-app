@@ -1,8 +1,8 @@
 import React from 'react'
-import styles from '../styles/components/PostPagePollVoteSection.module.scss'
+import styles from '../styles/components/PostPagePollVote.module.scss'
 import PollAnswer from './PollAnswer'
 
-function PostPagePollVoteSection(props) {
+function PostPagePollVote(props) {
     const {
         castVote,
         pollAnswersSortedById,
@@ -10,7 +10,7 @@ function PostPagePollVoteSection(props) {
         setSelectedPollAnswers
     } = props
     return (
-        <div className={styles.pollVoteSection}>
+        <div className={styles.pollVote}>
             <div className={styles.castVoteButton} onClick={() => { castVote() }}>Cast your vote</div>
             {pollAnswersSortedById.map((answer, index) => 
                 <PollAnswer 
@@ -24,4 +24,4 @@ function PostPagePollVoteSection(props) {
     )
 }
 
-export default PostPagePollVoteSection
+export default PostPagePollVote

@@ -21,13 +21,13 @@ function NavBar() {
                         <img className={navBarIcon} src="/icons/home-solid.svg"/>
                         <div className={navBarText}>Home</div>
                     </Link> |
-                    <Link to="/h/root/wall"
+                    <Link to="/h/root"
                         className={navBarLink}
                         onClick={() => { updateHolonContext('root') }}>
                         <img className={navBarIcon} src="/icons/globe-americas-solid.svg"/>
                         <div className={navBarText}>Wall</div>
                     </Link> | 
-                    <Link to="/h/root/child-holons"
+                    <Link to="/h/root/child-spaces"
                         className={navBarLink}
                         onClick={() => { updateHolonContext('root') }}>
                         <img className={navBarIcon} src="/icons/overlapping-circles-thick.svg"/>
@@ -57,11 +57,11 @@ export default NavBar
 
 
 {/* <div className="navBar-text" 
-        onClick={() => redirectTo('/h/root/wall', 'root')}>
+        onClick={() => redirectTo('/h/root', 'root')}>
         Wall
     </div> |
     <div className="navBar-text"
-        onClick={() => redirectTo('/h/root/child-holons', 'root')}>
+        onClick={() => redirectTo('/h/root/child-spaces', 'root')}>
         Child-holons
     </div> */}
 

@@ -1,0 +1,33 @@
+.wallFilters {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.dropDownContent {
+    width: 200px;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: white;
+    box-shadow: 0 1px 30px 0 rgba(0,0,0,0.2);
+    position: absolute;
+    top: 60px;
+    left: calc(50% - 70px);
+    z-index: 5;
+}
+.dropDownTitle {
+    font-weight: 800;
+    width: 100%;
+    text-align: center;
+    margin: 5px 0;
+}
+.dropDownItem {
+    height: 40px;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    &:hover {
+        background-color: #eee;
+    }
+}

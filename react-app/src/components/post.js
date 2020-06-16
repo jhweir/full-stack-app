@@ -127,7 +127,7 @@ function Post(props) {
                     <div className={styles.holonNames}>
                         {Post_Holons && Post_Holons.length >= 1 ? 
                             Post_Holons.map((holon, index) =>
-                                <Link to={ `/h/${holon}/wall` }
+                                <Link to={ `/h/${holon}` }
                                     onClick={ () => { updateHolonContext(holon) } }
                                     style={{marginRight: 10}}
                                     key={index}>
@@ -197,7 +197,7 @@ export default Post
 //     <div className={styles.holonNames}>
 //         {props.post.Holons.length >= 1 ? 
 //             props.post.Holons.map((holon, index) =>
-//                 <Link to={ `/h/${holon.handle}/wall` }
+//                 <Link to={ `/h/${holon.handle}` }
 //                     onClick={ () => { updateHolonContext(holon.handle) } }
 //                     style={{marginRight: 10}}
 //                     key={index}>

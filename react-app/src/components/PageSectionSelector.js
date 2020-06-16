@@ -1,27 +1,45 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import styles from '../styles/components/PageSectionSelector.module.scss'
 
 function PageSectionSelector(props) {
-    const { setPageSection } = props
+    const { pageUrl } = props
     return (
         <div className={styles.pageSectionSelector}>
-            <div 
+            <Link 
                 className={styles.pageSectionSelectorButton}
-                onClick={() => {setPageSection('comments')}}>
+                to={ `${pageUrl}` }>
                 Comments
-            </div>
-            <div 
+            </Link>
+            <Link 
                 className={styles.pageSectionSelectorButton}
-                onClick={() => {setPageSection('poll-vote')}}>
+                to={ `${pageUrl}/vote` }>
                 Vote
-            </div>
-            <div
+            </Link>
+            <Link
                 className={styles.pageSectionSelectorButton}
-                onClick={() => {setPageSection('poll-results')}}>
+                to={ `${pageUrl}/results` }>
                 Results
-            </div>
+            </Link>
         </div>
     )
 }
 
 export default PageSectionSelector
+
+
+{/* <div 
+    className={styles.pageSectionSelectorButton}
+    onClick={() => {setPageSection('comments')}}>
+    Comments
+</div>
+<div 
+    className={styles.pageSectionSelectorButton}
+    onClick={() => {setPageSection('poll-vote')}}>
+    Vote
+</div>
+<div
+    className={styles.pageSectionSelectorButton}
+    onClick={() => {setPageSection('poll-results')}}>
+    Results
+</div> */}

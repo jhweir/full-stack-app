@@ -2,12 +2,14 @@
 Last updated: 01-04-2020
 
 + Take down remaining EC2-ELB services on AWS
-- Prevent PostHolon duplicates when creating posts
 - Create time graph for poll results
-- Create single choice, multiple choise, and weighted choice polls
+- Create single choice, multiple choice, and weighted choice polls
+- Set up 'visible holons' on post (vs. all included holons)
 - User authentication
-- work out best approach to paginate posts with filters
-    - Store post totals in db to enable filtered paginated queries?
+    - Request FB sign-up
+    - Set up verification/welcome emails
++ work out best approach to paginate posts with filters
+    - Store post totals in db to enable/speed up filtered paginated queries?
     - Apply filters in query?
 - set up filters on child-holons page
 - Write out list of required features
@@ -21,3 +23,6 @@ Last updated: 01-04-2020
     - Expandable tree
 - Image uploads
 - Url scrapping
+
+# Complete
+- Prevent PostHolon duplicates when creating posts
