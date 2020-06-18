@@ -99,6 +99,7 @@ function PostPage(props) {
 
                 <Route path={`${props.match.url}/results`} component={() => 
                     <PostPagePollResults
+                        post={post}    
                         postId={postId}
                         pageUrl={pageUrl}
                         parsedQuery={parsedQuery}

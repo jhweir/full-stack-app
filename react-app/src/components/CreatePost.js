@@ -23,7 +23,8 @@ function CreatePost(props) {
     const [holonError, setHolonError] = useState(false)
     const [holonErrorMessage, setHolonErrorMessage] = useState(false)
 
-    // TODO: look into whether it would be better to strip out the unnecissary data included in 'HolonData' when passing it into the holonHandles:
+    // TODO: look into whether it would be better to strip out the unnecissary data included in 'HolonData' when passing it into the holonHandles
+    // Also may be possible to move this use of state into a simpler variable
     useEffect(() => {
         setHolonHandles([...holonHandles, holonData.handle]) //holonData.HolonTags...
     }, [isLoading])
