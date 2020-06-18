@@ -99,7 +99,7 @@ function PollResultsTimeGraph(props) {
 
                 d3.select("#time-graph-svg").append('g')
                     .selectAll("dot")
-                    .data(answer.values.map)
+                    .data(answer.values)
                     .enter()
                     .append("circle")
                     .attr("cx", function (d) { return x(d.parsedCreatedAt) } )
