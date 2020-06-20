@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
+import React from 'react'
 import * as d3 from 'd3'
 import styles from '../styles/components/PostPagePollResults.module.scss'
-import PollResultsFilters from './PollResultsFilters'
+//import PollResultsFilters from './PollResultsFilters'
 import PollResultsDisplay from './PollResultsDisplay'
 import PollResultsAnswer from './PollResultsAnswer'
 
@@ -9,11 +9,12 @@ function PostPagePollResults(props) {
     const {
         post,
         postId,
-        pageUrl,
+        //pageUrl,
         parsedQuery,
         pollAnswers,
         pollAnswersSortedByScore,
-        totalPollVotes
+        totalPollVotes,
+        //totalPollScore
     } = props
 
     var colorScale = d3.scaleSequential()
@@ -40,6 +41,9 @@ function PostPagePollResults(props) {
                     index={index} 
                     answer={answer}
                     totalPollVotes={totalPollVotes}
+                    post={post}
+                    //totalPollScore={totalPollScore}
+                    //totalScore={answer.total_score}
                 />
             )}
         </div>

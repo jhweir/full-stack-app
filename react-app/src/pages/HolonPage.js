@@ -14,7 +14,7 @@ function HolonPage(props) {
 
     useEffect(() => {
         updateHolonContext(holonHandle)
-    }, [])
+    }, [updateHolonContext, holonHandle])
 
     return (
         <div className={styles.holonPage}>

@@ -107,6 +107,22 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date()
       },
+      {
+        localState: 'visible',
+        relationship: 'post',
+        postId: 7,
+        holonId: 1,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        localState: 'visible',
+        relationship: 'post',
+        postId: 8,
+        holonId: 1,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
     ]);
   },
 

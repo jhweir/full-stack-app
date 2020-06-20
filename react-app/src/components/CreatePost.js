@@ -7,7 +7,7 @@ import HolonHandleInput from './HolonHandleInput'
 import PollAnswerForm from './PollAnswerForm'
 
 function CreatePost(props) {
-    const { holonData, globalData, isLoading } = useContext(HolonContext)
+    const { holonData, globalData, isLoading, updateHolonContext } = useContext(HolonContext)
     const { toggleModal } = props
     const [type, setPostType] = useState('')
     // const [user, setUser] = useState('')
@@ -16,6 +16,7 @@ function CreatePost(props) {
     const [url, setUrl] = useState('')
     const [holonHandles, setHolonHandles] = useState([])
     const [newHolonHandle, setNewHolonHandle] = useState('')
+    const [pollType, setPollType] = useState('single-choice')
     const [pollAnswers, setPollAnswers] = useState([])
     const [newPollAnswer, setNewPollAnswer] = useState('')
     const [titleError, setTitleError] = useState(false)
@@ -38,11 +39,11 @@ function CreatePost(props) {
         if (invalidDescription) { setDescriptionError(true) }
         if (invalidHolons) { setHolonError(true) }
         if (!invalidTitle && !invalidDescription && !invalidHolons) {
-            let post = { type, title, description, url, holonHandles, pollAnswers }
+            let post = { type, subType: pollType, title, description, url, holonHandles, pollAnswers }
             axios.post(config.environmentURL + '/create-post', { post })
-                .then(res => { console.log(res) })
+                //.then(res => { console.log(res) })
                 .then(toggleModal)
-                // .then(setTimeout(() => { getBranchContent() }, 100))
+                .then(setTimeout(() => { updateHolonContext(holonData.handle) }, 200))
         }
     }
 
@@ -64,6 +65,17 @@ function CreatePost(props) {
                 }
                 {type &&
                     <form className={styles.createPostModalForm} onSubmit={ submitPost }>
+                        {type === 'poll' &&
+                            <div className={styles.pollTypeSelector}>
+                                <span className={styles.pollTypeSelectorText}>Choose a poll type</span>
+                                <div className={styles.pollTypeSelectorOptions}>
+                                    <div className="button" onClick={() => { setPollType('single-choice') }}>Single Choice</div>
+                                    <div className="button" onClick={() => { setPollType('multiple-choice') }}>Multiple Choice</div>
+                                    <div className="button" onClick={() => { setPollType('weighted-choice') }}>Weighted Choice</div>
+                                </div>
+                                <span className={styles.pollTypeSelectorText}>Selected poll type: {pollType}</span>
+                            </div>
+                        }
                         <input className={`${styles.createPostModalFormInput} ${(titleError && styles.error)}`}
                             placeholder="Title... (required, max 200 characters)"
                             type="text" value={title}

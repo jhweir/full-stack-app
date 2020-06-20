@@ -7,9 +7,9 @@ function NavBar() {
     const { updateHolonContext, isLoading, setIsLoading } = useContext(HolonContext);
     const { navBar, navBarContainer, navBarLinks, navBarLink, navBarIcon, navBarText } = styles
 
-    function toggleDarkMode() {
-        document.body.classList.toggle("dark-mode"); // look into useRef
-    }
+    // function toggleDarkMode() {
+    //     document.body.classList.toggle("dark-mode"); // look into useRef
+    // }
 
     return (
         <div className={navBar}>
@@ -18,19 +18,19 @@ function NavBar() {
                     <Link to="/"
                         className={navBarLink}
                         onClick={() => { updateHolonContext('root') }}>
-                        <img className={navBarIcon} src="/icons/home-solid.svg"/>
+                        <img className={navBarIcon} src="/icons/home-solid.svg" alt=''/>
                         <div className={navBarText}>Home</div>
                     </Link> |
                     <Link to="/h/root"
                         className={navBarLink}
                         onClick={() => { updateHolonContext('root') }}>
-                        <img className={navBarIcon} src="/icons/globe-americas-solid.svg"/>
+                        <img className={navBarIcon} src="/icons/globe-americas-solid.svg" alt=''/>
                         <div className={navBarText}>Wall</div>
                     </Link> | 
                     <Link to="/h/root/child-spaces"
                         className={navBarLink}
                         onClick={() => { updateHolonContext('root') }}>
-                        <img className={navBarIcon} src="/icons/overlapping-circles-thick.svg"/>
+                        <img className={navBarIcon} src="/icons/overlapping-circles-thick.svg" alt=''/>
                         <div className={navBarText}>Spaces</div>
                     </Link>
                 </div>
@@ -47,23 +47,23 @@ function NavBar() {
 
 export default NavBar
 
-{/* <div 
+/* <div 
     style={{ marginLeft: 20 }}
     className="button"
     onClick={ toggleDarkMode }>
     Dark mode
-</div> */}
+</div> */
 
 
 
-{/* <div className="navBar-text" 
+/* <div className="navBar-text" 
         onClick={() => redirectTo('/h/root', 'root')}>
         Wall
     </div> |
     <div className="navBar-text"
         onClick={() => redirectTo('/h/root/child-spaces', 'root')}>
         Child-holons
-    </div> */}
+    </div> */
 
 
 

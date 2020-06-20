@@ -11,6 +11,9 @@ module.exports = {
       type: {
         type: Sequelize.STRING
       },
+      subType: {
+        type: Sequelize.STRING
+      },
       globalState: {
         type: Sequelize.STRING
       },

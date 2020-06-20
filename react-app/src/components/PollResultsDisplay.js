@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import styles from '../styles/components/PollResultsDisplay.module.scss'
 import PollResultsPieChart from './PollResultsPieChart'
 import PollResultsTimeGraph from './PollResultsTimeGraph'
@@ -7,7 +7,7 @@ function PollResultsDisplay(props) {
     const {
         post,
         postId,
-        parsedQuery,
+        //parsedQuery,
         pollAnswers,
         totalPollVotes,
         pollAnswersSortedByScore,
@@ -17,6 +17,7 @@ function PollResultsDisplay(props) {
     return (
         <div className={styles.pollResultsDisplay}>
                 <PollResultsPieChart
+                    post={post}
                     pollAnswers={pollAnswers}
                     totalPollVotes={totalPollVotes}
                     pollAnswersSortedByScore={pollAnswersSortedByScore}

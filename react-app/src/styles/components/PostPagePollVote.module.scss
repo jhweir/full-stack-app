@@ -1,15 +1,49 @@
 .pollVote {
     width: 100%;
 }
+.castVoteSection {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 10px;
+}
 .castVoteButton {
     width: 150px;
     height: 50px;
-    border-radius: 10px;
-    background-color: #3a88f0;
-    margin-bottom: 10px;
+    border-radius: 5px;
+    background-color: #cedcf1;
+    margin-right: 10px;
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
     color: white;
+    &.validVote {
+        background-color: #3a88f0;
+    }
+}
+.voteCastAlert {
+    width: 150px;
+    height: 50px;
+    border-radius: 5px;
+    background-color: #4ed276;
+    margin-right: 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    color: white;
+}
+.voteCastAlertCheck {
+    margin-right: 10px;
+    width: 25px;
+    height: 25px;
+    opacity: 0.8;
+    filter: invert(100%)
+}
+.totalUsedPointsText {
+    margin: 10px 0;
+    &.error {
+        //color: red;
+    }
 }

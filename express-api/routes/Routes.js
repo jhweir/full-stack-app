@@ -17,7 +17,7 @@ const PollAnswer = require('../models').PollAnswer
 // const Notifications = require('../models').Notification
 
 const postAttributes = [
-    'id', 'type', 'globalState', 'creator', 'title', 'description', 'url', 'createdAt',
+    'id', 'type', 'subType', 'globalState', 'creator', 'title', 'description', 'url', 'createdAt',
     [sequelize.literal(
         `(SELECT COUNT(*) FROM Comments AS Comment WHERE Comment.postId = Post.id)`
         ),'total_comments'
@@ -148,7 +148,7 @@ router.get('/post', (req, res) => {
                         ),'total_votes'
                     ],
                     [sequelize.literal(
-                        `(SELECT SUM(value) FROM Labels AS Label WHERE Label.pollAnswerId = PollAnswers.id)`
+                        `(SELECT ROUND(SUM(value), 2) FROM Labels AS Label WHERE Label.pollAnswerId = PollAnswers.id)`
                         ),'total_score'
                     ],
                 ],
@@ -229,7 +229,7 @@ router.post('/create-holon', (req, res) => {
 
 // Create a new post
 router.post('/create-post', (req, res) => {
-    const { type, title, description, url, holonHandles, pollAnswers } = req.body.post
+    const { type, subType, title, description, url, holonHandles, pollAnswers } = req.body.post
     let holonIds = []
 
     async function asyncForEach(array, callback) {
@@ -267,7 +267,7 @@ router.post('/create-post', (req, res) => {
 
     // Create the post and all of its assosiated content
     Post.create({
-        type, title, description, url, globalState: 'visible'
+        type, subType, title, description, url, globalState: 'visible'
     })
     .then(post => {
         createNewPostHolons(post)
@@ -322,7 +322,7 @@ router.put('/addRating', (req, res) => {
 })
 
 // Create comment
-router.post('/addComment', (req, res) => {
+router.post('/add-comment', (req, res) => {
     let { postId, text } = req.body
     Comment.create({ postId, text })
         .catch(err => console.log(err))
@@ -334,19 +334,19 @@ router.post('/addComment', (req, res) => {
 })
 
 // Cast vote
-router.post('/castVote', (req, res) => {
-    const { selectedPollAnswers, postId } = req.body.voteData
+router.post('/cast-vote', (req, res) => {
+    const { selectedPollAnswers, postId, pollType } = req.body.voteData
     selectedPollAnswers.forEach((answer) => {
+        let value = 1
+        if (pollType === 'weighted-choice') { value = answer.value / 100}
         Label.create({ 
             type: 'vote',
-            value: 1,
+            value: value,
             postId: postId,
-            pollAnswerId: answer.id,
+            pollAnswerId: answer.id
         })
     })
 })
-
-
 
 module.exports = router
 

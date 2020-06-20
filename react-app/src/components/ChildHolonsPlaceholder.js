@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react'
+import React, { useContext } from 'react'
 import HolonPlaceholder from './HolonPlaceholder'
 import { HolonContext } from '../contexts/HolonContext'
 import styles from '../styles/components/ChildHolonsPlaceholder.module.scss'

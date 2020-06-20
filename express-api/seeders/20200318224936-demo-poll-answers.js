@@ -27,6 +27,54 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date()
       },
+      {
+        text: 'Answer 1...',
+        postId: 7,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        text: 'Answer 2...',
+        postId: 7,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        text: 'Answer 3...',
+        postId: 7,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        text: 'Answer 4...',
+        postId: 7,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        text: 'Answer 1...',
+        postId: 8,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        text: 'Answer 2...',
+        postId: 8,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        text: 'Answer 3...',
+        postId: 8,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        text: 'Answer 4...',
+        postId: 8,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
     ])
   },
 

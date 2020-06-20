@@ -13,7 +13,7 @@ function SideBarLeft() {
             <div className={`${styles.sideBarLeftContent} ${(!isLoading && styles.visible)}`}>
                 <div className={styles.sideBarLeftHolonName}>{ holonData.name }</div>
                 <div className={styles.sideBarLeftFlagImageWrapper}>
-                    <img className={styles.sideBarLeftFlagImagePlaceholder} src='/icons/users-solid.svg'/>
+                    <img className={styles.sideBarLeftFlagImagePlaceholder} src='/icons/users-solid.svg' alt='space-flag'/>
                 </div>
                 <div className={styles.sideBarLeftNavButtons}>
                     <Link className={styles.sideBarLeftNavButton}

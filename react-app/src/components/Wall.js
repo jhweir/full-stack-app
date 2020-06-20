@@ -66,7 +66,7 @@ function Wall() {
 
 export default Wall
 
-{/* <ul className={pinnedPosts}>
+/* <ul className={pinnedPosts}>
     {holonData && pinnedPosts.map((post, index) => 
         <Post
             post={post}
@@ -75,4 +75,4 @@ export default Wall
             isLoading={isLoading}
         /> 
     )}
-</ul> */}
+</ul> */

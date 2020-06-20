@@ -39,7 +39,7 @@
     }
 }
 .createPostModalForm {
-    width: 500px;
+    width: 600px;
     padding-bottom: 20px;
     display: flex;
     flex-direction: column;
@@ -48,6 +48,22 @@
     @media screen and (max-width: 1000px) {
         width: 100%;
     }
+}
+.pollTypeSelector {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    //align-items: center;
+    margin-bottom: 10px;
+}
+.pollTypeSelectorOptions {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    //margin-bottom: 10px;
+}
+.pollTypeSelectorText {
+    margin: 10px 0;
 }
 .createPostModalTitle {
     font-size: 30px;

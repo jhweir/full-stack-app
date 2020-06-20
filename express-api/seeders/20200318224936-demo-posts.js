@@ -6,6 +6,7 @@ module.exports = {
       {
         id: 1,
         type: 'text',
+        subType: null,
         globalState: 'visible',
         title: 'Post 1',
         description: 'Post 1 located in Root...',
@@ -15,6 +16,7 @@ module.exports = {
       {
         id: 2,
         type: 'text',
+        subType: null,
         globalState: 'visible',
         title: 'Post 2',
         description: 'Post 2 located in All > Science...',
@@ -24,6 +26,7 @@ module.exports = {
       {
         id: 3,
         type: 'text',
+        subType: null,
         globalState: 'visible',
         title: 'Post 3',
         description: 'Post 3 located in All > Science > Physics...',
@@ -33,6 +36,7 @@ module.exports = {
       {
         id: 4,
         type: 'text',
+        subType: null,
         globalState: 'visible',
         title: 'Post 4',
         description: 'Post 4 located in All > Science > Biology...',
@@ -42,6 +46,7 @@ module.exports = {
       {
         id: 5,
         type: 'text',
+        subType: null,
         globalState: 'visible',
         title: 'Post 5',
         description: 'Post 5 located in All > Science > Chemistry...',
@@ -51,8 +56,29 @@ module.exports = {
       {
         id: 6,
         type: 'poll',
+        subType: 'single-choice',
         globalState: 'visible',
-        title: 'Example Poll',
+        title: 'Single Choice Poll',
+        description: 'Vote on your favourite answer...',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        id: 7,
+        type: 'poll',
+        subType: 'multiple-choice',
+        globalState: 'visible',
+        title: 'Multiple Choice Poll',
+        description: 'Vote on your favourite answer...',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        id: 8,
+        type: 'poll',
+        subType: 'weighted-choice',
+        globalState: 'visible',
+        title: 'Weighted Choice Poll',
         description: 'Vote on your favourite answer...',
         createdAt: new Date(),
         updatedAt: new Date()

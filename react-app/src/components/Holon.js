@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react'
+import React, { useContext } from 'react'
 import { Link } from 'react-router-dom'
 import { HolonContext } from '../contexts/HolonContext'
 import styles from '../styles/components/Holon.module.scss'
@@ -11,7 +11,7 @@ function Holon(props) {
             <Link className={styles.holonImage}
                 to={ `/h/${props.holon.handle}` }
                 onClick={ () => { updateHolonContext(props.holon.handle) } }>
-                <img className={styles.holonImage} src="/icons/holon-flag-image-03.svg"/>
+                <img className={styles.holonImage} src="/icons/holon-flag-image-03.svg" alt=''/>
             </Link>
             <div className={styles.holonInfo}>
                 <Link className={styles.holonTitle}

@@ -84,7 +84,7 @@ function Post(props) {
 
     function deletePost() {
         axios.delete(config.environmentURL  + '/deletePost', { data: { id } })
-            //.then(setTimeout(() => { updatePosts() }, 100))
+            .then(setTimeout(() => { updateHolonContext(holonData.handle) }, 200))
             .catch(error => { console.log(error) })
     }
 
@@ -120,7 +120,7 @@ function Post(props) {
             <div className={styles.postBody}>
                 <div className={styles.postTags}>
                     <div className={styles.userImageWrapper}>
-                        <img className={styles.userImagePlaceholder} src='/icons/user-solid.svg'/>
+                        <img className={styles.userImagePlaceholder} src='/icons/user-solid.svg' alt=''/>
                     </div>
                     <span className={styles.postSubText}>{ user || 'Anonymous' }</span>
                     <span className={styles.postSubText}>to</span>
@@ -148,7 +148,7 @@ function Post(props) {
                     <div className={styles.postDescription}>{ description }</div>    
                     <div className={styles.postInteract}>
                         <div className={styles.postInteractItem} onClick={() => toggleReactionModal()}>
-                            <img className={styles.postIcon} src="/icons/fire-alt-solid.svg"/>
+                            <img className={styles.postIcon} src="/icons/fire-alt-solid.svg" alt=''/>
                             <span>{ totalReactions } Reactions</span>
                         </div>
                         <PostReactionModal
@@ -172,15 +172,15 @@ function Post(props) {
                         />
                         <Link className={styles.postInteractItem} 
                             to={ `/p/${id}` }>
-                            <img className={styles.postIcon} src="/icons/comment-solid.svg"/>
+                            <img className={styles.postIcon} src="/icons/comment-solid.svg" alt=''/>
                             <span>{ totalComments } Comments</span>
                         </Link>
                         <div className={styles.postInteractItem} onClick={ deletePost }>
-                            <img className={styles.postIcon} src="/icons/trash-alt-solid.svg"/>
+                            <img className={styles.postIcon} src="/icons/trash-alt-solid.svg" alt=''/>
                             <span>Delete</span>
                         </div>
                         {!pins && <div className={`${styles.postInteractItem} ${styles.opacity50}`}>{/* onClick={ pinPost } */}
-                            <img className={styles.postIcon} src="/icons/thumbtack-solid.svg"/>
+                            <img className={styles.postIcon} src="/icons/thumbtack-solid.svg" alt=''/>
                             <span>Pin post</span>
                         </div>}
                     </div>

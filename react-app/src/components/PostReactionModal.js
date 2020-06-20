@@ -26,21 +26,21 @@ function PostReactionModal(props) {
         <div className={`${styles.postReactionModal} ${(reactionModalOpen && styles.visible)}`}>
 
             <img className={styles.postReactionModalCloseButton}
-                src="/icons/close-01.svg"
+                src="/icons/close-01.svg" alt=''
                 onClick={() => toggleReactionModal()}/>
 
             <div className={styles.postReactionModalItem} onClick={() => addLike()}>
-                <img className={styles.postIcon} src="/icons/thumbs-up-solid.svg"/>
+                <img className={styles.postIcon} src="/icons/thumbs-up-solid.svg" alt=''/>
                 <div>{ totalLikes } Likes</div>
             </div>
 
             <div className={styles.postReactionModalItem} onClick={() => addHeart()}>
-                <img className={styles.postIcon} src="/icons/heart-solid.svg"/>
+                <img className={styles.postIcon} src="/icons/heart-solid.svg" alt=''/>
                 <div>{ totalHearts } Hearts</div>
             </div>
 
             <div className={styles.postReactionModalItem} onClick={() => toggleRatingModal()}>
-                <img className={styles.postIcon} src="/icons/star-solid.svg"/>
+                <img className={styles.postIcon} src="/icons/star-solid.svg" alt=''/>
                 <div>{ totalRatings } Ratings</div>
             </div>
 

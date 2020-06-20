@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react'
+import React, { useContext, useState } from 'react'
 import { HolonContext } from '../contexts/HolonContext'
 import axios from 'axios'
 import config from '../Config'
@@ -62,7 +62,7 @@ function CreateHolon(props) {
 
 export default CreateHolon
 
-{/* <span className="modal-title-medium mb-20">Choose its location (parent holons)</span>
+/* <span className="modal-title-medium mb-20">Choose its location (parent holons)</span>
 <textarea className={"input-wrapper modal mb-20 " + (parentHolonIdError && 'error')}
     style={{ height:'auto', paddingTop:10 }}
     rows="5"
@@ -73,4 +73,4 @@ export default CreateHolon
         setParentHolonId(e.target.value)
         setParentHolonIdError(false)
     }}
-/> */}
+/> */

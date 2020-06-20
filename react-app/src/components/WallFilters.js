@@ -3,7 +3,11 @@ import { HolonContext } from '../contexts/HolonContext'
 import styles from '../styles/components/WallFilters.module.scss'
 
 function WallFilters() {
-    const { holonData, updateHolonContext, setPostSortByFilter } = useContext(HolonContext);
+    const { 
+        //holonData,
+        //updateHolonContext,
+        setPostSortByFilter
+    } = useContext(HolonContext)
     const [dropdown, setDropdown] = useState(false)
 
     function updateFilter(filter) {

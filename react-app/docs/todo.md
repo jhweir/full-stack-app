@@ -2,8 +2,8 @@
 Last updated: 01-04-2020
 
 + Take down remaining EC2-ELB services on AWS
-- Re-create PostContext and then remove cascading props to clean up components
-+ Create single choice, multiple choice, and weighted choice polls
+- Bug: on wieghted choice poll vote section. put in answers then move away to results section and come back. numbers have reset to 0 but values are reatined messing up calculations.
++ Re-create PostContext and then remove cascading props to clean up components
 - Set up 'visible holons' on post (vs. all included holons)
 - User authentication
     - Request FB sign-up
@@ -28,3 +28,4 @@ Last updated: 01-04-2020
 - Improve routing for post and holon pages
 - Create time graph for poll results
 - Set up color scale on polls and link to results below display
+- Create single choice, multiple choice, and weighted choice polls

@@ -26,11 +26,21 @@ function PostPage(props) {
     const [commentError, setCommentError] = useState(false)
     const [postPageLoading, setPostPageLoading] = useState(true)
     const [selectedPollAnswers, setSelectedPollAnswers] = useState([])
+    const [voteCast, setVoteCast] = useState(false)
+    //console.log('selectedPollAnswers', selectedPollAnswers)
 
-    // TODO: is there a better way to achieve the effect of .map((a)=>a) here?
-    const pollAnswersSortedByScore = post.PollAnswers.map((a)=>a).sort((a, b) => b.total_votes - a.total_votes) 
     const pollAnswersSortedById = post.PollAnswers.map((a)=>a).sort((a, b) => a.id - b.id)
-    const totalPollVotes = post.PollAnswers.map((answer) => { return answer.total_votes }).reduce((a, b) => a + b, 0)
+    let pollAnswersSortedByScore = post.PollAnswers.map((a)=>a).sort((a, b) => b.total_votes - a.total_votes) 
+    let totalPollVotes = post.PollAnswers.map((answer) => { return answer.total_votes }).reduce((a, b) => a + b, 0)
+
+    if (post.subType === 'weighted-choice') { 
+        totalPollVotes = post.PollAnswers.map((answer) => { return answer.total_score }).reduce((a, b) => a + b, 0)
+        pollAnswersSortedByScore = post.PollAnswers.map((a)=>a).sort((a, b) => b.total_score - a.total_score) 
+    }
+
+    //console.log('totalPollVotes', totalPollVotes)
+    const totalUsedPoints = selectedPollAnswers.map((answer) => { return answer.value }).reduce((a, b) => a + b, 0)
+    const validVote = selectedPollAnswers.length !== 0 && (post.subType !== 'weighted-choice' || totalUsedPoints == 100)
 
     function getPost() {
         axios.get(config.environmentURL + `/post?id=${postId}`)
@@ -43,18 +53,20 @@ function PostPage(props) {
     function submitComment(e) {
         e.preventDefault()
         if (newComment === '') { setCommentError(true) } else {
-            axios.post(config.environmentURL + '/addComment', { text: newComment, postId })
+            axios.post(config.environmentURL + '/add-comment', { text: newComment, postId })
                 .then(setNewComment(''))
-                .then(setTimeout(() => { getPost() }, 100))
+                .then(setTimeout(() => { getPost() }, 200))
         }
     }
 
     function castVote() {
-        if (selectedPollAnswers.length !== 0) {
-            let voteData = { postId, selectedPollAnswers }
-            axios.post(config.environmentURL + '/castVote', { voteData })
+        if (validVote) {
+            let voteData = { postId, pollType: post.subType, selectedPollAnswers }
+            console.log('voteData', voteData)
+            axios.post(config.environmentURL + '/cast-vote', { voteData })
                 .then(setSelectedPollAnswers([]))
-                .then(setTimeout(() => { getPost() }, 100))
+                .then(setVoteCast(true))
+                .then(setTimeout(() => { getPost() }, 200))
         }
     }
 
@@ -88,24 +100,30 @@ function PostPage(props) {
                     />
                 } exact />
 
-                <Route path={`${props.match.url}/vote`} component={() => 
+                <Route path={`${props.match.url}/vote`} render={() => 
                     <PostPagePollVote
+                        pollType={post.subType}
+                        validVote={validVote}
                         castVote={castVote}
+                        voteCast={voteCast}
+                        setVoteCast={setVoteCast}
                         pollAnswersSortedById={pollAnswersSortedById}
                         selectedPollAnswers={selectedPollAnswers}
                         setSelectedPollAnswers={setSelectedPollAnswers}
+                        totalUsedPoints={totalUsedPoints}
                     />
                 } exact />
 
                 <Route path={`${props.match.url}/results`} component={() => 
                     <PostPagePollResults
-                        post={post}    
+                        post={post}
                         postId={postId}
                         pageUrl={pageUrl}
                         parsedQuery={parsedQuery}
                         pollAnswers={post.PollAnswers}
                         pollAnswersSortedByScore={pollAnswersSortedByScore}
                         totalPollVotes={totalPollVotes}
+                        //totalPollScore={totalPollScore}
                     />
                 } exact />
                 <Route component={ EmptyPage }/>
@@ -116,7 +134,7 @@ function PostPage(props) {
 
 export default PostPage
 
-{/* {pageSection === 'comments' &&
+/* {pageSection === 'comments' &&
     <PostPageComments
         submitComment={submitComment}
         commentError={commentError}
@@ -125,22 +143,22 @@ export default PostPage
         setCommentError={setCommentError}
         post={post}
     />
-} */}
+} */
 
-{/* {pageSection === 'poll-vote' &&
+/* {pageSection === 'poll-vote' &&
     <PostPagePollVote
         castVote={castVote}
         pollAnswersSortedById={pollAnswersSortedById}
         selectedPollAnswers={selectedPollAnswers}
         setSelectedPollAnswers={setSelectedPollAnswers}
     />
-} */}
+} */
 
-{/* {pageSection === 'poll-results' &&
+/* {pageSection === 'poll-results' &&
     <PostPagePollResults
         postId={postId}
         pollAnswers={post.PollAnswers}
         pollAnswersSortedByScore={pollAnswersSortedByScore}
         totalPollVotes={totalPollVotes}
     />
-} */}
+} */

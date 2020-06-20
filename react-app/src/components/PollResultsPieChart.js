@@ -2,13 +2,17 @@ import React, { useEffect } from 'react'
 import * as d3 from "d3"
 
 function PollResultsPieChart(props) {
-    const { pollAnswersSortedByScore, totalPollVotes, colorScale } = props
-    let width = 450,
-    height = 450,
-    radius = 150
+    // const { post, pollAnswersSortedByScore, totalPollVotes, colorScale } = props
+    // let width = 450,
+    // height = 450,
+    // radius = 150
     useEffect(() => {
         // console.log('pollAnswers: ', pollAnswers)
         // console.log('pollAnswersSortedByScore: ', pollAnswersSortedByScore)
+        const { post, pollAnswersSortedByScore, totalPollVotes, colorScale } = props
+        let width = 450,
+        height = 450,
+        radius = 150
 
         let arc = d3.arc()
             .outerRadius(radius - 20)
@@ -17,7 +21,8 @@ function PollResultsPieChart(props) {
         let pie = d3.pie()
             //.sort(null)
             .value(function(d) {
-                return d.total_votes
+                if (post.subType === 'weighted-choice') { return d.total_score }
+                else { return d.total_votes }
             })
 
         let angleInterpolation = d3.interpolate(pie.startAngle()(), pie.endAngle()())
@@ -72,8 +77,13 @@ function PollResultsPieChart(props) {
             .duration(2000)
             .style("opacity", 1)
             .text(function(d) {
-                if (((d.data.total_votes / totalPollVotes) * 100).toFixed(1) < 4) { return '' }
-                return `${d.data.total_votes} ↑` //↑⇧⇑⇪⬆
+                if (post.subType === 'weighted-choice') {
+                    if (((d.data.total_score / totalPollVotes) * 100).toFixed(1) < 4) { return '' }
+                    return `${d.data.total_score.toFixed(1)} ↑` //↑⇧⇑⇪⬆
+                } else {
+                    if (((d.data.total_votes / totalPollVotes) * 100).toFixed(1) < 4) { return '' }
+                    return `${d.data.total_votes} ↑` //↑⇧⇑⇪⬆
+                }
             })
 
         g.append("text")
@@ -91,8 +101,8 @@ function PollResultsPieChart(props) {
             .duration(2000)
             .style("opacity", 1)
             .text(function(d) {
-                if (((d.data.total_votes / totalPollVotes) * 100).toFixed(2) < 4) { return '' }
-                return `${((d.data.total_votes / totalPollVotes) * 100).toFixed(1)}%`
+                if (((d.data.total_score / totalPollVotes) * 100).toFixed(2) < 4) { return '' }
+                return `${((d.data.total_score / totalPollVotes) * 100).toFixed(1)}%`
             })
 
         g.append("text")
@@ -119,7 +129,7 @@ function PollResultsPieChart(props) {
             .attr('font-size', '3em')
             .attr('x', width / 2)
             .attr('y', height / 2 + 10)
-            .text(totalPollVotes)
+            .text(totalPollVotes.toFixed(0))
             .style("opacity", 0)
             .transition()
             .duration(2000)
@@ -135,9 +145,9 @@ function PollResultsPieChart(props) {
             .transition()
             .duration(2000)
             .style("opacity", 1)
-    }, [])
+    }, [props])
     return (
-        <div className="chart" style={{width: width}}></div>
+        <div className="chart" style={{width: 450}}></div>
     )
 }
 

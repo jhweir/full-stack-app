@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react'
+import React, { useContext } from 'react'
 import PostPlaceholder from './PostPlaceholder'
 import { HolonContext } from '../contexts/HolonContext'
 import styles from '../styles/components/WallPlaceholder.module.scss'
