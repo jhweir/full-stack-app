@@ -4,6 +4,7 @@ import { Route, Switch, Redirect } from "react-router-dom"
 import styles from '../styles/pages/HolonPage.module.scss'
 import Wall from '../components/Wall'
 import ChildHolons from '../components/ChildHolons'
+import Users from '../components/Users'
 import SideBarLeft from '../components/SideBarLeft'
 import SideBarRight from '../components/SideBarRight'
 import EmptyPage from './EmptyPage'
@@ -14,7 +15,7 @@ function HolonPage(props) {
 
     useEffect(() => {
         updateHolonContext(holonHandle)
-    }, [updateHolonContext, holonHandle])
+    }, [])
 
     return (
         <div className={styles.holonPage}>
@@ -29,6 +30,7 @@ function HolonPage(props) {
                         <Redirect from={`${props.match.url}`} to={`${props.match.url}/wall`} exact/>
                         <Route path={`${props.match.url}/wall`} component={ Wall } exact/>
                         <Route path={`${props.match.url}/child-spaces`} component={ ChildHolons } exact/>
+                        <Route path={`${props.match.url}/users`} component={ Users } exact/>
                         <Route component={ EmptyPage }/> {/* TODO: Check if this needs to be doubled up on the App.js component */}
                     </Switch>
                 </div>

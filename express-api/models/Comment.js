@@ -12,6 +12,9 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'postId',
       //sourceKey: 'postId'
     })
+    // Comment.hasOne(models.User, {
+    //   //as: 'commentCreator'
+    // })
   };
   return Comment;
 };

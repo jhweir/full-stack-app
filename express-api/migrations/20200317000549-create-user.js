@@ -14,6 +14,12 @@ module.exports = {
       name: {
         type: Sequelize.STRING
       },
+      email: {
+        type: Sequelize.STRING
+      },
+      password: {
+        type: Sequelize.STRING
+      },
       bio: {
         type: Sequelize.STRING
       },
@@ -21,6 +27,9 @@ module.exports = {
         type: Sequelize.STRING
       },
       coverImagePath: {
+        type: Sequelize.STRING
+      },
+      facebookId: {
         type: Sequelize.STRING
       },
       createdAt: {

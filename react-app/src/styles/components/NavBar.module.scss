@@ -15,25 +15,21 @@
     transition-duration: 2s;
     z-index: 10;
 }
-
 .navBarContainer {
     width: 1200px;
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    
     @media screen and (max-width: 1200px) {
         width: 100%;
     }
 }
-
 .navBarLinks {
     display: flex;
     flex-direction: row;
     align-items: center;
 }
-
 .navBarLink {
     display: flex;
     flex-direction: row;
@@ -44,7 +40,6 @@
         margin-right: 15px;
     }
 }
-
 .navBarText {
     color: #fff; //#9DA1A8; //rgb(218, 218, 218);
     font-size: 20px;
@@ -56,7 +51,6 @@
         display: none;
     }
 }
-
 .navBarIcon {
     width: 28px;
     height: 28px;
@@ -64,4 +58,41 @@
     opacity: 0.4;
     filter: invert(100%);
     transition: opacity 0.5s;
+}
+.authButtons {
+    display: flex;
+    flex-direction: row;
+}
+.userControls {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    &:hover {
+        cursor: pointer;
+    }
+}
+.userName {
+    color: white;
+    font-size: 16px;
+    margin-right: 20px;
+}
+.userImage {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+.userImageWrapper {
+    background-color: #eee; //rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    height: 40px;
+    width: 40px;
+    margin-right: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+}
+.userImagePlaceholder {
+    width: 50%;
+    opacity: 0.2;
 }

@@ -22,7 +22,7 @@ function Post(props) {
 
     const { 
         id,
-        user,
+        creator,
         title,
         description,
         url,
@@ -34,7 +34,7 @@ function Post(props) {
         total_ratings,
         total_rating_points,
         pins,
-        Post_Holons
+        spaces
     } = props.post
 
     useEffect(() => {
@@ -119,14 +119,17 @@ function Post(props) {
             }
             <div className={styles.postBody}>
                 <div className={styles.postTags}>
-                    <div className={styles.userImageWrapper}>
-                        <img className={styles.userImagePlaceholder} src='/icons/user-solid.svg' alt=''/>
-                    </div>
-                    <span className={styles.postSubText}>{ user || 'Anonymous' }</span>
+                    {creator && creator.profileImagePath ?
+                        <img className={styles.userImage} src={creator.profileImagePath} alt=''/> :
+                        <div className={styles.userImageWrapper}>
+                            <img className={styles.userImagePlaceholder} src={'/icons/user-solid.svg'} alt=''/>
+                        </div>
+                    }
+                    <span className={styles.postSubText}>{ creator && creator.name || 'Anonymous' }</span>
                     <span className={styles.postSubText}>to</span>
                     <div className={styles.holonNames}>
-                        {Post_Holons && Post_Holons.length >= 1 ? 
-                            Post_Holons.map((holon, index) =>
+                        {spaces && spaces.length >= 1 ? 
+                            spaces.map((holon, index) =>
                                 <Link to={ `/h/${holon}` }
                                     onClick={ () => { updateHolonContext(holon) } }
                                     style={{marginRight: 10}}

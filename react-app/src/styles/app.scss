@@ -113,3 +113,66 @@ input {
         display: none;
     }
 }
+
+
+.wecoInput {
+    font-size: 14px;
+    height: 40px;
+    width: 100%;
+    border-radius: 5px;
+    padding: 0px 15px;
+    margin-bottom: 10px;
+    outline: none;
+    border: none;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    background-color: rgba(0,0,0,0.08); //gba(10, 8, 72, 0.1);
+    //box-shadow: 0 1px 10px 0 rgba(10, 8, 72, 0.2);
+    transition-property: box-shadow, background-color;
+    transition-duration: 0.3s, 1s;
+    &.error {
+        box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.6);
+    }
+    &:hover {
+        box-shadow: 0 0 0 3px rgb(183, 214, 255); //0 0 5px 6px rgba(58,136,240,0.4);
+        background-color: white;
+    }
+    @media screen and (max-width: 700px) {
+        width: 100%;
+    }
+}
+
+.wecoButton {
+    height: 40px;
+    border-radius: 5px;
+    background-color: $blueGrey;
+    color: white;
+    font-size: 14px;
+    font-weight: 800;
+    padding: 0px 15px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 1px 10px 0 rgba(10, 8, 72, 0.1);
+    border: none;
+    transition-property: box-shadow, background-color, filter;
+    transition-duration: 0.3s, 2s, 0.5s;
+
+    &.w-100 {
+        width: 100%;
+    }
+
+    &.mr-10 {
+        margin-right: 10px;
+    }
+ 
+    &:hover { 
+        outline: none;
+        filter: brightness(115%);
+        cursor: pointer;
+    }
+    
+    &:focus { outline: none }
+}

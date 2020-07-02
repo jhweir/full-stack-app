@@ -1,5 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react'
 import { HolonContext } from '../contexts/HolonContext'
+import { UserContext } from '../contexts/UserContext'
 import axios from 'axios'
 import config from '../Config'
 import styles from '../styles/components/CreatePost.module.scss'
@@ -8,6 +9,7 @@ import PollAnswerForm from './PollAnswerForm'
 
 function CreatePost(props) {
     const { holonData, globalData, isLoading, updateHolonContext } = useContext(HolonContext)
+    const { userData } = useContext(UserContext)
     const { toggleModal } = props
     const [type, setPostType] = useState('')
     // const [user, setUser] = useState('')
@@ -39,7 +41,8 @@ function CreatePost(props) {
         if (invalidDescription) { setDescriptionError(true) }
         if (invalidHolons) { setHolonError(true) }
         if (!invalidTitle && !invalidDescription && !invalidHolons) {
-            let post = { type, subType: pollType, title, description, url, holonHandles, pollAnswers }
+            //console.log('userData.name:', userData.name)
+            let post = { type, subType: pollType, creatorId: userData.id, title, description, url, holonHandles, pollAnswers }
             axios.post(config.environmentURL + '/create-post', { post })
                 //.then(res => { console.log(res) })
                 .then(toggleModal)

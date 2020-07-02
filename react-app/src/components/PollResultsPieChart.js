@@ -78,8 +78,8 @@ function PollResultsPieChart(props) {
             .style("opacity", 1)
             .text(function(d) {
                 if (post.subType === 'weighted-choice') {
-                    if (((d.data.total_score / totalPollVotes) * 100).toFixed(1) < 4) { return '' }
-                    return `${d.data.total_score.toFixed(1)} ↑` //↑⇧⇑⇪⬆
+                    if (((d.data.total_score / totalPollVotes) * 100) < 4) { return '' }
+                    return `${d.data.total_score} ↑` //↑⇧⇑⇪⬆
                 } else {
                     if (((d.data.total_votes / totalPollVotes) * 100).toFixed(1) < 4) { return '' }
                     return `${d.data.total_votes} ↑` //↑⇧⇑⇪⬆

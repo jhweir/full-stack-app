@@ -1,14 +1,22 @@
+require("dotenv").config()
 const express = require('express')
 const router = express.Router()
-var sequelize = require('sequelize');
-const Op = sequelize.Op;
+var sequelize = require('sequelize')
+const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
+const passport = require("passport")
+const passportJWT = require('passport-jwt')
+const JwtStrategy = passportJWT.Strategy
+const ExtractJwt = passportJWT.ExtractJwt
+
+// const Op = sequelize.Op;
 
 const Holon = require('../models').Holon
 const VerticalHolonRelationship = require('../models').VerticalHolonRelationship
-const HolonHandle = require('../models').HolonHandle
+// const HolonHandle = require('../models').HolonHandle
 // const HolonUser = require('../models').HolonUser
 const PostHolon = require('../models').PostHolon
-// const User = require('../models').User
+const User = require('../models').User
 // const UserUser = require('../models').UserUser
 const Post = require('../models').Post
 const Comment = require('../models').Comment
@@ -17,7 +25,7 @@ const PollAnswer = require('../models').PollAnswer
 // const Notifications = require('../models').Notification
 
 const postAttributes = [
-    'id', 'type', 'subType', 'globalState', 'creator', 'title', 'description', 'url', 'createdAt',
+    'id', 'type', 'subType', 'globalState', 'title', 'description', 'url', 'createdAt',
     [sequelize.literal(
         `(SELECT COUNT(*) FROM Comments AS Comment WHERE Comment.postId = Post.id)`
         ),'total_comments'
@@ -43,6 +51,53 @@ const postAttributes = [
         ),'total_rating_points'
     ]
 ]
+
+// const options = {
+//     secretOrKey: process.env.ACCESS_TOKEN_SECRET,
+//     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken()
+// }
+
+// const strategy = new JwtStrategy(options, (payload, next) => {
+//     //const user = null
+//     //User.find
+//     next(null, user)
+// })
+
+// passport.use(strategy)
+// router.use(passport.initialize())
+
+// router.get('/protected', passport.authenticate('jwt', { session: false }), (req, res) => {
+//     res.send('i\'m protected')
+// })
+
+// // Log in
+// router.post('/log-in', async (req, res) => {
+//     const { email, password } = req.body
+//     // Authenticate user
+//     User.findOne({ where: { email: email } }).then(user => {
+//         //res.send(user)
+//         if (!user) { return res.status(400).send('User not found') }
+//         bcrypt.compare(password, user.password, function(error, success) {
+//             if (error) { /* handle error */ }
+//             if (success) { 
+//                 const payload = { id: user.id }
+//                 const token = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET)
+//                 res.send(token)
+//                 //res.send('Success')
+//             }
+//             else { res.send('Incorrect password') }
+//         })
+//     })
+
+//     // Create JWT access token
+//     // const user = { email: email }
+//     // const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15s' })
+//     // const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET)
+//     // res.json({ accessToken: accessToken, refreshToken: refreshToken })
+// })
+
+
+
 
 router.get('/global-data', (req, res) => {
     Holon.findAll({ attributes: ['handle'] })
@@ -108,13 +163,18 @@ router.get('/holon-posts', (req, res) => {
                     as: 'PostHolons',
                     attributes: ['handle'],
                     through: { attributes: [] },
+                },
+                {
+                    model: User,
+                    as: 'creator',
+                    attributes: ['name', 'profileImagePath'],
                 }
             ]
         })
         .then(posts => {
             posts.forEach(post => {
                 const newPostHolons = post.PostHolons.map(ph => ph.handle)
-                post.setDataValue("Post_Holons", newPostHolons)
+                post.setDataValue("spaces", newPostHolons)
                 delete post.dataValues.PostHolons
             })
             return posts
@@ -122,6 +182,11 @@ router.get('/holon-posts', (req, res) => {
     })
     .then(data => { res.json(data) })
     .catch(err => console.log(err))
+})
+
+router.get('/holon-users', (req, res) => {
+    User.findAll()
+    .then(data => { res.json(data) })
 })
 
 router.get('/post', (req, res) => {
@@ -229,7 +294,7 @@ router.post('/create-holon', (req, res) => {
 
 // Create a new post
 router.post('/create-post', (req, res) => {
-    const { type, subType, title, description, url, holonHandles, pollAnswers } = req.body.post
+    const { type, subType, creatorId, title, description, url, holonHandles, pollAnswers } = req.body.post
     let holonIds = []
 
     async function asyncForEach(array, callback) {
@@ -267,7 +332,7 @@ router.post('/create-post', (req, res) => {
 
     // Create the post and all of its assosiated content
     Post.create({
-        type, subType, title, description, url, globalState: 'visible'
+        type, subType, creatorId, title, description, url, globalState: 'visible'
     })
     .then(post => {
         createNewPostHolons(post)
@@ -348,10 +413,108 @@ router.post('/cast-vote', (req, res) => {
     })
 })
 
+// Register account
+router.post('/register', async (req, res) => {
+    const { newUserName, newEmail, newPassword } = req.body
+
+    // Check username and email is available
+    User.findOne({ where: { name: newUserName } })
+        .then(user => {
+            if (user) { res.send('username-taken') }
+            else { User.findOne({ where: { email: newEmail } })
+                .then(async user => {
+                    if (user) { res.send('email-taken') }
+                    else {
+                        try {
+                            const hashedPassword = await bcrypt.hash(newPassword, 10)
+                            User.create({
+                                name: newUserName,
+                                email: newEmail,
+                                password: hashedPassword
+                            })
+                            res.send('account-registered')
+                        } catch {
+                            //res.redirect('/')
+                        }
+                    }
+                })
+            }
+        })
+
+    // check email is available
+    //console.log('register attempt')
+    // try {
+    //     const hashedPassword = await bcrypt.hash(newPassword, 10)
+    //     User.create({
+    //         name: newUserName,
+    //         email: newEmail,
+    //         password: hashedPassword
+    //     })
+    //     //res.redirect('/h/root')
+    // } catch {
+    //     //res.redirect('/')
+    // }
+})
+
+// function authenticateToken(req, res, next) {
+//     const authHeader = req.headers['authorization']
+//     const token = authHeader && authHeader.split(' ')[1]
+//     if (token == null) return res.sendStatus(401)
+
+//     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+//         if (err) return res.sendStatus(403)
+//         req.user = user
+//         next()
+//     })
+// }
+
+// function generateAccessToken(user) {
+//     return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15s' })
+// }
+
+// // Log in
+// router.post('/log-in', async (req, res) => {
+//     const { email, password } = req.body
+//     // Authenticate user
+//     User.findOne({ where: { email: email } }).then(user => {
+//         //res.send(user)
+//         if (!user) { return res.status(400).send('User not found') }
+//         bcrypt.compare(password, user.password, function(error, success) {
+//             if (error) { /* handle error */ }
+//             if (success) { 
+//                 const payload = { id: user.id }
+//                 const token = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET)
+//                 res.send(token)
+//                 //res.send('Success')
+//             }
+//             else { res.send('Incorrect password') }
+//         })
+//     })
+
+//     // Create JWT access token
+//     // const user = { email: email }
+//     // const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15s' })
+//     // const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET)
+//     // res.json({ accessToken: accessToken, refreshToken: refreshToken })
+// })
+
+
+
 module.exports = router
 
 
 
+// const user = await User.findOne({ where: { email: email } })
+// if (!user) { res.status(400).send('User not found') }
+// if (await bcrypt.compare(password, user.password)) { 
+//     res.send('Success')
+//     // user.then(user => {
+//     //     const payload = { id: user.id }
+//     //     const token = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET)
+//     //     res.send(token)
+//     // })
+// }
+// else { res.send('Incorrect password') }
 
 // // Pin post
 // router.put('/pinpost', (req, res) => {

@@ -3,12 +3,24 @@ module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define('User', {
     handle: DataTypes.STRING,
     name: DataTypes.STRING,
+    email: DataTypes.STRING,
+    password: DataTypes.STRING,
     bio: DataTypes.STRING,
     profileImagePath: DataTypes.STRING,
-    coverImagePath: DataTypes.STRING
+    coverImagePath: DataTypes.STRING,
+    facebookId: DataTypes.STRING
   }, {});
   User.associate = function(models) {
-    // associations can be defined here
+    User.hasMany(models.Post, {
+      foreignKey: 'creatorId',
+      //as: 'createdPosts'
+    })
+    // User.hasMany(models.Comment, {
+    //   //as: 'createdComments'
+    // })
+    // User.hasMany(models.Holon, {
+    //   //as: 'followedSpaces'
+    // })
   };
   return User;
 };

@@ -1,17 +1,26 @@
 # Todos
-Last updated: 01-04-2020
+Last updated: 26-06-2020
 
 + Take down remaining EC2-ELB services on AWS
-- Bug: on wieghted choice poll vote section. put in answers then move away to results section and come back. numbers have reset to 0 but values are reatined messing up calculations.
+- Set up social media log-in strategies
+- Set up user profiles
+- only allow post creators to delete posts
+- one vote per user
+- highlight items user has interacted with
+- request to log in if vote attempt made when logged out
+- set up JWT refresh token (https://www.youtube.com/watch?v=iD49_NIQ-R4&t=9s)
+- Bug: on weighted choice poll vote section. put in answers then move away to results section and come back. numbers have reset to 0 but values are reatined messing up calculations.
 + Re-create PostContext and then remove cascading props to clean up components
+- Re-consider layout/approach used for pie chart and time graph components
 - Set up 'visible holons' on post (vs. all included holons)
-- User authentication
+- User authentication/authorization
     - Request FB sign-up
     - Set up verification/welcome emails
 + work out best approach to paginate posts with filters
     - Store post totals in db to enable/speed up filtered paginated queries?
     - Apply filters in query?
-- set up filters on child-holons page
+- Set up filters on child-holons page
+- create seperate Authentication server
 - Merge title and description into one text field character limit around 3000?
 - Add privacy setting to labels (public, anonymous etc.)
 - Set up reverse orders for wall filters
@@ -29,3 +38,6 @@ Last updated: 01-04-2020
 - Create time graph for poll results
 - Set up color scale on polls and link to results below display
 - Create single choice, multiple choice, and weighted choice polls
+- Create User context
+- Create auth component
+- Create user table in database

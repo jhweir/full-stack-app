@@ -1,51 +1,110 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { HolonContext } from '../contexts/HolonContext'
+import { UserContext } from '../contexts/UserContext'
 import styles from '../styles/components/NavBar.module.scss'
+import AuthModal from './AuthModal'
+import UserControlsModal from './UserControlsModal'
+import axios from 'axios'
+import config from '../Config'
+//var _ = require('lodash')
 
 function NavBar() {
-    const { updateHolonContext, isLoading, setIsLoading } = useContext(HolonContext);
-    const { navBar, navBarContainer, navBarLinks, navBarLink, navBarIcon, navBarText } = styles
+    const { updateHolonContext, isLoading, setIsLoading } = useContext(HolonContext)
+    const { userData, setUserData, getUserData, logOut } = useContext(UserContext)
 
-    // function toggleDarkMode() {
-    //     document.body.classList.toggle("dark-mode"); // look into useRef
+    const [authModalOpen, setAuthModalOpen] = useState(false)
+    const [userControlsModalOpen, setUserControlsModalOpen] = useState(false)
+    //const [isAuth, setIsAuth] = useState(false)
+
+    // function logOut() {
+    //     axios.get(config.environmentURL + `/log-out`)
+    // }
+
+    // function checkAuth() {
+    //     axios
+    //         .get(config.environmentURL + `/check-auth`)
+    //         .then(res => {
+    //             console.log(res)
+    //             //setIsAuth()
+    //         })
     // }
 
     return (
-        <div className={navBar}>
-            <div className={navBarContainer}>
-                <div className={navBarLinks}>
+        <div className={styles.navBar}>
+            <div className={styles.navBarContainer}>
+                <div className={styles.navBarLinks}>
                     <Link to="/"
-                        className={navBarLink}
+                        className={styles.navBarLink}
                         onClick={() => { updateHolonContext('root') }}>
-                        <img className={navBarIcon} src="/icons/home-solid.svg" alt=''/>
-                        <div className={navBarText}>Home</div>
+                        <img className={styles.navBarIcon} src="/icons/home-solid.svg" alt=''/>
+                        <div className={styles.navBarText}>Home</div>
                     </Link> |
                     <Link to="/h/root"
-                        className={navBarLink}
+                        className={styles.navBarLink}
                         onClick={() => { updateHolonContext('root') }}>
-                        <img className={navBarIcon} src="/icons/globe-americas-solid.svg" alt=''/>
-                        <div className={navBarText}>Wall</div>
+                        <img className={styles.navBarIcon} src="/icons/globe-americas-solid.svg" alt=''/>
+                        <div className={styles.navBarText}>Wall</div>
                     </Link> | 
                     <Link to="/h/root/child-spaces"
-                        className={navBarLink}
+                        className={styles.navBarLink}
                         onClick={() => { updateHolonContext('root') }}>
-                        <img className={navBarIcon} src="/icons/overlapping-circles-thick.svg" alt=''/>
-                        <div className={navBarText}>Spaces</div>
+                        <img className={styles.navBarIcon} src="/icons/overlapping-circles-thick.svg" alt=''/>
+                        <div className={styles.navBarText}>Spaces</div>
+                    </Link> | 
+                    <Link to="/h/root/users"
+                        className={styles.navBarLink}
+                        onClick={() => { updateHolonContext('root') }}>
+                        <img className={styles.navBarIcon} src="/icons/users-solid.svg" alt=''/>
+                        <div className={styles.navBarText}>Users</div>
                     </Link>
                 </div>
-                <div 
-                    style={{marginLeft: 20}}
-                    className="button"
-                    onClick={() => setIsLoading(!isLoading)}>
-                    Toggle loading
-                </div>
+                {!userData &&
+                    <div className={styles.authButtons}>
+                        <div className="button" onClick={() => setAuthModalOpen(true)}>
+                            Log in
+                        </div>
+                    </div>
+                }
+                {authModalOpen && 
+                    <AuthModal setAuthModalOpen={setAuthModalOpen}/>
+                }
+                {userData &&
+                    <div className={styles.userControls} onClick={() => setUserControlsModalOpen(true)}>
+                        <span className={styles.userName}>{userData.name}</span>
+                        {userData.profileImagePath ?
+                            <img className={styles.userImage} src={userData.profileImagePath}/> :
+                            <div className={styles.userImageWrapper}>
+                                <img className={styles.userImagePlaceholder} src='/icons/user-solid.svg' alt=''/>
+                            </div>
+                        }
+                    </div>
+                }
+                {userControlsModalOpen && 
+                    <UserControlsModal
+                        setUserControlsModalOpen={setUserControlsModalOpen}
+                        setUserData={setUserData}
+                        logOut={logOut}
+                    />
+                }
             </div>
         </div>
     )
 }
 
 export default NavBar
+
+
+
+// function toggleDarkMode() {
+//     document.body.classList.toggle("dark-mode"); // look into useRef
+// }
+/* <div 
+    style={{marginLeft: 20}}
+    className="button"
+    onClick={() => setIsLoading(!isLoading)}>
+    Toggle loading
+</div> */
 
 /* <div 
     style={{ marginLeft: 20 }}

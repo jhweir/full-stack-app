@@ -4,13 +4,14 @@ import config from '../Config'
 
 export const HolonContext = createContext()
 
-function HolonContextProvider(props) {
+function HolonContextProvider({ children }) {
     const [globalData, setGlobalData] = useState({})
     const [holonData, setHolonData] = useState({
         DirectChildHolons: [],
         DirectParentHolons: [],
     })
     const [holonPosts, setHolonPosts] = useState([])
+    const [holonUsers, setHolonUsers] = useState([])
     const [postSearchFilter, setPostSearchFilter] = useState('')
     const [postSortByFilter, setPostSortByFilter] = useState('reactions')
     const [holonSearchFilter, setHolonSearchFilter] = useState('')
@@ -24,11 +25,13 @@ function HolonContextProvider(props) {
         const getGlobalData = axios.get(config.environmentURL + '/global-data') //remove getGlobalData and move to seperate function (or context)?
         const getHolonData = axios.get(config.environmentURL + `/holon-data?handle=${holonHandle}`)
         const getHolonPosts = axios.get(config.environmentURL + `/holon-posts?handle=${holonHandle}`)
+        const getHolonUsers = axios.get(config.environmentURL + `/holon-users`)
         // const demoDelay = new Promise((resolve) => { setTimeout(resolve, 1000) })
-        Promise.all([getGlobalData, getHolonData, getHolonPosts]).then((values) => {
+        Promise.all([getGlobalData, getHolonData, getHolonPosts, getHolonUsers]).then((values) => {
             setGlobalData(values[0].data)
             setHolonData(values[1].data)
             setHolonPosts(values[2].data)
+            setHolonUsers(values[3].data)
             setIsLoading(false)
             console.log('HolonContext updated')
         })
@@ -39,6 +42,7 @@ function HolonContextProvider(props) {
             globalData,
             holonData,
             holonPosts,
+            holonUsers,
             updateHolonContext,
             postSearchFilter,
             setPostSearchFilter,
@@ -51,7 +55,7 @@ function HolonContextProvider(props) {
             isLoading,
             setIsLoading
         }}>
-            {props.children}
+            {children}
         </HolonContext.Provider>
     )
 }

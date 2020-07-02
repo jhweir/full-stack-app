@@ -5,7 +5,7 @@ module.exports = (sequelize, DataTypes) => {
     subType: DataTypes.STRING,
     globalState: DataTypes.STRING,
     privacySetting: DataTypes.STRING,
-    creator: DataTypes.INTEGER,
+    creatorId: DataTypes.INTEGER,
     note: DataTypes.STRING,
     title: DataTypes.STRING,
     description: DataTypes.STRING,
@@ -13,6 +13,11 @@ module.exports = (sequelize, DataTypes) => {
     imagePath: DataTypes.STRING
   }, {})
   Post.associate = function(models) {
+    // why not 'belongsTo' like Comment.belongsTo(models.Post, ?
+    Post.belongsTo(models.User, {
+      foreignKey: 'creatorId',
+      as: 'creator'
+    })
     Post.belongsToMany(models.Holon, { 
       through: models.PostHolon,
       as: 'PostHolons',

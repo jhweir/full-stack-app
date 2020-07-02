@@ -63,6 +63,9 @@ Posts to holon A appear within holon B
 ### PollAnswer
 `npx sequelize-cli model:generate --name PollAnswer --attributes creator:integer,text:string,postId:integer`
 
+### Session
+`npx sequelize-cli model:generate --name Session --attributes sid:integer,expires:date,data:string`
+
 ## Generate Seeders
 `npx sequelize-cli seed:generate --name demo-holons`
 `npx sequelize-cli seed:generate --name demo-holon-tags`

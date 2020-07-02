@@ -20,7 +20,7 @@ module.exports = {
       privacySetting: {
         type: Sequelize.STRING
       },
-      creator: {
+      creatorId: {
         type: Sequelize.INTEGER
       },
       note: {
