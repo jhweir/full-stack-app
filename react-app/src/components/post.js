@@ -119,13 +119,17 @@ function Post(props) {
             }
             <div className={styles.postBody}>
                 <div className={styles.postTags}>
-                    {creator && creator.profileImagePath ?
-                        <img className={styles.userImage} src={creator.profileImagePath} alt=''/> :
-                        <div className={styles.userImageWrapper}>
-                            <img className={styles.userImagePlaceholder} src={'/icons/user-solid.svg'} alt=''/>
-                        </div>
+                    {creator &&
+                        <Link to={ `/u/${creator.name}`} className={styles.postCreator}>
+                            {creator.profileImagePath ?
+                                <img className={styles.userImage} src={creator.profileImagePath} alt=''/> :
+                                <div className={styles.userImageWrapper}>
+                                    <img className={styles.userImagePlaceholder} src={'/icons/user-solid.svg'} alt=''/>
+                                </div>
+                            }
+                            <span className={styles.postSubText}>{ creator && creator.name || 'Anonymous' }</span>
+                        </Link>
                     }
-                    <span className={styles.postSubText}>{ creator && creator.name || 'Anonymous' }</span>
                     <span className={styles.postSubText}>to</span>
                     <div className={styles.holonNames}>
                         {spaces && spaces.length >= 1 ? 

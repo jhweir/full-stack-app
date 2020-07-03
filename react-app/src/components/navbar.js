@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { HolonContext } from '../contexts/HolonContext'
-import { UserContext } from '../contexts/UserContext'
+import { AccountContext } from '../contexts/AccountContext'
 import styles from '../styles/components/NavBar.module.scss'
 import AuthModal from './AuthModal'
 import UserControlsModal from './UserControlsModal'
@@ -11,7 +11,7 @@ import config from '../Config'
 
 function NavBar() {
     const { updateHolonContext, isLoading, setIsLoading } = useContext(HolonContext)
-    const { userData, setUserData, getUserData, logOut } = useContext(UserContext)
+    const { accountData, setAccountData, logOut } = useContext(AccountContext)
 
     const [authModalOpen, setAuthModalOpen] = useState(false)
     const [userControlsModalOpen, setUserControlsModalOpen] = useState(false)
@@ -59,7 +59,7 @@ function NavBar() {
                         <div className={styles.navBarText}>Users</div>
                     </Link>
                 </div>
-                {!userData &&
+                {!accountData &&
                     <div className={styles.authButtons}>
                         <div className="button" onClick={() => setAuthModalOpen(true)}>
                             Log in
@@ -69,11 +69,11 @@ function NavBar() {
                 {authModalOpen && 
                     <AuthModal setAuthModalOpen={setAuthModalOpen}/>
                 }
-                {userData &&
+                {accountData &&
                     <div className={styles.userControls} onClick={() => setUserControlsModalOpen(true)}>
-                        <span className={styles.userName}>{userData.name}</span>
-                        {userData.profileImagePath ?
-                            <img className={styles.userImage} src={userData.profileImagePath}/> :
+                        <span className={styles.userName}>{accountData.name}</span>
+                        {accountData.profileImagePath ?
+                            <img className={styles.userImage} src={accountData.profileImagePath}/> :
                             <div className={styles.userImageWrapper}>
                                 <img className={styles.userImagePlaceholder} src='/icons/user-solid.svg' alt=''/>
                             </div>
@@ -83,7 +83,8 @@ function NavBar() {
                 {userControlsModalOpen && 
                     <UserControlsModal
                         setUserControlsModalOpen={setUserControlsModalOpen}
-                        setUserData={setUserData}
+                        setAccountData={setAccountData}
+                        accountData={accountData}
                         logOut={logOut}
                     />
                 }

@@ -2,10 +2,10 @@ import React, { useContext, useState } from 'react'
 import axios from 'axios'
 import config from '../Config'
 import styles from '../styles/components/AuthModal.module.scss'
-import { UserContext } from '../contexts/UserContext'
+import { AccountContext } from '../contexts/AccountContext'
 
 function AuthModal(props) {
-    const { getUserData } = useContext(UserContext)
+    const { updateAccountContext } = useContext(AccountContext)
     const { setAuthModalOpen } = props
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
@@ -35,9 +35,9 @@ function AuthModal(props) {
                     if (res.data === 'user-not-found') { setLogInFlashMessage('User not found') }
                     if (res.data === 'incorrect-password') { setLogInFlashMessage('Incorrect password') }
                     if (res.data !== 'user-not-found' && res.data !== 'incorrect-password') {
-                        document.cookie = `accessToken=${res.data}`
+                        document.cookie = `accessToken=${res.data}; path=/`
                         setAuthModalOpen(false)
-                        getUserData()
+                        updateAccountContext()
                     }
                 })
         }

@@ -3,6 +3,11 @@ const User = require('./models').User
 const bcrypt = require('bcrypt')
 const passport = require("passport")
 const jwt = require('jsonwebtoken')
+
+var aws = require('aws-sdk')
+var multer = require('multer')
+var multerS3 = require('multer-s3')
+
 // const passportJWT = require('passport-jwt')
 // const JwtStrategy = passportJWT.Strategy
 // const ExtractJwt = passportJWT.ExtractJwt
@@ -52,13 +57,13 @@ app.post('/api/log-in', async (req, res) => {
 function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization']
   const token = authHeader && authHeader.split(' ')[1]
-  if (token == null) return res.sendStatus(401)
+  if (token == null) return res.status(401).send('No token')
 
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-      if (err) return res.sendStatus(403)
-      console.log(user)
-      req.user = user
-      next()
+    if (err) return res.status(403).send('Invalid token')
+    //console.log(user)
+    req.user = user
+    next()
   })
 }
 
@@ -67,13 +72,46 @@ app.post('/api/protected', authenticateToken, (req, res) => {
   res.send('success. UserId: ' + req.user.id)
 })
 
-app.get('/api/user-data', authenticateToken, (req, res) => {
-  console.log('req.user.id: ', req.user.id)
+app.get('/api/account-data', authenticateToken, (req, res) => {
+  //console.log('req.user.id: ', req.user.id)
   User
     .findOne({ where: { id: req.user.id } })
     .then(user => { res.send(user) })
   //console.log('reqHeaders: ', req.headers.authorization)
   //res.send('success')
+})
+
+aws.config.update({
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  region: 'eu-west-1'
+})
+
+var s3 = new aws.S3({ /* ... */ })
+ 
+var upload = multer({
+  storage: multerS3({
+    s3: s3,
+    bucket: 'new-weco-user-profile-images',
+    acl: 'public-read',
+    metadata: function (req, file, cb) {
+      cb(null, {fieldName: 'testing...'});
+    },
+    key: function (req, file, cb) {
+      cb(null, Date.now().toString())
+    }
+  })
+})
+
+app.post('/api/image-upload', authenticateToken, function(req, res) {
+  upload.single('image')(req, res, function(err) {
+    if (err) { console.log(err) }
+    if (req.file) {
+      User
+        .update({ profileImagePath: req.file.location }, { where: { id: req.user.id }})
+        .then(res.send('success'))
+    } else { res.json({ message: 'failed' }) }
+  })
 })
 
 

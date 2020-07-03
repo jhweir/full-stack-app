@@ -17,17 +17,15 @@ function PostPage(props) {
     const parsedQuery = queryString.parse(props.location.search)
 
     const [post, setPost] = useState({
-        Post_Holons: [],
+        spaces: [],
         Comments: [],
-        PollAnswers: [],
-        PollVotes: []
+        PollAnswers: []
     })
     const [newComment, setNewComment] = useState('')
     const [commentError, setCommentError] = useState(false)
     const [postPageLoading, setPostPageLoading] = useState(true)
     const [selectedPollAnswers, setSelectedPollAnswers] = useState([])
     const [voteCast, setVoteCast] = useState(false)
-    //console.log('selectedPollAnswers', selectedPollAnswers)
 
     const pollAnswersSortedById = post.PollAnswers.map((a)=>a).sort((a, b) => a.id - b.id)
     let pollAnswersSortedByScore = post.PollAnswers.map((a)=>a).sort((a, b) => b.total_votes - a.total_votes) 

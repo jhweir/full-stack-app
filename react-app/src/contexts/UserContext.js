@@ -1,44 +1,21 @@
-import React, { createContext, useState, useEffect } from 'react'
+import React, { createContext, useState } from 'react'
 import axios from 'axios'
 import config from '../Config'
-import Cookies from 'universal-cookie';
-
-// const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6OCwiaWF0IjoxNTkzNjMyMzY4LCJleHAiOjE1OTM2MzQxNjh9.crjYhaNXYDGKLNRITHQd_yEcQfvIPlCYbyiVoYMLjvM'
-
 export const UserContext = createContext()
 
 function UserContextProvider(props) {
-    const [userData, setUserData] = useState(null)
+    const [userData, setUserData] = useState({})
 
-    let cookies = new Cookies()
-
-    function getUserData() {
-        let accessToken = cookies.get('accessToken')
+    function updateUserContext(userName) {
         axios
-            // Include JWT in Authorization header
-            .create({
-                baseURL: config.environmentURL,
-                headers: { Authorization: `Bearer ${accessToken}` }
-            })
-            .get(`/user-data`)
+            .get(config.environmentURL + `/user-data?userName=${userName}`)
             .then(res => { setUserData(res.data) })
     }
-
-    function logOut() {
-        cookies.remove('accessToken')
-        setUserData(null)
-    }
-
-    useEffect(() => {
-        getUserData()
-    }, [])
 
     return (
         <UserContext.Provider value={{
             userData,
-            setUserData,
-            getUserData,
-            logOut
+            updateUserContext
         }}>
             {props.children}
         </UserContext.Provider>

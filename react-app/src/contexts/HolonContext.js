@@ -8,7 +8,7 @@ function HolonContextProvider({ children }) {
     const [globalData, setGlobalData] = useState({})
     const [holonData, setHolonData] = useState({
         DirectChildHolons: [],
-        DirectParentHolons: [],
+        DirectParentHolons: []
     })
     const [holonPosts, setHolonPosts] = useState([])
     const [holonUsers, setHolonUsers] = useState([])

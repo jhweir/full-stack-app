@@ -52,53 +52,6 @@ const postAttributes = [
     ]
 ]
 
-// const options = {
-//     secretOrKey: process.env.ACCESS_TOKEN_SECRET,
-//     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken()
-// }
-
-// const strategy = new JwtStrategy(options, (payload, next) => {
-//     //const user = null
-//     //User.find
-//     next(null, user)
-// })
-
-// passport.use(strategy)
-// router.use(passport.initialize())
-
-// router.get('/protected', passport.authenticate('jwt', { session: false }), (req, res) => {
-//     res.send('i\'m protected')
-// })
-
-// // Log in
-// router.post('/log-in', async (req, res) => {
-//     const { email, password } = req.body
-//     // Authenticate user
-//     User.findOne({ where: { email: email } }).then(user => {
-//         //res.send(user)
-//         if (!user) { return res.status(400).send('User not found') }
-//         bcrypt.compare(password, user.password, function(error, success) {
-//             if (error) { /* handle error */ }
-//             if (success) { 
-//                 const payload = { id: user.id }
-//                 const token = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET)
-//                 res.send(token)
-//                 //res.send('Success')
-//             }
-//             else { res.send('Incorrect password') }
-//         })
-//     })
-
-//     // Create JWT access token
-//     // const user = { email: email }
-//     // const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15s' })
-//     // const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET)
-//     // res.json({ accessToken: accessToken, refreshToken: refreshToken })
-// })
-
-
-
-
 router.get('/global-data', (req, res) => {
     Holon.findAll({ attributes: ['handle'] })
     .then(handles => { return handles.map(h => h.handle) })
@@ -189,11 +142,55 @@ router.get('/holon-users', (req, res) => {
     .then(data => { res.json(data) })
 })
 
+router.get('/user-data', (req, res) => {
+    User.findOne({ 
+        where: { name: req.query.userName },
+        attributes: ['id', 'handle', 'name', 'bio', 'profileImagePath', 'coverImagePath', 'createdAt'],
+        include: [
+            { 
+                model: Post,
+                //as: 'createdPosts',
+                //attributes: postAttributes //['id']
+            },
+            // { 
+            //     model: Holon,
+            //     //as: 'followedSpaces',
+            //     //attributes: ['handle'],
+            //     //through: { attributes: [] }
+            // },
+            // { 
+            //     model: Comment,
+            //     //attributes: ['creator', 'text', 'createdAt']
+            // }
+        ]
+    })
+    .then(user => {
+        // replace PostHolons array of objects with simpler Post_Holons array of strings
+        // const spaces = post.PostHolons.map(ph => ph.handle)
+        // post.setDataValue("spaces", spaces)
+        // delete post.dataValues.PostHolons
+        // replace raw createdAt dates in PollAnswer.Labels with parsed number strings
+        // post.PollAnswers.forEach(answer => answer.Votes.forEach(label => {
+        //     label.setDataValue("parsedCreatedAt", Date.parse(label.createdAt))
+        //     delete label.dataValues.createdAt
+        // }))
+        return user
+    })
+    .then(user => { res.json(user) })
+    .catch(err => console.log(err))
+})
+
+
 router.get('/post', (req, res) => {
     Post.findOne({ 
         where: { id: req.query.id },
         attributes: postAttributes,
         include: [
+            { 
+                model: User,
+                as: 'creator',
+                attributes: ['name', 'profileImagePath']
+            },
             { 
                 model: Holon,
                 as: 'PostHolons',
@@ -229,8 +226,8 @@ router.get('/post', (req, res) => {
     })
     .then(post => {
         // replace PostHolons array of objects with simpler Post_Holons array of strings
-        const Post_Holons = post.PostHolons.map(ph => ph.handle)
-        post.setDataValue("Post_Holons", Post_Holons)
+        const spaces = post.PostHolons.map(ph => ph.handle)
+        post.setDataValue("spaces", spaces)
         delete post.dataValues.PostHolons
         // replace raw createdAt dates in PollAnswer.Labels with parsed number strings
         // post.PollAnswers.forEach(answer => answer.Votes.forEach(label => {
@@ -502,7 +499,49 @@ router.post('/register', async (req, res) => {
 
 module.exports = router
 
+// const options = {
+//     secretOrKey: process.env.ACCESS_TOKEN_SECRET,
+//     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken()
+// }
 
+// const strategy = new JwtStrategy(options, (payload, next) => {
+//     //const user = null
+//     //User.find
+//     next(null, user)
+// })
+
+// passport.use(strategy)
+// router.use(passport.initialize())
+
+// router.get('/protected', passport.authenticate('jwt', { session: false }), (req, res) => {
+//     res.send('i\'m protected')
+// })
+
+// // Log in
+// router.post('/log-in', async (req, res) => {
+//     const { email, password } = req.body
+//     // Authenticate user
+//     User.findOne({ where: { email: email } }).then(user => {
+//         //res.send(user)
+//         if (!user) { return res.status(400).send('User not found') }
+//         bcrypt.compare(password, user.password, function(error, success) {
+//             if (error) { /* handle error */ }
+//             if (success) { 
+//                 const payload = { id: user.id }
+//                 const token = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET)
+//                 res.send(token)
+//                 //res.send('Success')
+//             }
+//             else { res.send('Incorrect password') }
+//         })
+//     })
+
+//     // Create JWT access token
+//     // const user = { email: email }
+//     // const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15s' })
+//     // const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET)
+//     // res.json({ accessToken: accessToken, refreshToken: refreshToken })
+// })
 
 // const user = await User.findOne({ where: { email: email } })
 // if (!user) { res.status(400).send('User not found') }

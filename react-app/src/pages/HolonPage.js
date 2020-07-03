@@ -9,8 +9,9 @@ import SideBarLeft from '../components/SideBarLeft'
 import SideBarRight from '../components/SideBarRight'
 import EmptyPage from './EmptyPage'
 
-function HolonPage(props) {
-    const { holonHandle } = props.match.params
+function HolonPage({ match }) {
+    const { url } = match
+    const { holonHandle } = match.params
     const { updateHolonContext } = useContext(HolonContext)
 
     useEffect(() => {
@@ -27,10 +28,10 @@ function HolonPage(props) {
                 <SideBarLeft/>
                 <div className={styles.holonPageCenterPanel}>
                     <Switch>
-                        <Redirect from={`${props.match.url}`} to={`${props.match.url}/wall`} exact/>
-                        <Route path={`${props.match.url}/wall`} component={ Wall } exact/>
-                        <Route path={`${props.match.url}/child-spaces`} component={ ChildHolons } exact/>
-                        <Route path={`${props.match.url}/users`} component={ Users } exact/>
+                        <Redirect from={url} to={`${url}/wall`} exact/>
+                        <Route path={`${url}/wall`} component={ Wall } exact/>
+                        <Route path={`${url}/child-spaces`} component={ ChildHolons } exact/>
+                        <Route path={`${url}/users`} component={ Users } exact/>
                         <Route component={ EmptyPage }/> {/* TODO: Check if this needs to be doubled up on the App.js component */}
                     </Switch>
                 </div>
@@ -51,8 +52,8 @@ export default HolonPage
     key={location.key}>
     <section className={sectionWrapper}>         
         <Switch location={location}>
-            <Route path={`${props.match.url}/wall`} component={ Wall } exact/>
-            <Route path={`${props.match.url}/child-spaces`} component={ ChildHolons } exact/>
+            <Route path={`${url}/wall`} component={ Wall } exact/>
+            <Route path={`${url}/child-spaces`} component={ ChildHolons } exact/>
             <Route component={ EmptyPage }/>
         </Switch>
     </section>
@@ -82,8 +83,8 @@ export default HolonPage
 //     <TransitionGroup>
 //         <CSSTransition key={location.key} classNames="fade" timeout={1000} mountOnEnter={true} unmountOnExit={true}>
 //             <Switch location={location}>
-//                 <Route path={`${props.match.url}/wall`} component={ Wall } exact/>
-//                 <Route path={`${props.match.url}/child-spaces`} component={ ChildHolons } exact/>
+//                 <Route path={`${url}/wall`} component={ Wall } exact/>
+//                 <Route path={`${url}/child-spaces`} component={ ChildHolons } exact/>
 //                 {/* <Route path="/" component={Home} exact />
 //                 <Route path="/first" component={First} />
 //                 <Route path="/second" component={Second} /> */}

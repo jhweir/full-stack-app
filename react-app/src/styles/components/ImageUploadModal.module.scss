@@ -1,4 +1,4 @@
-.userControlsModalWrapper {
+.imageUploadModalWrapper {
     position: fixed;
     top: 0;
     left: 0;
@@ -9,9 +9,9 @@
     justify-content: center;
     align-items: center;
 }
-.userControlsModal {
-    width: 300px;
-    height: 400px;
+.imageUploadModal {
+    width: 600px;
+    height: 600px;
     border-radius: 5px;
     background-color: white;
     color: black;
@@ -21,7 +21,7 @@
     flex-direction: column;
     align-items: center;
 }
-.userControlsModalCloseButton {
+.imageUploadModalCloseButton {
     height: 20px;
     width: 20px;
     opacity: 0.2;
@@ -32,11 +32,11 @@
         cursor: pointer;
     }
 }
-.userControlsModalTitle {
+.imageUploadModalTitle {
     font-size: 24px;
     margin-bottom: 20px;
 }
-.userControlsLink {
+.imageUploadLink {
     font-size: 20px;
     margin-bottom: 20px;
     &:hover {
