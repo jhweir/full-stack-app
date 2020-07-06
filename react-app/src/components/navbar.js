@@ -11,24 +11,14 @@ import config from '../Config'
 
 function NavBar() {
     const { updateHolonContext, isLoading, setIsLoading } = useContext(HolonContext)
-    const { accountData, setAccountData, logOut } = useContext(AccountContext)
-
-    const [authModalOpen, setAuthModalOpen] = useState(false)
-    const [userControlsModalOpen, setUserControlsModalOpen] = useState(false)
-    //const [isAuth, setIsAuth] = useState(false)
-
-    // function logOut() {
-    //     axios.get(config.environmentURL + `/log-out`)
-    // }
-
-    // function checkAuth() {
-    //     axios
-    //         .get(config.environmentURL + `/check-auth`)
-    //         .then(res => {
-    //             console.log(res)
-    //             //setIsAuth()
-    //         })
-    // }
+    const { 
+        accountData,
+        setAccountData,
+        logOut,
+        setAuthModalOpen,
+        userControlsModalOpen,
+        setUserControlsModalOpen
+    } = useContext(AccountContext)
 
     return (
         <div className={styles.navBar}>
@@ -44,9 +34,9 @@ function NavBar() {
                         className={styles.navBarLink}
                         onClick={() => { updateHolonContext('root') }}>
                         <img className={styles.navBarIcon} src="/icons/globe-americas-solid.svg" alt=''/>
-                        <div className={styles.navBarText}>Wall</div>
+                        <div className={styles.navBarText}>Posts</div>
                     </Link> | 
-                    <Link to="/h/root/child-spaces"
+                    <Link to="/h/root/spaces"
                         className={styles.navBarLink}
                         onClick={() => { updateHolonContext('root') }}>
                         <img className={styles.navBarIcon} src="/icons/overlapping-circles-thick.svg" alt=''/>
@@ -66,28 +56,26 @@ function NavBar() {
                         </div>
                     </div>
                 }
-                {authModalOpen && 
-                    <AuthModal setAuthModalOpen={setAuthModalOpen}/>
-                }
+                {/* {authModalOpen && <AuthModal setAuthModalOpen={setAuthModalOpen}/>} */}
                 {accountData &&
                     <div className={styles.userControls} onClick={() => setUserControlsModalOpen(true)}>
                         <span className={styles.userName}>{accountData.name}</span>
-                        {accountData.profileImagePath ?
-                            <img className={styles.userImage} src={accountData.profileImagePath}/> :
-                            <div className={styles.userImageWrapper}>
+                        {accountData.profileImagePath
+                            ? <img className={styles.userImage} src={accountData.profileImagePath}/>
+                            : <div className={styles.userImageWrapper}>
                                 <img className={styles.userImagePlaceholder} src='/icons/user-solid.svg' alt=''/>
                             </div>
                         }
                     </div>
                 }
-                {userControlsModalOpen && 
+                {/* {userControlsModalOpen && 
                     <UserControlsModal
                         setUserControlsModalOpen={setUserControlsModalOpen}
                         setAccountData={setAccountData}
                         accountData={accountData}
                         logOut={logOut}
                     />
-                }
+                } */}
             </div>
         </div>
     )
@@ -121,7 +109,7 @@ export default NavBar
         Wall
     </div> |
     <div className="navBar-text"
-        onClick={() => redirectTo('/h/root/child-spaces', 'root')}>
+        onClick={() => redirectTo('/h/root/spaces', 'root')}>
         Child-holons
     </div> */
 

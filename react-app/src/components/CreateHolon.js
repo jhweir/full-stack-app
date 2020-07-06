@@ -6,8 +6,8 @@ import styles from '../styles/components/CreateHolon.module.scss'
 // import HolonHandleInput from './HolonHandleInput'
 
 function CreateHolon(props) {
-    const { holonData } = useContext(HolonContext);
-    // const [user, setUser] = useState('')
+    const { holonData, updateHolonContext } = useContext(HolonContext)
+    
     const [name, setName] = useState('')
     const [handle, setHandle] = useState('')
     const [description, setDescription] = useState('')
@@ -21,11 +21,10 @@ function CreateHolon(props) {
         if (handle === '') { setHandleError(true) }
         if (description === '') { setDescriptionError(true) }
         if (name && handle && description !== '') {
-            let parentHolonId = holonData.id
-            const holon = { name, handle, description, parentHolonId }
-            axios({ method: 'post', url: config.environmentURL + `/create-holon`, data: { holon } })
+            const data = { name, handle, description, parentHolonId: holonData.id }
+            axios.post(config.environmentURL + `/create-holon`, data)
                 .then(props.toggleModal())
-                //.then(setTimeout(() => { getData() }, 200))
+                .then(setTimeout(() => { updateHolonContext(holonData.handle) }, 200))
         }
     }
 

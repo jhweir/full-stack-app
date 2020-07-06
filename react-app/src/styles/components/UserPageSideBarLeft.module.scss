@@ -8,34 +8,46 @@
         display: none;
     }
 }
-.sideBarLeftContent {
-    display: flex;
-    flex-direction: column;
-    transition: all $transitionSpeed;
-    opacity: 0;
-    &.visible { opacity: 1 }
-}
-.sideBarLeftHolonName {
+.userName {
     font-size: 26px;
     line-height: 30px;
     margin-bottom: 20px;
 }
-.sideBarLeftParentHolonNamesRoot {
-    font-size: 20px;
-    line-height: 16px;
-    margin-bottom: 25px;
-    color: rgba(0,0,0,0.3)
-}
-.sideBarLeftParentHolonNames {
-    font-size: 16px;
-}
-.sideBarLeftFlagImage {
+.flagImageWrapper {
     width: 120px;
     height: 120px;
     border-radius: 50%;
+    position: relative;
     margin-bottom: 20px;
 }
-.sideBarLeftFlagImagePlaceholderWrapper {
+.flagImage {
+    width: 100%; //120px;
+    height: 100%; //120px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+.flagImageUploadButton {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0);
+    border-radius: 50%;
+    color: transparent;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    text-align: center;
+    transition-property: background-color, color;
+    transition-duration: 0.3s, 0.3s;
+    &:hover {
+        cursor: pointer;
+        background-color: rgba(0,0,0,0.4);
+        color: white;
+    }
+}
+.flagImagePlaceholderWrapper {
     background-color: #eee; //rgba(0, 0, 0, 0.1);
     border-radius: 50%;
     height: 120px;
@@ -46,15 +58,35 @@
     align-items: center;
     flex-shrink: 0;
 }
-.sideBarLeftFlagImagePlaceholder {
+.flagImagePlaceholder {
     width: 60%;
     opacity: 0.2;
 }
-.sideBarLeftNavButtons {
+.navButtons {
     display: flex;
     flex-direction: column;
 }
-.sideBarLeftNavButton {
+.navButton {
+    height: 30px;
     display: flex;
     flex-direction: row;
+    align-items: center;
+    &:hover {
+        cursor: pointer;
+        .navButtonIcon { opacity: 0.4; }
+    }
+    &.selected {
+        .navButtonIcon { opacity: 0.4; }
+    }
+}
+.navButtonIcon {
+    width: 25px;
+    height: 25px;
+    margin-right: 10px;
+    opacity: 0.2;
+    transition-property: opacity;
+    transition-duration: 0.3s;
+}
+.navButtonText {
+    //font-size: 18px;
 }

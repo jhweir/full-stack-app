@@ -13,7 +13,7 @@ const ExtractJwt = passportJWT.ExtractJwt
 
 const Holon = require('../models').Holon
 const VerticalHolonRelationship = require('../models').VerticalHolonRelationship
-// const HolonHandle = require('../models').HolonHandle
+const HolonHandle = require('../models').HolonHandle
 // const HolonUser = require('../models').HolonUser
 const PostHolon = require('../models').PostHolon
 const User = require('../models').User
@@ -62,7 +62,7 @@ router.get('/global-data', (req, res) => {
 router.get('/holon-data', (req, res) => {
     Holon.findOne({ 
         where: { handle: req.query.handle },
-        attributes: ['handle', 'name', 'description'],
+        attributes: ['id', 'handle', 'name', 'description'],
         include: [
             { 
                 model: Holon,
@@ -180,6 +180,22 @@ router.get('/user-data', (req, res) => {
     .catch(err => console.log(err))
 })
 
+router.get('/created-posts', (req, res) => {
+    Post.findAll({ 
+        where: { creatorId: req.query.id },
+        attributes: postAttributes,
+        include: [
+            { 
+                model: User,
+                as: 'creator',
+                attributes: ['name', 'profileImagePath']
+            }
+        ]
+    })
+    .then(posts => { res.json(posts) })
+    .catch(err => console.log(err))
+})
+
 
 router.get('/post', (req, res) => {
     Post.findOne({ 
@@ -199,7 +215,14 @@ router.get('/post', (req, res) => {
             },
             { 
                 model: Comment,
-                attributes: ['creator', 'text', 'createdAt']
+                attributes: ['creatorId', 'text', 'createdAt'],
+                include: [
+                    {
+                        model: User,
+                        as: 'commentCreator',
+                        attributes: ['name', 'profileImagePath']
+                    }
+                ]
             },
             {
                 model: PollAnswer,
@@ -257,7 +280,7 @@ router.get('/poll-votes', (req, res) => {
 
 // Create a new holon
 router.post('/create-holon', (req, res) => {
-    const { name, handle, description, parentHolonId } = req.body.holon
+    const { name, handle, description, parentHolonId } = req.body
     Holon.create({ name, handle, description }).then((newHolon) => {
         // Attach new holon to parent holon(s)
         VerticalHolonRelationship.create({
@@ -266,7 +289,7 @@ router.post('/create-holon', (req, res) => {
             holonBId: newHolon.id,
         })
         // Create a unique tag for the holon
-        HolonTag.create({
+        HolonHandle.create({
             state: 'open',
             holonAId: newHolon.id,
             holonBId: newHolon.id,
@@ -279,7 +302,7 @@ router.post('/create-holon', (req, res) => {
         }).then(data => {
         //// 2. Add them to the new holon
             data.HolonHandles.forEach((tag) => {
-                HolonTag.create({
+                HolonHandle.create({
                     state: 'open',
                     holonAId: newHolon.id,
                     holonBId: tag.id,
@@ -385,8 +408,8 @@ router.put('/addRating', (req, res) => {
 
 // Create comment
 router.post('/add-comment', (req, res) => {
-    let { postId, text } = req.body
-    Comment.create({ postId, text })
+    let { creatorId, postId, text } = req.body
+    Comment.create({ creatorId, postId, text })
         .catch(err => console.log(err))
 
     // // Update number of comments on post in Post table

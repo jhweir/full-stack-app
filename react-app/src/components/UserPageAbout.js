@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { UserContext } from '../contexts/UserContext'
 import styles from '../styles/components/UserPageAbout.module.scss'
 // import Post from './Post'
@@ -6,17 +6,25 @@ import styles from '../styles/components/UserPageAbout.module.scss'
 // import WallPlaceholder from './WallPlaceholder'
 
 function UserPageAbout() {
-    const { userData } = useContext(UserContext)
+    const { userData, setSelectedSubPage } = useContext(UserContext)
 
     let d = new Date(userData.createdAt)
-    let dateJoined = `${d.getDate()}-${d.getMonth()}-${d.getFullYear()} at ${d.getHours()}:${d.getMinutes()}`
+    let dateJoined = `${d.getHours()}:${d.getMinutes()} on ${d.getDate()}-${d.getMonth()}-${d.getFullYear()}`
+
+    useEffect(() => {
+        setSelectedSubPage('about')
+    }, [])
 
     return (
         <div className={styles.wrapper}>
-            About section...
-            <div>Name: {userData.name}</div>
-            <div>Bio: {userData.bio}</div>
-            <div>Date joined: {dateJoined}</div>
+            <div className={styles.header}>
+                About
+            </div>
+            <div className={styles.body}>
+                <div><b>Name:</b> {userData.name}</div>
+                <div><b>Bio:</b> {userData.bio}</div>
+                <div><b>Joined:</b> {dateJoined}</div>
+            </div>
         </div>
     )
 }

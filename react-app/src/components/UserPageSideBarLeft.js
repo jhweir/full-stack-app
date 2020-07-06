@@ -6,7 +6,7 @@ import styles from '../styles/components/UserPageSideBarLeft.module.scss'
 //import SideBarLeftPlaceholder from '../components/SideBarLeftPlaceholder'
 
 function UserPageSideBarLeft(props) {
-    const { isOwnAccount, setImageUploadModalOpen } = props
+    const { isOwnAccount, setImageUploadModalOpen, selectedSubPage, setSelectedSubPage } = props
     const { accountData } = useContext(AccountContext)
     const { userData } = useContext(UserContext)
     //let isOwnAccount = accountData && userData.id === accountData.id
@@ -14,34 +14,45 @@ function UserPageSideBarLeft(props) {
     return (
         <div className={styles.sideBarLeft}>
             {/* <SideBarLeftPlaceholder/> */}
-            <div className={styles.sideBarLeftHolonName}>{ userData && userData.name }</div>
-            {userData.profileImagePath != null &&
-                <img className={styles.sideBarLeftFlagImage} src={userData.profileImagePath} alt=''/>
-            }
-            {userData.profileImagePath === null &&
-                <div className={styles.sideBarLeftFlagImagePlaceholderWrapper}>
-                    <img className={styles.sideBarLeftFlagImagePlaceholder} src='/icons/user-solid.svg' alt=''/>
-                </div>
-            }
-            <div className={styles.sideBarLeftNavButtons}>
-                {isOwnAccount &&
-                    <>
-                        <div className="wecoButton" onClick={() => setImageUploadModalOpen(true)}>Upload new image</div>
-                        <Link className={styles.sideBarLeftNavButton}
-                            to={ `/u/${userData && userData.name}/settings` }>
-                            Settings
-                        </Link>
-                    </>
+            <div className={styles.userName}>{ userData.name }</div>
+            <div className={styles.flagImageWrapper}>
+                {userData.profileImagePath === null ?
+                    <div className={styles.flagImagePlaceholderWrapper}>
+                        <img className={styles.flagImagePlaceholder} src='/icons/user-solid.svg' alt=''/>
+                    </div> :
+                    <img className={styles.flagImage} src={userData.profileImagePath} alt=''/>
                 }
-                <Link className={styles.sideBarLeftNavButton}
-                    to={ `/u/${userData && userData.name}` }>
-                    About
+                {isOwnAccount &&
+                    <div 
+                        className={styles.flagImageUploadButton}
+                        src='/icons/edit-solid.svg'
+                        onClick={() => setImageUploadModalOpen(true)}>
+                        Upload new image
+                    </div>
+                }
+            </div>
+            <div className={styles.navButtons}>
+                {isOwnAccount &&
+                    <Link className={`${styles.navButton} ${selectedSubPage === 'settings' && styles.selected}`}
+                        to={`/u/${userData.name}/settings`}
+                        onClick={() => setSelectedSubPage('settings')}>
+                        <img className={styles.navButtonIcon} src='/icons/cog-solid.svg'/>
+                        <span className={styles.navButtonText}>Settings</span>
+                    </Link>
+                }
+                <Link className={`${styles.navButton} ${selectedSubPage === 'about' && styles.selected}`}
+                    to={`/u/${userData.name}`}
+                    onClick={() => setSelectedSubPage('about')}>
+                    <img className={styles.navButtonIcon} src='/icons/book-open-solid.svg'/>
+                    <span className={styles.navButtonText}>About</span>
                 </Link>
-                <Link className={styles.sideBarLeftNavButton}
-                    to={ `/u/${userData && userData.name}/created-posts` }>
-                    Created Posts
+                <Link className={`${styles.navButton} ${selectedSubPage === 'created-posts' && styles.selected}`}
+                    to={`/u/${userData.name}/created-posts`}
+                    onClick={() => setSelectedSubPage('created-posts')}>
+                    <img className={styles.navButtonIcon} src='/icons/edit-solid.svg'/>
+                    <span className={styles.navButtonText}>Created Posts</span>
                 </Link>
-                <span className="sub-text mt-20">{userData && userData.bio}</span>
+                <span className="sub-text mt-20">{userData.bio}</span>
             </div>
         </div>
     )

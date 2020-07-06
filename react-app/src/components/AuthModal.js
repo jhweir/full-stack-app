@@ -4,9 +4,9 @@ import config from '../Config'
 import styles from '../styles/components/AuthModal.module.scss'
 import { AccountContext } from '../contexts/AccountContext'
 
-function AuthModal(props) {
-    const { updateAccountContext } = useContext(AccountContext)
-    const { setAuthModalOpen } = props
+function AuthModal() {
+    const { authModalOpen, updateAccountContext, setAuthModalOpen } = useContext(AccountContext)
+    //const { setAuthModalOpen } = props
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [newUserName, setNewUserName] = useState('')
@@ -79,82 +79,83 @@ function AuthModal(props) {
         }
 
     }
-
-    return (
-        <div className={styles.authModalWrapper}>
-            <div className={styles.authModal}>
-                <img 
-                    className={styles.authModalCloseButton}
-                    src="/icons/close-01.svg"
-                    onClick={() => setAuthModalOpen(false)}
-                />
-                <div className={styles.authModalColumn}>
-                    <span className={styles.authModalTitle}>Log in</span>
-                    <span className={styles.authModalFlashMessage}>{ logInFlashMessage }</span>
-                    <form className={styles.authModalForm} onSubmit={ logIn }>
-                        <input 
-                            className={`wecoInput ${emailError && 'error'}`}
-                            placeholder='Email'
-                            type="email" value={email}
-                            onChange={(e) => { setEmail(e.target.value); setEmailError(false) }}
-                        />
-                        <input 
-                            className={`wecoInput ${passwordError && 'error'}`}
-                            placeholder='Password'
-                            type="password" value={password}
-                            onChange={(e) => { setPassword(e.target.value); setPasswordError(false) }}
-                        />
-                        <button className='wecoButton w-100'>Log in</button>
-                    </form>
-                    <span className={styles.authModalText}>or log in with:</span>
-                    <a className={styles.socialMediaButton} style={{ backgroundColor: '#4867aa'}} href="http://localhost:5000/auth/facebook">
-                        <img className={styles.socialMediaIcon} src='/icons/facebook-f-brands.svg'/>
-                        Facebook
-                    </a>
-                    <a className={styles.socialMediaButton} style={{ backgroundColor: '#1da1f2'}} href=''>
-                        <img className={styles.socialMediaIcon} src='/icons/twitter-brands.svg'/>
-                        Twitter
-                    </a>
-                    <a className={styles.socialMediaButton} style={{ backgroundColor: '#34a853'}} href=''>
-                        <img className={styles.socialMediaIcon} src='/icons/google-brands.svg'/>
-                        Google
-                    </a>
-                </div>
-                <div className={styles.authModalDividerLine}/>
-                <div className={styles.authModalColumn}>
-                    <span className={styles.authModalTitle}>Register</span>
-                    <span className={styles.authModalFlashMessage}>{ registerFlashMessage }</span>
-                    <form className={styles.authModalForm} onSubmit={ register }>
-                        <input
-                            className={`wecoInput ${newUserNameError && 'error'}`}
-                            placeholder='Username'
-                            type="text" value={newUserName}
-                            onChange={(e) => { setNewUserName(e.target.value); setNewUserNameError(false) }}
-                        />
-                        <input 
-                            className={`wecoInput ${newEmailError && 'error'}`}
-                            placeholder='Email'
-                            type="email" value={newEmail}
-                            onChange={(e) => { setNewEmail(e.target.value); setNewEmailError(false) }}
-                        />
-                        <input 
-                            className={`wecoInput ${newPasswordError && 'error'}`}
-                            placeholder='Password'
-                            type="password" value={newPassword}
-                            onChange={(e) => { setNewPassword(e.target.value); setNewPasswordError(false) }}
-                        />
-                        <input 
-                            className={`wecoInput ${newPasswordTwoError && 'error'}`}
-                            placeholder='Repeat password'
-                            type="password" value={newPasswordTwo}
-                            onChange={(e) => { setNewPasswordTwo(e.target.value); setNewPasswordTwoError(false) }}
-                        />
-                        <button className='wecoButton w-100'>Register</button>
-                    </form>
+    if (authModalOpen) {
+        return (
+            <div className={styles.authModalWrapper}>
+                <div className={styles.authModal}>
+                    <img 
+                        className={styles.authModalCloseButton}
+                        src="/icons/close-01.svg"
+                        onClick={() => setAuthModalOpen(false)}
+                    />
+                    <div className={styles.authModalColumn}>
+                        <span className={styles.authModalTitle}>Log in</span>
+                        <span className={styles.authModalFlashMessage}>{ logInFlashMessage }</span>
+                        <form className={styles.authModalForm} onSubmit={ logIn }>
+                            <input 
+                                className={`wecoInput ${emailError && 'error'}`}
+                                placeholder='Email'
+                                type="email" value={email}
+                                onChange={(e) => { setEmail(e.target.value); setEmailError(false) }}
+                            />
+                            <input 
+                                className={`wecoInput ${passwordError && 'error'}`}
+                                placeholder='Password'
+                                type="password" value={password}
+                                onChange={(e) => { setPassword(e.target.value); setPasswordError(false) }}
+                            />
+                            <button className='wecoButton w-100'>Log in</button>
+                        </form>
+                        <span className={styles.authModalText}>or log in with:</span>
+                        <a className={styles.socialMediaButton} style={{ backgroundColor: '#4867aa'}} href="http://localhost:5000/auth/facebook">
+                            <img className={styles.socialMediaIcon} src='/icons/facebook-f-brands.svg'/>
+                            Facebook
+                        </a>
+                        <a className={styles.socialMediaButton} style={{ backgroundColor: '#1da1f2'}} href=''>
+                            <img className={styles.socialMediaIcon} src='/icons/twitter-brands.svg'/>
+                            Twitter
+                        </a>
+                        <a className={styles.socialMediaButton} style={{ backgroundColor: '#34a853'}} href=''>
+                            <img className={styles.socialMediaIcon} src='/icons/google-brands.svg'/>
+                            Google
+                        </a>
+                    </div>
+                    <div className={styles.authModalDividerLine}/>
+                    <div className={styles.authModalColumn}>
+                        <span className={styles.authModalTitle}>Register</span>
+                        <span className={styles.authModalFlashMessage}>{ registerFlashMessage }</span>
+                        <form className={styles.authModalForm} onSubmit={ register }>
+                            <input
+                                className={`wecoInput ${newUserNameError && 'error'}`}
+                                placeholder='Username'
+                                type="text" value={newUserName}
+                                onChange={(e) => { setNewUserName(e.target.value); setNewUserNameError(false) }}
+                            />
+                            <input 
+                                className={`wecoInput ${newEmailError && 'error'}`}
+                                placeholder='Email'
+                                type="email" value={newEmail}
+                                onChange={(e) => { setNewEmail(e.target.value); setNewEmailError(false) }}
+                            />
+                            <input 
+                                className={`wecoInput ${newPasswordError && 'error'}`}
+                                placeholder='Password'
+                                type="password" value={newPassword}
+                                onChange={(e) => { setNewPassword(e.target.value); setNewPasswordError(false) }}
+                            />
+                            <input 
+                                className={`wecoInput ${newPasswordTwoError && 'error'}`}
+                                placeholder='Repeat password'
+                                type="password" value={newPasswordTwo}
+                                onChange={(e) => { setNewPasswordTwo(e.target.value); setNewPasswordTwoError(false) }}
+                            />
+                            <button className='wecoButton w-100'>Register</button>
+                        </form>
+                    </div>
                 </div>
             </div>
-        </div>
-    )
+        )
+    } else { return null }
 }
 
 export default AuthModal

@@ -8,7 +8,7 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      creator: {
+      creatorId: {
         type: Sequelize.INTEGER
       },
       parentCommentId: {

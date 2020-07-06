@@ -28,9 +28,9 @@ function HolonPage({ match }) {
                 <SideBarLeft/>
                 <div className={styles.holonPageCenterPanel}>
                     <Switch>
-                        <Redirect from={url} to={`${url}/wall`} exact/>
-                        <Route path={`${url}/wall`} component={ Wall } exact/>
-                        <Route path={`${url}/child-spaces`} component={ ChildHolons } exact/>
+                        <Redirect from={url} to={`${url}/posts`} exact/>
+                        <Route path={`${url}/posts`} component={ Wall } exact/>
+                        <Route path={`${url}/spaces`} component={ ChildHolons } exact/>
                         <Route path={`${url}/users`} component={ Users } exact/>
                         <Route component={ EmptyPage }/> {/* TODO: Check if this needs to be doubled up on the App.js component */}
                     </Switch>

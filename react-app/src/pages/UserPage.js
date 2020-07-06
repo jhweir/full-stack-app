@@ -14,8 +14,9 @@ function UserPage({ match }) {
     // update userName to userHandle?
     const { userName } = match.params
     const { accountData, updateAccountContext } = useContext(AccountContext)
-    const { userData, updateUserContext } = useContext(UserContext)
+    const { userData, updateUserContext, selectedSubPage, setSelectedSubPage } = useContext(UserContext)
     const [imageUploadModalOpen, setImageUploadModalOpen] = useState(false)
+    // const [selectedSubPage, setSelectedSubPage] = useState('')
 
 
     useEffect(() => {
@@ -37,12 +38,14 @@ function UserPage({ match }) {
                     <UserPageSideBarLeft 
                         isOwnAccount={isOwnAccount}
                         setImageUploadModalOpen={setImageUploadModalOpen}
+                        selectedSubPage={selectedSubPage}
+                        setSelectedSubPage={setSelectedSubPage}
                     />
                     <div className={styles.userPageCenterPanel}>
                         <Switch>
                             {isOwnAccount && <Route path={`${match.url}/settings`} component={ UserPageSettings } exact/>}
-                            {/* <Redirect from={`${match.url}`} to={`${match.url}/about`} exact/> */}
-                            <Route path={`${match.url}`} component={ UserPageAbout } exact/>
+                            <Redirect from={`${match.url}`} to={`${match.url}/about`} exact/>
+                            <Route path={`${match.url}/about`} component={ UserPageAbout } exact/>
                             <Route path={`${match.url}/created-posts`} component={ UserPageCreatedPosts } exact/>
                         </Switch>
                     </div>

@@ -1,6 +1,7 @@
 import React from 'react'
 import { BrowserRouter, Route, Switch } from 'react-router-dom'
 import { createBrowserHistory } from 'history'
+// import { AccountContext } from '../contexts/AccountContext'
 import AccountContextProvider from './contexts/AccountContext'
 import HolonContextProvider from './contexts/HolonContext'
 import UserContextProvider from './contexts/UserContext'
@@ -10,10 +11,12 @@ import PostPage from './pages/PostPage'
 import UserPage from './pages/UserPage'
 import EmptyPage from './pages/EmptyPage'
 import NavBar from './components/NavBar'
-//import axios from 'axios';
-//axios.defaults.withCredentials = true
+import AlertModal from './components/AlertModal'
+import AuthModal from './components/AuthModal'
+import UserControlsModal from './components/UserControlsModal'
 
 function App() {
+  // const { authModalOpen, setAuthModalOpen} = useContext(AccountContext)
   return (
     <div className="app">
       <BrowserRouter history={createBrowserHistory}>
@@ -21,7 +24,9 @@ function App() {
           <HolonContextProvider>
             <UserContextProvider>
               <NavBar history={createBrowserHistory}/>
-              {/* <div style={{width: "300px", height: "100%", backgroundColor: "#4F5361", position: "absolute", left: 0, top: 0}}></div> */}
+              <AlertModal/>
+              <AuthModal/>
+              <UserControlsModal/>
               <Switch>
                 <Route path="/" exact component={Homepage}/>
                 <Route path="/h/:holonHandle" component={HolonPage}/>
@@ -38,10 +43,6 @@ function App() {
 }
 
 export default App;
-
-//  Side bar/burger menu test
-{/* <div style={{width: "300px", height: "100%", backgroundColor: "#4F5361", position: "absolute", left: 0, top: 0}}></div> */}
-
 
 // import { TransitionGroup, CSSTransition } from "react-transition-group";
 

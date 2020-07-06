@@ -18,14 +18,14 @@ function HolonContextProvider({ children }) {
     const [holonSortByFilter, setHolonSortByFilter] = useState('date')
     const [isLoading, setIsLoading] = useState(false)
 
-    //TODO: create seperate functions for updating globalData, holonData, and holonPosts
+    //TODO: create seperate functions for updating globalData, holonData, and holonPosts?
 
     function updateHolonContext(holonHandle) {
         setIsLoading(true)
         const getGlobalData = axios.get(config.environmentURL + '/global-data') //remove getGlobalData and move to seperate function (or context)?
         const getHolonData = axios.get(config.environmentURL + `/holon-data?handle=${holonHandle}`)
         const getHolonPosts = axios.get(config.environmentURL + `/holon-posts?handle=${holonHandle}`)
-        const getHolonUsers = axios.get(config.environmentURL + `/holon-users`)
+        const getHolonUsers = axios.get(config.environmentURL + `/holon-users?handle=${holonHandle}`)
         // const demoDelay = new Promise((resolve) => { setTimeout(resolve, 1000) })
         Promise.all([getGlobalData, getHolonData, getHolonPosts, getHolonUsers]).then((values) => {
             setGlobalData(values[0].data)
@@ -33,7 +33,7 @@ function HolonContextProvider({ children }) {
             setHolonPosts(values[2].data)
             setHolonUsers(values[3].data)
             setIsLoading(false)
-            console.log('HolonContext updated')
+            console.log('Holon Context updated')
         })
     }
 

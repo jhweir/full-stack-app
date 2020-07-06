@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { Route, Switch, Redirect } from "react-router-dom"
 import queryString from 'query-string'
 import axios from 'axios'
 import config from '../Config'
 import styles from '../styles/pages/PostPage.module.scss'
+import { AccountContext } from '../contexts/AccountContext'
 import EmptyPage from '../pages/EmptyPage'
 import Post from '../components/Post'
 import PageSectionSelector from '../components/PageSectionSelector'
@@ -15,6 +16,8 @@ function PostPage(props) {
     const postId = props.match.params.postId
     const pageUrl = props.match.url
     const parsedQuery = queryString.parse(props.location.search)
+
+    const { accountData, setAlertModalOpen, setAlertMessage } = useContext(AccountContext)
 
     const [post, setPost] = useState({
         spaces: [],
@@ -50,8 +53,10 @@ function PostPage(props) {
 
     function submitComment(e) {
         e.preventDefault()
-        if (newComment === '') { setCommentError(true) } else {
-            axios.post(config.environmentURL + '/add-comment', { text: newComment, postId })
+        if (newComment === '') { setCommentError(true) }
+        if (newComment !== '' && !accountData) { setAlertMessage('Log in to comment'); setAlertModalOpen(true) }
+        if (accountData && newComment !== '') {
+            axios.post(config.environmentURL + '/add-comment', { creatorId: accountData.id, postId, text: newComment })
                 .then(setNewComment(''))
                 .then(setTimeout(() => { getPost() }, 200))
         }
@@ -75,6 +80,11 @@ function PostPage(props) {
 
     return (
         <div className={styles.postPage}>
+            {/* {alertModalOpen && 
+                <AlertModal message={alertMessage} setAlertModalOpen={setAlertModalOpen}>
+                    <div className='wecoButton' onClick={}>Log in</div>
+                </AlertModal>
+            } */}
             <Post 
                 post={post}
                 postPageLoading={postPageLoading}

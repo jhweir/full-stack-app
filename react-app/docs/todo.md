@@ -2,8 +2,18 @@
 Last updated: 26-06-2020
 
 + Take down remaining EC2-ELB services on AWS
+- Allow users to follow spaces
+- Add followed spaces to user profile
+- Add user to create holon
+- Include interests and location on register form
 - Set up social media log-in strategies
 - Set up user profiles
+    - about page
+    - created posts page
+    - settings page
+    - liked posts page
+    - notifications
+    - messages
 - only allow post creators to delete posts
 - one vote per user
 - highlight items user has interacted with
@@ -29,8 +39,8 @@ Last updated: 26-06-2020
     - Bubble map
     - Radial tree
     - Expandable tree
-- Image uploads
 - Url scrapping
+- Location map
 
 # Complete
 - Prevent PostHolon duplicates when creating posts
@@ -41,3 +51,4 @@ Last updated: 26-06-2020
 - Create User context
 - Create auth component
 - Create user table in database
+- Image uploads

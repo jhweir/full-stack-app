@@ -1,16 +1,33 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { UserContext } from '../contexts/UserContext'
 import styles from '../styles/components/UserPageCreatedPosts.module.scss'
-// import Post from './Post'
+import Post from './Post'
 // import WallHeader from './WallHeader'
 // import WallPlaceholder from './WallPlaceholder'
 
 function UserPageCreatedPosts() {
-    const { userData } = useContext(UserContext)
+    const { userData, setSelectedSubPage, getCreatedPosts, createdPosts } = useContext(UserContext)
+
+    useEffect(() => {
+        setSelectedSubPage('created-posts')
+        getCreatedPosts()
+    }, [userData])
 
     return (
         <div className={styles.wrapper}>
-            Created Posts section...
+            <div className={styles.header}>Created posts</div>
+            <div className={styles.createdPostsHeader}>
+                search and filters go here...
+            </div>
+            <ul className={styles.createdPosts}>
+                {createdPosts.map((post, index) =>
+                    <Post
+                        post={post}
+                        key={index}
+                        index={index}
+                    />
+                )} 
+            </ul>
         </div>
     )
 }

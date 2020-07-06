@@ -19,12 +19,17 @@ function SideBarLeft() {
                     <Link className={styles.sideBarLeftNavButton}
                         to={ `/h/${holonData.handle}` }
                         onClick={ () => { updateHolonContext(holonData.handle) } }>
-                        Wall
+                        Posts
                     </Link>
                     <Link className={styles.sideBarLeftNavButton}
-                        to={ `/h/${holonData.handle}/child-spaces` }
+                        to={ `/h/${holonData.handle}/spaces` }
                         onClick={ () => { updateHolonContext(holonData.handle) } }>
-                        Child Spaces
+                        Spaces
+                    </Link>
+                    <Link className={styles.sideBarLeftNavButton}
+                        to={ `/h/${holonData.handle}/users` }
+                        onClick={ () => { updateHolonContext(holonData.handle) } }>
+                        Users
                     </Link>
                     <span className="sub-text mt-20">{holonData.description}</span>
                 </div>

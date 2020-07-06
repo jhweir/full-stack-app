@@ -15,9 +15,10 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'creatorId',
       //as: 'createdPosts'
     })
-    // User.hasMany(models.Comment, {
-    //   //as: 'createdComments'
-    // })
+    User.hasMany(models.Comment, {
+      foreignKey: 'creatorId',
+      //as: 'createdComments'
+    })
     // User.hasMany(models.Holon, {
     //   //as: 'followedSpaces'
     // })

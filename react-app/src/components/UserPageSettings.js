@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { UserContext } from '../contexts/UserContext'
 import styles from '../styles/components/UserPageSettings.module.scss'
 // import Post from './Post'
@@ -6,11 +6,20 @@ import styles from '../styles/components/UserPageSettings.module.scss'
 // import WallPlaceholder from './WallPlaceholder'
 
 function UserPageSettings() {
-    const { userData } = useContext(UserContext)
+    const { userData, setSelectedSubPage } = useContext(UserContext)
+
+    useEffect(() => {
+        setSelectedSubPage('settings')
+    }, [])
 
     return (
         <div className={styles.wrapper}>
-            Settings section...
+            <div className={styles.header}>
+                Settings
+            </div>
+            <div className={styles.body}>
+                Change settings here...
+            </div>
         </div>
     )
 }

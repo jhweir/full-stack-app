@@ -1,7 +1,7 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   const Comment = sequelize.define('Comment', {
-    creator: DataTypes.INTEGER,
+    creatorId: DataTypes.INTEGER,
     parentCommentId: DataTypes.INTEGER,
     postId: DataTypes.INTEGER,
     text: DataTypes.STRING
@@ -12,9 +12,10 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'postId',
       //sourceKey: 'postId'
     })
-    // Comment.hasOne(models.User, {
-    //   //as: 'commentCreator'
-    // })
+    Comment.belongsTo(models.User, {
+      foreignKey: 'creatorId',
+      as: 'commentCreator'
+    })
   };
   return Comment;
 };

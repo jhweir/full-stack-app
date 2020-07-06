@@ -62,7 +62,7 @@ function HolonHandleInput(props) {
             {holonErrorMessage && 
                 <div className={styles.holonHandleInputSubTitle}>
                     Sorry, that space doesn't exist yet. You'll need to create it first on the 
-                    <Link to="/h/root/child-spaces"> Spaces</Link> page.
+                    <Link to="/h/root/spaces"> Spaces</Link> page.
                 </div>
             }
             {(newHolonHandle !== '' && suggestedHolonHandles.length !== 0) &&
