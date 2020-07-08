@@ -1,11 +1,15 @@
-import React, { createContext, useState, useEffect } from 'react'
+import React, { createContext, useContext, useState, useEffect } from 'react'
 import axios from 'axios'
 import config from '../Config'
 import Cookies from 'universal-cookie';
+import { HolonContext } from './HolonContext'
 
 export const AccountContext = createContext()
 
 function AccountContextProvider(props) {
+    //const { updateHolonContext, holonData } = useContext(HolonContext)
+
+    const [accountContextLoading, setAccountContextLoading] = useState(true)
     const [accountData, setAccountData] = useState(null)
     const [alertModalOpen, setAlertModalOpen] = useState(false)
     const [alertMessage, setAlertMessage] = useState('')
@@ -16,15 +20,22 @@ function AccountContextProvider(props) {
 
     function updateAccountContext() {
         let accessToken = cookies.get('accessToken')
-        console.log('accessToken:', accessToken)
-        axios
-            // Create new axios instance with JWT in authorization header
-            .create({
-                baseURL: config.environmentURL,
-                headers: { Authorization: `Bearer ${accessToken}` }
-            })
-            .get(`/account-data`)
-            .then(res => { setAccountData(res.data) })
+        //console.log('accessToken:', accessToken)
+        if (accessToken === undefined) { setAccountContextLoading(false) }
+        if (accessToken !== undefined) {
+            axios
+                // Create new axios instance with JWT in authorization header
+                .create({
+                    baseURL: config.environmentURL,
+                    headers: { Authorization: `Bearer ${accessToken}` }
+                })
+                .get(`/account-data`)
+                .then(res => {
+                    if (res.data !== 'Invalid token') { setAccountData(res.data) }
+                    setAccountContextLoading(false)
+                    //updateHolonContext(holonData.handle)
+                })
+        }
     }
 
     function logOut() {
@@ -33,12 +44,19 @@ function AccountContextProvider(props) {
     }
 
     useEffect(() => {
-        console.log('account context run')
         updateAccountContext()
+        console.log('account context updated')
     }, [])
+
+    // useEffect(() => {
+    //     //
+    //         updateHolonContext('root')
+    //     //}
+    // }, [accountData])
 
     return (
         <AccountContext.Provider value={{
+            accountContextLoading,
             accountData,
             setAccountData,
             updateAccountContext,

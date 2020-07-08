@@ -14,6 +14,9 @@ module.exports = {
       value: {
         type: Sequelize.STRING
       },
+      state: {
+        type: Sequelize.STRING
+      },
       holonId: {
         type: Sequelize.INTEGER
       },

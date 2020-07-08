@@ -19,7 +19,9 @@ function PostReactionModal(props) {
         setNewRating,
         setNewRatingError,
         addRating,
-        Labels
+        accountLike,
+        accountHeart,
+        accountRating
     } = props
 
     return (
@@ -27,20 +29,30 @@ function PostReactionModal(props) {
 
             <img className={styles.postReactionModalCloseButton}
                 src="/icons/close-01.svg" alt=''
-                onClick={() => toggleReactionModal()}/>
+                onClick={() => toggleReactionModal()}
+            />
 
             <div className={styles.postReactionModalItem} onClick={() => addLike()}>
-                <img className={styles.postIcon} src="/icons/thumbs-up-solid.svg" alt=''/>
+                <img
+                    className={`${styles.postIcon} ${accountLike !== 0 && styles.selectedOrange}`}
+                    src="/icons/thumbs-up-solid.svg" alt=''
+                />
                 <div>{ totalLikes } Likes</div>
             </div>
 
             <div className={styles.postReactionModalItem} onClick={() => addHeart()}>
-                <img className={styles.postIcon} src="/icons/heart-solid.svg" alt=''/>
+                <img
+                    className={`${styles.postIcon} ${accountHeart !== 0 && styles.selectedOrange}`}
+                    src="/icons/heart-solid.svg" alt=''
+                />
                 <div>{ totalHearts } Hearts</div>
             </div>
 
             <div className={styles.postReactionModalItem} onClick={() => toggleRatingModal()}>
-                <img className={styles.postIcon} src="/icons/star-solid.svg" alt=''/>
+                <img
+                    className={`${styles.postIcon} ${accountRating !== 0 && styles.selectedOrange}`}
+                    src="/icons/star-solid.svg" alt=''
+                />
                 <div>{ totalRatings } Ratings</div>
             </div>
 
@@ -51,28 +63,8 @@ function PostReactionModal(props) {
                 totalRatingScore={totalRatingScore}
                 setNewRating={setNewRating}
                 setNewRatingError={setNewRatingError}
-                addRating={addRating}/>
-{/* 
-            <div className={`${styles.postReactionModalItem} ${styles.opacity50}`}>
-                <img className={styles.postIcon} src="/icons/hashtag-solid.svg"/>
-                <div>{ Labels.filter((label)=> label.type === 'tag').length } Tags</div>
-            </div>
-
-            <div className={`${styles.postReactionModalItem} ${styles.opacity50}`}>
-                <img className={styles.postIcon} src="/icons/tags-solid.svg"/>
-                <div>{ Labels.filter((label)=> label.type === 'label').length } Labels</div>
-            </div>
-
-            <div className={`${styles.postReactionModalItem} ${styles.opacity50}`}>
-                <img className={styles.postIcon} src="/icons/flag-solid.svg"/>
-                <div>{ Labels.filter((label)=> label.type === 'flag').length } Flags</div>
-            </div>
-
-            <div className={`${styles.postReactionModalItem} ${styles.opacity50}`}>
-                <img className={styles.postIcon} src="/icons/link-solid.svg"/>
-                <div>{ Labels.filter((label)=> label.type === 'link').length } Links</div>
-            </div> */}
-
+                addRating={addRating}
+            />
         </div>
     )
 }

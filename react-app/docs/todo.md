@@ -1,23 +1,21 @@
 # Todos
-Last updated: 26-06-2020
+Last updated: 08-07-2020
 
 + Take down remaining EC2-ELB services on AWS
+- Create links between posts
 - Allow users to follow spaces
 - Add followed spaces to user profile
-- Add user to create holon
+- Add user to created holons
 - Include interests and location on register form
 - Set up social media log-in strategies
+- Multiple choice polls should spread value by number of selected answers (i.e 1 vote = 100 points, 3 votes = 3 * 33.3 points)
 - Set up user profiles
-    - about page
-    - created posts page
-    - settings page
-    - liked posts page
-    - notifications
-    - messages
-- only allow post creators to delete posts
-- one vote per user
-- highlight items user has interacted with
-- request to log in if vote attempt made when logged out
+    - [x] about page
+    - [x] created posts page
+    - [ ] settings page
+    - [ ] liked posts page
+    - [ ] notifications
+    - [ ] messages
 - set up JWT refresh token (https://www.youtube.com/watch?v=iD49_NIQ-R4&t=9s)
 - Bug: on weighted choice poll vote section. put in answers then move away to results section and come back. numbers have reset to 0 but values are reatined messing up calculations.
 + Re-create PostContext and then remove cascading props to clean up components
@@ -31,7 +29,7 @@ Last updated: 26-06-2020
     - Apply filters in query?
 - Set up filters on child-holons page
 - create seperate Authentication server
-- Merge title and description into one text field character limit around 3000?
+- Merge title and description into one text field (character limit around 3000)?
 - Add privacy setting to labels (public, anonymous etc.)
 - Set up reverse orders for wall filters
 - create expandable comments
@@ -52,3 +50,11 @@ Last updated: 26-06-2020
 - Create auth component
 - Create user table in database
 - Image uploads
+- Add user to posts
+- Add user to comments
+- Add user to likes/hearts/ratings
+- Recognise and highlight account likes/hearts/ratings when loading posts
+- Prevent double likes/hearts/ratings from the same account
+- Remove likes/hearts/ratings
+- Request to log in if vote attempt made when logged out
+- Only display delete button on posts if own account

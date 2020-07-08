@@ -1,10 +1,13 @@
-import React, { createContext, useState } from 'react'
+import React, { createContext, useState, useContext, useEffect } from 'react'
 import axios from 'axios'
 import config from '../Config'
+import { AccountContext } from './AccountContext'
 
 export const HolonContext = createContext()
 
 function HolonContextProvider({ children }) {
+    const { accountData } = useContext(AccountContext)
+
     const [globalData, setGlobalData] = useState({})
     const [holonData, setHolonData] = useState({
         DirectChildHolons: [],
@@ -17,6 +20,7 @@ function HolonContextProvider({ children }) {
     const [holonSearchFilter, setHolonSearchFilter] = useState('')
     const [holonSortByFilter, setHolonSortByFilter] = useState('date')
     const [isLoading, setIsLoading] = useState(false)
+    const [selectedHolonSubPage, setSelectedHolonSubPage] = useState('')
 
     //TODO: create seperate functions for updating globalData, holonData, and holonPosts?
 
@@ -24,9 +28,10 @@ function HolonContextProvider({ children }) {
         setIsLoading(true)
         const getGlobalData = axios.get(config.environmentURL + '/global-data') //remove getGlobalData and move to seperate function (or context)?
         const getHolonData = axios.get(config.environmentURL + `/holon-data?handle=${holonHandle}`)
-        const getHolonPosts = axios.get(config.environmentURL + `/holon-posts?handle=${holonHandle}`)
+        const getHolonPosts = axios.get(config.environmentURL + `/holon-posts?handle=${holonHandle}&userId=${accountData ? accountData.id : null}`)
         const getHolonUsers = axios.get(config.environmentURL + `/holon-users?handle=${holonHandle}`)
         // const demoDelay = new Promise((resolve) => { setTimeout(resolve, 1000) })
+    
         Promise.all([getGlobalData, getHolonData, getHolonPosts, getHolonUsers]).then((values) => {
             setGlobalData(values[0].data)
             setHolonData(values[1].data)
@@ -36,6 +41,13 @@ function HolonContextProvider({ children }) {
             console.log('Holon Context updated')
         })
     }
+
+    useEffect(() => {
+        if (holonData.handle) {
+            updateHolonContext(holonData.handle)
+            console.log('holon context use effect run')
+        }
+    }, [accountData])
 
     return (
         <HolonContext.Provider value={{
@@ -53,7 +65,9 @@ function HolonContextProvider({ children }) {
             holonSortByFilter,
             setHolonSortByFilter,
             isLoading,
-            setIsLoading
+            setIsLoading,
+            selectedHolonSubPage,
+            setSelectedHolonSubPage
         }}>
             {children}
         </HolonContext.Provider>

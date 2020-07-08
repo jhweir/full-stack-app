@@ -19,9 +19,12 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'creatorId',
       //as: 'createdComments'
     })
-    // User.hasMany(models.Holon, {
-    //   //as: 'followedSpaces'
-    // })
+    // HolonPosts relationship
+    User.belongsToMany(models.Holon, { 
+      through: models.HolonUser,
+      as: 'FollowedHolons',
+      foreignKey: 'userId'
+    })
   };
   return User;
 };

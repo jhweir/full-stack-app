@@ -8,6 +8,12 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+      relationship: {
+        type: Sequelize.STRING
+      },
+      state: {
+        type: Sequelize.STRING
+      },
       holonId: {
         type: Sequelize.INTEGER
       },

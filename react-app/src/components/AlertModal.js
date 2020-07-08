@@ -17,7 +17,7 @@ function AlertModal() {
                         onClick={() => setAlertModalOpen(false)}
                     />
                     <span className={styles.alertModalText}>{ alertMessage }</span>
-                    {alertMessage === 'Log in to comment' &&
+                    {alertMessage.includes('Log in') &&
                         <div
                             className="wecoButton"
                             onClick={() => { setAuthModalOpen(true); setAlertModalOpen(false) }}>

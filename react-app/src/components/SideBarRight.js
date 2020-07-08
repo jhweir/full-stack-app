@@ -11,44 +11,46 @@ function SideBarRight() {
     return (
         <div className={styles.sideBarRight}>
             <SideBarRightPlaceholder/>
-            <div className={`${styles.sideBarRightContent} ${(!isLoading && styles.visible)}`}>
-                {holonData.DirectParentHolons.length !== 0 &&
-                    <>
-                        <span className={styles.sideBarRightText}>Parent spaces:</span>
-                        <ul className={styles.sideBarRightHolons}>
-                            {holonData.DirectParentHolons.map((holon, index) => 
-                                <Link className={styles.sideBarRightHolon}
-                                    to={ `/h/${holon.handle}` }
-                                    key={index}
-                                    onClick={ () => { updateHolonContext(holon.handle) } }>
-                                    <div className={styles.sideBarRightHolonImageWrapper}>
-                                        <img className={styles.sideBarRightHolonImage} src="/icons/users-solid.svg"/>
-                                    </div>
-                                    { holon.name }
-                                </Link>
-                            )} 
-                        </ul>
-                    </>
-                }
-                {holonData.DirectChildHolons.length !== 0 &&
-                    <>
-                        <span className={styles.sideBarRightText}>Child spaces:</span>
-                        <ul className={styles.sideBarRightHolons}>
-                            {holonData.DirectChildHolons.map((holon, index) => 
-                                <Link className={styles.sideBarRightHolon}
-                                    to={ `/h/${holon.handle}` }
-                                    key={index}
-                                    onClick={ () => { updateHolonContext(holon.handle) } }>
-                                    <div className={styles.sideBarRightHolonImageWrapper}>
-                                        <img className={styles.sideBarRightHolonImage} src="/icons/users-solid.svg"/>
-                                    </div>
-                                    { holon.name }
-                                </Link>
-                            )}
-                        </ul>
-                    </>
-                }
-            </div>
+            {holonData &&
+                <div className={`${styles.sideBarRightContent} ${(!isLoading && styles.visible)}`}>
+                    {holonData.DirectParentHolons.length !== 0 &&
+                        <>
+                            <span className={styles.sideBarRightText}>Parent spaces:</span>
+                            <ul className={styles.sideBarRightHolons}>
+                                {holonData.DirectParentHolons.map((holon, index) => 
+                                    <Link className={styles.sideBarRightHolon}
+                                        to={ `/h/${holon.handle}` }
+                                        key={index}
+                                        onClick={ () => { updateHolonContext(holon.handle) } }>
+                                        <div className={styles.sideBarRightHolonImageWrapper}>
+                                            <img className={styles.sideBarRightHolonImage} src="/icons/users-solid.svg"/>
+                                        </div>
+                                        { holon.name }
+                                    </Link>
+                                )} 
+                            </ul>
+                        </>
+                    }
+                    {holonData.DirectChildHolons.length !== 0 &&
+                        <>
+                            <span className={styles.sideBarRightText}>Child spaces:</span>
+                            <ul className={styles.sideBarRightHolons}>
+                                {holonData.DirectChildHolons.map((holon, index) => 
+                                    <Link className={styles.sideBarRightHolon}
+                                        to={ `/h/${holon.handle}` }
+                                        key={index}
+                                        onClick={ () => { updateHolonContext(holon.handle) } }>
+                                        <div className={styles.sideBarRightHolonImageWrapper}>
+                                            <img className={styles.sideBarRightHolonImage} src="/icons/users-solid.svg"/>
+                                        </div>
+                                        { holon.name }
+                                    </Link>
+                                )}
+                            </ul>
+                        </>
+                    }
+                </div>
+            }
         </div>
     )
 }

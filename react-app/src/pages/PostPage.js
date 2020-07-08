@@ -17,7 +17,7 @@ function PostPage(props) {
     const pageUrl = props.match.url
     const parsedQuery = queryString.parse(props.location.search)
 
-    const { accountData, setAlertModalOpen, setAlertMessage } = useContext(AccountContext)
+    const { accountContextLoading, accountData, setAlertModalOpen, setAlertMessage } = useContext(AccountContext)
 
     const [post, setPost] = useState({
         spaces: [],
@@ -44,7 +44,7 @@ function PostPage(props) {
     const validVote = selectedPollAnswers.length !== 0 && (post.subType !== 'weighted-choice' || totalUsedPoints == 100)
 
     function getPost() {
-        axios.get(config.environmentURL + `/post?id=${postId}`)
+        axios.get(config.environmentURL + `/post?id=${postId}&userId=${accountData ? accountData.id : null}`)
             .then(res => { 
                 setPost(res.data)
                 setPostPageLoading(false)
@@ -74,9 +74,11 @@ function PostPage(props) {
     }
 
     useEffect(() => {
-        getPost()
-        console.log('getPost run on PostPage')
-    }, [])
+        if (!accountContextLoading) {
+            getPost()
+            console.log('getPost run on PostPage')
+        }
+    }, [accountContextLoading])
 
     return (
         <div className={styles.postPage}>

@@ -2,23 +2,31 @@ import React, { useState, useContext, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
 import config from '../Config'
+import { AccountContext } from '../contexts/AccountContext'
 import { HolonContext } from '../contexts/HolonContext'
 import styles from '../styles/components/Post.module.scss'
 import PostReactionModal from './PostReactionModal'
 
 function Post(props) {
+    const { accountData, setAlertMessage, setAlertModalOpen } = useContext(AccountContext)
     const { updateHolonContext, holonData } = useContext(HolonContext)
+
     const [reactionModalOpen, setReactionModalOpen] = useState(false)
     const [ratingModalOpen, setRatingModalOpen] = useState(false)
+
     const [totalComments, setTotalComments] = useState(0)
     const [totalReactions, setTotalReactions] = useState(0)
     const [totalLikes, setTotalLikes] = useState(0)
     const [totalHearts, setTotalHearts] = useState(0)
     const [totalRatings, setTotalRatings] = useState(0)
-    // TODO: Move the rating state below to the PostRatingModal component
+    const [totalRatingPoints, setTotalRatingPoints] = useState(0)
+    const [accountLike, setAccountLike] = useState(0)
+    const [accountHeart, setAccountHeart] = useState(0)
+    const [accountRating, setAccountRating] = useState(0)
+
+    // TODO: Move the rating state below to the PostRatingModal component?
     const [newRating, setNewRating] = useState('')
     const [newRatingError, setNewRatingError] = useState(false)
-    const [totalRatingPoints, setTotalRatingPoints] = useState(0)
 
     const { 
         id,
@@ -33,45 +41,103 @@ function Post(props) {
         total_hearts,
         total_ratings,
         total_rating_points,
+        account_like,
+        account_heart,
+        account_rating,
         pins,
         spaces
     } = props.post
 
     useEffect(() => {
-        // Is this necissary? It could all be moved into a single object. Or why not just take the values directly from the props?
+        // Is this necissary? Done in order to make instant changes to state (adding likes etc.) without waiting for a response from the server
         setTotalComments(total_comments)
         setTotalReactions(total_reactions)
         setTotalLikes(total_likes)
         setTotalHearts(total_hearts)
         setTotalRatings(total_ratings)
         setTotalRatingPoints(total_rating_points)
+        setAccountLike(account_like)
+        setAccountHeart(account_heart)
+        setAccountRating(account_rating)
     }, [props])
-    
-    const holonId = holonData.id // Re-named to match the column name in the database
 
     function addLike() {
-        setTotalLikes(totalLikes + 1)
-        setTotalReactions(totalReactions + 1)
-        axios.put(config.environmentURL + '/addLike', { id, holonId })
-            .catch(error => { console.log(error) })
+        // If user not logged in, request log in
+        if (!accountData) { setAlertMessage('Log in to like post'); setAlertModalOpen(true) }
+        else {
+            // If post already liked by account, remove like
+            if (accountLike !== 0) {
+                setTotalLikes(totalLikes - 1)
+                setTotalReactions(totalReactions - 1)
+                setAccountLike(0)
+                axios.put(config.environmentURL + '/removeLike', { postId: id, userId: accountData.id })
+                    .catch(error => { console.log(error) })
+            }
+            else {
+                // Add like
+                setTotalLikes(totalLikes + 1)
+                setTotalReactions(totalReactions + 1)
+                setAccountLike(accountLike + 1)
+                axios.put(config.environmentURL + '/addLike', { postId: id, holonId: holonData.id, userId: accountData.id })
+                    .catch(error => { console.log(error) })
+            }
+        }
     }
 
     function addHeart() {
-        setTotalHearts(totalHearts + 1)
-        setTotalReactions(totalReactions + 1)
-        axios.put(config.environmentURL + '/addHeart', { id, holonId })
-            .catch(error => { console.log(error) })
+        if (!accountData) { setAlertMessage('Log in to heart post'); setAlertModalOpen(true) }
+        else {
+            if (accountHeart !== 0) {
+                setTotalHearts(totalHearts - 1)
+                setTotalReactions(totalReactions - 1)
+                setAccountHeart(0)
+                axios.put(config.environmentURL + '/removeHeart', { postId: id, userId: accountData.id })
+                    .catch(error => { console.log(error) })
+            }
+            else {
+                setTotalHearts(totalHearts + 1)
+                setTotalReactions(totalReactions + 1)
+                setAccountHeart(accountHeart + 1)
+                axios.put(config.environmentURL + '/addHeart', { postId: id, holonId: holonData.id, userId: accountData.id })
+                    .catch(error => { console.log(error) })
+            }
+        }
     }
 
     function addRating() {
-        if (!isNaN(newRating) && newRating !== '' && newRating <= 100) {
-            setTotalRatings(totalRatings + 1)
-            setTotalReactions(totalReactions + 1)
-            setTotalRatingPoints(totalRatingPoints + parseInt(newRating, 10))
-            axios.put(config.environmentURL + '/addRating', { id, holonId, newRating })
-                .then(setNewRating(''))
-                .catch(error => { console.log(error) })
-        } else { setNewRatingError(true) }
+        if (!accountData) { setAlertMessage('Log in to add rating'); setAlertModalOpen(true) }
+        else {
+            if (accountRating !== 0) {
+                let n = newRating
+                let invalidRating = isNaN(n) || n === '' || n > 100 || n < 0
+                if (invalidRating) { setNewRatingError(true) }
+                else {
+                    console.log('updating rating')
+                    //setTotalRatings(totalRatings + 1)
+                    //setTotalReactions(totalReactions + 1)
+                    //setTotalRatingPoints(totalRatingPoints + parseInt(newRating, 10))
+                    //setAccountRating(accountRating + 1)
+                    axios.put(config.environmentURL + '/updateRating', { postId: id, holonId: holonData.id, userId: accountData.id, newRating })
+                        .then(() => { setNewRating(''); updateHolonContext(holonData.handle) })
+                        .catch(error => { console.log(error) })
+                }
+            }
+            else {
+                // TODO: prevent decimal places
+                let invalidRating = isNaN(newRating) || newRating === '' || newRating > 100 || newRating < 0
+                if (invalidRating) { setNewRatingError(true) }
+                else {
+                    console.log('creating new rating')
+                    setTotalRatings(totalRatings + 1)
+                    setTotalReactions(totalReactions + 1)
+                    setTotalRatingPoints(totalRatingPoints + parseInt(newRating, 10))
+                    setAccountRating(accountRating + 1)
+                    axios.put(config.environmentURL + '/addRating', { postId: id, holonId: holonData.id, userId: accountData.id, newRating })
+                        .then(setNewRating(''))
+                        .catch(error => { console.log(error) })
+                }
+            }
+        }
     }
 
     function toggleReactionModal() {
@@ -132,15 +198,19 @@ function Post(props) {
                     }
                     <span className={styles.postSubText}>to</span>
                     <div className={styles.holonNames}>
-                        {spaces && spaces.length >= 1 ? 
-                            spaces.map((holon, index) =>
+                        {spaces && spaces.length >= 1
+                            ? spaces.map((holon, index) =>
                                 <Link to={ `/h/${holon}` }
                                     onClick={ () => { updateHolonContext(holon) } }
                                     style={{marginRight: 10}}
                                     key={index}>
                                     {holon}
-                                </Link>
-                            ) : <div style={{marginRight: 10}}>root</div>}
+                                </Link>)
+                            : <Link to={ `/h/root` }
+                                onClick={ () => { updateHolonContext('root') } }
+                                style={{marginRight: 10}}>
+                                root
+                            </Link>}
                     </div>
                     <span className={styles.postSubText}>|</span>
                     {!props.postPageLoading && /* Wait until the post has finished loading before formatting the date to prevent errors */
@@ -155,7 +225,10 @@ function Post(props) {
                     <div className={styles.postDescription}>{ description }</div>    
                     <div className={styles.postInteract}>
                         <div className={styles.postInteractItem} onClick={() => toggleReactionModal()}>
-                            <img className={styles.postIcon} src="/icons/fire-alt-solid.svg" alt=''/>
+                            <img 
+                                className={`${styles.postIcon} ${(accountLike || accountHeart || accountRating !== 0) && styles.selectedOrange}`}
+                                src="/icons/fire-alt-solid.svg" alt=''
+                            />
                             <span>{ totalReactions } Reactions</span>
                         </div>
                         <PostReactionModal
@@ -166,7 +239,7 @@ function Post(props) {
                             toggleReactionModal={toggleReactionModal}
                             addLike={addLike}
                             addHeart={addHeart}
-                            // TODO: Move rating state to Rating Modal component
+                            // TODO: Move rating state to Rating Modal component?
                             ratingModalOpen={ratingModalOpen}
                             toggleRatingModal={toggleRatingModal}
                             totalRatingScore={totalRatingScore}
@@ -175,21 +248,21 @@ function Post(props) {
                             newRatingError={newRatingError}
                             setNewRatingError={setNewRatingError}
                             addRating={addRating}
-                            //Labels={Labels}
+                            accountLike={accountLike}
+                            accountHeart={accountHeart}
+                            accountRating={accountRating}
                         />
-                        <Link className={styles.postInteractItem} 
+                        <Link className={styles.postInteractItem}
                             to={ `/p/${id}` }>
                             <img className={styles.postIcon} src="/icons/comment-solid.svg" alt=''/>
                             <span>{ totalComments } Comments</span>
                         </Link>
-                        <div className={styles.postInteractItem} onClick={ deletePost }>
-                            <img className={styles.postIcon} src="/icons/trash-alt-solid.svg" alt=''/>
-                            <span>Delete</span>
-                        </div>
-                        {!pins && <div className={`${styles.postInteractItem} ${styles.opacity50}`}>{/* onClick={ pinPost } */}
-                            <img className={styles.postIcon} src="/icons/thumbtack-solid.svg" alt=''/>
-                            <span>Pin post</span>
-                        </div>}
+                        {accountData && creator && accountData.name === creator.name &&
+                            <div className={styles.postInteractItem} onClick={ deletePost }>
+                                <img className={styles.postIcon} src="/icons/trash-alt-solid.svg" alt=''/>
+                                <span>Delete</span>
+                            </div>
+                        }
                     </div>
                 </div>
             </div>
@@ -199,6 +272,12 @@ function Post(props) {
 
 export default Post
 
+// {!pins && 
+//     <div className={`${styles.postInteractItem} ${styles.opacity50}`}>{/* onClick={ pinPost } */}
+//         <img className={styles.postIcon} src="/icons/thumbtack-solid.svg" alt=''/>
+//         <span>Pin post</span>
+//     </div>
+// }
 
 // {!props.postPageLoading &&  /* Wait until the post has finished loading before displaying the holons to prevent errors (possibly no longer needed) */
 //     <div className={styles.holonNames}>

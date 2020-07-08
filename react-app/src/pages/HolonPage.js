@@ -1,7 +1,9 @@
 import React, { useContext, useEffect } from 'react'
 import { HolonContext } from '../contexts/HolonContext'
+import { AccountContext } from '../contexts/AccountContext'
 import { Route, Switch, Redirect } from "react-router-dom"
 import styles from '../styles/pages/HolonPage.module.scss'
+import HolonPageAbout from '../components/HolonPageAbout'
 import Wall from '../components/Wall'
 import ChildHolons from '../components/ChildHolons'
 import Users from '../components/Users'
@@ -13,10 +15,11 @@ function HolonPage({ match }) {
     const { url } = match
     const { holonHandle } = match.params
     const { updateHolonContext } = useContext(HolonContext)
+    const { accountContextLoading } = useContext(AccountContext)
 
     useEffect(() => {
-        updateHolonContext(holonHandle)
-    }, [])
+        if (!accountContextLoading) { updateHolonContext(holonHandle) }
+    }, [accountContextLoading])
 
     return (
         <div className={styles.holonPage}>
@@ -29,6 +32,7 @@ function HolonPage({ match }) {
                 <div className={styles.holonPageCenterPanel}>
                     <Switch>
                         <Redirect from={url} to={`${url}/posts`} exact/>
+                        <Route path={`${url}/about`} component={ HolonPageAbout } exact/>
                         <Route path={`${url}/posts`} component={ Wall } exact/>
                         <Route path={`${url}/spaces`} component={ ChildHolons } exact/>
                         <Route path={`${url}/users`} component={ Users } exact/>

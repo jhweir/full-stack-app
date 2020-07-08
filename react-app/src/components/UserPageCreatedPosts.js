@@ -13,6 +13,10 @@ function UserPageCreatedPosts() {
         getCreatedPosts()
     }, [userData])
 
+    const filteredPosts = createdPosts.filter(post => {
+        return post.globalState === 'visible'
+    })
+
     return (
         <div className={styles.wrapper}>
             <div className={styles.header}>Created posts</div>
@@ -20,7 +24,7 @@ function UserPageCreatedPosts() {
                 search and filters go here...
             </div>
             <ul className={styles.createdPosts}>
-                {createdPosts.map((post, index) =>
+                {filteredPosts.map((post, index) =>
                     <Post
                         post={post}
                         key={index}

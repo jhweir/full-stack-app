@@ -3,18 +3,19 @@ const express = require('express')
 const router = express.Router()
 var sequelize = require('sequelize')
 const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken')
-const passport = require("passport")
-const passportJWT = require('passport-jwt')
-const JwtStrategy = passportJWT.Strategy
-const ExtractJwt = passportJWT.ExtractJwt
+const holonuser = require("../models/holonuser")
+// const jwt = require('jsonwebtoken')
+// const passport = require("passport")
+// const passportJWT = require('passport-jwt')
+// const JwtStrategy = passportJWT.Strategy
+// const ExtractJwt = passportJWT.ExtractJwt
 
 // const Op = sequelize.Op;
 
 const Holon = require('../models').Holon
 const VerticalHolonRelationship = require('../models').VerticalHolonRelationship
 const HolonHandle = require('../models').HolonHandle
-// const HolonUser = require('../models').HolonUser
+const HolonUser = require('../models').HolonUser
 const PostHolon = require('../models').PostHolon
 const User = require('../models').User
 // const UserUser = require('../models').UserUser
@@ -31,32 +32,44 @@ const postAttributes = [
         ),'total_comments'
     ],
     [sequelize.literal(
-        `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.type != "vote")`
+        `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.type != "vote" AND Label.state = 'active')`
         ),'total_reactions'
     ],
     [sequelize.literal(
-        `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.type = "like")`
+        `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.type = "like" AND Label.state = 'active')`
         ),'total_likes'
     ],
     [sequelize.literal(
-        `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.type = "heart")`
+        `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.type = "heart" AND Label.state = 'active')`
         ),'total_hearts'
     ],
     [sequelize.literal(
-        `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.type = "rating")`
+        `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.type = "rating" AND Label.state = 'active')`
         ),'total_ratings'
     ],
     [sequelize.literal(
-        `(SELECT SUM(value) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.type = "rating")`
+        `(SELECT SUM(value) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.type = "rating" AND Label.state = 'active')`
         ),'total_rating_points'
-    ]
+    ],
+    // [sequelize.literal(
+    //     `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.userId = 2 AND Label.type = 'like')`
+    //     ),'account_like'
+    // ],
+    // [sequelize.literal(
+    //     `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.userId = 2 AND Label.type = 'heart')`
+    //     ),'account_heart'
+    // ],
+    // [sequelize.literal(
+    //     `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.userId = 2 AND Label.type = 'rating')`
+    //     ),'account_rating'
+    // ]
 ]
 
 router.get('/global-data', (req, res) => {
-    Holon.findAll({ attributes: ['handle'] })
-    .then(handles => { return handles.map(h => h.handle) })
-    .then(data => { res.json(data) })
-    .catch(err => console.log(err))
+    Holon
+        .findAll({ attributes: ['handle'] })
+        .then(handles => res.json(handles.map(h => h.handle)))
+        .catch(err => console.log(err))
 })
 
 router.get('/holon-data', (req, res) => {
@@ -89,12 +102,13 @@ router.get('/holon-data', (req, res) => {
 })
 
 router.get('/holon-posts', (req, res) => {
+    const { handle, userId } = req.query
     // Double query required to to prevent results and pagination being effected by top level where clause.
     // Intial query used to find correct posts.
     // Second query used to return post data.
-    // Final function used to replace PostHolons object with a simpler array.
+    // Final function used to replace PostHolons object with an array.
     Post.findAll({ 
-        where: { '$PostHolons.handle$': req.query.handle },
+        where: { '$PostHolons.handle$': handle },
         attributes: ['id'],
         include: [{ 
             model: Holon,
@@ -107,9 +121,43 @@ router.get('/holon-posts', (req, res) => {
         subQuery: false
     })
     .then(posts => {
+        // Add account reaction data to post attributes
+        let attributes = [
+            ...postAttributes,
+            [sequelize.literal(`(
+                SELECT COUNT(*)
+                FROM Labels
+                AS Label
+                WHERE Label.postId = Post.id
+                AND Label.userId = ${userId}
+                AND Label.type = 'like'
+                AND Label.state = 'active'
+                )`),'account_like'
+            ],
+            [sequelize.literal(`(
+                SELECT COUNT(*)
+                FROM Labels
+                AS Label
+                WHERE Label.postId = Post.id
+                AND Label.userId = ${userId}
+                AND Label.type = 'heart'
+                AND Label.state = 'active'
+                )`),'account_heart'
+            ],
+            [sequelize.literal(`(
+                SELECT COUNT(*)
+                FROM Labels
+                AS Label
+                WHERE Label.postId = Post.id
+                AND Label.userId = ${userId}
+                AND Label.type = 'rating'
+                AND Label.state = 'active'
+                )`),'account_rating'
+            ]
+        ]
         return Post.findAll({ 
             where: { id: posts.map(post => post.id) },
-            attributes: postAttributes,
+            attributes: attributes,
             include: [
                 {
                     model: Holon,
@@ -126,9 +174,18 @@ router.get('/holon-posts', (req, res) => {
         })
         .then(posts => {
             posts.forEach(post => {
+                // replace PostHolons object with an array
                 const newPostHolons = post.PostHolons.map(ph => ph.handle)
                 post.setDataValue("spaces", newPostHolons)
                 delete post.dataValues.PostHolons
+                // check if user has reacted to post and list reactions in 'accountReactions' array
+                // console.log('req.query.userId', req.query.userId)
+                // Label
+                //     .findAll({ 
+                //         where: { postId: post.id, userId: req.query.userId },
+                //         attributes: ['type']
+                //     })
+                //     .then(labels => console.log('labels', labels))
             })
             return posts
         })
@@ -198,9 +255,24 @@ router.get('/created-posts', (req, res) => {
 
 
 router.get('/post', (req, res) => {
+    const { userId } = req.query
+    let attributes = [...postAttributes,
+        [sequelize.literal(
+            `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.userId = ${userId} AND Label.type = 'like' AND Label.state = 'active')`
+            ),'account_like'
+        ],
+        [sequelize.literal(
+            `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.userId = ${userId} AND Label.type = 'heart' AND Label.state = 'active')`
+            ),'account_heart'
+        ],
+        [sequelize.literal(
+            `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.userId = ${userId} AND Label.type = 'rating' AND Label.state = 'active')`
+            ),'account_rating'
+        ]
+    ]
     Post.findOne({ 
         where: { id: req.query.id },
-        attributes: postAttributes,
+        attributes: attributes,
         include: [
             { 
                 model: User,
@@ -236,14 +308,7 @@ router.get('/post', (req, res) => {
                         `(SELECT ROUND(SUM(value), 2) FROM Labels AS Label WHERE Label.pollAnswerId = PollAnswers.id)`
                         ),'total_score'
                     ],
-                ],
-                // include: [
-                //     { 
-                //         model: Label,
-                //         as: 'Votes',
-                //         attributes: ['value', 'createdAt']
-                //     }
-                // ]
+                ]
             }
         ]
     })
@@ -372,37 +437,76 @@ router.delete('/deletePost', (req, res) => {
 
 // Add like label
 router.put('/addLike', (req, res) => {
+    const { postId, userId, holonId } = req.body
     Label.create({ 
         type: 'like',
         value: null,
-        holonId: req.body.holonId,
-        userId: null,
-        postId: req.body.id,
+        state: 'active',
+        holonId,
+        userId,
+        postId,
         commentId: null,
     }).then(res.send('Post successfully liked'))
 })
 
+// Remove like label
+router.put('/removeLike', (req, res) => {
+    const { postId, userId } = req.body
+    Label.update({ state: 'removed' }, {
+        where: { type: 'like', state: 'active', postId, userId }
+    })
+})
+
 // Add heart label
 router.put('/addHeart', (req, res) => {
+    const { postId, userId, holonId } = req.body
     Label.create({ 
         type: 'heart',
         value: null,
-        holonId: req.body.holonId,
-        userId: null,
-        postId: req.body.id,
+        state: 'active',
+        holonId,
+        userId,
+        postId,
         commentId: null,
     }).then(res.send('Post successfully hearted'))
 })
 
+// Remove heart label
+router.put('/removeHeart', (req, res) => {
+    const { postId, userId } = req.body
+    Label.update({ state: 'removed' }, {
+        where: { type: 'heart', state: 'active', postId, userId }
+    })
+})
+
 // Add rating label
 router.put('/addRating', (req, res) => {
+    const { postId, userId, holonId, newRating } = req.body
     Label.create({ 
         type: 'rating',
-        value: req.body.newRating,
-        holonId: req.body.holonId,
-        userId: null,
-        postId: req.body.id,
+        value: newRating,
+        state: 'active',
+        holonId,
+        userId,
+        postId,
         commentId: null,
+    }).then(res.send('Post successfully rated'))
+})
+
+// Remove rating label
+router.put('/updateRating', (req, res) => {
+    const { postId, userId, holonId, newRating } = req.body
+    Label.update({ state: 'removed' }, { where: { type: 'rating', state: 'active', postId, userId } })
+    .then(() => {
+        Label.create({ 
+            type: 'rating',
+            value: newRating,
+            state: 'active',
+            holonId,
+            userId,
+            postId,
+            commentId: null,
+        })
     }).then(res.send('Post successfully rated'))
 })
 
@@ -438,7 +542,8 @@ router.post('/register', async (req, res) => {
     const { newUserName, newEmail, newPassword } = req.body
 
     // Check username and email is available
-    User.findOne({ where: { name: newUserName } })
+    User
+        .findOne({ where: { name: newUserName } })
         .then(user => {
             if (user) { res.send('username-taken') }
             else { User.findOne({ where: { email: newEmail } })
@@ -460,21 +565,23 @@ router.post('/register', async (req, res) => {
                 })
             }
         })
-
-    // check email is available
-    //console.log('register attempt')
-    // try {
-    //     const hashedPassword = await bcrypt.hash(newPassword, 10)
-    //     User.create({
-    //         name: newUserName,
-    //         email: newEmail,
-    //         password: hashedPassword
-    //     })
-    //     //res.redirect('/h/root')
-    // } catch {
-    //     //res.redirect('/')
-    // }
 })
+
+// Follow space
+router.post('/followHolon', (req, res) => {
+    const { holonId, userId } = req.body
+    HolonUser.create({ relationship: 'follower', state: 'active', holonId, userId })
+})
+
+// Unfollow space
+router.put('/unfollowHolon', (req, res) => {
+    const { holonId, userId } = req.body
+    HolonUser.update({ state: 'removed' }, { where: { relationship: 'follower', holonId, userId }})
+})
+
+
+
+
 
 // function authenticateToken(req, res, next) {
 //     const authHeader = req.headers['authorization']

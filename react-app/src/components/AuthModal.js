@@ -3,9 +3,11 @@ import axios from 'axios'
 import config from '../Config'
 import styles from '../styles/components/AuthModal.module.scss'
 import { AccountContext } from '../contexts/AccountContext'
+import { HolonContext } from '../contexts/HolonContext'
 
 function AuthModal() {
     const { authModalOpen, updateAccountContext, setAuthModalOpen } = useContext(AccountContext)
+    const { updateHolonContext, holonData } = useContext(HolonContext)
     //const { setAuthModalOpen } = props
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
@@ -38,6 +40,7 @@ function AuthModal() {
                         document.cookie = `accessToken=${res.data}; path=/`
                         setAuthModalOpen(false)
                         updateAccountContext()
+                        //updateHolonContext(holonData.handle)
                     }
                 })
         }

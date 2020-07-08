@@ -1,5 +1,6 @@
 require("dotenv").config()
 const User = require('./models').User
+const Holon = require('./models').Holon
 const bcrypt = require('bcrypt')
 const passport = require("passport")
 const jwt = require('jsonwebtoken')
@@ -60,7 +61,7 @@ function authenticateToken(req, res, next) {
   if (token == null) return res.status(401).send('No token')
 
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-    if (err) return res.status(403).send('Invalid token')
+    if (err) return res.send('Invalid token')
     //console.log(user)
     req.user = user
     next()
@@ -75,8 +76,32 @@ app.post('/api/protected', authenticateToken, (req, res) => {
 app.get('/api/account-data', authenticateToken, (req, res) => {
   //console.log('req.user.id: ', req.user.id)
   User
-    .findOne({ where: { id: req.user.id } })
-    .then(user => { res.send(user) })
+    .findOne({ 
+      where: { id: req.user.id },
+      include: [
+        {
+          model: Holon,
+          //where: { '$HolonUsers.state$': 'active' },
+          as: 'FollowedHolons',
+          attributes: ['name', 'flagImagePath']
+        }
+      ]
+    })
+    .then(user => {
+      // User.findAll({ 
+      //   where: { '$FollowedHolons.state$': 'active' },
+      //   include: [
+      //     {
+      //       model: Holon,
+      //       //where: { '$HolonUsers.state$': 'active' },
+      //       as: 'FollowedHolons',
+      //       attributes: ['name', 'flagImagePath']
+      //     }
+      //   ]
+      // })
+      //   .then(holons => console.log('holons', holons))
+      res.send(user)
+    })
   //console.log('reqHeaders: ', req.headers.authorization)
   //res.send('success')
 })
