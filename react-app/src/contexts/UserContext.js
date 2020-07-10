@@ -8,7 +8,11 @@ export const UserContext = createContext()
 function UserContextProvider(props) {
     const { accountData } = useContext(AccountContext)
 
-    const [userData, setUserData] = useState([])
+    const [userData, setUserData] = useState({
+        Posts: [], //change to 'CreatedPosts'
+        FollowedHolons: [],
+        ModeratedHolons: []
+    })
     const [selectedSubPage, setSelectedSubPage] = useState('')
     const [createdPosts, setCreatedPosts] = useState([])
 
@@ -20,7 +24,7 @@ function UserContextProvider(props) {
 
     function getCreatedPosts() {
         axios
-            .get(config.environmentURL + `/created-posts?accountId=${accountData ? accountData.id : null}&userId=${userData.id}`)
+            .get(config.environmentURL + `/created-posts?accountId=${accountData ? accountData.id : null}&userId=${userData ? userData.id : null}`)
             .then(res => { setCreatedPosts(res.data) })
     }
 

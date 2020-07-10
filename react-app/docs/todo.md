@@ -15,7 +15,6 @@ Last updated: 08-07-2020
     - [ ] notifications
     - [ ] messages
 - set up JWT refresh token (https://www.youtube.com/watch?v=iD49_NIQ-R4&t=9s)
-- Bug: on weighted choice poll vote section. put in answers then move away to results section and come back. numbers have reset to 0 but values are reatined messing up calculations.
 + Re-create PostContext and then remove cascading props to clean up components
 - Re-consider layout/approach used for pie chart and time graph components
 - Set up 'visible holons' on post (vs. all included holons)
@@ -37,6 +36,10 @@ Last updated: 08-07-2020
     - Expandable tree
 - Url scrapping
 - Location map
+
+# Bugs
+- Following/not-following link on holon sidebar not always updating correctly when moving between spaces after a change but before a refresh
+- On weighted choice poll vote section: put in answers then move away to results section and come back. numbers have reset to 0 but values are reatined messing up calculations.
 
 # Complete
 - Prevent PostHolon duplicates when creating posts

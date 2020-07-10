@@ -22,13 +22,14 @@ function HolonContextProvider({ children }) {
     const [isLoading, setIsLoading] = useState(false)
     const [selectedHolonSubPage, setSelectedHolonSubPage] = useState('')
     const [isFollowing, setIsFollowing] = useState(false)
+    const [isModerator, setIsModerator] = useState(false)
 
     //TODO: create seperate functions for updating globalData, holonData, and holonPosts?
     function updateHolonContext(holonHandle) {
         setIsLoading(true)
         const getGlobalData = axios.get(config.environmentURL + '/global-data') //remove getGlobalData and move to seperate function (or context)?
         const getHolonData = axios.get(config.environmentURL + `/holon-data?handle=${holonHandle}`)
-        const getHolonPosts = axios.get(config.environmentURL + `/holon-posts?handle=${holonHandle}&userId=${accountData ? accountData.id : null}`)
+        const getHolonPosts = axios.get(config.environmentURL + `/holon-posts?handle=${holonHandle}&userId=${accountData.id ? accountData.id : null}`)
         const getHolonUsers = axios.get(config.environmentURL + `/holon-users?handle=${holonHandle}`)
         // const demoDelay = new Promise((resolve) => { setTimeout(resolve, 1000) })
     
@@ -50,9 +51,13 @@ function HolonContextProvider({ children }) {
     }, [accountData])
 
     useEffect(() => {
-        if (accountData && accountData.FollowedHolons.some(holon => { return holon.handle === holonData.handle })) { 
-            setIsFollowing(true)
-        } else { setIsFollowing(false) }
+        // if (holonData && accountData) {
+            // Check if space is followed or moderated by account and set in state
+            let accountIsFollowing = accountData && holonData && accountData.FollowedHolons.some(holon => holon.handle === holonData.handle)
+            let accountIsModerator = accountData && holonData && accountData.ModeratedHolons.some(holon => holon.handle === holonData.handle)
+            if (accountIsFollowing) { setIsFollowing(true) } else { setIsFollowing(false) }
+            if (accountIsModerator) { setIsModerator(true) } else { setIsModerator(false) }
+        //}
     }, [holonData])
 
     return (
@@ -75,7 +80,9 @@ function HolonContextProvider({ children }) {
             selectedHolonSubPage,
             setSelectedHolonSubPage,
             isFollowing,
-            setIsFollowing
+            setIsFollowing,
+            isModerator,
+            setIsModerator
         }}>
             {children}
         </HolonContext.Provider>

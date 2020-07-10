@@ -1,24 +1,12 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext } from 'react'
 import { Link } from 'react-router-dom'
 import { HolonContext } from '../contexts/HolonContext'
 import { AccountContext } from '../contexts/AccountContext'
 import styles from '../styles/components/NavBar.module.scss'
-import AuthModal from './AuthModal'
-import UserControlsModal from './UserControlsModal'
-import axios from 'axios'
-import config from '../Config'
-//var _ = require('lodash')
 
 function NavBar() {
-    const { updateHolonContext, isLoading, setIsLoading } = useContext(HolonContext)
-    const { 
-        accountData,
-        setAccountData,
-        logOut,
-        setAuthModalOpen,
-        userControlsModalOpen,
-        setUserControlsModalOpen
-    } = useContext(AccountContext)
+    const { updateHolonContext } = useContext(HolonContext)
+    const { accountData, setAuthModalOpen, setUserControlsModalOpen } = useContext(AccountContext)
 
     return (
         <div className={styles.navBar}>
@@ -49,15 +37,14 @@ function NavBar() {
                         <div className={styles.navBarText}>Users</div>
                     </Link>
                 </div>
-                {!accountData &&
+                {!accountData.id &&
                     <div className={styles.authButtons}>
                         <div className="button" onClick={() => setAuthModalOpen(true)}>
                             Log in
                         </div>
                     </div>
                 }
-                {/* {authModalOpen && <AuthModal setAuthModalOpen={setAuthModalOpen}/>} */}
-                {accountData &&
+                {accountData.id &&
                     <div className={styles.userControls} onClick={() => setUserControlsModalOpen(true)}>
                         <span className={styles.userName}>{accountData.name}</span>
                         {accountData.profileImagePath
@@ -68,14 +55,6 @@ function NavBar() {
                         }
                     </div>
                 }
-                {/* {userControlsModalOpen && 
-                    <UserControlsModal
-                        setUserControlsModalOpen={setUserControlsModalOpen}
-                        setAccountData={setAccountData}
-                        accountData={accountData}
-                        logOut={logOut}
-                    />
-                } */}
             </div>
         </div>
     )

@@ -10,7 +10,10 @@ function AccountContextProvider(props) {
     //const { updateHolonContext, holonData } = useContext(HolonContext)
 
     const [accountContextLoading, setAccountContextLoading] = useState(true)
-    const [accountData, setAccountData] = useState(null)
+    const [accountData, setAccountData] = useState({
+        FollowedHolons: [],
+        ModeratedHolons: []
+    })
     const [alertModalOpen, setAlertModalOpen] = useState(false)
     const [alertMessage, setAlertMessage] = useState('')
     const [authModalOpen, setAuthModalOpen] = useState(false)
@@ -40,7 +43,10 @@ function AccountContextProvider(props) {
 
     function logOut() {
         cookies.remove('accessToken', { path: '/' })
-        setAccountData(null)
+        setAccountData({        
+            FollowedHolons: [],
+            ModeratedHolons: []
+        })
     }
 
     useEffect(() => {

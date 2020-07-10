@@ -82,7 +82,13 @@ app.get('/api/account-data', authenticateToken, (req, res) => {
         model: Holon,
         as: 'FollowedHolons',
         attributes: ['handle', 'name', 'flagImagePath'],
-        through: { where: { state: 'active' }, attributes: [] }
+        through: { where: { relationship: 'follower', state: 'active' }, attributes: [] }
+      },
+      {
+        model: Holon,
+        as: 'ModeratedHolons',
+        attributes: ['handle', 'name', 'flagImagePath'],
+        through: { where: { relationship: 'moderator', state: 'active' }, attributes: [] }
       }
     ]
   })

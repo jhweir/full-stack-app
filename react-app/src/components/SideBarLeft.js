@@ -8,7 +8,7 @@ import styles from '../styles/components/SideBarLeft.module.scss'
 import SideBarLeftPlaceholder from '../components/SideBarLeftPlaceholder'
 
 function SideBarLeft() {
-    const { holonData, updateHolonContext, isLoading, selectedHolonSubPage, setSelectedHolonSubPage, isFollowing, setIsFollowing } = useContext(HolonContext)
+    const { holonData, updateHolonContext, isLoading, selectedHolonSubPage, setSelectedHolonSubPage, isFollowing, setIsFollowing, isModerator, setIsModerator } = useContext(HolonContext)
     const { accountData } = useContext(AccountContext)
 
     function followSpace() {
@@ -40,15 +40,19 @@ function SideBarLeft() {
                         <img className={styles.flagImagePlaceholder} src='/icons/users-solid.svg' alt='space-flag'/>
                     </div>
                     <div className={styles.navButtons}>
-                        {accountData &&
-                            <div className={styles.navButton} style={{marginBottom: 10}} onClick={() => { followSpace() }}>
-                                <img
-                                    className={styles.navButtonIcon}
-                                    src={isFollowing ? '/icons/eye-solid.svg' : '/icons/eye-slash-solid.svg'}
-                                />
-                                <span className={styles.navButtonText}>{isFollowing ? 'Following' : 'Not Following'}</span>
+                        {isModerator &&
+                            <div className={styles.navButton} style={{marginBottom: 10}}>
+                                <img className={styles.navButtonIcon} src='/icons/crown-solid.svg'/>
+                                <span className={styles.navButtonText}>Moderator</span>
                             </div>
                         }
+                        <div className={styles.navButton} style={{marginBottom: 10}} onClick={() => { followSpace() }}>
+                            <img
+                                className={styles.navButtonIcon}
+                                src={isFollowing ? '/icons/eye-solid.svg' : '/icons/eye-slash-solid.svg'}
+                            />
+                            <span className={styles.navButtonText}>{isFollowing ? 'Following' : 'Not Following'}</span>
+                        </div>
                         <Link className={`${styles.navButton} ${selectedHolonSubPage === 'about' && styles.selected}`}
                             to={`/h/${holonData.handle}/about`}
                             onClick={() => { updateHolonContext(holonData.handle); setSelectedHolonSubPage('about') }}>

@@ -24,7 +24,6 @@ function UserPage({ match }) {
         updateUserContext(userName)
     }, [])
 
-    let userFound = userData != null
     let isOwnAccount = userData && accountData && userData.id === accountData.id
 
     return (
@@ -32,8 +31,8 @@ function UserPage({ match }) {
             <div className={styles.coverImageWrapper}>
                 <div className={styles.coverImage}/>
             </div>
-            {!userFound && <span style={{padding: 20}}>No user with that name!</span>}
-            {userFound &&
+            {!userData && <span style={{padding: 20}}>No user with that name!</span>}
+            {userData &&
                 <div className={styles.userPageContainer}>
                     <UserPageSideBarLeft 
                         isOwnAccount={isOwnAccount}
