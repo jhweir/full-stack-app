@@ -75,35 +75,33 @@ app.post('/api/protected', authenticateToken, (req, res) => {
 
 app.get('/api/account-data', authenticateToken, (req, res) => {
   //console.log('req.user.id: ', req.user.id)
-  User
-    .findOne({ 
-      where: { id: req.user.id },
-      include: [
-        {
-          model: Holon,
-          //where: { '$HolonUsers.state$': 'active' },
-          as: 'FollowedHolons',
-          attributes: ['name', 'flagImagePath']
-        }
-      ]
-    })
-    .then(user => {
-      // User.findAll({ 
-      //   where: { '$FollowedHolons.state$': 'active' },
-      //   include: [
-      //     {
-      //       model: Holon,
-      //       //where: { '$HolonUsers.state$': 'active' },
-      //       as: 'FollowedHolons',
-      //       attributes: ['name', 'flagImagePath']
-      //     }
-      //   ]
-      // })
-      //   .then(holons => console.log('holons', holons))
-      res.send(user)
-    })
-  //console.log('reqHeaders: ', req.headers.authorization)
-  //res.send('success')
+  User.findOne({ 
+    where: { id: req.user.id },
+    include: [
+      {
+        model: Holon,
+        as: 'FollowedHolons',
+        attributes: ['handle', 'name', 'flagImagePath'],
+        through: { where: { state: 'active' }, attributes: [] }
+      }
+    ]
+  })
+  .then(user => { res.send(user) })
+})
+
+app.get('/api/user-holons', (req, res) => {
+  //console.log('req.user.id: ', req.user.id)
+  Holon.findAll({ 
+    where: { '$HolonFollowers.id$': '8' },
+    attributes: ['handle'],
+    include: [{ 
+      model: User,
+      as: 'HolonFollowers',
+      attributes: [],
+      through: { where: { state: 'active' } }
+    }]
+  }).then(holons => res.send(holons))
+
 })
 
 aws.config.update({

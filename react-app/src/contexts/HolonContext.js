@@ -21,9 +21,9 @@ function HolonContextProvider({ children }) {
     const [holonSortByFilter, setHolonSortByFilter] = useState('date')
     const [isLoading, setIsLoading] = useState(false)
     const [selectedHolonSubPage, setSelectedHolonSubPage] = useState('')
+    const [isFollowing, setIsFollowing] = useState(false)
 
     //TODO: create seperate functions for updating globalData, holonData, and holonPosts?
-
     function updateHolonContext(holonHandle) {
         setIsLoading(true)
         const getGlobalData = axios.get(config.environmentURL + '/global-data') //remove getGlobalData and move to seperate function (or context)?
@@ -32,7 +32,7 @@ function HolonContextProvider({ children }) {
         const getHolonUsers = axios.get(config.environmentURL + `/holon-users?handle=${holonHandle}`)
         // const demoDelay = new Promise((resolve) => { setTimeout(resolve, 1000) })
     
-        Promise.all([getGlobalData, getHolonData, getHolonPosts, getHolonUsers]).then((values) => {
+        Promise.all([getGlobalData, getHolonData, getHolonPosts, getHolonUsers]).then(values => {
             setGlobalData(values[0].data)
             setHolonData(values[1].data)
             setHolonPosts(values[2].data)
@@ -48,6 +48,12 @@ function HolonContextProvider({ children }) {
             console.log('holon context use effect run')
         }
     }, [accountData])
+
+    useEffect(() => {
+        if (accountData && accountData.FollowedHolons.some(holon => { return holon.handle === holonData.handle })) { 
+            setIsFollowing(true)
+        } else { setIsFollowing(false) }
+    }, [holonData])
 
     return (
         <HolonContext.Provider value={{
@@ -67,7 +73,9 @@ function HolonContextProvider({ children }) {
             isLoading,
             setIsLoading,
             selectedHolonSubPage,
-            setSelectedHolonSubPage
+            setSelectedHolonSubPage,
+            isFollowing,
+            setIsFollowing
         }}>
             {children}
         </HolonContext.Provider>

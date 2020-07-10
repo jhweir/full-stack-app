@@ -75,7 +75,7 @@ router.get('/global-data', (req, res) => {
 router.get('/holon-data', (req, res) => {
     Holon.findOne({ 
         where: { handle: req.query.handle },
-        attributes: ['id', 'handle', 'name', 'description'],
+        attributes: ['id', 'handle', 'name', 'description', 'createdAt'],
         include: [
             { 
                 model: Holon,
@@ -209,12 +209,12 @@ router.get('/user-data', (req, res) => {
                 //as: 'createdPosts',
                 //attributes: postAttributes //['id']
             },
-            // { 
-            //     model: Holon,
-            //     //as: 'followedSpaces',
-            //     //attributes: ['handle'],
-            //     //through: { attributes: [] }
-            // },
+            { 
+                model: Holon,
+                as: 'FollowedHolons',
+                attributes: ['handle', 'name', 'flagImagePath'],
+                through: { where: { state: 'active' }, attributes: [] }
+            },
             // { 
             //     model: Comment,
             //     //attributes: ['creator', 'text', 'createdAt']
@@ -238,9 +238,44 @@ router.get('/user-data', (req, res) => {
 })
 
 router.get('/created-posts', (req, res) => {
+    const { accountId, userId } = req.query
+    // Add account reaction data to post attributes
+    let attributes = [
+        ...postAttributes,
+        [sequelize.literal(`(
+            SELECT COUNT(*)
+            FROM Labels
+            AS Label
+            WHERE Label.postId = Post.id
+            AND Label.userId = ${accountId}
+            AND Label.type = 'like'
+            AND Label.state = 'active'
+            )`),'account_like'
+        ],
+        [sequelize.literal(`(
+            SELECT COUNT(*)
+            FROM Labels
+            AS Label
+            WHERE Label.postId = Post.id
+            AND Label.userId = ${accountId}
+            AND Label.type = 'heart'
+            AND Label.state = 'active'
+            )`),'account_heart'
+        ],
+        [sequelize.literal(`(
+            SELECT COUNT(*)
+            FROM Labels
+            AS Label
+            WHERE Label.postId = Post.id
+            AND Label.userId = ${accountId}
+            AND Label.type = 'rating'
+            AND Label.state = 'active'
+            )`),'account_rating'
+        ]
+    ]
     Post.findAll({ 
-        where: { creatorId: req.query.id },
-        attributes: postAttributes,
+        where: { creatorId: userId },
+        attributes: attributes,
         include: [
             { 
                 model: User,

@@ -3,8 +3,6 @@ Last updated: 08-07-2020
 
 + Take down remaining EC2-ELB services on AWS
 - Create links between posts
-- Allow users to follow spaces
-- Add followed spaces to user profile
 - Add user to created holons
 - Include interests and location on register form
 - Set up social media log-in strategies
@@ -58,3 +56,5 @@ Last updated: 08-07-2020
 - Remove likes/hearts/ratings
 - Request to log in if vote attempt made when logged out
 - Only display delete button on posts if own account
+- Allow users to follow spaces
+- Add followed spaces to user profile

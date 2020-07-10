@@ -8,7 +8,7 @@ import UserPageSettings from '../components/UserPageSettings'
 import UserPageCreatedPosts from '../components/UserPageCreatedPosts'
 import UserPageSideBarLeft from '../components/UserPageSideBarLeft'
 import ImageUploadModal from '../components/ImageUploadModal'
-import SideBarRight from '../components/SideBarRight'
+import UserPageSideBarRight from '../components/UserPageSideBarRight'
 
 function UserPage({ match }) {
     // update userName to userHandle?
@@ -49,7 +49,7 @@ function UserPage({ match }) {
                             <Route path={`${match.url}/created-posts`} component={ UserPageCreatedPosts } exact/>
                         </Switch>
                     </div>
-                    <SideBarRight/>
+                    <UserPageSideBarRight/>
                 </div>
             }
             {imageUploadModalOpen &&

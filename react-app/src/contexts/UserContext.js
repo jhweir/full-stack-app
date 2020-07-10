@@ -1,9 +1,13 @@
-import React, { createContext, useState } from 'react'
+import React, { createContext, useContext, useState } from 'react'
 import axios from 'axios'
 import config from '../Config'
+import { AccountContext } from './AccountContext'
+
 export const UserContext = createContext()
 
 function UserContextProvider(props) {
+    const { accountData } = useContext(AccountContext)
+
     const [userData, setUserData] = useState([])
     const [selectedSubPage, setSelectedSubPage] = useState('')
     const [createdPosts, setCreatedPosts] = useState([])
@@ -16,7 +20,7 @@ function UserContextProvider(props) {
 
     function getCreatedPosts() {
         axios
-            .get(config.environmentURL + `/created-posts?id=${userData.id}`)
+            .get(config.environmentURL + `/created-posts?accountId=${accountData ? accountData.id : null}&userId=${userData.id}`)
             .then(res => { setCreatedPosts(res.data) })
     }
 

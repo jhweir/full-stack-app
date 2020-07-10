@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext } from 'react'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
 import config from '../Config'
@@ -8,27 +8,24 @@ import styles from '../styles/components/SideBarLeft.module.scss'
 import SideBarLeftPlaceholder from '../components/SideBarLeftPlaceholder'
 
 function SideBarLeft() {
-    const { holonData, updateHolonContext, isLoading, selectedHolonSubPage, setSelectedHolonSubPage } = useContext(HolonContext)
+    const { holonData, updateHolonContext, isLoading, selectedHolonSubPage, setSelectedHolonSubPage, isFollowing, setIsFollowing } = useContext(HolonContext)
     const { accountData } = useContext(AccountContext)
-    
-    let isFollowing = false
-    
-    if (accountData) {
-        isFollowing = accountData.FollowedHolons.some(holon => holon.name === holonData.name)
-    }
 
     function followSpace() {
+        console.log('followSpace run')
         // if space is already followed by user, unfollow space
         if (isFollowing) {
+            setIsFollowing(false)
             axios
                 .put(config.environmentURL + `/unfollowHolon`, { holonId: holonData.id, userId: accountData.id })
-                .then(res => { console.log(res)})
+                .then(res => { console.log(res) })
                 .catch(error => { console.log(error) })
         } else {
             // otherwise follow space
+            setIsFollowing(true)
             axios
                 .post(config.environmentURL + `/followHolon`, { holonId: holonData.id, userId: accountData.id })
-                .then(res => { console.log(res)})
+                .then(res => { console.log(res) })
                 .catch(error => { console.log(error) })
         }
     }

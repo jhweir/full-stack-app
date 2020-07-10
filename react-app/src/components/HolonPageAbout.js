@@ -18,8 +18,8 @@ function HolonPageAbout() {
                 About
             </div>
             <div className={styles.body}>
-                <div><b>Handle:</b> {holonData.handle}</div>
                 <div><b>Name:</b> {holonData.name}</div>
+                <div><b>Handle:</b> {holonData.handle}</div>
                 <div><b>Description:</b> {holonData.description}</div>
                 <div><b>Created:</b> {dateCreated}</div>
             </div>

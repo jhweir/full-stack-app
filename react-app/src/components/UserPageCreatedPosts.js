@@ -13,25 +13,26 @@ function UserPageCreatedPosts() {
         getCreatedPosts()
     }, [userData])
 
-    const filteredPosts = createdPosts.filter(post => {
-        return post.globalState === 'visible'
-    })
+    const filteredPosts = createdPosts.filter(post => { return post.globalState === 'visible' })
 
     return (
         <div className={styles.wrapper}>
             <div className={styles.header}>Created posts</div>
             <div className={styles.createdPostsHeader}>
-                search and filters go here...
+                [search and filters go here...]
             </div>
-            <ul className={styles.createdPosts}>
-                {filteredPosts.map((post, index) =>
-                    <Post
-                        post={post}
-                        key={index}
-                        index={index}
-                    />
-                )} 
-            </ul>
+            {filteredPosts.length
+                ? <ul className={styles.createdPosts}>
+                    {filteredPosts.map((post, index) =>
+                        <Post
+                            post={post}
+                            key={index}
+                            index={index}
+                        />
+                    )} 
+                </ul>
+                : <div>No posts created yet</div>
+            }
         </div>
     )
 }

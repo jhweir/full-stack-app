@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { HolonContext } from '../contexts/HolonContext'
 import { AccountContext } from '../contexts/AccountContext'
 import { Route, Switch, Redirect } from "react-router-dom"
@@ -14,8 +14,8 @@ import EmptyPage from './EmptyPage'
 function HolonPage({ match }) {
     const { url } = match
     const { holonHandle } = match.params
-    const { updateHolonContext } = useContext(HolonContext)
-    const { accountContextLoading } = useContext(AccountContext)
+    const { holonData, updateHolonContext } = useContext(HolonContext)
+    const { accountData, accountContextLoading } = useContext(AccountContext)
 
     useEffect(() => {
         if (!accountContextLoading) { updateHolonContext(holonHandle) }
