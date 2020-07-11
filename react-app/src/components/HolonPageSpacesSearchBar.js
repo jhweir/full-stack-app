@@ -1,13 +1,13 @@
 import React, { useState, useContext } from 'react'
 import { HolonContext } from '../contexts/HolonContext'
 
-function WallSearchBar(props) {
-    const { setPostSearchFilter } = useContext(HolonContext);
+function HolonPageSpacesSearchBar(props) {
+    const { setHolonSearchFilter } = useContext(HolonContext);
     const [newSearch, setNewSearch] = useState('')
 
     function applySearch(e) {
         e.preventDefault()
-        setPostSearchFilter(newSearch)
+        setHolonSearchFilter(newSearch)
     }
 
     return (
@@ -17,7 +17,7 @@ function WallSearchBar(props) {
                     <input
                         className="input"
                         type="text"
-                        placeholder="Search posts..."
+                        placeholder="Search spaces..."
                         value={ newSearch }
                         onChange={ (e) => setNewSearch(e.target.value) }
                     />
@@ -57,14 +57,14 @@ function WallSearchBar(props) {
                     height: 20px;
                     width: 20px;
                     padding: 0;
-                    opacity: 0.4;
+                    opacity: 0.6;
                 }
             `}</style>
         </>
     )
 }
 
-export default WallSearchBar
+export default HolonPageSpacesSearchBar
 
 
 

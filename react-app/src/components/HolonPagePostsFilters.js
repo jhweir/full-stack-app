@@ -1,8 +1,8 @@
 import React, { useState, useContext } from 'react'
 import { HolonContext } from '../contexts/HolonContext'
-import styles from '../styles/components/WallFilters.module.scss'
+import styles from '../styles/components/HolonPagePostsFilters.module.scss'
 
-function WallFilters() {
+function HolonPagePostsFilters() {
     const { 
         //holonData,
         //updateHolonContext,
@@ -33,14 +33,14 @@ function WallFilters() {
     )
 }
 
-export default WallFilters
+export default HolonPagePostsFilters
 
 
 
 // import React, { Component } from 'react'
 // // import colors from '../tokens/Colors';
 
-// export class WallFilters extends Component {
+// export class HolonPagePostsFilters extends Component {
 //     state = {
 //         dropdownVisible: false
 //     }
@@ -103,4 +103,4 @@ export default WallFilters
 //     }
 // }
 
-// export default WallFilters
+// export default HolonPagePostsFilters

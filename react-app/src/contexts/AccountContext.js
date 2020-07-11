@@ -1,15 +1,13 @@
-import React, { createContext, useContext, useState, useEffect } from 'react'
+import React, { createContext, useState, useEffect } from 'react'
 import axios from 'axios'
 import config from '../Config'
-import Cookies from 'universal-cookie';
-import { HolonContext } from './HolonContext'
+import Cookies from 'universal-cookie'
 
 export const AccountContext = createContext()
 
 function AccountContextProvider(props) {
-    //const { updateHolonContext, holonData } = useContext(HolonContext)
-
     const [accountContextLoading, setAccountContextLoading] = useState(true)
+    const [isLoggedIn, setIsLoggedIn] = useState(false)
     const [accountData, setAccountData] = useState({
         FollowedHolons: [],
         ModeratedHolons: []
@@ -18,26 +16,26 @@ function AccountContextProvider(props) {
     const [alertMessage, setAlertMessage] = useState('')
     const [authModalOpen, setAuthModalOpen] = useState(false)
     const [userControlsModalOpen, setUserControlsModalOpen] = useState(false)
+    const [imageUploadModalOpen, setImageUploadModalOpen] = useState(false)
+    const [imageUploadType, setImageUploadType] = useState(false)
 
     let cookies = new Cookies()
 
-    function updateAccountContext() {
+    function getAccountData() {
         let accessToken = cookies.get('accessToken')
         //console.log('accessToken:', accessToken)
         if (accessToken === undefined) { setAccountContextLoading(false) }
         if (accessToken !== undefined) {
-            axios
-                // Create new axios instance with JWT in authorization header
-                .create({
-                    baseURL: config.environmentURL,
-                    headers: { Authorization: `Bearer ${accessToken}` }
-                })
-                .get(`/account-data`)
-                .then(res => {
-                    if (res.data !== 'Invalid token') { setAccountData(res.data) }
-                    setAccountContextLoading(false)
-                    //updateHolonContext(holonData.handle)
-                })
+            // Create new axios instance with JWT in authorization header
+            axios.create({
+                baseURL: config.environmentURL,
+                headers: { Authorization: `Bearer ${accessToken}` }
+            })
+            .get(`/account-data`)
+            .then(res => {
+                if (res.data !== 'Invalid token') { setAccountData(res.data); setIsLoggedIn(true) }
+                setAccountContextLoading(false)
+            })
         }
     }
 
@@ -47,25 +45,23 @@ function AccountContextProvider(props) {
             FollowedHolons: [],
             ModeratedHolons: []
         })
+        setIsLoggedIn(false)
     }
 
+    function toggleUserControlsModal() { setUserControlsModalOpen(!userControlsModalOpen) }
+
     useEffect(() => {
-        updateAccountContext()
+        getAccountData()
         console.log('account context updated')
     }, [])
-
-    // useEffect(() => {
-    //     //
-    //         updateHolonContext('root')
-    //     //}
-    // }, [accountData])
 
     return (
         <AccountContext.Provider value={{
             accountContextLoading,
+            isLoggedIn,
             accountData,
             setAccountData,
-            updateAccountContext,
+            getAccountData,
             logOut,
             authModalOpen,
             setAuthModalOpen,
@@ -74,7 +70,12 @@ function AccountContextProvider(props) {
             alertMessage,
             setAlertMessage,
             alertModalOpen,
-            setAlertModalOpen
+            setAlertModalOpen,
+            toggleUserControlsModal,
+            imageUploadModalOpen,
+            setImageUploadModalOpen,
+            imageUploadType,
+            setImageUploadType
         }}>
             {props.children}
         </AccountContext.Provider>

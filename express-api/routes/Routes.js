@@ -75,18 +75,18 @@ router.get('/global-data', (req, res) => {
 router.get('/holon-data', (req, res) => {
     Holon.findOne({ 
         where: { handle: req.query.handle },
-        attributes: ['id', 'handle', 'name', 'description', 'createdAt'],
+        attributes: ['id', 'handle', 'name', 'description', 'flagImagePath', 'coverImagePath', 'createdAt'],
         include: [
             { 
                 model: Holon,
                 as: 'DirectChildHolons',
-                attributes: ['handle', 'name', 'description'],
+                attributes: ['handle', 'name', 'description', 'flagImagePath'],
                 through: { attributes: [] }
             },
             {
                 model: Holon,
                 as: 'DirectParentHolons',
-                attributes: ['handle', 'name', 'description'],
+                attributes: ['handle', 'name', 'description', 'flagImagePath'],
                 through: { attributes: [] }
             },
             {
@@ -194,8 +194,23 @@ router.get('/holon-posts', (req, res) => {
     .catch(err => console.log(err))
 })
 
-router.get('/holon-users', (req, res) => {
-    User.findAll()
+router.get('/holon-followers', (req, res) => {
+    const { holonId } = req.query
+    User.findAll({ 
+        where: { '$FollowedHolons.id$': holonId },
+        //attributes: ['id'],
+        include: [{ 
+            model: Holon,
+            as: 'FollowedHolons',
+            attributes: [],
+            through: { where: { relationship: 'follower', state: 'active' }, attributes: [] }
+        }],
+    })
+    .then(data => { res.json(data) })
+})
+
+router.get('/all-users', (req, res) => {
+    User.findAll({})
     .then(data => { res.json(data) })
 })
 
@@ -386,36 +401,45 @@ router.get('/poll-votes', (req, res) => {
 
 // Create a new holon
 router.post('/create-holon', (req, res) => {
-    const { name, handle, description, parentHolonId } = req.body
-    Holon.create({ name, handle, description }).then((newHolon) => {
-        // Attach new holon to parent holon(s)
-        VerticalHolonRelationship.create({
-            state: 'open',
-            holonAId: parentHolonId,
-            holonBId: newHolon.id,
+    const { handle, name, description, parentHolonId } = req.body
+
+    Holon.findOne({ where: { handle: handle }})
+        .then(holon => {
+            if (holon) { res.send('holon-handle-taken') }
+            else { createHolon() }
         })
-        // Create a unique tag for the holon
-        HolonHandle.create({
-            state: 'open',
-            holonAId: newHolon.id,
-            holonBId: newHolon.id,
-        })
-        // Copy the parent holons tags to the new holon
-        //// 1. Work out parent holons tags
-        Holon.findOne({
-            where: { id: parentHolonId },
-            include: [{ model: Holon, as: 'HolonHandles' }]
-        }).then(data => {
-        //// 2. Add them to the new holon
-            data.HolonHandles.forEach((tag) => {
-                HolonHandle.create({
-                    state: 'open',
-                    holonAId: newHolon.id,
-                    holonBId: tag.id,
-                })
+
+    function createHolon() { 
+        Holon.create({ name, handle, description }).then((newHolon) => {
+            // Attach new holon to parent holon(s)
+            VerticalHolonRelationship.create({
+                state: 'open',
+                holonAId: parentHolonId,
+                holonBId: newHolon.id,
             })
-        }).catch(err => console.log(err))
-    }).catch(err => console.log(err))
+            // Create a unique tag for the holon
+            HolonHandle.create({
+                state: 'open',
+                holonAId: newHolon.id,
+                holonBId: newHolon.id,
+            })
+            // Copy the parent holons tags to the new holon
+            //// 1. Work out parent holons tags
+            Holon.findOne({
+                where: { id: parentHolonId },
+                include: [{ model: Holon, as: 'HolonHandles' }]
+            }).then(data => {
+            //// 2. Add them to the new holon
+                data.HolonHandles.forEach((tag) => {
+                    HolonHandle.create({
+                        state: 'open',
+                        holonAId: newHolon.id,
+                        holonBId: tag.id,
+                    })
+                })
+            }).catch(err => console.log(err))
+        }).then(res.send('success')).catch(err => console.log(err))
+    }
 })
 
 // Create a new post

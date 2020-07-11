@@ -1,13 +1,13 @@
 import React, { useState, useContext } from 'react'
 import { HolonContext } from '../contexts/HolonContext'
 
-function BranchSearchBar(props) {
-    const { setHolonSearchFilter } = useContext(HolonContext);
+function HolonPagePostsSearchBar() {
+    const { setPostSearchFilter } = useContext(HolonContext);
     const [newSearch, setNewSearch] = useState('')
 
     function applySearch(e) {
         e.preventDefault()
-        setHolonSearchFilter(newSearch)
+        setPostSearchFilter(newSearch)
     }
 
     return (
@@ -17,7 +17,7 @@ function BranchSearchBar(props) {
                     <input
                         className="input"
                         type="text"
-                        placeholder="Search spaces..."
+                        placeholder="Search posts..."
                         value={ newSearch }
                         onChange={ (e) => setNewSearch(e.target.value) }
                     />
@@ -57,14 +57,14 @@ function BranchSearchBar(props) {
                     height: 20px;
                     width: 20px;
                     padding: 0;
-                    opacity: 0.6;
+                    opacity: 0.4;
                 }
             `}</style>
         </>
     )
 }
 
-export default BranchSearchBar
+export default HolonPagePostsSearchBar
 
 
 

@@ -17,7 +17,7 @@ function PostPage(props) {
     const pageUrl = props.match.url
     const parsedQuery = queryString.parse(props.location.search)
 
-    const { accountContextLoading, accountData, setAlertModalOpen, setAlertMessage } = useContext(AccountContext)
+    const { accountContextLoading, isLoggedIn, accountData, setAlertModalOpen, setAlertMessage } = useContext(AccountContext)
 
     const [post, setPost] = useState({
         spaces: [],
@@ -44,7 +44,8 @@ function PostPage(props) {
     const validVote = selectedPollAnswers.length !== 0 && (post.subType !== 'weighted-choice' || totalUsedPoints == 100)
 
     function getPost() {
-        axios.get(config.environmentURL + `/post?id=${postId}&userId=${accountData ? accountData.id : null}`)
+        setPostPageLoading(true)
+        axios.get(config.environmentURL + `/post?id=${postId}&userId=${isLoggedIn ? accountData.id : null}`)
             .then(res => { 
                 setPost(res.data)
                 setPostPageLoading(false)
@@ -54,8 +55,8 @@ function PostPage(props) {
     function submitComment(e) {
         e.preventDefault()
         if (newComment === '') { setCommentError(true) }
-        if (newComment !== '' && !accountData) { setAlertMessage('Log in to comment'); setAlertModalOpen(true) }
-        if (accountData && newComment !== '') {
+        if (newComment !== '' && !isLoggedIn) { setAlertMessage('Log in to comment'); setAlertModalOpen(true) }
+        if (newComment !== '' && isLoggedIn) {
             axios.post(config.environmentURL + '/add-comment', { creatorId: accountData.id, postId, text: newComment })
                 .then(setNewComment(''))
                 .then(setTimeout(() => { getPost() }, 200))

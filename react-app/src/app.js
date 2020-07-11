@@ -14,6 +14,7 @@ import NavBar from './components/NavBar'
 import AlertModal from './components/AlertModal'
 import AuthModal from './components/AuthModal'
 import UserControlsModal from './components/UserControlsModal'
+import ImageUploadModal from './components/ImageUploadModal'
 
 function App() {
   // const { authModalOpen, setAuthModalOpen} = useContext(AccountContext)
@@ -27,6 +28,7 @@ function App() {
               <AlertModal/>
               <AuthModal/>
               <UserControlsModal/>
+              <ImageUploadModal/>
               <Switch>
                 <Route path="/" exact component={Homepage}/>
                 <Route path="/h/:holonHandle" component={HolonPage}/>

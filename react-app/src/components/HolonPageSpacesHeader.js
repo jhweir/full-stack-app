@@ -1,26 +1,26 @@
 import React, { useState, useContext } from 'react';
-import ChildHolonsSearchBar from './ChildHolonsSearchBar';
-import ChildHolonsFilters from './ChildHolonsFilters';
-import CreateBranch from './CreateHolon';
+import HolonPageSpacesSearchBar from './HolonPageSpacesSearchBar';
+import HolonPageSpacesFilters from './HolonPageSpacesFilters';
+import CreateHolon from './CreateHolon';
 import { HolonContext } from '../contexts/HolonContext';
 
-function ChildHolonsHeader() {
-    const { isLoading, setIsLoading } = useContext(HolonContext);
-    const [modal, setModal] = useState(false);
+function HolonPageSpacesHeader() {
+    const { holonContextLoading, setHolonContextLoading } = useContext(HolonContext);
+    const [createHolonModalOpen, setCreateHolonModalOpen] = useState(false);
 
-    function toggleModal() {
-        setModal(!modal)
-    }
+    // function toggleModal() {
+    //     setCreateHolonModalOpen(!createHolonModalOpen)
+    // }
 
     return (
         <>
             <div className="holon-header">
-                <ChildHolonsSearchBar/>
-                <button className="button mb-10" onClick={ toggleModal }>Create Space</button>
-                {modal && 
-                    <CreateBranch toggleModal={ toggleModal }/>
+                <HolonPageSpacesSearchBar/>
+                <button className="button mb-10" onClick={() => setCreateHolonModalOpen(true) }>Create Space</button>
+                {createHolonModalOpen && 
+                    <CreateHolon setCreateHolonModalOpen={setCreateHolonModalOpen}/>
                 }
-                {/* <ChildHolonsFilters/> */}
+                {/* <HolonPageSpacesFilters/> */}
             </div>
 
             <style jsx="true">{`
@@ -37,17 +37,17 @@ function ChildHolonsHeader() {
     )
 }
 
-export default ChildHolonsHeader
+export default HolonPageSpacesHeader
 
 
 
 // import React, { Component } from 'react';
 // import SearchBar from './search-bar';
-// import WallFilters from './wall-filters';
+// import HolonPagePostsFilters from './wall-filters';
 // import CreatePostModal from './create-post-modal';
 // // import colors from '../tokens/Colors';
 
-// export class WallHeader extends Component {
+// export class HolonPagePostsHeader extends Component {
 //     state = {
 //         showPostModal: false
 //     }
@@ -69,7 +69,7 @@ export default ChildHolonsHeader
 
 //                 <SearchBar searchFilter={this.props.searchFilter}/>
 
-//                 <WallFilters SortById={this.props.SortById} SortByLikes={this.props.SortByLikes}/>
+//                 <HolonPagePostsFilters SortById={this.props.SortById} SortByLikes={this.props.SortByLikes}/>
 
 //                 <style jsx="true">{`
 //                     .wall-header {
@@ -86,4 +86,4 @@ export default ChildHolonsHeader
 //     }
 // }
 
-// export default WallHeader
+// export default HolonPagePostsHeader

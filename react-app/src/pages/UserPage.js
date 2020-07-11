@@ -13,33 +13,31 @@ import UserPageSideBarRight from '../components/UserPageSideBarRight'
 function UserPage({ match }) {
     // update userName to userHandle?
     const { userName } = match.params
-    const { accountData, updateAccountContext } = useContext(AccountContext)
-    const { userData, updateUserContext, selectedSubPage, setSelectedSubPage } = useContext(UserContext)
-    const [imageUploadModalOpen, setImageUploadModalOpen] = useState(false)
-    // const [selectedSubPage, setSelectedSubPage] = useState('')
-
+    const { setImageUploadType, imageUploadModalOpen, setImageUploadModalOpen } = useContext(AccountContext)
+    const { userData, getUserData, selectedSubPage, setSelectedSubPage, isOwnAccount } = useContext(UserContext)
 
     useEffect(() => {
-        //updateAccountContext()
-        updateUserContext(userName)
+        getUserData(userName)
     }, [])
-
-    let isOwnAccount = userData && accountData && userData.id === accountData.id
 
     return (
         <div className={styles.userPage}>
-            <div className={styles.coverImageWrapper}>
-                <div className={styles.coverImage}/>
-            </div>
+            {/* TODO: create cover image component */}
+            {userData.coverImagePath === null
+                ? <div className={styles.coverImagePlaceholder}/>
+                : <img className={styles.coverImage} src={userData.coverImagePath}/>
+            }
+            {isOwnAccount &&
+                <div 
+                    className={styles.coverImageUploadButton}
+                    onClick={() => { setImageUploadType('user-cover-image'); setImageUploadModalOpen(true) }}>
+                    Upload new image
+                </div>
+            }
             {!userData && <span style={{padding: 20}}>No user with that name!</span>}
             {userData &&
                 <div className={styles.userPageContainer}>
-                    <UserPageSideBarLeft 
-                        isOwnAccount={isOwnAccount}
-                        setImageUploadModalOpen={setImageUploadModalOpen}
-                        selectedSubPage={selectedSubPage}
-                        setSelectedSubPage={setSelectedSubPage}
-                    />
+                    <UserPageSideBarLeft/>
                     <div className={styles.userPageCenterPanel}>
                         <Switch>
                             {isOwnAccount && <Route path={`${match.url}/settings`} component={ UserPageSettings } exact/>}
@@ -50,9 +48,6 @@ function UserPage({ match }) {
                     </div>
                     <UserPageSideBarRight/>
                 </div>
-            }
-            {imageUploadModalOpen &&
-                <ImageUploadModal setImageUploadModalOpen={setImageUploadModalOpen}/>
             }
         </div>
     )

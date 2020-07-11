@@ -5,47 +5,46 @@ import { AccountContext } from '../contexts/AccountContext'
 import styles from '../styles/components/NavBar.module.scss'
 
 function NavBar() {
-    const { updateHolonContext } = useContext(HolonContext)
-    const { accountData, setAuthModalOpen, setUserControlsModalOpen } = useContext(AccountContext)
+    const { setHolonHandle } = useContext(HolonContext)
+    const { isLoggedIn, accountData, setAuthModalOpen, toggleUserControlsModal } = useContext(AccountContext)
 
     return (
         <div className={styles.navBar}>
             <div className={styles.navBarContainer}>
                 <div className={styles.navBarLinks}>
                     <Link to="/"
-                        className={styles.navBarLink}
-                        onClick={() => { updateHolonContext('root') }}>
+                        className={styles.navBarLink}>
                         <img className={styles.navBarIcon} src="/icons/home-solid.svg" alt=''/>
                         <div className={styles.navBarText}>Home</div>
                     </Link> |
                     <Link to="/h/root"
                         className={styles.navBarLink}
-                        onClick={() => { updateHolonContext('root') }}>
+                        onClick={() => { setHolonHandle('root') }}>
                         <img className={styles.navBarIcon} src="/icons/globe-americas-solid.svg" alt=''/>
                         <div className={styles.navBarText}>Posts</div>
                     </Link> | 
                     <Link to="/h/root/spaces"
                         className={styles.navBarLink}
-                        onClick={() => { updateHolonContext('root') }}>
+                        onClick={() => { setHolonHandle('root') }}>
                         <img className={styles.navBarIcon} src="/icons/overlapping-circles-thick.svg" alt=''/>
                         <div className={styles.navBarText}>Spaces</div>
                     </Link> | 
                     <Link to="/h/root/users"
                         className={styles.navBarLink}
-                        onClick={() => { updateHolonContext('root') }}>
+                        onClick={() => { setHolonHandle('root') }}>
                         <img className={styles.navBarIcon} src="/icons/users-solid.svg" alt=''/>
                         <div className={styles.navBarText}>Users</div>
                     </Link>
                 </div>
-                {!accountData.id &&
+                {!isLoggedIn &&
                     <div className={styles.authButtons}>
                         <div className="button" onClick={() => setAuthModalOpen(true)}>
                             Log in
                         </div>
                     </div>
                 }
-                {accountData.id &&
-                    <div className={styles.userControls} onClick={() => setUserControlsModalOpen(true)}>
+                {isLoggedIn &&
+                    <div className={styles.userControls} onClick={() => toggleUserControlsModal()}>
                         <span className={styles.userName}>{accountData.name}</span>
                         {accountData.profileImagePath
                             ? <img className={styles.userImage} src={accountData.profileImagePath}/>
@@ -70,7 +69,7 @@ export default NavBar
 /* <div 
     style={{marginLeft: 20}}
     className="button"
-    onClick={() => setIsLoading(!isLoading)}>
+    onClick={() => setHolonContextLoading(!holonContextLoading)}>
     Toggle loading
 </div> */
 
@@ -85,7 +84,7 @@ export default NavBar
 
 /* <div className="navBar-text" 
         onClick={() => redirectTo('/h/root', 'root')}>
-        Wall
+        HolonPagePosts
     </div> |
     <div className="navBar-text"
         onClick={() => redirectTo('/h/root/spaces', 'root')}>
@@ -97,7 +96,7 @@ export default NavBar
 
 
         // function redirect(path) {
-    //     setIsLoading(true)
+    //     setHolonContextLoading(true)
     //     //updateHolonContext('root')
     //     setTimeout(function() { 
     //         history.push(path)

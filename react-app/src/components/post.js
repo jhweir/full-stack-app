@@ -8,8 +8,8 @@ import styles from '../styles/components/Post.module.scss'
 import PostReactionModal from './PostReactionModal'
 
 function Post(props) {
-    const { accountData, setAlertMessage, setAlertModalOpen } = useContext(AccountContext)
-    const { updateHolonContext, holonData } = useContext(HolonContext)
+    const { isLoggedIn, accountData, setAlertMessage, setAlertModalOpen } = useContext(AccountContext)
+    const { holonData, setHolonHandle, getHolonPosts } = useContext(HolonContext)
 
     const [reactionModalOpen, setReactionModalOpen] = useState(false)
     const [ratingModalOpen, setRatingModalOpen] = useState(false)
@@ -63,7 +63,7 @@ function Post(props) {
 
     function addLike() {
         // If user not logged in, request log in
-        if (!accountData) { setAlertMessage('Log in to like post'); setAlertModalOpen(true) }
+        if (!isLoggedIn) { setAlertMessage('Log in to like post'); setAlertModalOpen(true) }
         else {
             // If post already liked by account, remove like
             if (accountLike !== 0) {
@@ -85,7 +85,7 @@ function Post(props) {
     }
 
     function addHeart() {
-        if (!accountData) { setAlertMessage('Log in to heart post'); setAlertModalOpen(true) }
+        if (!isLoggedIn) { setAlertMessage('Log in to heart post'); setAlertModalOpen(true) }
         else {
             if (accountHeart !== 0) {
                 setTotalHearts(totalHearts - 1)
@@ -105,20 +105,15 @@ function Post(props) {
     }
 
     function addRating() {
-        if (!accountData) { setAlertMessage('Log in to add rating'); setAlertModalOpen(true) }
+        if (!isLoggedIn) { setAlertMessage('Log in to add rating'); setAlertModalOpen(true) }
         else {
             if (accountRating !== 0) {
                 let n = newRating
                 let invalidRating = isNaN(n) || n === '' || n > 100 || n < 0
                 if (invalidRating) { setNewRatingError(true) }
                 else {
-                    console.log('updating rating')
-                    //setTotalRatings(totalRatings + 1)
-                    //setTotalReactions(totalReactions + 1)
-                    //setTotalRatingPoints(totalRatingPoints + parseInt(newRating, 10))
-                    //setAccountRating(accountRating + 1)
                     axios.put(config.environmentURL + '/updateRating', { postId: id, holonId: holonData.id, userId: accountData.id, newRating })
-                        .then(() => { setNewRating(''); updateHolonContext(holonData.handle) })
+                        .then(() => { setNewRating(''); getHolonPosts() })
                         .catch(error => { console.log(error) })
                 }
             }
@@ -140,17 +135,17 @@ function Post(props) {
         }
     }
 
-    function toggleReactionModal() {
-        setReactionModalOpen(!reactionModalOpen)
-    }
+    // function toggleReactionModal() {
+    //     setReactionModalOpen(!reactionModalOpen)
+    // }
 
-    function toggleRatingModal() {
-        setRatingModalOpen(!ratingModalOpen)
-    }
+    // function toggleRatingModal() {
+    //     setRatingModalOpen(!ratingModalOpen)
+    // }
 
     function deletePost() {
         axios.delete(config.environmentURL  + '/deletePost', { data: { id } })
-            .then(setTimeout(() => { updateHolonContext(holonData.handle) }, 200))
+            .then(setTimeout(() => { getHolonPosts() }, 200))
             .catch(error => { console.log(error) })
     }
 
@@ -198,18 +193,18 @@ function Post(props) {
                     }
                     <span className={styles.postSubText}>to</span>
                     <div className={styles.holonNames}>
-                        {spaces && spaces.length >= 1
+                        {spaces && spaces.length > 0
                             ? spaces.map((holon, index) =>
                                 <Link to={ `/h/${holon}` }
-                                    onClick={ () => { updateHolonContext(holon) } }
+                                    onClick={ () => { setHolonHandle(holon) } }
                                     style={{marginRight: 10}}
                                     key={index}>
                                     {holon}
                                 </Link>)
                             : <Link to={ `/h/root` }
-                                onClick={ () => { updateHolonContext('root') } }
+                                onClick={ () => { setHolonHandle('root') } }
                                 style={{marginRight: 10}}>
-                                root
+                                all
                             </Link>}
                     </div>
                     <span className={styles.postSubText}>|</span>
@@ -224,7 +219,7 @@ function Post(props) {
                     }
                     <div className={styles.postDescription}>{ description }</div>    
                     <div className={styles.postInteract}>
-                        <div className={styles.postInteractItem} onClick={() => toggleReactionModal()}>
+                        <div className={styles.postInteractItem} onClick={() => setReactionModalOpen(true)}>
                             <img 
                                 className={`${styles.postIcon} ${(accountLike || accountHeart || accountRating !== 0) && styles.selectedOrange}`}
                                 src="/icons/fire-alt-solid.svg" alt=''
@@ -236,12 +231,12 @@ function Post(props) {
                             totalHearts={totalHearts}
                             totalRatings={totalRatings}
                             reactionModalOpen={reactionModalOpen}
-                            toggleReactionModal={toggleReactionModal}
+                            setReactionModalOpen={setReactionModalOpen}
                             addLike={addLike}
                             addHeart={addHeart}
                             // TODO: Move rating state to Rating Modal component?
                             ratingModalOpen={ratingModalOpen}
-                            toggleRatingModal={toggleRatingModal}
+                            setRatingModalOpen={setRatingModalOpen}
                             totalRatingScore={totalRatingScore}
                             newRating={newRating}
                             setNewRating={setNewRating}

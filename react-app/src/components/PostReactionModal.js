@@ -8,11 +8,11 @@ function PostReactionModal(props) {
         totalHearts,
         totalRatings,
         reactionModalOpen,
-        toggleReactionModal,
+        setReactionModalOpen,
         addLike,
         addHeart,
         ratingModalOpen,
-        toggleRatingModal,
+        setRatingModalOpen,
         totalRatingScore,
         newRating,
         newRatingError,
@@ -29,7 +29,7 @@ function PostReactionModal(props) {
 
             <img className={styles.postReactionModalCloseButton}
                 src="/icons/close-01.svg" alt=''
-                onClick={() => toggleReactionModal()}
+                onClick={() => setReactionModalOpen(false)}
             />
 
             <div className={styles.postReactionModalItem} onClick={() => addLike()}>
@@ -48,7 +48,7 @@ function PostReactionModal(props) {
                 <div>{ totalHearts } Hearts</div>
             </div>
 
-            <div className={styles.postReactionModalItem} onClick={() => toggleRatingModal()}>
+            <div className={styles.postReactionModalItem} onClick={() => setRatingModalOpen(true)}>
                 <img
                     className={`${styles.postIcon} ${accountRating !== 0 && styles.selectedOrange}`}
                     src="/icons/star-solid.svg" alt=''

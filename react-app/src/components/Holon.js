@@ -4,22 +4,28 @@ import { HolonContext } from '../contexts/HolonContext'
 import styles from '../styles/components/Holon.module.scss'
 
 function Holon(props) {
-    const { updateHolonContext } = useContext(HolonContext)
+    const { handle, name, description, flagImagePath } = props.holon
+    const { setHolonHandle } = useContext(HolonContext)
 
     return (
         <div className={styles.holon}>
-            <Link className={styles.holonImage}
-                to={ `/h/${props.holon.handle}` }
-                onClick={ () => { updateHolonContext(props.holon.handle) } }>
-                <img className={styles.holonImage} src="/icons/holon-flag-image-03.svg" alt=''/>
+            <Link className={styles.flagImage}
+                to={ `/h/${handle}` }
+                onClick={ () => { setHolonHandle(handle) } }>
+                    {flagImagePath === null
+                        ? <div className={styles.flagImagePlaceholderWrapper}>
+                            <img className={styles.flagImagePlaceholder} src='/icons/users-solid.svg' alt=''/>
+                        </div>
+                        : <img className={styles.flagImage} src={flagImagePath} alt=''/>
+                    }
             </Link>
             <div className={styles.holonInfo}>
                 <Link className={styles.holonTitle}
-                    to={ `/h/${props.holon.handle}` }
-                    onClick={ () => { updateHolonContext(props.holon.handle) } }>
-                    {props.holon.name}
+                    to={ `/h/${handle}` }
+                    onClick={ () => { setHolonHandle(handle) } }>
+                    {name}
                 </Link>
-                <span className={styles.holonDescription}>{props.holon.description}</span>
+                <span className={styles.holonDescription}>{description}</span>
             </div>
         </div>
     )

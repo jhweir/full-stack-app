@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react'
 import { HolonContext } from '../contexts/HolonContext'
 
-function ChildHolonsFilters() {
+function HolonPageSpacesFilters() {
     const { getHolonPosts, setSortBy } = useContext(HolonContext);
     const [dropdown, setDropdown] = useState(false)
 
@@ -56,4 +56,4 @@ function ChildHolonsFilters() {
     )
 }
 
-export default ChildHolonsFilters
+export default HolonPageSpacesFilters

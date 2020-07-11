@@ -11,11 +11,27 @@
     transition-duration: 2s;
     position: relative;
 }
-.holonImage {
+.flagImage {
     width: 100px;
     height: 100px;
     border-radius: 50%;
     margin-right: 20px;
+    object-fit: cover;
+}
+.flagImagePlaceholderWrapper {
+    background-color: #eee; //rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    height: 100px;
+    width: 100px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+}
+.flagImagePlaceholder {
+    width: 60%;
+    opacity: 0.2;
 }
 .holonInfo {
     display: flex;

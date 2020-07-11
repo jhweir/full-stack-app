@@ -3,10 +3,10 @@ import { HolonContext } from '../contexts/HolonContext'
 import styles from '../styles/components/SideBarRightPlaceholder.module.scss'
 
 function SideBarRightPlaceholder() {
-    const { isLoading } = useContext(HolonContext)
+    const { holonContextLoading } = useContext(HolonContext)
 
     return (
-        <div className={`${styles.PHSideBarRight} ${(isLoading && styles.visible)}`}>
+        <div className={`${styles.PHSideBarRight} ${(holonContextLoading && styles.visible)}`}>
             <div className="PHSideBarShine"/>
             <ul className={styles.PHSideBarRightHolons}>
                 <div className={styles.PHSideBarRightHolonsTitle}/>

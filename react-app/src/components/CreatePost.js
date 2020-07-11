@@ -8,7 +8,7 @@ import HolonHandleInput from './HolonHandleInput'
 import PollAnswerForm from './PollAnswerForm'
 
 function CreatePost(props) {
-    const { holonData, globalData, isLoading, updateHolonContext } = useContext(HolonContext)
+    const { holonData, globalData, holonContextLoading, getHolonPosts } = useContext(HolonContext)
     const { accountData } = useContext(AccountContext)
     const { toggleModal } = props
     const [type, setPostType] = useState('')
@@ -30,7 +30,7 @@ function CreatePost(props) {
     // Also may be possible to move this use of state into a simpler variable
     useEffect(() => {
         setHolonHandles([...holonHandles, holonData.handle]) //holonData.HolonTags...
-    }, [isLoading])
+    }, [holonContextLoading])
 
     function submitPost(e) {
         e.preventDefault()
@@ -46,7 +46,7 @@ function CreatePost(props) {
             axios.post(config.environmentURL + '/create-post', { post })
                 //.then(res => { console.log(res) })
                 .then(toggleModal)
-                .then(setTimeout(() => { updateHolonContext(holonData.handle) }, 200))
+                .then(setTimeout(() => { getHolonPosts() }, 200))
         }
     }
 

@@ -4,6 +4,7 @@
 .sideBarLeft {
     width: 200px;
     padding: 0 20px;
+    position: relative;
     @media screen and (max-width: 1200px) {
         display: none;
     }
@@ -11,14 +12,15 @@
 .userName {
     font-size: 26px;
     line-height: 30px;
-    margin-bottom: 20px;
+    margin: 60px 0 20px 0;
 }
 .flagImageWrapper {
-    width: 120px;
-    height: 120px;
+    width: 130px;
+    height: 130px;
     border-radius: 50%;
-    position: relative;
-    margin-bottom: 20px;
+    position: absolute;
+    top: -87px;
+    //margin-bottom: 20px;
 }
 .flagImage {
     width: 100%; //120px;
@@ -50,8 +52,8 @@
 .flagImagePlaceholderWrapper {
     background-color: #eee; //rgba(0, 0, 0, 0.1);
     border-radius: 50%;
-    height: 120px;
-    width: 120px;
+    height: 130px;
+    width: 130px;
     margin-bottom: 20px;
     display: flex;
     justify-content: center;

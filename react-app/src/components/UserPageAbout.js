@@ -2,8 +2,8 @@ import React, { useContext, useEffect } from 'react'
 import { UserContext } from '../contexts/UserContext'
 import styles from '../styles/components/UserPageAbout.module.scss'
 // import Post from './Post'
-// import WallHeader from './WallHeader'
-// import WallPlaceholder from './WallPlaceholder'
+// import HolonPagePostsHeader from './HolonPagePostsHeader'
+// import HolonPagePostsPlaceholder from './HolonPagePostsPlaceholder'
 
 function UserPageAbout() {
     const { userData, setSelectedSubPage } = useContext(UserContext)

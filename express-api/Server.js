@@ -143,6 +143,19 @@ app.post('/api/image-upload', authenticateToken, function(req, res) {
   })
 })
 
+app.post('/api/holon-flag-image-upload', authenticateToken, function(req, res) {
+  const { holonId } = req.query
+  upload.single('image')(req, res, function(err) {
+    if (err) { console.log(err) }
+    if (req.file) {
+      Holon
+        .update({ flagImagePath: req.file.location }, { where: { id: holonId }})
+        .then(res.send('success'))
+    } else { res.json({ message: 'failed' }) }
+  })
+})
+
+
 
 // app.use(function (req, res, next) {
 //   res.header('Access-Control-Allow-Credentials', true);

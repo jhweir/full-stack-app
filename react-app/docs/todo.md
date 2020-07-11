@@ -2,8 +2,12 @@
 Last updated: 08-07-2020
 
 + Take down remaining EC2-ELB services on AWS
-- Create links between posts
 - Add user to created holons
+- Add basic mod controls (image upload, name change, handle change)
++ work out best approach to paginate posts with filters
+    - Store post totals in db to enable/speed up filtered paginated queries? Probably not.
+    - Apply filters in query? Probably.
+- Create links between posts
 - Include interests and location on register form
 - Set up social media log-in strategies
 - Multiple choice polls should spread value by number of selected answers (i.e 1 vote = 100 points, 3 votes = 3 * 33.3 points)
@@ -21,9 +25,6 @@ Last updated: 08-07-2020
 - User authentication/authorization
     - Request FB sign-up
     - Set up verification/welcome emails
-+ work out best approach to paginate posts with filters
-    - Store post totals in db to enable/speed up filtered paginated queries?
-    - Apply filters in query?
 - Set up filters on child-holons page
 - create seperate Authentication server
 - Merge title and description into one text field (character limit around 3000)?

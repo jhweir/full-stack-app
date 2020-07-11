@@ -6,67 +6,88 @@ import { AccountContext } from './AccountContext'
 export const HolonContext = createContext()
 
 function HolonContextProvider({ children }) {
-    const { accountData } = useContext(AccountContext)
-
+    const { accountContextLoading, accountData } = useContext(AccountContext)
+    const [holonContextLoading, setHolonContextLoading] = useState(true)
+    const [holonHandle, setHolonHandle] = useState('')
     const [globalData, setGlobalData] = useState({})
     const [holonData, setHolonData] = useState({
         DirectChildHolons: [],
-        DirectParentHolons: []
+        DirectParentHolons: [],
+        HolonHandles: []
     })
     const [holonPosts, setHolonPosts] = useState([])
-    const [holonUsers, setHolonUsers] = useState([])
+    const [holonFollowers, setHolonFollowers] = useState([])
     const [postSearchFilter, setPostSearchFilter] = useState('')
     const [postSortByFilter, setPostSortByFilter] = useState('reactions')
     const [holonSearchFilter, setHolonSearchFilter] = useState('')
     const [holonSortByFilter, setHolonSortByFilter] = useState('date')
-    const [isLoading, setIsLoading] = useState(false)
     const [selectedHolonSubPage, setSelectedHolonSubPage] = useState('')
     const [isFollowing, setIsFollowing] = useState(false)
     const [isModerator, setIsModerator] = useState(false)
 
-    //TODO: create seperate functions for updating globalData, holonData, and holonPosts?
-    function updateHolonContext(holonHandle) {
-        setIsLoading(true)
-        const getGlobalData = axios.get(config.environmentURL + '/global-data') //remove getGlobalData and move to seperate function (or context)?
-        const getHolonData = axios.get(config.environmentURL + `/holon-data?handle=${holonHandle}`)
-        const getHolonPosts = axios.get(config.environmentURL + `/holon-posts?handle=${holonHandle}&userId=${accountData.id ? accountData.id : null}`)
-        const getHolonUsers = axios.get(config.environmentURL + `/holon-users?handle=${holonHandle}`)
-        // const demoDelay = new Promise((resolve) => { setTimeout(resolve, 1000) })
-    
-        Promise.all([getGlobalData, getHolonData, getHolonPosts, getHolonUsers]).then(values => {
-            setGlobalData(values[0].data)
-            setHolonData(values[1].data)
-            setHolonPosts(values[2].data)
-            setHolonUsers(values[3].data)
-            setIsLoading(false)
-            console.log('Holon Context updated')
-        })
+    function getGlobalData() {
+        console.log('getGlobalData')
+        axios.get(config.environmentURL + '/global-data')
+        .then(res => { setGlobalData(res.data) })
     }
 
-    useEffect(() => {
-        if (holonData.handle) {
-            updateHolonContext(holonData.handle)
-            console.log('holon context use effect run')
+    function getHolonData() {
+        console.log('getHolonData')
+        axios.get(config.environmentURL + `/holon-data?handle=${holonHandle}`)
+        .then(res => { setHolonData(res.data) })
+    }
+
+     function getHolonPosts() {
+         console.log('getHolonPosts')
+        axios.get(config.environmentURL + `/holon-posts?handle=${holonHandle}&userId=${accountData.id ? accountData.id : null}`)
+        .then(res => { setHolonPosts(res.data) })
+    }
+
+    function getHolonFollowers() {
+        console.log('getHolonFollowers')
+        if (holonData.handle === 'root') {
+            axios.get(config.environmentURL + `/all-users`)
+            .then(res => { setHolonFollowers(res.data) })
+        } else {
+            axios.get(config.environmentURL + `/holon-followers?holonId=${holonData.id}`)
+            .then(res => { setHolonFollowers(res.data) })
         }
-    }, [accountData])
+    }
+    
+    useEffect(() => {
+        if (!accountContextLoading) {
+            setHolonContextLoading(true)
+            console.log('set loading true')
+            const a = getGlobalData()
+            const b = getHolonData()
+            Promise.all([a,b]).then(() => {
+                setHolonContextLoading(false)
+                console.log('set loading false')
+            })
+        }
+    }, [holonHandle, accountData])
 
     useEffect(() => {
-        // if (holonData && accountData) {
-            // Check if space is followed or moderated by account and set in state
-            let accountIsFollowing = accountData && holonData && accountData.FollowedHolons.some(holon => holon.handle === holonData.handle)
-            let accountIsModerator = accountData && holonData && accountData.ModeratedHolons.some(holon => holon.handle === holonData.handle)
+        if (holonData) {
+            let accountIsFollowing = accountData.FollowedHolons.some(holon => holon.handle === holonData.handle)
+            let accountIsModerator = accountData.ModeratedHolons.some(holon => holon.handle === holonData.handle)
             if (accountIsFollowing) { setIsFollowing(true) } else { setIsFollowing(false) }
             if (accountIsModerator) { setIsModerator(true) } else { setIsModerator(false) }
-        //}
+        }
     }, [holonData])
 
     return (
         <HolonContext.Provider value={{
+            holonHandle,
+            setHolonHandle,
             globalData,
+            getHolonData,
             holonData,
+            setHolonData,
             holonPosts,
-            holonUsers,
-            updateHolonContext,
+            getHolonPosts,
+            holonFollowers,
+            getHolonFollowers,
             postSearchFilter,
             setPostSearchFilter,
             postSortByFilter,
@@ -75,8 +96,8 @@ function HolonContextProvider({ children }) {
             setHolonSearchFilter,
             holonSortByFilter,
             setHolonSortByFilter,
-            isLoading,
-            setIsLoading,
+            holonContextLoading,
+            setHolonContextLoading,
             selectedHolonSubPage,
             setSelectedHolonSubPage,
             isFollowing,
@@ -92,6 +113,25 @@ function HolonContextProvider({ children }) {
 export default HolonContextProvider
 
 
+    //TODO: create seperate functions for updating globalData, holonData, holonPosts and holonFollowers? Yes!
+    // function updateHolonContext(holonHandle) {
+    //     // setHolonContextLoading(true)
+    //     // const getGlobalData = axios.get(config.environmentURL + '/global-data') //remove getGlobalData and move to seperate function (or context)?
+    //     // const getHolonData = axios.get(config.environmentURL + `/holon-data?handle=${holonHandle}`)
+    //     // // const getHolonPosts = axios.get(config.environmentURL + `/holon-posts?handle=${holonHandle}&userId=${accountData.id ? accountData.id : null}`)
+    //     // // const getHolonUsers = axios.get(config.environmentURL + `/holon-users?handle=${holonHandle}`)
+    //     // // const demoDelay = new Promise((resolve) => { setTimeout(resolve, 1000) })
+    
+    //     // Promise.all([getGlobalData, getHolonData]).then(values => {
+    //     //     setGlobalData(values[0].data)
+    //     //     setHolonData(values[1].data)
+    //     //     // setHolonPosts(values[2].data)
+    //     //     //setHolonFollowers(values[3].data)
+    //     //     setHolonContextLoading(false)
+    //     //     console.log('Holon Context updated')
+    //     // })
+    // }
+
 
     //const [renderKey, setRenderKey] = useState(0)
     //const [holon, setHolon] = useState('') // setHolon passed down as a prop to HolonPage which sets the holon as soon as the page loads
@@ -106,7 +146,7 @@ export default HolonContextProvider
     // function getData() {
     //     axios.get(config.environmentURL + `/getData?id=${holon}`).then(res => {
     //         setHolonData(res.data)
-    //         // setIsLoading(false)
+    //         // setHolonContextLoading(false)
     //     })
     // }
     // const promise3 = new Promise(function(resolve, reject) {
@@ -147,7 +187,7 @@ export default HolonContextProvider
     //let history = useHistory();
 
     // function redirectTo(path, handle) {
-    //     setIsLoading(true)
+    //     setHolonContextLoading(true)
     //     setTimeout(() => {
     //         history.push(path)
     //         updateHolonContext(handle)

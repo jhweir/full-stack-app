@@ -6,8 +6,8 @@ import styles from '../styles/components/UserPageSideBarRight.module.scss'
 import SideBarRightPlaceholder from '../components/SideBarRightPlaceholder'
 
 function UserPageSideBarRight() {
-    const { userData, updateUserContext, selectedSubPage, setSelectedSubPage } = useContext(UserContext)
-    const { updateHolonContext } = useContext(HolonContext)
+    const { userData, getUserData, selectedSubPage, setSelectedSubPage } = useContext(UserContext)
+    const { setHolonHandle } = useContext(HolonContext)
 
     return (
         <div className={styles.sideBarRight}>
@@ -20,7 +20,7 @@ function UserPageSideBarRight() {
                             <Link className={styles.sideBarRightHolon}
                                 to={ `/h/${holon.handle}` }
                                 key={index}
-                                onClick={ () => { updateHolonContext(holon.handle) } }>
+                                onClick={ () => { setHolonHandle(holon.handle) } }>
                                 <div className={styles.sideBarRightHolonImageWrapper}>
                                     <img className={styles.sideBarRightHolonImage} src="/icons/users-solid.svg"/>
                                 </div>
@@ -38,7 +38,7 @@ function UserPageSideBarRight() {
                             <Link className={styles.sideBarRightHolon}
                                 to={ `/h/${holon.handle}` }
                                 key={index}
-                                onClick={ () => { updateHolonContext(holon.handle) } }>
+                                onClick={ () => { setHolonHandle(holon.handle) } }>
                                 <div className={styles.sideBarRightHolonImageWrapper}>
                                     <img className={styles.sideBarRightHolonImage} src="/icons/users-solid.svg"/>
                                 </div>

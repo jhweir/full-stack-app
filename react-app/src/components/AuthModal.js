@@ -6,7 +6,7 @@ import { AccountContext } from '../contexts/AccountContext'
 import { HolonContext } from '../contexts/HolonContext'
 
 function AuthModal() {
-    const { authModalOpen, updateAccountContext, setAuthModalOpen } = useContext(AccountContext)
+    const { authModalOpen, getAccountData, setAuthModalOpen } = useContext(AccountContext)
     const { updateHolonContext, holonData } = useContext(HolonContext)
     //const { setAuthModalOpen } = props
     const [email, setEmail] = useState('')
@@ -39,7 +39,7 @@ function AuthModal() {
                     if (res.data !== 'user-not-found' && res.data !== 'incorrect-password') {
                         document.cookie = `accessToken=${res.data}; path=/`
                         setAuthModalOpen(false)
-                        updateAccountContext()
+                        getAccountData()
                         //updateHolonContext(holonData.handle)
                     }
                 })

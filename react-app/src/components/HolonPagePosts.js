@@ -1,12 +1,20 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { HolonContext } from '../contexts/HolonContext'
-import styles from '../styles/components/Wall.module.scss'
+import styles from '../styles/components/HolonPagePosts.module.scss'
 import Post from './Post'
-import WallHeader from './WallHeader'
-import WallPlaceholder from './WallPlaceholder'
+import HolonPagePostsHeader from './HolonPagePostsHeader'
+import HolonPagePostsPlaceholder from './HolonPagePostsPlaceholder'
 
-function Wall() {
-    const { holonPosts, postSearchFilter, postSortByFilter, isLoading } = useContext(HolonContext)
+function HolonPagePosts() {
+    const { holonData, getHolonPosts, holonPosts, postSearchFilter, postSortByFilter, holonContextLoading, setSelectedHolonSubPage } = useContext(HolonContext)
+
+    useEffect(() => {
+        setSelectedHolonSubPage('posts')
+    }, [])
+
+    useEffect(() => {
+        if (holonData) { getHolonPosts() }
+    }, [holonData])
 
     // Apply search filter to posts
     const filteredPosts = holonPosts.filter(post => {
@@ -48,15 +56,15 @@ function Wall() {
 
     return (
         <div className={styles.wall}>
-            <WallHeader/>
-            <WallPlaceholder/>
-            <ul className={`${styles.posts} ${(isLoading && styles.hidden)}`}>
+            <HolonPagePostsHeader/>
+            <HolonPagePostsPlaceholder/>
+            <ul className={`${styles.posts} ${(holonContextLoading && styles.hidden)}`}>
                 {filteredPosts.map((post, index) =>
                     <Post
                         post={post}
                         key={index}
                         index={index}
-                        isLoading={isLoading}
+                        holonContextLoading={holonContextLoading}
                     />
                 )} 
             </ul>
@@ -64,7 +72,7 @@ function Wall() {
     )
 }
 
-export default Wall
+export default HolonPagePosts
 
 /* <ul className={pinnedPosts}>
     {holonData && pinnedPosts.map((post, index) => 
@@ -72,7 +80,7 @@ export default Wall
             post={post}
             index={index}
             key={post.id}
-            isLoading={isLoading}
+            holonContextLoading={holonContextLoading}
         /> 
     )}
 </ul> */

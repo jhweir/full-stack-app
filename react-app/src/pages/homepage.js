@@ -50,9 +50,9 @@ export default Homepage
         <ul>
             <li><input type="checkbox" checked="checked" readOnly></input> Component tree and features</li>
         </ul>
-        <li><input type="checkbox" checked="checked" readOnly></input> Wall</li>
+        <li><input type="checkbox" checked="checked" readOnly></input> HolonPagePosts</li>
         <ul>
-            <li><input type="checkbox" checked="checked" readOnly></input> WallHeader</li>
+            <li><input type="checkbox" checked="checked" readOnly></input> HolonPagePostsHeader</li>
             <ul>
                 <li><input type="checkbox" checked="checked" readOnly></input> CreatePostModal</li>
                 <ul>
@@ -65,7 +65,7 @@ export default Homepage
                 <ul>
                     <li><input type="checkbox" checked="checked" readOnly></input> Search by text</li>
                 </ul>
-                <li><input type="checkbox" checked="checked" readOnly></input> WallFilters</li>
+                <li><input type="checkbox" checked="checked" readOnly></input> HolonPagePostsFilters</li>
                 <ul>
                     <li><input type="checkbox" checked="checked" readOnly></input> Sort by ID</li>
                     <li><input type="checkbox" checked="checked" readOnly></input> Sort by Likes</li>
@@ -91,7 +91,7 @@ export default Homepage
             <li><input type="checkbox" checked="checked" readOnly></input> List comments</li>
         </ul>
         <li><input type="checkbox" checked="" readOnly></input> Holons</li>
-        <li><input type="checkbox" checked="" readOnly></input> Users</li>
+        <li><input type="checkbox" checked="" readOnly></input> HolonPageUsers</li>
         <li><input type="checkbox" checked="" readOnly></input> Auth page</li>
     </ul>
 </ul> */}
