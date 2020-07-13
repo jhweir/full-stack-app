@@ -5,8 +5,14 @@ import { AccountContext } from '../contexts/AccountContext'
 import styles from '../styles/components/NavBar.module.scss'
 
 function NavBar() {
+    const {
+        isLoggedIn,
+        accountData,
+        setAuthModalOpen,
+        userControlsModalOpen,
+        setUserControlsModalOpen
+    } = useContext(AccountContext)
     const { setHolonHandle } = useContext(HolonContext)
-    const { isLoggedIn, accountData, setAuthModalOpen, toggleUserControlsModal } = useContext(AccountContext)
 
     return (
         <div className={styles.navBar}>
@@ -44,7 +50,7 @@ function NavBar() {
                     </div>
                 }
                 {isLoggedIn &&
-                    <div className={styles.userControls} onClick={() => toggleUserControlsModal()}>
+                    <div className={styles.userControls} onClick={() => setUserControlsModalOpen(!userControlsModalOpen)}>
                         <span className={styles.userName}>{accountData.name}</span>
                         {accountData.flagImagePath
                             ? <img className={styles.userImage} src={accountData.flagImagePath}/>

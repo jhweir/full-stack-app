@@ -6,7 +6,7 @@ import { AccountContext } from './AccountContext'
 export const UserContext = createContext()
 
 function UserContextProvider(props) {
-    const { isLoggedIn, accountData } = useContext(AccountContext)
+    const { accountContextLoading, isLoggedIn, accountData } = useContext(AccountContext)
     const [userContextLoading, setUserContextLoading] = useState(true)
     const [userName, setUserName] = useState('')
     const [userData, setUserData] = useState({
@@ -19,22 +19,24 @@ function UserContextProvider(props) {
     const [isOwnAccount, setIsOwnAccount] = useState(false)
 
     function getUserData() {
-        console.log('getUserData')
-        axios
-            .get(config.environmentURL + `/user-data?userName=${userName}`)
-            .then(res => { setUserData(res.data) })
+        console.log('UserContext: getUserData')
+        setUserContextLoading(true)
+        axios.get(config.environmentURL + `/user-data?userName=${userName}`)
+            .then(res => { setUserData(res.data); setUserContextLoading(false) })
     }
 
     function getCreatedPosts() {
-        console.log('getCreatedPosts')
+        console.log('UserContext: getCreatedPosts')
+
         axios
             .get(config.environmentURL + 
             `/created-posts?userId=${userData.id ? userData.id : null}&accountId=${isLoggedIn ? accountData.id : null}`)
-            .then(res => { setCreatedPosts(res.data) })
+            .then(res => { setCreatedPosts(res.data); setUserContextLoading(false) })
     }
 
     useEffect(() => {
-        if (userName) { getUserData() }
+        // when userName recieved from UserPage, getUserData
+        if (!accountContextLoading) { getUserData() }
     }, [userName])
 
     useEffect(() => {
@@ -44,15 +46,12 @@ function UserContextProvider(props) {
 
     return (
         <UserContext.Provider value={{
-            userName,
-            setUserName,
-            userData,
-            getUserData,
-            selectedUserSubPage,
-            setSelectedUserSubPage,
-            createdPosts,
-            getCreatedPosts,
-            isOwnAccount
+            isOwnAccount,
+            userName, setUserName,
+            userData, getUserData,
+            selectedUserSubPage, setSelectedUserSubPage,
+            createdPosts, getCreatedPosts,
+            userContextLoading, setUserContextLoading
         }}>
             {props.children}
         </UserContext.Provider>

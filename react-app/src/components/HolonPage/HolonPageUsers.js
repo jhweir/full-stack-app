@@ -4,21 +4,20 @@ import styles from '../../styles/components/HolonPageUsers.module.scss'
 import UserCard from '../Cards/UserCard'
 
 function HolonPageUsers() {
-    const { holonData, holonFollowers, getHolonFollowers, setSelectedHolonSubPage } = useContext(HolonContext)
+    const { holonContextLoading, holonData, holonFollowers, getHolonFollowers, setSelectedHolonSubPage } = useContext(HolonContext)
 
     useEffect(() => {
         setSelectedHolonSubPage('users')
     }, [])
 
     useEffect(() => {
-        if (holonData) { getHolonFollowers() }
+        if (!holonContextLoading && holonData.id) { getHolonFollowers() }
     }, [holonData])
 
     return (
         <div className={styles.usersWrapper}>
-            users List
-            {/* <HolonPageSpacesHeader/>
-            <HolonPageSpacesPlaceholder/> */}
+            Search and filters go here...
+            {/* <HolonPageSpacesPlaceholder/> */}
             <ul className={styles.users}>
                 {holonFollowers.length > 0 && holonFollowers.map((user, index) =>
                     <UserCard

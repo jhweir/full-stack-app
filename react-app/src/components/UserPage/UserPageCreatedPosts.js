@@ -1,23 +1,20 @@
 import React, { useContext, useEffect } from 'react'
 import { UserContext } from '../../contexts/UserContext'
-import { AccountContext } from '../../contexts/AccountContext'
 import styles from '../../styles/components/UserPageCreatedPosts.module.scss'
 import PostCard from '../Cards/PostCard'
-// import HolonPagePostsHeader from './HolonPagePostsHeader'
-// import HolonPagePostsPlaceholder from './HolonPagePostsPlaceholder'
 
 function UserPageCreatedPosts() {
-    const { accountContextLoading, isLoggedIn, accountData } = useContext(AccountContext)
-    const { userData, setSelectedUserSubPage, getCreatedPosts, createdPosts } = useContext(UserContext)
+    const { userContextLoading, userData, setSelectedUserSubPage, getCreatedPosts, createdPosts } = useContext(UserContext)
 
     useEffect(() => {
-        if (!accountContextLoading) {
-            setSelectedUserSubPage('created-posts')
-            getCreatedPosts()
-        }
-    }, [accountContextLoading])
+        setSelectedUserSubPage('created-posts')
+    }, [])
 
-    const visiblePosts = createdPosts.filter(post => { return post.globalState === 'visible' })
+    useEffect(() => {
+        if (!userContextLoading && userData.id) { getCreatedPosts() }
+    }, [userContextLoading])
+
+    let visiblePosts = createdPosts.filter(post => { return post.globalState === 'visible' })
 
     return (
         <div className={styles.wrapper}>

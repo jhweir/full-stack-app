@@ -9,7 +9,7 @@ function HolonContextProvider({ children }) {
     const { accountContextLoading, accountData } = useContext(AccountContext)
     const [holonContextLoading, setHolonContextLoading] = useState(true)
     const [holonHandle, setHolonHandle] = useState('')
-    const [globalData, setGlobalData] = useState({})
+    // const [globalData, setGlobalData] = useState({})
     const [holonData, setHolonData] = useState({ DirectChildHolons: [], DirectParentHolons: [], HolonHandles: [] })
     const [holonPosts, setHolonPosts] = useState([])
     const [holonFollowers, setHolonFollowers] = useState([])
@@ -23,26 +23,21 @@ function HolonContextProvider({ children }) {
     const [holonUsersSearchFilter, setHolonUsersSearchFilter] = useState('')
     const [holonUsersSortByFilter, setHolonUsersSortByFilter] = useState('')
 
-    function getGlobalData() {
-        console.log('getGlobalData')
-        axios.get(config.environmentURL + '/global-data')
-        .then(res => { setGlobalData(res.data) })
-    }
-
     function getHolonData() {
-        console.log('getHolonData')
+        console.log('HolonContext: getHolonData')
+        setHolonContextLoading(true)
         axios.get(config.environmentURL + `/holon-data?handle=${holonHandle}`)
-        .then(res => { setHolonData(res.data) })
+        .then(res => { setHolonData(res.data); setHolonContextLoading(false) })
     }
 
      function getHolonPosts() {
-        console.log('getHolonPosts')
+        console.log('HolonContext: getHolonPosts')
         axios.get(config.environmentURL + `/holon-posts?handle=${holonHandle}&userId=${accountData.id ? accountData.id : null}`)
         .then(res => { setHolonPosts(res.data) })
     }
 
     function getHolonFollowers() {
-        console.log('getHolonFollowers')
+        console.log('HolonContext: getHolonFollowers')
         if (holonData.handle === 'root') {
             axios.get(config.environmentURL + `/all-users`)
             .then(res => { setHolonFollowers(res.data) })
@@ -51,17 +46,10 @@ function HolonContextProvider({ children }) {
             .then(res => { setHolonFollowers(res.data) })
         }
     }
-    
+
     useEffect(() => {
-        if (!accountContextLoading) {
-            setHolonContextLoading(true)
-            const a = getGlobalData()
-            const b = getHolonData()
-            Promise.all([a,b]).then(() => {
-                setHolonContextLoading(false)
-            })
-        }
-    }, [holonHandle, accountData])
+        if (!accountContextLoading) { getHolonData() }
+    }, [holonHandle, accountData]) //update dependencies?
 
     useEffect(() => {
         if (accountData && holonData) {
@@ -76,7 +64,6 @@ function HolonContextProvider({ children }) {
         <HolonContext.Provider value={{
             holonHandle, setHolonHandle,
             holonContextLoading, setHolonContextLoading,
-            globalData,
             holonData, getHolonData, setHolonData,
             holonPosts, getHolonPosts,
             holonFollowers, getHolonFollowers,

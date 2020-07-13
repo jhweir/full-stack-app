@@ -12,17 +12,16 @@ import UserPageSideBarRight from '../components/UserPage/UserPageSideBarRight'
 
 function UserPage({ match }) {
     // update userName to userHandle?
+    const { url } = match
     const { userName } = match.params
-    const { accountContextLoading, setImageUploadType, imageUploadModalOpen, setImageUploadModalOpen } = useContext(AccountContext)
-    const { userData, setUserName, getUserData, selectedUserSubPage, setSelectedUserSubPage, isOwnAccount } = useContext(UserContext)
+    const { accountContextLoading } = useContext(AccountContext)
+    const { userData, setUserName, isOwnAccount } = useContext(UserContext)
 
     useEffect(() => {
+        // make sure AccountContext has finished loading so we know if the user
+        // is logged in or not and then set the userName in the UserContext
         if (!accountContextLoading) { setUserName(userName) }
     }, [accountContextLoading])
-
-    // useEffect(() => {
-    //     getUserData(userName)
-    // }, [])
 
     return (
         <div className={styles.userPage}>
@@ -33,10 +32,10 @@ function UserPage({ match }) {
                     <UserPageSideBarLeft/>
                     <div className={styles.userPageCenterPanel}>
                         <Switch>
-                            {isOwnAccount && <Route path={`${match.url}/settings`} component={ UserPageSettings } exact/>}
-                            <Redirect from={`${match.url}`} to={`${match.url}/about`} exact/>
-                            <Route path={`${match.url}/about`} component={ UserPageAbout } exact/>
-                            <Route path={`${match.url}/created-posts`} component={ UserPageCreatedPosts } exact/>
+                            {isOwnAccount && <Route path={`${url}/settings`} component={ UserPageSettings } exact/>}
+                            <Redirect from={`${url}`} to={`${url}/about`} exact/>
+                            <Route path={`${url}/about`} component={ UserPageAbout } exact/>
+                            <Route path={`${url}/created-posts`} component={ UserPageCreatedPosts } exact/>
                         </Switch>
                     </div>
                     <UserPageSideBarRight/>

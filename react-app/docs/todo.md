@@ -1,10 +1,9 @@
 # Todos
 Last updated: 13-07-2020
 
-- Reorganise component folder structure
-- Rename holon components inline with page component convention
 - Add user to created holons
 - Add basic mod controls (image upload, name change, handle change)
+- getHolonPosts run from sidebar buttons but not getHolonData (best approach?)
 + work out best approach to paginate posts with filters
     - Store post totals in db to enable/speed up filtered paginated queries? Probably not.
     - Apply filters in query? Probably.
@@ -68,4 +67,6 @@ Last updated: 13-07-2020
 - Create page header component
 - Create modals component
 - Take down remaining EC2-ELB services on AWS
+- Reorganise component folder structure
+- Fix context flow
 

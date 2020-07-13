@@ -11,12 +11,12 @@ import SearchBar from '../SearchBar'
 function HolonPagePosts() {
     const { setCreatePostModalOpen } = useContext(AccountContext)
     const {
+        holonContextLoading,
         holonData,
         getHolonPosts,
         holonPosts,
         holonPostsSearchFilter,
         holonPostSortByFilter,
-        holonContextLoading,
         setSelectedHolonSubPage
     } = useContext(HolonContext)
 
@@ -25,8 +25,8 @@ function HolonPagePosts() {
     }, [])
 
     useEffect(() => {
-        if (holonData) { getHolonPosts() }
-    }, [holonData])
+        if (!holonContextLoading && holonData.id) { getHolonPosts() }
+    }, [holonContextLoading])
 
     // Apply search filter to posts
     const filteredPosts = holonPosts.filter(post => {

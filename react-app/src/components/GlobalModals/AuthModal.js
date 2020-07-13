@@ -40,7 +40,6 @@ function AuthModal() {
                         document.cookie = `accessToken=${res.data}; path=/`
                         setAuthModalOpen(false)
                         getAccountData()
-                        //updateHolonContext(holonData.handle)
                     }
                 })
         }

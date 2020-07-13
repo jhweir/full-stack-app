@@ -8,10 +8,8 @@ export const AccountContext = createContext()
 function AccountContextProvider(props) {
     const [accountContextLoading, setAccountContextLoading] = useState(true)
     const [isLoggedIn, setIsLoggedIn] = useState(false)
-    const [accountData, setAccountData] = useState({
-        FollowedHolons: [],
-        ModeratedHolons: []
-    })
+    const [accountData, setAccountData] = useState({ FollowedHolons: [], ModeratedHolons: [] })
+    const [globalData, setGlobalData] = useState({})
     const [alertModalOpen, setAlertModalOpen] = useState(false)
     const [alertMessage, setAlertMessage] = useState('')
     const [authModalOpen, setAuthModalOpen] = useState(false)
@@ -24,8 +22,8 @@ function AccountContextProvider(props) {
     let cookies = new Cookies()
 
     function getAccountData() {
+        console.log('AccountContext: getAccountData')
         let accessToken = cookies.get('accessToken')
-        //console.log('accessToken:', accessToken)
         if (accessToken === undefined) { setAccountContextLoading(false) }
         if (accessToken !== undefined) {
             // Create new axios instance with JWT in authorization header
@@ -35,30 +33,35 @@ function AccountContextProvider(props) {
             })
             .get(`/account-data`)
             .then(res => {
-                if (res.data !== 'Invalid token') { setAccountData(res.data); setIsLoggedIn(true) }
+                if (res.data !== 'Invalid token') { setAccountData(res.data); setIsLoggedIn(true); console.log('AccountContext: logged in succesfully') }
                 setAccountContextLoading(false)
             })
         }
     }
 
+    function getGlobalData() {
+        console.log('AccountContext: getGlobalData')
+        axios.get(config.environmentURL + '/global-data')
+        .then(res => { setGlobalData(res.data) })
+    }
+
     function logOut() {
+        console.log('AccountContext: logOut')
         cookies.remove('accessToken', { path: '/' })
-        setAccountData({        
-            FollowedHolons: [],
-            ModeratedHolons: []
-        })
+        setAccountData({ FollowedHolons: [], ModeratedHolons: [] })
         setIsLoggedIn(false)
     }
 
     useEffect(() => {
+        getGlobalData()
         getAccountData()
-        console.log('account context updated')
     }, [])
 
     return (
         <AccountContext.Provider value={{
             accountContextLoading,
             isLoggedIn, logOut,
+            globalData, getGlobalData,
             accountData, getAccountData, setAccountData,
             authModalOpen, setAuthModalOpen,
             userControlsModalOpen, setUserControlsModalOpen,
