@@ -3,42 +3,33 @@ import { HolonContext } from '../contexts/HolonContext'
 import { AccountContext } from '../contexts/AccountContext'
 import { Route, Switch, Redirect } from "react-router-dom"
 import styles from '../styles/pages/HolonPage.module.scss'
-import HolonPageAbout from '../components/HolonPageAbout'
-import HolonPagePosts from '../components/HolonPagePosts'
-import HolonPageSpaces from '../components/HolonPageSpaces'
-import HolonPageUsers from '../components/HolonPageUsers'
-import SideBarLeft from '../components/SideBarLeft'
-import SideBarRight from '../components/SideBarRight'
-import HolonFlagImageUploadModal from '../components/HolonFlagImageUploadModal'
+import CoverImage from '../components/CoverImage'
+import HolonPageAbout from '../components/HolonPage/HolonPageAbout'
+import HolonPagePosts from '../components/HolonPage/HolonPagePosts'
+import HolonPageSpaces from '../components/HolonPage/HolonPageSpaces'
+import HolonPageUsers from '../components/HolonPage/HolonPageUsers'
+import HolonPageSideBarLeft from '../components/HolonPage/HolonPageSideBarLeft'
+import HolonPageSideBarRight from '../components/HolonPage/HolonPageSideBarRight'
 import EmptyPage from './EmptyPage'
-import ImageUploadModal from '../components/ImageUploadModal'
 
 function HolonPage({ match }) {
     const { url } = match
     const { holonHandle } = match.params
-    const { setHolonHandle, setHolonData, holonData, isModerator } = useContext(HolonContext)
-    const { accountData, accountContextLoading, setImageUploadModalOpen, setImageUploadType } = useContext(AccountContext)
+    const { setHolonHandle, getHolonData, holonData, isModerator } = useContext(HolonContext)
+    const { accountContextLoading } = useContext(AccountContext)
 
     useEffect(() => {
-        if (!accountContextLoading) { setHolonHandle(holonHandle) }
+        if (!accountContextLoading) { 
+            setHolonHandle(holonHandle)
+            //getHolonData(holonHandle)
+        }
     }, [accountContextLoading])
 
     return (
         <div className={styles.holonPage}>
-            {/* TODO: Create new cover component and pass in required holon props */}
-            {holonData.coverImagePath === null
-                ? <div className={styles.coverImagePlaceholder}/>
-                : <img className={styles.coverImage} src={holonData.coverImagePath}/>
-            }
-            {isModerator &&
-                <div 
-                    className={styles.coverImageUploadButton}
-                    onClick={() => { setImageUploadType('holon-cover-image'); setImageUploadModalOpen(true) }}>
-                    Upload new image
-                </div>
-            }
-            <div className={styles.holonPageContainer}>
-                <SideBarLeft/>
+            <CoverImage type='holon'/>
+            <div className={styles.holonPageContent}>
+                <HolonPageSideBarLeft/>
                 <div className={styles.holonPageCenterPanel}>
                     <Switch>
                         <Redirect from={url} to={`${url}/posts`} exact/>
@@ -49,7 +40,7 @@ function HolonPage({ match }) {
                         <Route component={ EmptyPage }/> {/* TODO: Check if this needs to be doubled up on the App.js component */}
                     </Switch>
                 </div>
-                <SideBarRight/>
+                <HolonPageSideBarRight/>
             </div>
         </div>
     )

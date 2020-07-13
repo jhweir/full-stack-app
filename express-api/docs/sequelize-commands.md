@@ -40,7 +40,7 @@ Posts to holon A appear within holon B
 `npx sequelize-cli model:generate --name PostHolon --attributes creator:integer,relationship:string,state:string,postId:integer,holonId:integer`
 
 ### User
-`npx sequelize-cli model:generate --name User --attributes handle:string,name:string,bio:string,profileImagePath:string,coverImagePath:string`
+`npx sequelize-cli model:generate --name User --attributes handle:string,name:string,bio:string,flagImagePath:string,coverImagePath:string`
 
 ### Post
 `npx sequelize-cli model:generate --name Post --attributes type:string,privacySetting:string,creator:integer,note:string,title:string,description:string,url:string,imagePath:string`

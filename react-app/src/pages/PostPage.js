@@ -6,11 +6,11 @@ import config from '../Config'
 import styles from '../styles/pages/PostPage.module.scss'
 import { AccountContext } from '../contexts/AccountContext'
 import EmptyPage from '../pages/EmptyPage'
-import Post from '../components/Post'
+import PostCard from '../components/Cards/PostCard'
 import PageSectionSelector from '../components/PageSectionSelector'
-import PostPageComments from '../components/PostPageComments'
-import PostPagePollVote from '../components/PostPagePollVote'
-import PostPagePollResults from '../components/PostPagePollResults'
+import PostPageComments from '../components/PostPage/PostPageComments'
+import PostPagePollVote from '../components/PostPage/PostPagePollVote'
+import PostPagePollResults from '../components/PostPage/PostPagePollResults'
 
 function PostPage(props) {
     const postId = props.match.params.postId
@@ -88,7 +88,7 @@ function PostPage(props) {
                     <div className='wecoButton' onClick={}>Log in</div>
                 </AlertModal>
             } */}
-            <Post 
+            <PostCard
                 post={post}
                 postPageLoading={postPageLoading}
                 isPostPage={true}

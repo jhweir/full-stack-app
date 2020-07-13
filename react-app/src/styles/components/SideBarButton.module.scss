@@ -1,0 +1,24 @@
+.navButton {
+    height: 30px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    &:hover {
+        cursor: pointer;
+        .navButtonIcon { opacity: 0.4; }
+    }
+    &.selected {
+        .navButtonIcon { opacity: 0.4; }
+    }
+}
+.navButtonIcon {
+    width: 25px;
+    height: 25px;
+    margin-right: 10px;
+    opacity: 0.2;
+    transition-property: opacity;
+    transition-duration: 0.3s;
+}
+.navButtonText {
+    //font-size: 18px;
+}

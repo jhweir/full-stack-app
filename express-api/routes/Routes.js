@@ -168,7 +168,7 @@ router.get('/holon-posts', (req, res) => {
                 {
                     model: User,
                     as: 'creator',
-                    attributes: ['name', 'profileImagePath'],
+                    attributes: ['name', 'flagImagePath'],
                 }
             ]
         })
@@ -217,7 +217,7 @@ router.get('/all-users', (req, res) => {
 router.get('/user-data', (req, res) => {
     User.findOne({ 
         where: { name: req.query.userName },
-        attributes: ['id', 'handle', 'name', 'bio', 'profileImagePath', 'coverImagePath', 'createdAt'],
+        attributes: ['id', 'handle', 'name', 'bio', 'flagImagePath', 'coverImagePath', 'createdAt'],
         include: [
             { 
                 model: Post,
@@ -301,7 +301,7 @@ router.get('/created-posts', (req, res) => {
             { 
                 model: User,
                 as: 'creator',
-                attributes: ['name', 'profileImagePath']
+                attributes: ['name', 'flagImagePath']
             }
         ]
     })
@@ -333,7 +333,7 @@ router.get('/post', (req, res) => {
             { 
                 model: User,
                 as: 'creator',
-                attributes: ['name', 'profileImagePath']
+                attributes: ['name', 'flagImagePath']
             },
             { 
                 model: Holon,
@@ -348,7 +348,7 @@ router.get('/post', (req, res) => {
                     {
                         model: User,
                         as: 'commentCreator',
-                        attributes: ['name', 'profileImagePath']
+                        attributes: ['name', 'flagImagePath']
                     }
                 ]
             },

@@ -46,8 +46,8 @@ function NavBar() {
                 {isLoggedIn &&
                     <div className={styles.userControls} onClick={() => toggleUserControlsModal()}>
                         <span className={styles.userName}>{accountData.name}</span>
-                        {accountData.profileImagePath
-                            ? <img className={styles.userImage} src={accountData.profileImagePath}/>
+                        {accountData.flagImagePath
+                            ? <img className={styles.userImage} src={accountData.flagImagePath}/>
                             : <div className={styles.userImageWrapper}>
                                 <img className={styles.userImagePlaceholder} src='/icons/user-solid.svg' alt=''/>
                             </div>

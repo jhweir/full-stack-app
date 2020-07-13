@@ -10,20 +10,18 @@ function HolonContextProvider({ children }) {
     const [holonContextLoading, setHolonContextLoading] = useState(true)
     const [holonHandle, setHolonHandle] = useState('')
     const [globalData, setGlobalData] = useState({})
-    const [holonData, setHolonData] = useState({
-        DirectChildHolons: [],
-        DirectParentHolons: [],
-        HolonHandles: []
-    })
+    const [holonData, setHolonData] = useState({ DirectChildHolons: [], DirectParentHolons: [], HolonHandles: [] })
     const [holonPosts, setHolonPosts] = useState([])
     const [holonFollowers, setHolonFollowers] = useState([])
-    const [postSearchFilter, setPostSearchFilter] = useState('')
-    const [postSortByFilter, setPostSortByFilter] = useState('reactions')
-    const [holonSearchFilter, setHolonSearchFilter] = useState('')
-    const [holonSortByFilter, setHolonSortByFilter] = useState('date')
     const [selectedHolonSubPage, setSelectedHolonSubPage] = useState('')
     const [isFollowing, setIsFollowing] = useState(false)
     const [isModerator, setIsModerator] = useState(false)
+    const [holonPostsSearchFilter, setHolonPostsSearchFilter] = useState('')
+    const [holonPostSortByFilter, setHolonPostSortByFilter] = useState('reactions')
+    const [holonSpacesSearchFilter, setHolonSpacesSearchFilter] = useState('')
+    const [holonSpacesSortByFilter, setHolonSpacesSortByFilter] = useState('date')
+    const [holonUsersSearchFilter, setHolonUsersSearchFilter] = useState('')
+    const [holonUsersSortByFilter, setHolonUsersSortByFilter] = useState('')
 
     function getGlobalData() {
         console.log('getGlobalData')
@@ -38,7 +36,7 @@ function HolonContextProvider({ children }) {
     }
 
      function getHolonPosts() {
-         console.log('getHolonPosts')
+        console.log('getHolonPosts')
         axios.get(config.environmentURL + `/holon-posts?handle=${holonHandle}&userId=${accountData.id ? accountData.id : null}`)
         .then(res => { setHolonPosts(res.data) })
     }
@@ -57,18 +55,16 @@ function HolonContextProvider({ children }) {
     useEffect(() => {
         if (!accountContextLoading) {
             setHolonContextLoading(true)
-            console.log('set loading true')
             const a = getGlobalData()
             const b = getHolonData()
             Promise.all([a,b]).then(() => {
                 setHolonContextLoading(false)
-                console.log('set loading false')
             })
         }
     }, [holonHandle, accountData])
 
     useEffect(() => {
-        if (holonData) {
+        if (accountData && holonData) {
             let accountIsFollowing = accountData.FollowedHolons.some(holon => holon.handle === holonData.handle)
             let accountIsModerator = accountData.ModeratedHolons.some(holon => holon.handle === holonData.handle)
             if (accountIsFollowing) { setIsFollowing(true) } else { setIsFollowing(false) }
@@ -78,32 +74,21 @@ function HolonContextProvider({ children }) {
 
     return (
         <HolonContext.Provider value={{
-            holonHandle,
-            setHolonHandle,
+            holonHandle, setHolonHandle,
+            holonContextLoading, setHolonContextLoading,
             globalData,
-            getHolonData,
-            holonData,
-            setHolonData,
-            holonPosts,
-            getHolonPosts,
-            holonFollowers,
-            getHolonFollowers,
-            postSearchFilter,
-            setPostSearchFilter,
-            postSortByFilter,
-            setPostSortByFilter,
-            holonSearchFilter,
-            setHolonSearchFilter,
-            holonSortByFilter,
-            setHolonSortByFilter,
-            holonContextLoading,
-            setHolonContextLoading,
-            selectedHolonSubPage,
-            setSelectedHolonSubPage,
-            isFollowing,
-            setIsFollowing,
-            isModerator,
-            setIsModerator
+            holonData, getHolonData, setHolonData,
+            holonPosts, getHolonPosts,
+            holonFollowers, getHolonFollowers,
+            isFollowing, setIsFollowing,
+            isModerator, setIsModerator,
+            selectedHolonSubPage, setSelectedHolonSubPage,
+            holonPostsSearchFilter, setHolonPostsSearchFilter,
+            holonPostSortByFilter, setHolonPostSortByFilter,
+            holonSpacesSearchFilter, setHolonSpacesSearchFilter,
+            holonSpacesSortByFilter, setHolonSpacesSortByFilter,
+            holonUsersSearchFilter, setHolonUsersSearchFilter,
+            holonUsersSortByFilter, setHolonUsersSortByFilter
         }}>
             {children}
         </HolonContext.Provider>

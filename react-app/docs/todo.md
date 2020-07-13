@@ -1,7 +1,8 @@
 # Todos
-Last updated: 08-07-2020
+Last updated: 13-07-2020
 
-+ Take down remaining EC2-ELB services on AWS
+- Reorganise component folder structure
+- Rename holon components inline with page component convention
 - Add user to created holons
 - Add basic mod controls (image upload, name change, handle change)
 + work out best approach to paginate posts with filters
@@ -22,11 +23,9 @@ Last updated: 08-07-2020
 + Re-create PostContext and then remove cascading props to clean up components
 - Re-consider layout/approach used for pie chart and time graph components
 - Set up 'visible holons' on post (vs. all included holons)
-- User authentication/authorization
-    - Request FB sign-up
-    - Set up verification/welcome emails
+- Set up verification/welcome emails
 - Set up filters on child-holons page
-- create seperate Authentication server
+- create seperate Authentication server?
 - Merge title and description into one text field (character limit around 3000)?
 - Add privacy setting to labels (public, anonymous etc.)
 - Set up reverse orders for wall filters
@@ -62,3 +61,11 @@ Last updated: 08-07-2020
 - Only display delete button on posts if own account
 - Allow users to follow spaces
 - Add followed spaces to user profile
+- Set up single image upload modal component for all image uploads
+- Create flag image component
+- Create cover image component
+- Create side bar link components
+- Create page header component
+- Create modals component
+- Take down remaining EC2-ELB services on AWS
+

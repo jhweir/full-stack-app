@@ -7,28 +7,35 @@ export const UserContext = createContext()
 
 function UserContextProvider(props) {
     const { isLoggedIn, accountData } = useContext(AccountContext)
-
+    const [userContextLoading, setUserContextLoading] = useState(true)
+    const [userName, setUserName] = useState('')
     const [userData, setUserData] = useState({
         Posts: [], //change to 'CreatedPosts'?
         FollowedHolons: [],
         ModeratedHolons: []
     })
-    const [selectedSubPage, setSelectedSubPage] = useState('')
+    const [selectedUserSubPage, setSelectedUserSubPage] = useState('')
     const [createdPosts, setCreatedPosts] = useState([])
     const [isOwnAccount, setIsOwnAccount] = useState(false)
 
-    function getUserData(userName) {
+    function getUserData() {
+        console.log('getUserData')
         axios
             .get(config.environmentURL + `/user-data?userName=${userName}`)
             .then(res => { setUserData(res.data) })
     }
 
     function getCreatedPosts() {
+        console.log('getCreatedPosts')
         axios
             .get(config.environmentURL + 
             `/created-posts?userId=${userData.id ? userData.id : null}&accountId=${isLoggedIn ? accountData.id : null}`)
             .then(res => { setCreatedPosts(res.data) })
     }
+
+    useEffect(() => {
+        if (userName) { getUserData() }
+    }, [userName])
 
     useEffect(() => {
         if (isLoggedIn && userData && userData.id === accountData.id) { setIsOwnAccount(true) }
@@ -37,10 +44,12 @@ function UserContextProvider(props) {
 
     return (
         <UserContext.Provider value={{
+            userName,
+            setUserName,
             userData,
             getUserData,
-            selectedSubPage,
-            setSelectedSubPage,
+            selectedUserSubPage,
+            setSelectedUserSubPage,
             createdPosts,
             getCreatedPosts,
             isOwnAccount

@@ -118,10 +118,24 @@ aws.config.update({
 
 var s3 = new aws.S3({ /* ... */ })
  
-var upload = multer({
+// var upload = multer({
+//   storage: multerS3({
+//     s3: s3,
+//     bucket: 'new-weco-user-profile-images',
+//     acl: 'public-read',
+//     metadata: function (req, file, cb) {
+//       cb(null, {fieldName: 'testing...'});
+//     },
+//     key: function (req, file, cb) {
+//       cb(null, Date.now().toString())
+//     }
+//   })
+// })
+
+var userFlagImageUpload = multer({
   storage: multerS3({
     s3: s3,
-    bucket: 'new-weco-user-profile-images',
+    bucket: 'new-weco-user-flag-images',
     acl: 'public-read',
     metadata: function (req, file, cb) {
       cb(null, {fieldName: 'testing...'});
@@ -132,24 +146,94 @@ var upload = multer({
   })
 })
 
-app.post('/api/image-upload', authenticateToken, function(req, res) {
-  upload.single('image')(req, res, function(err) {
+var userCoverImageUpload = multer({
+  storage: multerS3({
+    s3: s3,
+    bucket: 'new-weco-user-cover-images',
+    acl: 'public-read',
+    metadata: function (req, file, cb) {
+      cb(null, {fieldName: 'testing...'});
+    },
+    key: function (req, file, cb) {
+      cb(null, Date.now().toString())
+    }
+  })
+})
+
+var holonFlagImageUpload = multer({
+  storage: multerS3({
+    s3: s3,
+    bucket: 'new-weco-holon-flag-images',
+    acl: 'public-read',
+    metadata: function (req, file, cb) {
+      cb(null, {fieldName: 'testing...'});
+    },
+    key: function (req, file, cb) {
+      cb(null, Date.now().toString())
+    }
+  })
+})
+
+var holonCoverImageUpload = multer({
+  storage: multerS3({
+    s3: s3,
+    bucket: 'new-weco-holon-cover-images',
+    acl: 'public-read',
+    metadata: function (req, file, cb) {
+      cb(null, {fieldName: 'testing...'});
+    },
+    key: function (req, file, cb) {
+      cb(null, Date.now().toString())
+    }
+  })
+})
+
+app.post('/api/user-flag-image-upload', authenticateToken, function(req, res) {
+  console.log('user-flag-image-upload')
+  userFlagImageUpload.single('image')(req, res, function(err) {
+    const { file, user } = req
     if (err) { console.log(err) }
-    if (req.file) {
+    if (file) {
+      User.update({ flagImagePath: file.location }, { where: { id: user.id }})
+        .then(res.send('success'))
+    } else { res.json({ message: 'failed' }) }
+  })
+})
+
+app.post('/api/user-cover-image-upload', authenticateToken, function(req, res) {
+  console.log('user-cover-image-upload')
+  userCoverImageUpload.single('image')(req, res, function(err) {
+    const { file, user } = req
+    if (err) { console.log(err) }
+    if (file) {
       User
-        .update({ profileImagePath: req.file.location }, { where: { id: req.user.id }})
+        .update({ coverImagePath: file.location }, { where: { id: user.id }})
         .then(res.send('success'))
     } else { res.json({ message: 'failed' }) }
   })
 })
 
 app.post('/api/holon-flag-image-upload', authenticateToken, function(req, res) {
-  const { holonId } = req.query
-  upload.single('image')(req, res, function(err) {
+  console.log('holon-flag-image-upload')
+  holonFlagImageUpload.single('image')(req, res, function(err) {
+    const { file, query } = req
     if (err) { console.log(err) }
-    if (req.file) {
+    if (file) {
       Holon
-        .update({ flagImagePath: req.file.location }, { where: { id: holonId }})
+        .update({ flagImagePath: file.location }, { where: { id: query.holonId } })
+        .then(res.send('success'))
+    } else { res.json({ message: 'failed' }) }
+  })
+})
+
+app.post('/api/holon-cover-image-upload', authenticateToken, function(req, res) {
+  console.log('holon-cover-image-upload')
+  holonCoverImageUpload.single('image')(req, res, function(err) {
+    const { file, query } = req
+    if (err) { console.log(err) }
+    if (file) {
+      Holon
+        .update({ coverImagePath: file.location }, { where: { id: query.holonId }})
         .then(res.send('success'))
     } else { res.json({ message: 'failed' }) }
   })
@@ -346,7 +430,7 @@ app.post('/api/holon-flag-image-upload', authenticateToken, function(req, res) {
 //           else {
 //             User.create({ 
 //               name: profile.name.givenName,
-//               profileImagePath: profile.photos[0].value,
+//               flagImagePath: profile.photos[0].value,
 //               facebookId: profile.id
 //             })
 //             .then(createdUser => {

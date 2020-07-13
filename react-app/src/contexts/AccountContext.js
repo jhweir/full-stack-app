@@ -16,8 +16,10 @@ function AccountContextProvider(props) {
     const [alertMessage, setAlertMessage] = useState('')
     const [authModalOpen, setAuthModalOpen] = useState(false)
     const [userControlsModalOpen, setUserControlsModalOpen] = useState(false)
+    const [createPostModalOpen, setCreatePostModalOpen] = useState(false)
+    const [createHolonModalOpen, setCreateHolonModalOpen] = useState(false)
     const [imageUploadModalOpen, setImageUploadModalOpen] = useState(false)
-    const [imageUploadType, setImageUploadType] = useState(false)
+    const [imageUploadType, setImageUploadType] = useState('')
 
     let cookies = new Cookies()
 
@@ -48,8 +50,6 @@ function AccountContextProvider(props) {
         setIsLoggedIn(false)
     }
 
-    function toggleUserControlsModal() { setUserControlsModalOpen(!userControlsModalOpen) }
-
     useEffect(() => {
         getAccountData()
         console.log('account context updated')
@@ -58,24 +58,16 @@ function AccountContextProvider(props) {
     return (
         <AccountContext.Provider value={{
             accountContextLoading,
-            isLoggedIn,
-            accountData,
-            setAccountData,
-            getAccountData,
-            logOut,
-            authModalOpen,
-            setAuthModalOpen,
-            userControlsModalOpen,
-            setUserControlsModalOpen,
-            alertMessage,
-            setAlertMessage,
-            alertModalOpen,
-            setAlertModalOpen,
-            toggleUserControlsModal,
-            imageUploadModalOpen,
-            setImageUploadModalOpen,
-            imageUploadType,
-            setImageUploadType
+            isLoggedIn, logOut,
+            accountData, getAccountData, setAccountData,
+            authModalOpen, setAuthModalOpen,
+            userControlsModalOpen, setUserControlsModalOpen,
+            alertMessage, setAlertMessage,
+            alertModalOpen, setAlertModalOpen,
+            imageUploadModalOpen, setImageUploadModalOpen,
+            imageUploadType, setImageUploadType,
+            createHolonModalOpen, setCreateHolonModalOpen,
+            createPostModalOpen, setCreatePostModalOpen
         }}>
             {props.children}
         </AccountContext.Provider>

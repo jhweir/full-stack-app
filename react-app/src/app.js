@@ -11,10 +11,7 @@ import PostPage from './pages/PostPage'
 import UserPage from './pages/UserPage'
 import EmptyPage from './pages/EmptyPage'
 import NavBar from './components/NavBar'
-import AlertModal from './components/AlertModal'
-import AuthModal from './components/AuthModal'
-import UserControlsModal from './components/UserControlsModal'
-import ImageUploadModal from './components/ImageUploadModal'
+import GlobalModals from './components/GlobalModals'
 
 function App() {
   // const { authModalOpen, setAuthModalOpen} = useContext(AccountContext)
@@ -25,10 +22,7 @@ function App() {
           <HolonContextProvider>
             <UserContextProvider>
               <NavBar history={createBrowserHistory}/>
-              <AlertModal/>
-              <AuthModal/>
-              <UserControlsModal/>
-              <ImageUploadModal/>
+              <GlobalModals/>
               <Switch>
                 <Route path="/" exact component={Homepage}/>
                 <Route path="/h/:holonHandle" component={HolonPage}/>

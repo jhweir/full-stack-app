@@ -23,7 +23,7 @@ module.exports = {
       bio: {
         type: Sequelize.STRING
       },
-      profileImagePath: {
+      flagImagePath: {
         type: Sequelize.STRING
       },
       coverImagePath: {
