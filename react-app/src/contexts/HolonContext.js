@@ -7,43 +7,60 @@ export const HolonContext = createContext()
 
 function HolonContextProvider({ children }) {
     const { accountContextLoading, accountData } = useContext(AccountContext)
+
     const [holonContextLoading, setHolonContextLoading] = useState(true)
     const [holonHandle, setHolonHandle] = useState('')
-    // const [globalData, setGlobalData] = useState({})
-    const [holonData, setHolonData] = useState({ DirectChildHolons: [], DirectParentHolons: [], HolonHandles: [] })
-    const [holonPosts, setHolonPosts] = useState([])
-    const [holonFollowers, setHolonFollowers] = useState([])
-    const [selectedHolonSubPage, setSelectedHolonSubPage] = useState('')
     const [isFollowing, setIsFollowing] = useState(false)
     const [isModerator, setIsModerator] = useState(false)
-    const [holonPostsSearchFilter, setHolonPostsSearchFilter] = useState('')
-    const [holonPostSortByFilter, setHolonPostSortByFilter] = useState('reactions')
-    const [holonSpacesSearchFilter, setHolonSpacesSearchFilter] = useState('')
-    const [holonSpacesSortByFilter, setHolonSpacesSortByFilter] = useState('date')
-    const [holonUsersSearchFilter, setHolonUsersSearchFilter] = useState('')
-    const [holonUsersSortByFilter, setHolonUsersSortByFilter] = useState('')
+    const [selectedHolonSubPage, setSelectedHolonSubPage] = useState('')
+
+    //TODO remove plurals from some hook names
+
+    const [holonData, setHolonData] = useState({ DirectChildHolons: [], DirectParentHolons: [], HolonHandles: [] })
+    const [holonSpaceSearchFilter, setHolonSpaceSearchFilter] = useState('')
+    const [holonSpaceSortByFilter, setHolonSpaceSortByFilter] = useState('date')
+
+    const [holonPosts, setHolonPosts] = useState([])
+    const [holonPostFiltersOpen, setHolonPostFiltersOpen] = useState(false)
+    const [holonPostSearchFilter, setHolonPostSearchFilter] = useState('')
+    const [holonPostTimeRangeFilter, setHolonPostTimeRangeFilter] = useState('All Time')
+    const [holonPostTypeFilter, setHolonPostTypeFilter] = useState('All Types')
+    const [holonPostSortByFilter, setHolonPostSortByFilter] = useState('Likes')
+    const [holonPostSortOrderFilter, setHolonPostSortOrderFilter] = useState('Descending')
+
+    const [holonFollowers, setHolonFollowers] = useState([])
+    const [holonUserSearchFilter, setHolonUserSearchFilter] = useState('')
+    const [holonUserSortByFilter, setHolonUserSortByFilter] = useState('')
 
     function getHolonData() {
         console.log('HolonContext: getHolonData')
         setHolonContextLoading(true)
         axios.get(config.environmentURL + `/holon-data?handle=${holonHandle}`)
-        .then(res => { setHolonData(res.data); setHolonContextLoading(false) })
+            .then(res => { setHolonData(res.data); setHolonContextLoading(false) })
     }
 
      function getHolonPosts() {
         console.log('HolonContext: getHolonPosts')
-        axios.get(config.environmentURL + `/holon-posts?handle=${holonHandle}&userId=${accountData.id ? accountData.id : null}`)
-        .then(res => { setHolonPosts(res.data) })
+        //history.push('/')
+        axios.get(config.environmentURL + 
+            `/holon-posts?userId=${accountData.id ? accountData.id : null
+            }&handle=${holonHandle
+            }&timeRange=${holonPostTimeRangeFilter
+            }&postType=${holonPostTypeFilter
+            }&sortBy=${holonPostSortByFilter
+            }&sortOrder=${holonPostSortOrderFilter
+            }&searchQuery=${holonPostSearchFilter}`)
+            .then(res => { setHolonPosts(res.data) })
     }
 
     function getHolonFollowers() {
         console.log('HolonContext: getHolonFollowers')
         if (holonData.handle === 'root') {
             axios.get(config.environmentURL + `/all-users`)
-            .then(res => { setHolonFollowers(res.data) })
+                .then(res => { setHolonFollowers(res.data) })
         } else {
             axios.get(config.environmentURL + `/holon-followers?holonId=${holonData.id}`)
-            .then(res => { setHolonFollowers(res.data) })
+                .then(res => { setHolonFollowers(res.data) })
         }
     }
 
@@ -62,20 +79,27 @@ function HolonContextProvider({ children }) {
 
     return (
         <HolonContext.Provider value={{
-            holonHandle, setHolonHandle,
             holonContextLoading, setHolonContextLoading,
-            holonData, getHolonData, setHolonData,
-            holonPosts, getHolonPosts,
-            holonFollowers, getHolonFollowers,
+            holonHandle, setHolonHandle,
             isFollowing, setIsFollowing,
             isModerator, setIsModerator,
             selectedHolonSubPage, setSelectedHolonSubPage,
-            holonPostsSearchFilter, setHolonPostsSearchFilter,
+
+            holonData, getHolonData, setHolonData,
+            holonSpaceSearchFilter, setHolonSpaceSearchFilter,
+            holonSpaceSortByFilter, setHolonSpaceSortByFilter,
+
+            holonPosts, getHolonPosts,
+            holonPostFiltersOpen, setHolonPostFiltersOpen,
+            holonPostSearchFilter, setHolonPostSearchFilter,
+            holonPostTimeRangeFilter, setHolonPostTimeRangeFilter,
+            holonPostTypeFilter, setHolonPostTypeFilter,
             holonPostSortByFilter, setHolonPostSortByFilter,
-            holonSpacesSearchFilter, setHolonSpacesSearchFilter,
-            holonSpacesSortByFilter, setHolonSpacesSortByFilter,
-            holonUsersSearchFilter, setHolonUsersSearchFilter,
-            holonUsersSortByFilter, setHolonUsersSortByFilter
+            holonPostSortOrderFilter, setHolonPostSortOrderFilter,
+
+            holonFollowers, getHolonFollowers,
+            holonUserSearchFilter, setHolonUserSearchFilter,
+            holonUserSortByFilter, setHolonUserSortByFilter
         }}>
             {children}
         </HolonContext.Provider>

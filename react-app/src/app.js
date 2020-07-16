@@ -21,7 +21,7 @@ function App() {
         <AccountContextProvider>
           <HolonContextProvider>
             <UserContextProvider>
-              <NavBar history={createBrowserHistory}/>
+              <NavBar/>
               <GlobalModals/>
               <Switch>
                 <Route path="/" exact component={Homepage}/>
@@ -38,7 +38,7 @@ function App() {
   )
 }
 
-export default App;
+export default App
 
 // import { TransitionGroup, CSSTransition } from "react-transition-group";
 

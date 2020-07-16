@@ -6,6 +6,7 @@ function Homepage() {
         <>
             <div className="homepage">
                 <div className="homepage-title">Homepage</div>
+                <div>All icons created by FontAwesome https://fontawesome.com/license</div>
             </div>
 
             <style jsx="true">{`

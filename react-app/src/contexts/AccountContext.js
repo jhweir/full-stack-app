@@ -12,6 +12,7 @@ function AccountContextProvider(props) {
     const [globalData, setGlobalData] = useState({})
     const [alertModalOpen, setAlertModalOpen] = useState(false)
     const [alertMessage, setAlertMessage] = useState('')
+    const [filtersOpen, setFiltersOpen] = useState(false)
     const [authModalOpen, setAuthModalOpen] = useState(false)
     const [userControlsModalOpen, setUserControlsModalOpen] = useState(false)
     const [createPostModalOpen, setCreatePostModalOpen] = useState(false)
@@ -63,6 +64,7 @@ function AccountContextProvider(props) {
             isLoggedIn, logOut,
             globalData, getGlobalData,
             accountData, getAccountData, setAccountData,
+            filtersOpen, setFiltersOpen,
             authModalOpen, setAuthModalOpen,
             userControlsModalOpen, setUserControlsModalOpen,
             alertMessage, setAlertMessage,

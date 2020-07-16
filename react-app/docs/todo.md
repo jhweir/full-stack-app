@@ -2,11 +2,16 @@
 Last updated: 13-07-2020
 
 - Add user to created holons
+- Add clickoutside approach from drop down menu to other modals
 - Add basic mod controls (image upload, name change, handle change)
 - getHolonPosts run from sidebar buttons but not getHolonData (best approach?)
 + work out best approach to paginate posts with filters
     - Store post totals in db to enable/speed up filtered paginated queries? Probably not.
     - Apply filters in query? Probably.
+    - Filters
+        - Time range (All Time, Last Year, Last Month, Last Week, Last 24 hours, Last Hour)
+        - Post type (Text, Poll, ...)
+        - Sort by (Total Reactions, Total Likes, Total Hearts, Total Ratings, Total Links, ...)
 - Create links between posts
 - Include interests and location on register form
 - Set up social media log-in strategies

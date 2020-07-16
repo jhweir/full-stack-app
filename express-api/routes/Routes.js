@@ -10,7 +10,7 @@ const holonuser = require("../models/holonuser")
 // const JwtStrategy = passportJWT.Strategy
 // const ExtractJwt = passportJWT.ExtractJwt
 
-// const Op = sequelize.Op;
+const Op = sequelize.Op;
 
 const Holon = require('../models').Holon
 const VerticalHolonRelationship = require('../models').VerticalHolonRelationship
@@ -25,6 +25,7 @@ const Label = require('../models').Label
 const PollAnswer = require('../models').PollAnswer
 // const Notifications = require('../models').Notification
 
+//const postAttributes = (userId) => [
 const postAttributes = [
     'id', 'type', 'subType', 'globalState', 'title', 'description', 'url', 'createdAt',
     [sequelize.literal(
@@ -102,25 +103,93 @@ router.get('/holon-data', (req, res) => {
 })
 
 router.get('/holon-posts', (req, res) => {
-    const { handle, userId } = req.query
+    const { userId, handle, timeRange, postType, sortBy, sortOrder, searchQuery, limit, offset } = req.query
+    console.log('req.query: ', req.query)
+
+    function findStartDate() {
+        let offset = undefined
+        //if (timeRange === 'All Time') { offset = undefined }
+        if (timeRange === 'Last Year') { offset = (24*60*60*1000) * 365 }
+        if (timeRange === 'Last Month') { offset = (24*60*60*1000) * 30 }
+        if (timeRange === 'Last Week') { offset = (24*60*60*1000) * 7 }
+        if (timeRange === 'Last 24 Hours') { offset = 24*60*60*1000 }
+        if (timeRange === 'Last Hour') { offset = 60*60*1000 }
+        var startDate = new Date()
+        startDate.setTime(startDate.getTime() - offset)
+        return startDate
+    }
+
+    function findType() {
+        let type
+        if (postType === 'All Types') { type = ['text', 'poll'] }
+        if (postType !== 'All Types') { type = postType.toLowerCase() }
+        return type
+    }
+
+    function findOrder() {
+        let direction //, order
+        if (sortOrder === 'Ascending') { direction = 'ASC' } else { direction = 'DESC' }
+        let order = [[sequelize.literal(`total_${sortBy.toLowerCase()}`), direction]]
+        return order
+    }
+
+    function findAttributes() {
+        let attributes = ['id']
+        if (sortBy === 'Comments') { attributes.push([sequelize.literal(
+            `(SELECT COUNT(*) FROM Comments AS Comment WHERE Comment.postId = Post.id)`
+            ),'total_comments'
+        ])}
+        if (sortBy === 'Reactions') { attributes.push([sequelize.literal(
+            `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.type != "vote" AND Label.state = 'active')`
+            ),'total_reactions'
+        ])}
+        if (sortBy === 'Likes') { attributes.push([sequelize.literal(
+            `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.type = "like" AND Label.state = 'active')`
+            ),'total_likes'
+        ])}
+        if (sortBy === 'Hearts') { attributes.push([sequelize.literal(
+            `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.type = "heart" AND Label.state = 'active')`
+            ),'total_hearts'
+        ])}
+        if (sortBy === 'Ratings') { attributes.push([sequelize.literal(
+            `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.type = "rating" AND Label.state = 'active')`
+            ),'total_ratings'
+        ])}
+        return attributes
+    }
+
+    let startDate = findStartDate()
+    let type = findType()
+    let order = findOrder()
+    let attributes = findAttributes()
+
+    // api/holon-posts?userId=1&handle=root&timeRange=last-week&postType=poll&sortBy=total-reactions&searchQuery=Po
+
     // Double query required to to prevent results and pagination being effected by top level where clause.
-    // Intial query used to find correct posts.
-    // Second query used to return post data.
+    // Intial query used to find correct posts. (including calculated stats and pagination)
+    // Second query used to return post data. (related models only)
     // Final function used to replace PostHolons object with an array.
     Post.findAll({ 
-        where: { '$PostHolons.handle$': handle },
-        attributes: ['id'],
+        where: { 
+            '$PostHolons.handle$': handle,
+            createdAt: { [Op.between]: [startDate, Date.now()] },
+            type,
+            title: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` }
+        },
+        order,
+        //limit: 3,
+        // offset,
+        attributes,
         include: [{ 
             model: Holon,
             as: 'PostHolons',
             attributes: [],
             through: { attributes: [] }
         }],
-        // limit: 3,
-        // offset: 1,
         subQuery: false
     })
     .then(posts => {
+        console.log('posts: ', posts)
         // Add account reaction data to post attributes
         let attributes = [
             ...postAttributes,
@@ -158,6 +227,7 @@ router.get('/holon-posts', (req, res) => {
         return Post.findAll({ 
             where: { id: posts.map(post => post.id) },
             attributes: attributes,
+            order,//: [['total_likes', 'DESC']],
             include: [
                 {
                     model: Holon,
@@ -174,18 +244,10 @@ router.get('/holon-posts', (req, res) => {
         })
         .then(posts => {
             posts.forEach(post => {
-                // replace PostHolons object with an array
+                // replace PostHolons object with simpler array
                 const newPostHolons = post.PostHolons.map(ph => ph.handle)
                 post.setDataValue("spaces", newPostHolons)
                 delete post.dataValues.PostHolons
-                // check if user has reacted to post and list reactions in 'accountReactions' array
-                // console.log('req.query.userId', req.query.userId)
-                // Label
-                //     .findAll({ 
-                //         where: { postId: post.id, userId: req.query.userId },
-                //         attributes: ['type']
-                //     })
-                //     .then(labels => console.log('labels', labels))
             })
             return posts
         })
@@ -193,6 +255,93 @@ router.get('/holon-posts', (req, res) => {
     .then(data => { res.json(data) })
     .catch(err => console.log(err))
 })
+
+// router.get('/holon-posts', (req, res) => {
+//     const { userId, handle, timeRange, postType, sortBy, searchQuery } = req.query
+//     console.log('req.query: ', req.query)
+//     // Double query required to to prevent results and pagination being effected by top level where clause.
+//     // Intial query used to find correct posts. (including calculated stats and pagination)
+//     // Second query used to return post data. (related models only)
+//     // Final function used to replace PostHolons object with an array.
+//     Post.findAll({ 
+//         where: { '$PostHolons.handle$': handle },
+//         attributes: ['id'],
+//         include: [{ 
+//             model: Holon,
+//             as: 'PostHolons',
+//             attributes: [],
+//             through: { attributes: [] }
+//         }],
+//         //order: [['id', 'DESC']],
+//         // limit: 3,
+//         // offset: 1,
+//         subQuery: false
+//     })
+//     .then(posts => {
+//         // Add account reaction data to post attributes
+//         let attributes = [
+//             ...postAttributes,
+//             [sequelize.literal(`(
+//                 SELECT COUNT(*)
+//                 FROM Labels
+//                 AS Label
+//                 WHERE Label.postId = Post.id
+//                 AND Label.userId = ${userId}
+//                 AND Label.type = 'like'
+//                 AND Label.state = 'active'
+//                 )`),'account_like'
+//             ],
+//             [sequelize.literal(`(
+//                 SELECT COUNT(*)
+//                 FROM Labels
+//                 AS Label
+//                 WHERE Label.postId = Post.id
+//                 AND Label.userId = ${userId}
+//                 AND Label.type = 'heart'
+//                 AND Label.state = 'active'
+//                 )`),'account_heart'
+//             ],
+//             [sequelize.literal(`(
+//                 SELECT COUNT(*)
+//                 FROM Labels
+//                 AS Label
+//                 WHERE Label.postId = Post.id
+//                 AND Label.userId = ${userId}
+//                 AND Label.type = 'rating'
+//                 AND Label.state = 'active'
+//                 )`),'account_rating'
+//             ]
+//         ]
+//         return Post.findAll({ 
+//             where: { id: posts.map(post => post.id) },
+//             attributes: attributes,
+//             include: [
+//                 {
+//                     model: Holon,
+//                     as: 'PostHolons',
+//                     attributes: ['handle'],
+//                     through: { attributes: [] },
+//                 },
+//                 {
+//                     model: User,
+//                     as: 'creator',
+//                     attributes: ['name', 'flagImagePath'],
+//                 }
+//             ]
+//         })
+//         .then(posts => {
+//             posts.forEach(post => {
+//                 // replace PostHolons object with simpler array
+//                 const newPostHolons = post.PostHolons.map(ph => ph.handle)
+//                 post.setDataValue("spaces", newPostHolons)
+//                 delete post.dataValues.PostHolons
+//             })
+//             return posts
+//         })
+//     })
+//     .then(data => { res.json(data) })
+//     .catch(err => console.log(err))
+// })
 
 router.get('/holon-followers', (req, res) => {
     const { holonId } = req.query

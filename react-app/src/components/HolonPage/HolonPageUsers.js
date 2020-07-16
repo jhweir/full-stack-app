@@ -12,7 +12,7 @@ function HolonPageUsers() {
 
     useEffect(() => {
         if (!holonContextLoading && holonData.id) { getHolonFollowers() }
-    }, [holonData])
+    }, [holonContextLoading])
 
     return (
         <div className={styles.usersWrapper}>

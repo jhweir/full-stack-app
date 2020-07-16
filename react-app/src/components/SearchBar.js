@@ -4,15 +4,15 @@ import styles from '../styles/components/SearchBar.module.scss'
 
 function SearchBar(props) {
     const { type } = props
-    const { setHolonPostsSearchFilter, setHolonSpacesSearchFilter, setHolonUsersSearchFilter } = useContext(HolonContext)
+    const { setHolonPostSearchFilter, setHolonSpaceSearchFilter, setHolonUserSearchFilter } = useContext(HolonContext)
     //const { setUserSearchFilter } = useContext(HolonContext)
     const [newSearch, setNewSearch] = useState('')
 
     let setSearchFilter
 
-    if (type === 'holon-posts') { setSearchFilter = setHolonPostsSearchFilter }
-    if (type === 'holon-spaces') { setSearchFilter = setHolonSpacesSearchFilter }
-    if (type === 'holon-users') { setSearchFilter = setHolonUsersSearchFilter }
+    if (type === 'holon-posts') { setSearchFilter = setHolonPostSearchFilter }
+    if (type === 'holon-spaces') { setSearchFilter = setHolonSpaceSearchFilter }
+    if (type === 'holon-users') { setSearchFilter = setHolonUserSearchFilter }
 
     function applySearch(e) {
         e.preventDefault()

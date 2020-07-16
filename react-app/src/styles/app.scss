@@ -101,6 +101,20 @@ input {
     to {opacity: 1;}
 }
 
+// select {
+//     border: none;
+//     outline: none;
+//     /* for Firefox */
+//     -moz-appearance: none;
+//     /* for Chrome */
+//     -webkit-appearance: none;
+// }
+  
+// /* For IE10 */
+// select::-ms-expand {
+//     display: none;
+// }
+
 .hide-scrollbars {
     // Hide scroll bars on Firefox:
     scrollbar-width: none;
@@ -175,8 +189,30 @@ input {
     }
     
     &:focus { outline: none }
+
+    .wecoButtonIcon {
+        width: 20px;
+        height: 20px;
+        filter: invert(100%);
+    }
 }
 
 .fileContainer {
     box-shadow: none;
+}
+
+.wecoPageHeader {
+    width: 100%;
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.wecoPageHeaderRow {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
 }
