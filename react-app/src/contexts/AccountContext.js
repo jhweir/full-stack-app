@@ -5,7 +5,7 @@ import Cookies from 'universal-cookie'
 
 export const AccountContext = createContext()
 
-function AccountContextProvider(props) {
+function AccountContextProvider({ children, pageBottomReached }) {
     const [accountContextLoading, setAccountContextLoading] = useState(true)
     const [isLoggedIn, setIsLoggedIn] = useState(false)
     const [accountData, setAccountData] = useState({ FollowedHolons: [], ModeratedHolons: [] })
@@ -61,6 +61,7 @@ function AccountContextProvider(props) {
     return (
         <AccountContext.Provider value={{
             accountContextLoading,
+            pageBottomReached,
             isLoggedIn, logOut,
             globalData, getGlobalData,
             accountData, getAccountData, setAccountData,
@@ -74,7 +75,7 @@ function AccountContextProvider(props) {
             createHolonModalOpen, setCreateHolonModalOpen,
             createPostModalOpen, setCreatePostModalOpen
         }}>
-            {props.children}
+            {children}
         </AccountContext.Provider>
     )
 }

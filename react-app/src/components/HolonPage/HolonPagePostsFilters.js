@@ -1,12 +1,9 @@
 import React, { useContext } from 'react'
-import { AccountContext } from '../../contexts/AccountContext'
 import { HolonContext } from '../../contexts/HolonContext'
-import { UserContext } from '../../contexts/UserContext'
 import styles from '../../styles/components/HolonPagePostsFilters.module.scss'
 import DropDownMenu from '../DropDownMenu'
 
 function HolonPagePostsFilters() {
-    //const { filtersOpen, setFiltersOpen } = useContext(AccountContext)
     const { holonPostFiltersOpen } = useContext(HolonContext)
 
     if (holonPostFiltersOpen) {
@@ -15,26 +12,19 @@ function HolonPagePostsFilters() {
                 <DropDownMenu
                     title='Time Range'
                     options={['All Time', 'Last Year', 'Last Month', 'Last Week', 'Last 24 Hours', 'Last Hour']}
-                    //defaultOption='All Time'
                 />
                 <DropDownMenu
                     title='Post Type'
                     options={['All Types', 'Text', 'Poll', 'Task']}
-                    //defaultOption='All Types'
                 />
                 <DropDownMenu
                     title='Sort By'
-                    options={['Comments', 'Reactions', 'Likes', 'Hearts', 'Ratings', 'Links']}
-                    //defaultOption='Likes'
+                    options={['Comments', 'Date', 'Reactions', 'Likes', 'Hearts', 'Ratings', 'Links']}
                 />
                 <DropDownMenu
                     title='Sort Order'
-                    options={['Decending', 'Ascending']}
-                    //defaultOption='Ascending'
+                    options={['Descending', 'Ascending']}
                 />
-                {/* <div className='wecoButton' style={{height:30}}>
-                    <img className='wecoButtonIcon' src='/icons/sync-alt-solid.svg'/>
-                </div> */}
             </div>
         )
     } else { return null }

@@ -8,8 +8,8 @@ import CreatePostModalHolonHandleInput from './CreatePostModalHolonHandleInput'
 import PollAnswerForm from './../PostPage/Poll/PollAnswerForm'
 
 function CreatePostModal(props) {
-    const { holonData, globalData, holonContextLoading, getHolonPosts } = useContext(HolonContext)
-    const { accountData, createPostModalOpen, setCreatePostModalOpen } = useContext(AccountContext)
+    const { globalData, accountData, createPostModalOpen, setCreatePostModalOpen } = useContext(AccountContext)
+    const { holonData, holonContextLoading, getHolonPosts } = useContext(HolonContext)
     const [type, setPostType] = useState('')
     // const [user, setUser] = useState('')
     const [title, setTitle] = useState('')

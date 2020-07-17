@@ -127,41 +127,42 @@ router.get('/holon-posts', (req, res) => {
     }
 
     function findOrder() {
-        let direction //, order
+        let direction, order
         if (sortOrder === 'Ascending') { direction = 'ASC' } else { direction = 'DESC' }
-        let order = [[sequelize.literal(`total_${sortBy.toLowerCase()}`), direction]]
+        if (sortBy === 'Date') { order = [['createdAt', direction]] }
+        else { order = [[sequelize.literal(`total_${sortBy.toLowerCase()}`), direction]] }
         return order
     }
 
-    function findAttributes() {
-        let attributes = ['id']
-        if (sortBy === 'Comments') { attributes.push([sequelize.literal(
+    function findFirstAttributes() {
+        let firstAttributes = ['id']
+        if (sortBy === 'Comments') { firstAttributes.push([sequelize.literal(
             `(SELECT COUNT(*) FROM Comments AS Comment WHERE Comment.postId = Post.id)`
             ),'total_comments'
         ])}
-        if (sortBy === 'Reactions') { attributes.push([sequelize.literal(
+        if (sortBy === 'Reactions') { firstAttributes.push([sequelize.literal(
             `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.type != "vote" AND Label.state = 'active')`
             ),'total_reactions'
         ])}
-        if (sortBy === 'Likes') { attributes.push([sequelize.literal(
+        if (sortBy === 'Likes') { firstAttributes.push([sequelize.literal(
             `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.type = "like" AND Label.state = 'active')`
             ),'total_likes'
         ])}
-        if (sortBy === 'Hearts') { attributes.push([sequelize.literal(
+        if (sortBy === 'Hearts') { firstAttributes.push([sequelize.literal(
             `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.type = "heart" AND Label.state = 'active')`
             ),'total_hearts'
         ])}
-        if (sortBy === 'Ratings') { attributes.push([sequelize.literal(
+        if (sortBy === 'Ratings') { firstAttributes.push([sequelize.literal(
             `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.type = "rating" AND Label.state = 'active')`
             ),'total_ratings'
         ])}
-        return attributes
+        return firstAttributes
     }
 
     let startDate = findStartDate()
     let type = findType()
     let order = findOrder()
-    let attributes = findAttributes()
+    let firstAttributes = findFirstAttributes()
 
     // api/holon-posts?userId=1&handle=root&timeRange=last-week&postType=poll&sortBy=total-reactions&searchQuery=Po
 
@@ -174,12 +175,15 @@ router.get('/holon-posts', (req, res) => {
             '$PostHolons.handle$': handle,
             createdAt: { [Op.between]: [startDate, Date.now()] },
             type,
-            title: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` }
+            [Op.or]: [
+                { title: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } },
+                { description: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } }
+            ]
         },
         order,
-        //limit: 3,
-        // offset,
-        attributes,
+        limit: Number(limit),
+        offset: Number(offset),
+        attributes: firstAttributes,
         include: [{ 
             model: Holon,
             as: 'PostHolons',
@@ -189,9 +193,9 @@ router.get('/holon-posts', (req, res) => {
         subQuery: false
     })
     .then(posts => {
-        console.log('posts: ', posts)
+        //console.log('posts: ', posts)
         // Add account reaction data to post attributes
-        let attributes = [
+        let mainAttributes = [
             ...postAttributes,
             [sequelize.literal(`(
                 SELECT COUNT(*)
@@ -226,8 +230,8 @@ router.get('/holon-posts', (req, res) => {
         ]
         return Post.findAll({ 
             where: { id: posts.map(post => post.id) },
-            attributes: attributes,
-            order,//: [['total_likes', 'DESC']],
+            attributes: mainAttributes,
+            order,
             include: [
                 {
                     model: Holon,

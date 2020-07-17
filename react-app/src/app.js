@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { BrowserRouter, Route, Switch } from 'react-router-dom'
 import { createBrowserHistory } from 'history'
 // import { AccountContext } from '../contexts/AccountContext'
@@ -14,11 +14,18 @@ import NavBar from './components/NavBar'
 import GlobalModals from './components/GlobalModals'
 
 function App() {
-  // const { authModalOpen, setAuthModalOpen} = useContext(AccountContext)
+  const [pageBottomReached, setPageBottomReached] = useState(false)
+
+  function handleScroll(e) {
+    let pageBottomOffset = 150
+    let pageBottomReached = e.target.scrollHeight - e.target.scrollTop.toFixed(0) - pageBottomOffset < e.target.clientHeight
+    if (pageBottomReached) { setPageBottomReached(true) } else { setPageBottomReached(false) }
+  }
+
   return (
-    <div className="app">
+    <div className="app" onScroll={handleScroll}>
       <BrowserRouter history={createBrowserHistory}>
-        <AccountContextProvider>
+        <AccountContextProvider pageBottomReached={pageBottomReached}>
           <HolonContextProvider>
             <UserContextProvider>
               <NavBar/>

@@ -7,10 +7,10 @@
     top: 170px;
     left: 50px;
     box-shadow: 0 1px 10px 0 rgba(10, 8, 72, 0.15);
-    z-index: -1;
-    opacity: 0;
+    //z-index: -1;
+    display: none;
     &.visible {
-        opacity: 1;
+        display: block;
         z-index: 2;
     }
 }

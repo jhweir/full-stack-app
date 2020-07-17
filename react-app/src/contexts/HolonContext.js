@@ -14,13 +14,14 @@ function HolonContextProvider({ children }) {
     const [isModerator, setIsModerator] = useState(false)
     const [selectedHolonSubPage, setSelectedHolonSubPage] = useState('')
 
-    //TODO remove plurals from some hook names
-
     const [holonData, setHolonData] = useState({ DirectChildHolons: [], DirectParentHolons: [], HolonHandles: [] })
     const [holonSpaceSearchFilter, setHolonSpaceSearchFilter] = useState('')
     const [holonSpaceSortByFilter, setHolonSpaceSortByFilter] = useState('date')
 
     const [holonPosts, setHolonPosts] = useState([])
+    const [holonPostPaginationLimit, setHolonPostPaginationLimit] = useState(5)
+    const [holonPostPaginationOffset, setHolonPostPaginationOffset] = useState(0)
+    const [holonPostPaginationHasMore, setHolonPostPaginationHasMore] = useState(true)
     const [holonPostFiltersOpen, setHolonPostFiltersOpen] = useState(false)
     const [holonPostSearchFilter, setHolonPostSearchFilter] = useState('')
     const [holonPostTimeRangeFilter, setHolonPostTimeRangeFilter] = useState('All Time')
@@ -39,19 +40,30 @@ function HolonContextProvider({ children }) {
             .then(res => { setHolonData(res.data); setHolonContextLoading(false) })
     }
 
-     function getHolonPosts() {
-        console.log('HolonContext: getHolonPosts')
-        //history.push('/')
-        axios.get(config.environmentURL + 
-            `/holon-posts?userId=${accountData.id ? accountData.id : null
-            }&handle=${holonHandle
-            }&timeRange=${holonPostTimeRangeFilter
-            }&postType=${holonPostTypeFilter
-            }&sortBy=${holonPostSortByFilter
-            }&sortOrder=${holonPostSortOrderFilter
-            }&searchQuery=${holonPostSearchFilter}`)
-            .then(res => { setHolonPosts(res.data) })
+    function getHolonPosts(test) {
+        if (test) { setHolonPostPaginationHasMore(true) }
+        if (holonPostPaginationHasMore || test) {
+            console.log(`HolonContext: getHolonPosts (${test ? 0 : holonPostPaginationOffset} to ${test ? holonPostPaginationLimit : holonPostPaginationOffset + holonPostPaginationLimit})`)
+            axios.get(config.environmentURL + 
+                `/holon-posts?userId=${accountData.id ? accountData.id : null
+                }&handle=${holonHandle
+                }&timeRange=${holonPostTimeRangeFilter
+                }&postType=${holonPostTypeFilter
+                }&sortBy=${holonPostSortByFilter
+                }&sortOrder=${holonPostSortOrderFilter
+                }&searchQuery=${holonPostSearchFilter
+                }&limit=${holonPostPaginationLimit
+                }&offset=${test ? 0 : holonPostPaginationOffset
+                }`)
+                .then(res => { 
+                    if (res.data.length < holonPostPaginationLimit) { setHolonPostPaginationHasMore(false) }
+                    if (test) { setHolonPosts(res.data) } else { setHolonPosts([...holonPosts, ...res.data]) }
+                    setHolonPostPaginationOffset((test ? 0 : holonPostPaginationOffset) + holonPostPaginationLimit)
+                })
+        }
     }
+
+    //function getNextHolonPosts() {}
 
     function getHolonFollowers() {
         console.log('HolonContext: getHolonFollowers')
@@ -89,7 +101,10 @@ function HolonContextProvider({ children }) {
             holonSpaceSearchFilter, setHolonSpaceSearchFilter,
             holonSpaceSortByFilter, setHolonSpaceSortByFilter,
 
-            holonPosts, getHolonPosts,
+            holonPosts, getHolonPosts, setHolonPosts,
+            holonPostPaginationLimit, setHolonPostPaginationLimit,
+            holonPostPaginationOffset, setHolonPostPaginationOffset,
+            holonPostPaginationHasMore, setHolonPostPaginationHasMore,
             holonPostFiltersOpen, setHolonPostFiltersOpen,
             holonPostSearchFilter, setHolonPostSearchFilter,
             holonPostTimeRangeFilter, setHolonPostTimeRangeFilter,
