@@ -40,10 +40,27 @@ function HolonContextProvider({ children }) {
             .then(res => { setHolonData(res.data); setHolonContextLoading(false) })
     }
 
-    function getHolonPosts(test) {
-        if (test) { setHolonPostPaginationHasMore(true) }
-        if (holonPostPaginationHasMore || test) {
-            console.log(`HolonContext: getHolonPosts (${test ? 0 : holonPostPaginationOffset} to ${test ? holonPostPaginationLimit : holonPostPaginationOffset + holonPostPaginationLimit})`)
+    function getHolonPosts() {
+        console.log(`HolonContext: getHolonPosts (0 to ${holonPostPaginationLimit})`)
+        axios.get(config.environmentURL + 
+            `/holon-posts?userId=${accountData.id ? accountData.id : null
+            }&handle=${holonHandle
+            }&timeRange=${holonPostTimeRangeFilter
+            }&postType=${holonPostTypeFilter
+            }&sortBy=${holonPostSortByFilter
+            }&sortOrder=${holonPostSortOrderFilter
+            }&searchQuery=${holonPostSearchFilter
+            }&limit=${holonPostPaginationLimit
+            }&offset=0`)
+            .then(res => { 
+                setHolonPosts(res.data)
+                setHolonPostPaginationOffset(holonPostPaginationLimit)
+            })
+    }
+
+    function getNextHolonPosts() {
+        if (holonPostPaginationHasMore) {
+            console.log(`HolonContext: getNextHolonPosts (${holonPostPaginationOffset} to ${holonPostPaginationOffset + holonPostPaginationLimit})`)
             axios.get(config.environmentURL + 
                 `/holon-posts?userId=${accountData.id ? accountData.id : null
                 }&handle=${holonHandle
@@ -53,17 +70,14 @@ function HolonContextProvider({ children }) {
                 }&sortOrder=${holonPostSortOrderFilter
                 }&searchQuery=${holonPostSearchFilter
                 }&limit=${holonPostPaginationLimit
-                }&offset=${test ? 0 : holonPostPaginationOffset
-                }`)
+                }&offset=${holonPostPaginationOffset}`)
                 .then(res => { 
                     if (res.data.length < holonPostPaginationLimit) { setHolonPostPaginationHasMore(false) }
-                    if (test) { setHolonPosts(res.data) } else { setHolonPosts([...holonPosts, ...res.data]) }
-                    setHolonPostPaginationOffset((test ? 0 : holonPostPaginationOffset) + holonPostPaginationLimit)
+                    setHolonPosts([...holonPosts, ...res.data])
+                    setHolonPostPaginationOffset(holonPostPaginationOffset + holonPostPaginationLimit)
                 })
         }
     }
-
-    //function getNextHolonPosts() {}
 
     function getHolonFollowers() {
         console.log('HolonContext: getHolonFollowers')
@@ -78,7 +92,7 @@ function HolonContextProvider({ children }) {
 
     useEffect(() => {
         if (!accountContextLoading) { getHolonData() }
-    }, [holonHandle, accountData]) //update dependencies?
+    }, [holonHandle, accountData])
 
     useEffect(() => {
         if (accountData && holonData) {
@@ -88,6 +102,14 @@ function HolonContextProvider({ children }) {
             if (accountIsModerator) { setIsModerator(true) } else { setIsModerator(false) }
         }
     }, [holonData])
+
+    useEffect(() => {
+        setHolonPostPaginationHasMore(true)
+        setHolonPostTimeRangeFilter('All Time')
+        setHolonPostTypeFilter('All Types')
+        setHolonPostSortByFilter('Likes')
+        setHolonPostSortOrderFilter('Descending')
+    }, [holonHandle])
 
     return (
         <HolonContext.Provider value={{
@@ -101,7 +123,7 @@ function HolonContextProvider({ children }) {
             holonSpaceSearchFilter, setHolonSpaceSearchFilter,
             holonSpaceSortByFilter, setHolonSpaceSortByFilter,
 
-            holonPosts, getHolonPosts, setHolonPosts,
+            holonPosts, setHolonPosts, getHolonPosts, getNextHolonPosts,
             holonPostPaginationLimit, setHolonPostPaginationLimit,
             holonPostPaginationOffset, setHolonPostPaginationOffset,
             holonPostPaginationHasMore, setHolonPostPaginationHasMore,

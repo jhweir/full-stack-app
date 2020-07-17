@@ -2,7 +2,6 @@ import React, { useContext, useEffect } from 'react'
 import { AccountContext } from '../../contexts/AccountContext'
 import { HolonContext } from '../../contexts/HolonContext'
 import styles from '../../styles/components/HolonPagePosts.module.scss'
-import InfiniteScroll from 'react-infinite-scroll-component';
 import PostCard from '../Cards/PostCard'
 import HolonPagePostsFilters from './HolonPagePostsFilters'
 import HolonPagePostsPlaceholder from './HolonPagePostsPlaceholder'
@@ -13,9 +12,7 @@ function HolonPagePosts() {
     const {
         holonContextLoading,
         holonData,
-        getHolonPosts, setHolonPosts, holonPosts,
-        setHolonPostPaginationOffset,
-        setHolonPostPaginationHasMore,
+        holonPosts, getHolonPosts, getNextHolonPosts,
         holonPostSearchFilter,
         setSelectedHolonSubPage,
         holonPostFiltersOpen, setHolonPostFiltersOpen,
@@ -30,28 +27,12 @@ function HolonPagePosts() {
     }, [])
 
     useEffect(() => {
-        if (!holonContextLoading && holonData.id) { 
-            console.log('main get posts')
-            const test = false
-            getHolonPosts(test)
-        }
-    }, [holonContextLoading, pageBottomReached])
+        if (!holonContextLoading && holonData.id) { getHolonPosts() }
+    }, [holonContextLoading, holonPostSearchFilter, holonPostTimeRangeFilter, holonPostTypeFilter, holonPostSortByFilter, holonPostSortOrderFilter])
 
     useEffect(() => {
-        if (!holonContextLoading && holonData.id) {
-            console.log('filter change get posts')
-            const test = true
-            getHolonPosts(test)
-            //const a = setHolonPostPaginationOffset(0)
-            //const b = setHolonPostPaginationHasMore(true)
-            //const c = setHolonPosts([])
-            //const b = setHolonPostPaginationOffset(0)
-            //Promise.all([b]).then(setTimeout(() => { getHolonPosts(test) }, 500))
-            //setHolonPosts([])
-            //setHolonPostPaginationOffset(0)
-            // getHolonPosts()
-        }
-    }, [holonPostSearchFilter, holonPostTimeRangeFilter, holonPostTypeFilter, holonPostSortByFilter, holonPostSortOrderFilter])
+        if (!holonContextLoading && holonData.id) { getNextHolonPosts() }
+    }, [pageBottomReached])
 
     return (
         <div className={styles.wall}>
