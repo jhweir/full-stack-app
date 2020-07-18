@@ -19,10 +19,7 @@ function HolonPage({ match }) {
     const { accountContextLoading } = useContext(AccountContext)
 
     useEffect(() => {
-        if (!accountContextLoading) { 
-            setHolonHandle(holonHandle)
-            //getHolonData(holonHandle)
-        }
+        if (!accountContextLoading) { setHolonHandle(holonHandle) }
     }, [accountContextLoading])
 
     return (

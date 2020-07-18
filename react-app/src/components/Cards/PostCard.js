@@ -49,7 +49,6 @@ function PostCard(props) {
     } = props.post
 
     useEffect(() => {
-        // Is this necissary? Done in order to make instant changes to state (adding likes etc.) without waiting for a response from the server
         setTotalComments(total_comments)
         setTotalReactions(total_reactions)
         setTotalLikes(total_likes)
@@ -59,7 +58,7 @@ function PostCard(props) {
         setAccountLike(account_like)
         setAccountHeart(account_heart)
         setAccountRating(account_rating)
-    }, [props])
+    }, [creator])
 
     function addLike() {
         // If user not logged in, request log in

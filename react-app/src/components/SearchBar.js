@@ -8,11 +8,11 @@ function SearchBar(props) {
     //const { setUserSearchFilter } = useContext(HolonContext)
     const [newSearch, setNewSearch] = useState('')
 
-    let setSearchFilter
+    let setSearchFilter, placeholder
 
-    if (type === 'holon-posts') { setSearchFilter = setHolonPostSearchFilter }
-    if (type === 'holon-spaces') { setSearchFilter = setHolonSpaceSearchFilter }
-    if (type === 'holon-users') { setSearchFilter = setHolonUserSearchFilter }
+    if (type === 'holon-posts') { setSearchFilter = setHolonPostSearchFilter; placeholder = 'Search posts...' }
+    if (type === 'holon-spaces') { setSearchFilter = setHolonSpaceSearchFilter; placeholder = 'Search spaces...' }
+    if (type === 'holon-users') { setSearchFilter = setHolonUserSearchFilter; placeholder = 'Search users...' }
 
     function applySearch(e) {
         e.preventDefault()
@@ -24,7 +24,7 @@ function SearchBar(props) {
             <input
                 className={styles.input}
                 type="text"
-                placeholder="Search spaces..."
+                placeholder={placeholder}
                 value={ newSearch }
                 onChange={ (e) => setNewSearch(e.target.value) }
             />

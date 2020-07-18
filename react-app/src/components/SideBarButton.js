@@ -33,7 +33,7 @@ function SideBarButton(props) {
         )
     } else {
         return (
-            <div className={`${styles.navButton} ${selectedSubPage === path && styles.selected}`}
+            <div className={`${styles.navButton} ${text !== 'Not Following' && styles.selected}`}
                 style={{marginBottom: marginBottom}}
                 onClick={() => { if (onClickFunction){ onClickFunction() } }}>
                 <img className={styles.navButtonIcon} src={`/icons/${icon}`}/>

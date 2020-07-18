@@ -41,6 +41,7 @@ function HolonContextProvider({ children }) {
     }
 
     function getHolonPosts() {
+        setHolonPostPaginationHasMore(true)
         console.log(`HolonContext: getHolonPosts (0 to ${holonPostPaginationLimit})`)
         axios.get(config.environmentURL + 
             `/holon-posts?userId=${accountData.id ? accountData.id : null
@@ -104,7 +105,7 @@ function HolonContextProvider({ children }) {
     }, [holonData])
 
     useEffect(() => {
-        setHolonPostPaginationHasMore(true)
+        setHolonPostFiltersOpen(false)
         setHolonPostTimeRangeFilter('All Time')
         setHolonPostTypeFilter('All Types')
         setHolonPostSortByFilter('Likes')
