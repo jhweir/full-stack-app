@@ -1,25 +1,50 @@
 import React, { useContext, useEffect } from 'react'
+import { AccountContext } from '../../contexts/AccountContext'
 import { HolonContext } from '../../contexts/HolonContext'
 import styles from '../../styles/components/HolonPageUsers.module.scss'
+import SearchBar from '../SearchBar'
+import HolonPageUsersFilters from './HolonPageUsersFilters'
 import UserCard from '../Cards/UserCard'
 
 function HolonPageUsers() {
-    const { holonContextLoading, holonData, holonFollowers, getHolonFollowers, setSelectedHolonSubPage } = useContext(HolonContext)
+    const { pageBottomReached } = useContext(AccountContext)
+    const {
+        holonContextLoading, holonData,
+        holonUsers, getHolonUsers, getNextHolonUsers,
+        setHolonUserFiltersOpen, holonUserFiltersOpen, 
+        holonUserSearchFilter,
+        holonUserTimeRangeFilter,
+        holonUserSortByFilter,
+        holonUserSortOrderFilter,
+        setSelectedHolonSubPage
+    } = useContext(HolonContext)
 
     useEffect(() => {
         setSelectedHolonSubPage('users')
     }, [])
 
     useEffect(() => {
-        if (!holonContextLoading && holonData.id) { getHolonFollowers() }
-    }, [holonContextLoading])
+        if (!holonContextLoading && holonData.id) { getHolonUsers() }
+    }, [holonContextLoading, holonUserSearchFilter, holonUserTimeRangeFilter, holonUserSortByFilter, holonUserSortOrderFilter])
+
+    useEffect(() => {
+        if (pageBottomReached && !holonContextLoading && holonData.id) { getNextHolonUsers() }
+    }, [pageBottomReached])
 
     return (
         <div className={styles.usersWrapper}>
-            Search and filters go here...
+            <div className='wecoPageHeader'>
+                <div className='wecoPageHeaderRow'>
+                    <SearchBar type='holon-users'/>
+                    <button className='wecoButton mr-10' onClick={() => setHolonUserFiltersOpen(!holonUserFiltersOpen)}>
+                        <img className='wecoButtonIcon' src='/icons/sliders-h-solid.svg'/>
+                    </button>
+                </div>
+                <HolonPageUsersFilters/>
+            </div>
             {/* <HolonPageSpacesPlaceholder/> */}
             <ul className={styles.users}>
-                {holonFollowers.length > 0 && holonFollowers.map((user, index) =>
+                {holonUsers.length > 0 && holonUsers.map((user, index) =>
                     <UserCard
                         key={index} 
                         index={index}

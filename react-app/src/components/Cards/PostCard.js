@@ -8,26 +8,6 @@ import styles from '../../styles/components/PostCard.module.scss'
 import PostCardReactionModal from './PostCardReactionModal'
 
 function PostCard(props) {
-    const { isLoggedIn, accountData, setAlertMessage, setAlertModalOpen } = useContext(AccountContext)
-    const { holonData, setHolonHandle, getHolonPosts } = useContext(HolonContext)
-
-    const [reactionModalOpen, setReactionModalOpen] = useState(false)
-    const [ratingModalOpen, setRatingModalOpen] = useState(false)
-
-    const [totalComments, setTotalComments] = useState(0)
-    const [totalReactions, setTotalReactions] = useState(0)
-    const [totalLikes, setTotalLikes] = useState(0)
-    const [totalHearts, setTotalHearts] = useState(0)
-    const [totalRatings, setTotalRatings] = useState(0)
-    const [totalRatingPoints, setTotalRatingPoints] = useState(0)
-    const [accountLike, setAccountLike] = useState(0)
-    const [accountHeart, setAccountHeart] = useState(0)
-    const [accountRating, setAccountRating] = useState(0)
-
-    // TODO: Move the rating state below to the PostCardRatingModal component?
-    const [newRating, setNewRating] = useState('')
-    const [newRatingError, setNewRatingError] = useState(false)
-
     const { 
         id,
         creator,
@@ -48,6 +28,26 @@ function PostCard(props) {
         spaces
     } = props.post
 
+    const { isLoggedIn, accountData, setAlertMessage, setAlertModalOpen } = useContext(AccountContext)
+    const { holonData, setHolonHandle, getHolonPosts } = useContext(HolonContext)
+
+    const [reactionModalOpen, setReactionModalOpen] = useState(false)
+    const [ratingModalOpen, setRatingModalOpen] = useState(false)
+
+    const [totalComments, setTotalComments] = useState(0)
+    const [totalReactions, setTotalReactions] = useState(0)
+    const [totalLikes, setTotalLikes] = useState(0)
+    const [totalHearts, setTotalHearts] = useState(0)
+    const [totalRatings, setTotalRatings] = useState(0)
+    const [totalRatingPoints, setTotalRatingPoints] = useState(0)
+    const [accountLike, setAccountLike] = useState(0)
+    const [accountHeart, setAccountHeart] = useState(0)
+    const [accountRating, setAccountRating] = useState(0)
+
+    // TODO: Move the rating state below to the PostCardRatingModal component?
+    const [newRating, setNewRating] = useState('')
+    const [newRatingError, setNewRatingError] = useState(false)
+
     useEffect(() => {
         setTotalComments(total_comments)
         setTotalReactions(total_reactions)
@@ -59,6 +59,8 @@ function PostCard(props) {
         setAccountHeart(account_heart)
         setAccountRating(account_rating)
     }, [creator])
+
+    // create 'addRemoveReaction' function and pass in 'type', 'alertMessage', 'path' as properties
 
     function addLike() {
         // If user not logged in, request log in
@@ -133,14 +135,6 @@ function PostCard(props) {
             }
         }
     }
-
-    // function toggleReactionModal() {
-    //     setReactionModalOpen(!reactionModalOpen)
-    // }
-
-    // function toggleRatingModal() {
-    //     setRatingModalOpen(!ratingModalOpen)
-    // }
 
     function deletePost() {
         axios.delete(config.environmentURL  + '/deletePost', { data: { id } })
@@ -220,7 +214,7 @@ function PostCard(props) {
                     <div className={styles.postInteract}>
                         <div className={styles.postInteractItem} onClick={() => setReactionModalOpen(true)}>
                             <img 
-                                className={`${styles.postIcon} ${(accountLike || accountHeart || accountRating !== 0) && styles.selectedOrange}`}
+                                className={`${styles.postIcon} ${(accountLike || accountHeart || accountRating !== 0) && styles.selected}`}
                                 src="/icons/fire-alt-solid.svg" alt=''
                             />
                             <span>{ totalReactions } Reactions</span>

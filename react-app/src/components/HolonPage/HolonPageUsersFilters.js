@@ -3,30 +3,30 @@ import { HolonContext } from '../../contexts/HolonContext'
 import styles from '../../styles/components/HolonPagePostsFilters.module.scss'
 import DropDownMenu from '../DropDownMenu'
 
-function HolonPageSpacesFilters() {
-    const { holonSpaceFiltersOpen } = useContext(HolonContext)
+function HolonPageUsersFilters() {
+    const { holonUserFiltersOpen } = useContext(HolonContext)
 
-    if (holonSpaceFiltersOpen) {
+    if (holonUserFiltersOpen) {
         return (
             <div className={styles.filters}>
                 <DropDownMenu
                     title='Time Range'
                     options={['All Time', 'Last Year', 'Last Month', 'Last Week', 'Last 24 Hours', 'Last Hour']}
-                    type='holon-spaces'
+                    type='holon-users'
                 />
                 <DropDownMenu
                     title='Sort By'
-                    options={['Followers', 'Posts', 'Comments', 'Date', 'Reactions', 'Likes', 'Hearts', 'Ratings', 'Links']}
-                    type='holon-spaces'
+                    options={['Posts', 'Comments', 'Date']}
+                    type='holon-users'
                 />
                 <DropDownMenu
                     title='Sort Order'
                     options={['Descending', 'Ascending']}
-                    type='holon-spaces'
+                    type='holon-users'
                 />
             </div>
         )
     } else { return null }
 }
 
-export default HolonPageSpacesFilters
+export default HolonPageUsersFilters

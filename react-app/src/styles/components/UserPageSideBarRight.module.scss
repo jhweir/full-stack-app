@@ -30,7 +30,7 @@
     flex-direction: row;
     align-items: center;
 }
-.sideBarRightHolonImageWrapper {
+.placeholderWrapper {
     background-color: #eee; //rgba(0, 0, 0, 0.1);
     border-radius: 50%;
     height: 40px;
@@ -41,11 +41,16 @@
     align-items: center;
     flex-shrink: 0;
 }
-.sideBarRightHolonImage {
+.placeholder {
     width: 60%;
     opacity: 0.2;
-    //width: 40px;
-    //border-radius: 50%;
+}
+.image {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 10px;
 }
 .sideBarRightHolonName{
     &:visited {

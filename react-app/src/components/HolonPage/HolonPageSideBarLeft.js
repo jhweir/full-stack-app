@@ -10,17 +10,17 @@ import SideBarButton from '../SideBarButton'
 
 function HolonPageSideBarLeft() {
     const { isLoggedIn, accountData } = useContext(AccountContext)
-    const { getHolonFollowers, holonData, isFollowing, setIsFollowing, isModerator } = useContext(HolonContext)
+    const { getHolonUsers, holonData, isFollowing, setIsFollowing, isModerator } = useContext(HolonContext)
 
     function followSpace() {
         if (isFollowing) {
             setIsFollowing(false)
             axios.put(config.environmentURL + `/unfollowHolon`, { holonId: holonData.id, userId: accountData.id })
-                .then(setTimeout(() => { getHolonFollowers() }, 200))
+                .then(setTimeout(() => { getHolonUsers() }, 200))
                 .catch(error => { console.log(error) })} 
         else { setIsFollowing(true)
             axios.post(config.environmentURL + `/followHolon`, { holonId: holonData.id, userId: accountData.id })
-                .then(setTimeout(() => { getHolonFollowers() }, 200))
+                .then(setTimeout(() => { getHolonUsers() }, 200))
                 .catch(error => { console.log(error) })
         }
     }

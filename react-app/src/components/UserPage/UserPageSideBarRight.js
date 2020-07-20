@@ -21,9 +21,15 @@ function UserPageSideBarRight() {
                                 to={ `/h/${holon.handle}` }
                                 key={index}
                                 onClick={ () => { setHolonHandle(holon.handle) } }>
-                                <div className={styles.sideBarRightHolonImageWrapper}>
+                                {holon.flagImagePath === null
+                                    ? <div className={styles.placeholderWrapper}>
+                                        <img className={styles.placeholder} src="/icons/users-solid.svg"/>
+                                    </div>
+                                    : <img className={styles.image} src={holon.flagImagePath}/>
+                                }
+                                {/* <div className={styles.sideBarRightHolonImageWrapper}>
                                     <img className={styles.sideBarRightHolonImage} src="/icons/users-solid.svg"/>
-                                </div>
+                                </div> */}
                                 { holon.name }
                             </Link>
                         )} 
@@ -39,9 +45,15 @@ function UserPageSideBarRight() {
                                 to={ `/h/${holon.handle}` }
                                 key={index}
                                 onClick={ () => { setHolonHandle(holon.handle) } }>
-                                <div className={styles.sideBarRightHolonImageWrapper}>
+                                {holon.flagImagePath === null
+                                    ? <div className={styles.placeholderWrapper}>
+                                        <img className={styles.placeholder} src="/icons/users-solid.svg"/>
+                                    </div>
+                                    : <img className={styles.image} src={holon.flagImagePath}/>
+                                }
+                                {/* <div className={styles.sideBarRightHolonImageWrapper}>
                                     <img className={styles.sideBarRightHolonImage} src="/icons/users-solid.svg"/>
-                                </div>
+                                </div> */}
                                 { holon.name }
                             </Link>
                         )} 

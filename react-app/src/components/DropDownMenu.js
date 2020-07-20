@@ -7,14 +7,18 @@ import styles from '../styles/components/DropDownMenu.module.scss'
 function DropDownMenu(props) {
     const { title, options, type } = props
     const {
+        holonPostTimeRangeFilter, setHolonPostTimeRangeFilter,
+        holonPostTypeFilter, setHolonPostTypeFilter,
+        holonPostSortByFilter, setHolonPostSortByFilter,
+        holonPostSortOrderFilter, setHolonPostSortOrderFilter,
+
         holonSpaceTimeRangeFilter, setHolonSpaceTimeRangeFilter,
         holonSpaceSortByFilter, setHolonSpaceSortByFilter,
         holonSpaceSortOrderFilter, setHolonSpaceSortOrderFilter,
 
-        holonPostTimeRangeFilter, setHolonPostTimeRangeFilter,
-        holonPostTypeFilter, setHolonPostTypeFilter,
-        holonPostSortByFilter, setHolonPostSortByFilter,
-        holonPostSortOrderFilter, setHolonPostSortOrderFilter
+        holonUserTimeRangeFilter, setHolonUserTimeRangeFilter,
+        holonUserSortByFilter, setHolonUserSortByFilter,
+        holonUserSortOrderFilter, setHolonUserSortOrderFilter
     } = useContext(HolonContext)
     const [menuOpen, setMenuOpen] = useState(false)
 
@@ -39,6 +43,12 @@ function DropDownMenu(props) {
         if (title === 'Time Range') { selectedOption = holonSpaceTimeRangeFilter; setSelectedOption = setHolonSpaceTimeRangeFilter }
         if (title === 'Sort By') { selectedOption = holonSpaceSortByFilter; setSelectedOption = setHolonSpaceSortByFilter }
         if (title === 'Sort Order') { selectedOption = holonSpaceSortOrderFilter; setSelectedOption = setHolonSpaceSortOrderFilter }
+    }
+
+    if (type === 'holon-users') {
+        if (title === 'Time Range') { selectedOption = holonUserTimeRangeFilter; setSelectedOption = setHolonUserTimeRangeFilter }
+        if (title === 'Sort By') { selectedOption = holonUserSortByFilter; setSelectedOption = setHolonUserSortByFilter }
+        if (title === 'Sort Order') { selectedOption = holonUserSortOrderFilter; setSelectedOption = setHolonUserSortOrderFilter }
     }
 
     return (
