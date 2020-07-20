@@ -12,18 +12,22 @@ function HolonPagePostsFilters() {
                 <DropDownMenu
                     title='Time Range'
                     options={['All Time', 'Last Year', 'Last Month', 'Last Week', 'Last 24 Hours', 'Last Hour']}
+                    type='holon-posts'
                 />
                 <DropDownMenu
                     title='Post Type'
                     options={['All Types', 'Text', 'Poll', 'Task']}
+                    type='holon-posts'
                 />
                 <DropDownMenu
                     title='Sort By'
                     options={['Comments', 'Date', 'Reactions', 'Likes', 'Hearts', 'Ratings', 'Links']}
+                    type='holon-posts'
                 />
                 <DropDownMenu
                     title='Sort Order'
                     options={['Descending', 'Ascending']}
+                    type='holon-posts'
                 />
             </div>
         )

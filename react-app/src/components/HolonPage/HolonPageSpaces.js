@@ -4,40 +4,48 @@ import { HolonContext } from '../../contexts/HolonContext'
 import styles from '../../styles/components/HolonPageSpaces.module.scss'
 import HolonCard from '../Cards/HolonCard'
 import SearchBar from '../SearchBar'
-//import Filters from '../Filters'
+import HolonPageSpacesFilters from './HolonPageSpacesFilters'
 import HolonPageSpacesPlaceholder from './HolonPageSpacesPlaceholder'
 
 function HolonPageSpaces() {
-    const { setCreateHolonModalOpen } = useContext(AccountContext)
-    const { holonData, getHolonData, holonContextLoading, holonSpaceSearchFilter, setSelectedHolonSubPage } = useContext(HolonContext)
+    const { setCreateHolonModalOpen, pageBottomReached } = useContext(AccountContext)
+    const {
+        holonContextLoading, holonData,
+        holonSpaces, getHolonSpaces, getNextHolonSpaces,
+        holonSpaceFiltersOpen, setHolonSpaceFiltersOpen,
+        holonSpaceSearchFilter, holonSpaceTimeRangeFilter, holonSpaceSortByFilter, holonSpaceSortOrderFilter,
+        setSelectedHolonSubPage
+    } = useContext(HolonContext)
 
     useEffect(() => {
         setSelectedHolonSubPage('spaces')
     }, [])
 
-    let holons = []
-    //holonData && holonData.DirectChildHolons
-    if (holonData) { holons = holonData.DirectChildHolons }
+    useEffect(() => {
+        if (!holonContextLoading && holonData.id) { getHolonSpaces() }
+    }, [holonContextLoading, holonSpaceSearchFilter, holonSpaceTimeRangeFilter, holonSpaceSortByFilter, holonSpaceSortOrderFilter])
 
-    // Apply search filter to holons
-    let filteredHolons = holons.filter(holon => {
-        return holon.name.toUpperCase().includes(holonSpaceSearchFilter.toUpperCase()) //&& holon.globalState === 'visible'
-    })
+    useEffect(() => {
+        if (pageBottomReached && !holonContextLoading && holonData.id) { getNextHolonSpaces() }
+    }, [pageBottomReached])
 
     return (
         <div className={styles.childHolonsWrapper}>
             <div className='wecoPageHeader'>
                 <div className='wecoPageHeaderRow'>
                     <SearchBar type='holon-spaces'/>
+                    <button className='wecoButton mr-10' onClick={() => setHolonSpaceFiltersOpen(!holonSpaceFiltersOpen)}>
+                        <img className='wecoButtonIcon' src='/icons/sliders-h-solid.svg'/>
+                    </button>
                     <button className="wecoButton" onClick={() => setCreateHolonModalOpen(true) }>
                         Create Space
                     </button>
                 </div>
-                {/* <Filters type='holon-spaces'/> */}
+                <HolonPageSpacesFilters/>
             </div>
             {/* <HolonPageSpacesPlaceholder/> */}
             <ul className={`${styles.childHolons} ${(holonContextLoading && styles.hidden)}`}>
-                {filteredHolons.map((holon, index) =>
+                {holonSpaces.map((holon, index) =>
                     <HolonCard
                         holon={holon}
                         index={index}

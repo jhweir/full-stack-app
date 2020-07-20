@@ -10,13 +10,21 @@ function HolonContextProvider({ children }) {
 
     const [holonContextLoading, setHolonContextLoading] = useState(true)
     const [holonHandle, setHolonHandle] = useState('')
+    const [holonData, setHolonData] = useState({ DirectChildHolons: [], DirectParentHolons: [], HolonHandles: [] })
     const [isFollowing, setIsFollowing] = useState(false)
     const [isModerator, setIsModerator] = useState(false)
     const [selectedHolonSubPage, setSelectedHolonSubPage] = useState('')
 
-    const [holonData, setHolonData] = useState({ DirectChildHolons: [], DirectParentHolons: [], HolonHandles: [] })
+    const [holonSpaces, setHolonSpaces] = useState([])
+    const [holonSpacePaginationLimit, setHolonSpacePaginationLimit] = useState(5)
+    const [holonSpacePaginationOffset, setHolonSpacePaginationOffset] = useState(0)
+    const [holonSpacePaginationHasMore, setHolonSpacePaginationHasMore] = useState(true)
+    const [holonSpaceFiltersOpen, setHolonSpaceFiltersOpen] = useState(false)
     const [holonSpaceSearchFilter, setHolonSpaceSearchFilter] = useState('')
-    const [holonSpaceSortByFilter, setHolonSpaceSortByFilter] = useState('date')
+    const [holonSpaceTimeRangeFilter, setHolonSpaceTimeRangeFilter] = useState('All Time')
+    const [holonSpaceTypeFilter, setHolonSpaceTypeFilter] = useState('All Types')
+    const [holonSpaceSortByFilter, setHolonSpaceSortByFilter] = useState('Likes')
+    const [holonSpaceSortOrderFilter, setHolonSpaceSortOrderFilter] = useState('Descending')
 
     const [holonPosts, setHolonPosts] = useState([])
     const [holonPostPaginationLimit, setHolonPostPaginationLimit] = useState(5)
@@ -80,6 +88,46 @@ function HolonContextProvider({ children }) {
         }
     }
 
+    function getHolonSpaces() {
+        setHolonSpacePaginationHasMore(true)
+        console.log(`HolonContext: getHolonSpaces (0 to ${holonSpacePaginationLimit})`)
+        axios.get(config.environmentURL + 
+            `/holon-spaces?userId=${accountData.id ? accountData.id : null
+            }&handle=${holonHandle
+            }&timeRange=${holonSpaceTimeRangeFilter
+            }&spaceType=${holonSpaceTypeFilter
+            }&sortBy=${holonSpaceSortByFilter
+            }&sortOrder=${holonSpaceSortOrderFilter
+            }&searchQuery=${holonSpaceSearchFilter
+            }&limit=${holonSpacePaginationLimit
+            }&offset=0`)
+            .then(res => { 
+                setHolonSpaces(res.data)
+                setHolonSpacePaginationOffset(holonPostPaginationLimit)
+            })
+    }
+
+    function getNextHolonSpaces() {
+        if (holonSpacePaginationHasMore) {
+            console.log(`HolonContext: getNextHolonSpaces (${holonSpacePaginationOffset} to ${holonSpacePaginationOffset + holonSpacePaginationLimit})`)
+            axios.get(config.environmentURL + 
+                `/holon-spaces?userId=${accountData.id ? accountData.id : null
+                }&handle=${holonHandle
+                }&timeRange=${holonSpaceTimeRangeFilter
+                }&postType=${holonSpaceTypeFilter
+                }&sortBy=${holonSpaceSortByFilter
+                }&sortOrder=${holonSpaceSortOrderFilter
+                }&searchQuery=${holonSpaceSearchFilter
+                }&limit=${holonSpacePaginationLimit
+                }&offset=${holonSpacePaginationOffset}`)
+                .then(res => { 
+                    if (res.data.length < holonSpacePaginationLimit) { setHolonSpacePaginationHasMore(false) }
+                    setHolonSpaces([...holonSpaces, ...res.data])
+                    setHolonSpacePaginationOffset(holonSpacePaginationOffset + holonSpacePaginationLimit)
+                })
+        }
+    }
+
     function getHolonFollowers() {
         console.log('HolonContext: getHolonFollowers')
         if (holonData.handle === 'root') {
@@ -116,13 +164,21 @@ function HolonContextProvider({ children }) {
         <HolonContext.Provider value={{
             holonContextLoading, setHolonContextLoading,
             holonHandle, setHolonHandle,
+            holonData, setHolonData, getHolonData,
             isFollowing, setIsFollowing,
             isModerator, setIsModerator,
             selectedHolonSubPage, setSelectedHolonSubPage,
 
-            holonData, getHolonData, setHolonData,
+            holonSpaces, setHolonSpaces, getHolonSpaces, getNextHolonSpaces,
+            holonSpacePaginationLimit, setHolonSpacePaginationLimit,
+            holonSpacePaginationOffset, setHolonSpacePaginationOffset,
+            holonSpacePaginationHasMore, setHolonSpacePaginationHasMore,
+            holonSpaceFiltersOpen, setHolonSpaceFiltersOpen,
             holonSpaceSearchFilter, setHolonSpaceSearchFilter,
+            holonSpaceTimeRangeFilter, setHolonSpaceTimeRangeFilter,
+            holonSpaceTypeFilter, setHolonSpaceTypeFilter,
             holonSpaceSortByFilter, setHolonSpaceSortByFilter,
+            holonSpaceSortOrderFilter, setHolonSpaceSortOrderFilter,
 
             holonPosts, setHolonPosts, getHolonPosts, getNextHolonPosts,
             holonPostPaginationLimit, setHolonPostPaginationLimit,
@@ -145,112 +201,3 @@ function HolonContextProvider({ children }) {
 }
 
 export default HolonContextProvider
-
-
-    //TODO: create seperate functions for updating globalData, holonData, holonPosts and holonFollowers? Yes!
-    // function updateHolonContext(holonHandle) {
-    //     // setHolonContextLoading(true)
-    //     // const getGlobalData = axios.get(config.environmentURL + '/global-data') //remove getGlobalData and move to seperate function (or context)?
-    //     // const getHolonData = axios.get(config.environmentURL + `/holon-data?handle=${holonHandle}`)
-    //     // // const getHolonPosts = axios.get(config.environmentURL + `/holon-posts?handle=${holonHandle}&userId=${accountData.id ? accountData.id : null}`)
-    //     // // const getHolonUsers = axios.get(config.environmentURL + `/holon-users?handle=${holonHandle}`)
-    //     // // const demoDelay = new Promise((resolve) => { setTimeout(resolve, 1000) })
-    
-    //     // Promise.all([getGlobalData, getHolonData]).then(values => {
-    //     //     setGlobalData(values[0].data)
-    //     //     setHolonData(values[1].data)
-    //     //     // setHolonPosts(values[2].data)
-    //     //     //setHolonFollowers(values[3].data)
-    //     //     setHolonContextLoading(false)
-    //     //     console.log('Holon Context updated')
-    //     // })
-    // }
-
-
-    //const [renderKey, setRenderKey] = useState(0)
-    //const [holon, setHolon] = useState('') // setHolon passed down as a prop to HolonPage which sets the holon as soon as the page loads
-
-    // function demoAsyncCall() {
-    //     return new Promise((resolve) => setTimeout(() => resolve(), 5000));
-    // }
-
-
-
-    // Merge all three requests below into a single request for 'LocalContext/Data' ?
-    // function getData() {
-    //     axios.get(config.environmentURL + `/getData?id=${holon}`).then(res => {
-    //         setHolonData(res.data)
-    //         // setHolonContextLoading(false)
-    //     })
-    // }
-    // const promise3 = new Promise(function(resolve, reject) {
-    //     setTimeout(resolve, 100, 'foo');
-    //   });
-
-
-    // function globalData() {
-    //     axios.get(config.environmentURL + '/globalData').then(res => { 
-    //         setGlobalData(res.data)
-    //     })
-    // }
-
-    // async function getAllData() {
-    //     getData()
-    //     globalData()
-    // }
-    
-
-
-    // function getBranchData() {
-    //     axios.get(config.environmentURL + `/holonData?id=${holon}`)
-    //         .then(res => {
-    //             setHolonData(res.data)
-    //         })
-    // }
-
-    // function getBranchContent() {
-    //     axios.get(config.environmentURL + `/branchContent?id=${holon}`)
-    //         .then(res => {
-    //             console.log('res.data: ', res.data)
-    //             setHolonPosts(res.data.Posts)
-    //             setHolonTags(res.data.Holons)
-    //         })
-    // }
-
-
-    //let history = useHistory();
-
-    // function redirectTo(path, handle) {
-    //     setHolonContextLoading(true)
-    //     setTimeout(() => {
-    //         history.push(path)
-    //         updateHolonContext(handle)
-    //     }, 500)
-    // }
-
-    // const getData = axios.get(config.environmentURL + `/getData?id=${holon}`)
-    // const globalData = axios.get(config.environmentURL + '/getGlobalData')
-    // const demoDelay = new Promise((resolve) => {
-    //     setTimeout(resolve, 1000);
-    // });
-    
-    // var updateHolon = new Promise(function(resolve, reject) {
-    //     // do a thing, possibly async, then…
-      
-    //     if (/* everything turned out fine */) {
-    //       resolve("Stuff worked!");
-    //     }
-    //     else {
-    //       reject(Error("It broke"));
-    //     }
-    //   });
-
-
-        // function updateContext() {
-    //     //setRenderKey(renderKey + 1)
-    // }
-
-    // useEffect(() => {
-    //     updateHolonContext()
-    //     console.log('HolonContext UseEffect run...')
-    // }, [holon]) //remove holon!

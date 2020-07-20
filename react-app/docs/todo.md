@@ -1,10 +1,11 @@
 # Todos
-Last updated: 13-07-2020
+Last updated: 20-07-2020
 
 - Add user to created holons
 - Add clickoutside approach from drop down menu to other modals
 - Add basic mod controls (image upload, name change, handle change)
-- show all spaces vs direct child branches in spaces
+- show all spaces vs direct child spaces ('holon handles' vs. 'verticle holon relationships')
+- show all posts vs direct posts ('post holons' vs. 'visible handles')
 - getHolonPosts run from sidebar buttons but not getHolonData (best approach?)
 - Create links between posts
 - Include interests and location on register form
@@ -22,7 +23,6 @@ Last updated: 13-07-2020
 - Re-consider layout/approach used for pie chart and time graph components
 - Set up 'visible holons' on post (vs. all included holons)
 - Set up verification/welcome emails
-- Set up filters on child-holons page
 - create seperate Authentication server?
 - Merge title and description into one text field (character limit around 3000)?
 - Add privacy setting to labels (public, anonymous etc.)
@@ -72,3 +72,5 @@ Last updated: 13-07-2020
     - Time range (All Time, Last Year, Last Month, Last Week, Last 24 hours, Last Hour)
     - Post type (Text, Poll, ...)
     - Sort by (Total Reactions, Total Likes, Total Hearts, Total Ratings, Total Links, ...)
+- work out how to get holon stats for sorting ()
+- Set up filters on child-holons page

@@ -5,8 +5,12 @@ import { UserContext } from '../contexts/UserContext'
 import styles from '../styles/components/DropDownMenu.module.scss'
 
 function DropDownMenu(props) {
-    const { title, options, defaultOption, history } = props
+    const { title, options, type } = props
     const {
+        holonSpaceTimeRangeFilter, setHolonSpaceTimeRangeFilter,
+        holonSpaceSortByFilter, setHolonSpaceSortByFilter,
+        holonSpaceSortOrderFilter, setHolonSpaceSortOrderFilter,
+
         holonPostTimeRangeFilter, setHolonPostTimeRangeFilter,
         holonPostTypeFilter, setHolonPostTypeFilter,
         holonPostSortByFilter, setHolonPostSortByFilter,
@@ -23,10 +27,19 @@ function DropDownMenu(props) {
     })
 
     let selectedOption, setSelectedOption
-    if (title === 'Time Range') { selectedOption = holonPostTimeRangeFilter; setSelectedOption = setHolonPostTimeRangeFilter }
-    if (title === 'Post Type') { selectedOption = holonPostTypeFilter; setSelectedOption = setHolonPostTypeFilter }
-    if (title === 'Sort By') { selectedOption = holonPostSortByFilter; setSelectedOption = setHolonPostSortByFilter }
-    if (title === 'Sort Order') { selectedOption = holonPostSortOrderFilter; setSelectedOption = setHolonPostSortOrderFilter }
+
+    if (type === 'holon-posts') {
+        if (title === 'Time Range') { selectedOption = holonPostTimeRangeFilter; setSelectedOption = setHolonPostTimeRangeFilter }
+        if (title === 'Post Type') { selectedOption = holonPostTypeFilter; setSelectedOption = setHolonPostTypeFilter }
+        if (title === 'Sort By') { selectedOption = holonPostSortByFilter; setSelectedOption = setHolonPostSortByFilter }
+        if (title === 'Sort Order') { selectedOption = holonPostSortOrderFilter; setSelectedOption = setHolonPostSortOrderFilter }
+    }
+
+    if (type === 'holon-spaces') {
+        if (title === 'Time Range') { selectedOption = holonSpaceTimeRangeFilter; setSelectedOption = setHolonSpaceTimeRangeFilter }
+        if (title === 'Sort By') { selectedOption = holonSpaceSortByFilter; setSelectedOption = setHolonSpaceSortByFilter }
+        if (title === 'Sort Order') { selectedOption = holonSpaceSortOrderFilter; setSelectedOption = setHolonSpaceSortOrderFilter }
+    }
 
     return (
         <div className={styles.dropDownMenu}>

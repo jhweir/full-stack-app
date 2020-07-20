@@ -5,7 +5,7 @@ import Cookies from 'universal-cookie'
 
 export const AccountContext = createContext()
 
-function AccountContextProvider({ children, pageBottomReached }) {
+function AccountContextProvider({ children, pageBottomReached, setPageBottomReached }) {
     const [accountContextLoading, setAccountContextLoading] = useState(true)
     const [isLoggedIn, setIsLoggedIn] = useState(false)
     const [accountData, setAccountData] = useState({ FollowedHolons: [], ModeratedHolons: [] })

@@ -4,6 +4,7 @@ const router = express.Router()
 var sequelize = require('sequelize')
 const bcrypt = require('bcrypt')
 const Op = sequelize.Op
+const db = require('../models/index')
 
 const Holon = require('../models').Holon
 const VerticalHolonRelationship = require('../models').VerticalHolonRelationship
@@ -246,6 +247,294 @@ router.get('/holon-posts', (req, res) => {
     })
     .then(data => { res.json(data) })
     .catch(err => console.log(err))
+})
+
+router.get('/holon-spaces', (req, res) => {
+    const { userId, handle, timeRange, spaceType, sortBy, sortOrder, searchQuery, limit, offset } = req.query
+
+    console.log('req.query: ', req.query)
+
+    function findStartDate() {
+        let offset = undefined
+        if (timeRange === 'Last Year') { offset = (24*60*60*1000) * 365 }
+        if (timeRange === 'Last Month') { offset = (24*60*60*1000) * 30 }
+        if (timeRange === 'Last Week') { offset = (24*60*60*1000) * 7 }
+        if (timeRange === 'Last 24 Hours') { offset = 24*60*60*1000 }
+        if (timeRange === 'Last Hour') { offset = 60*60*1000 }
+        var startDate = new Date()
+        startDate.setTime(startDate.getTime() - offset)
+        return startDate
+    }
+
+    function findOrder() {
+        let direction, order
+        if (sortOrder === 'Ascending') { direction = 'ASC' } else { direction = 'DESC' }
+        if (sortBy === 'Date') { order = [['createdAt', direction]] }
+        else { order = [[sequelize.literal(`total_${sortBy.toLowerCase()}`), direction]] }
+        return order
+    }
+
+    function findFirstAttributes() {
+        let firstAttributes = ['id']
+        if (sortBy === 'Comments') { firstAttributes.push([sequelize.literal(`(
+            SELECT COUNT(*)
+                FROM Comments
+                WHERE Comments.postId IN (
+                    SELECT PostHolons.postId
+                    FROM PostHolons
+                    RIGHT JOIN Posts
+                    ON PostHolons.postId = Posts.id
+                    WHERE PostHolons.HolonId = Holon.id
+                )
+            )`), 'total_comments'
+        ])}
+        if (sortBy === 'Reactions') { firstAttributes.push([sequelize.literal(`(
+            SELECT COUNT(*)
+                FROM Labels
+                WHERE Labels.state = 'active'
+                AND Labels.type != 'vote'
+                AND Labels.postId IN (
+                    SELECT PostHolons.postId
+                    FROM PostHolons
+                    RIGHT JOIN Posts
+                    ON PostHolons.postId = Posts.id
+                    WHERE PostHolons.HolonId = Holon.id
+                )
+            )`), 'total_reactions'
+        ])}
+        if (sortBy === 'Likes') { firstAttributes.push([sequelize.literal(`(
+            SELECT COUNT(*)
+                FROM Labels
+                WHERE Labels.state = 'active'
+                AND Labels.type = 'like'
+                AND Labels.postId IN (
+                    SELECT PostHolons.postId
+                    FROM PostHolons
+                    RIGHT JOIN Posts
+                    ON PostHolons.postId = Posts.id
+                    WHERE PostHolons.HolonId = Holon.id
+                )
+            )`), 'total_likes'
+        ])}
+        if (sortBy === 'Hearts') { firstAttributes.push([sequelize.literal(`(
+            SELECT COUNT(*)
+                FROM Labels
+                WHERE Labels.state = 'active'
+                AND Labels.type = 'heart'
+                AND Labels.postId IN (
+                    SELECT PostHolons.postId
+                    FROM PostHolons
+                    RIGHT JOIN Posts
+                    ON PostHolons.postId = Posts.id
+                    WHERE PostHolons.HolonId = Holon.id
+                )
+            )`), 'total_hearts'
+        ])}
+        if (sortBy === 'Ratings') { firstAttributes.push([sequelize.literal(`(
+            SELECT COUNT(*)
+                FROM Labels
+                WHERE Labels.state = 'active'
+                AND Labels.type = 'rating'
+                AND Labels.postId IN (
+                    SELECT PostHolons.postId
+                    FROM PostHolons
+                    RIGHT JOIN Posts
+                    ON PostHolons.postId = Posts.id
+                    WHERE PostHolons.HolonId = Holon.id
+                )
+            )`), 'total_ratings'
+        ])}
+        return firstAttributes
+    }
+
+    let startDate = findStartDate()
+    let order = findOrder()
+    let firstAttributes = findFirstAttributes()
+
+    // Double query required to to prevent results and pagination being effected by top level where clause.
+    // Intial query used to find correct posts with calculated stats and pagination applied.
+    // Second query used to return related models.
+    Holon.findAll({
+        where: { 
+            '$DirectParentHolons.handle$': handle,
+            createdAt: { [Op.between]: [startDate, Date.now()] },
+            [Op.or]: [
+                { name: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } },
+                { description: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } }
+            ]
+        },
+        order,
+        limit: Number(limit),
+        offset: Number(offset),
+        attributes: firstAttributes,
+        subQuery: false,
+        include: [{ 
+            model: Holon,
+            as: 'DirectParentHolons',
+            attributes: [],
+            through: { attributes: [] }
+        }]
+    })
+    .then(holons => {
+        Holon.findAll({ 
+            where: { id: holons.map(holon => holon.id) },
+            attributes: [
+                'id', 'handle', 'name', 'description', 'flagImagePath', 'coverImagePath', 'createdAt',
+                [sequelize.literal(`(
+                    SELECT COUNT(*)
+                        FROM Comments
+                        WHERE Comments.postId IN (
+                            SELECT PostHolons.postId
+                            FROM PostHolons
+                            RIGHT JOIN Posts
+                            ON PostHolons.postId = Posts.id
+                            WHERE PostHolons.HolonId = Holon.id
+                        )
+                    )`), 'total_comments'
+                ],
+                [sequelize.literal(`(
+                    SELECT COUNT(*)
+                        FROM Labels
+                        WHERE Labels.state = 'active'
+                        AND Labels.type != 'vote'
+                        AND Labels.postId IN (
+                            SELECT PostHolons.postId
+                            FROM PostHolons
+                            RIGHT JOIN Posts
+                            ON PostHolons.postId = Posts.id
+                            WHERE PostHolons.HolonId = Holon.id
+                        )
+                    )`), 'total_reactions'
+                ],
+                [sequelize.literal(`(
+                    SELECT COUNT(*)
+                        FROM Labels
+                        WHERE Labels.state = 'active'
+                        AND Labels.type = 'like'
+                        AND Labels.postId IN (
+                            SELECT PostHolons.postId
+                            FROM PostHolons
+                            RIGHT JOIN Posts
+                            ON PostHolons.postId = Posts.id
+                            WHERE PostHolons.HolonId = Holon.id
+                        )
+                    )`), 'total_likes'
+                ],
+                [sequelize.literal(`(
+                    SELECT COUNT(*)
+                        FROM Labels
+                        WHERE Labels.state = 'active'
+                        AND Labels.type = 'heart'
+                        AND Labels.postId IN (
+                            SELECT PostHolons.postId
+                            FROM PostHolons
+                            RIGHT JOIN Posts
+                            ON PostHolons.postId = Posts.id
+                            WHERE PostHolons.HolonId = Holon.id
+                        )
+                    )`), 'total_hearts'
+                ],
+                [sequelize.literal(`(
+                    SELECT COUNT(*)
+                        FROM Labels
+                        WHERE Labels.state = 'active'
+                        AND Labels.type = 'rating'
+                        AND Labels.postId IN (
+                            SELECT PostHolons.postId
+                            FROM PostHolons
+                            RIGHT JOIN Posts
+                            ON PostHolons.postId = Posts.id
+                            WHERE PostHolons.HolonId = Holon.id
+                        )
+                    )`), 'total_ratings'
+                ]
+            ],
+            order,
+            // include: [
+            //     // {
+            //     //     model: User,
+            //     //     as: 'HolonCreator',
+            //     //     attributes: ['handle', 'name'],
+            //     //     through: { attributes: [] },
+            //     // },
+            //     {
+            //         model: User,
+            //         as: 'creator',
+            //         attributes: ['name', 'flagImagePath'],
+            //     }
+            // ]
+        }).then(data => { res.json(data) })
+    })
+    .catch(err => console.log(err))
+})
+
+router.get('/holon-space-test', async (req, res) => {
+    Holon.findAll({
+        //subQuery: false,
+        attributes: [
+            'name',
+            [sequelize.literal(`(
+                SELECT COUNT(*)
+                FROM Labels
+                WHERE Labels.state = 'active'
+                AND Labels.type != 'vote'
+                AND Labels.postId IN (
+                    SELECT PostHolons.postId
+                    FROM PostHolons
+                    RIGHT JOIN Posts
+                    ON PostHolons.postId = Posts.id
+                    WHERE PostHolons.HolonId = Holon.id
+                ))`), 'total_reactions'
+            ],
+            [sequelize.literal(`(
+                SELECT COUNT(*)
+                FROM Labels
+                WHERE Labels.state = 'active'
+                AND Labels.type = 'like'
+                AND Labels.postId IN (
+                    SELECT PostHolons.postId
+                    FROM PostHolons
+                    RIGHT JOIN Posts
+                    ON PostHolons.postId = Posts.id
+                    WHERE PostHolons.HolonId = Holon.id
+                ))`), 'total_likes'
+            ],
+            [sequelize.literal(`(
+                SELECT COUNT(*)
+                FROM Labels
+                WHERE Labels.state = 'active'
+                AND Labels.type = 'heart'
+                AND Labels.postId IN (
+                    SELECT PostHolons.postId
+                    FROM PostHolons
+                    RIGHT JOIN Posts
+                    ON PostHolons.postId = Posts.id
+                    WHERE PostHolons.HolonId = Holon.id
+                ))`), 'total_hearts'
+            ],
+            [sequelize.literal(`(
+                SELECT COUNT(*)
+                FROM Labels
+                WHERE Labels.state = 'active'
+                AND Labels.type = 'rating'
+                AND Labels.postId IN (
+                    SELECT PostHolons.postId
+                    FROM PostHolons
+                    RIGHT JOIN Posts
+                    ON PostHolons.postId = Posts.id
+                    WHERE PostHolons.HolonId = Holon.id
+                ))`), 'total_ratings'
+            ],
+        ]
+    })
+    .then(data => res.json(data))
+    // const [results, metadata] = await db.sequelize.query("SELECT COUNT(*) AS total_likes FROM Labels WHERE Labels.state = 'active' AND Labels.type = 'like' AND Labels.postId IN (SELECT PostHolons.postId FROM PostHolons RIGHT JOIN Posts ON PostHolons.postId = Posts.id WHERE PostHolons.HolonId = 2)");
+    // res.json(results)
+
+    // Finds all posts in space: SELECT * FROM PostHolons RIGHT JOIN Posts ON PostHolons.postId = Posts.id WHERE PostHolons.HolonId = 2;
+    // Finds post Ids' in space: SELECT PostHolons.postId FROM PostHolons RIGHT JOIN Posts ON PostHolons.postId = Posts.id WHERE PostHolons.HolonId = 2
+    // Counts total number of posts in space: SELECT COUNT(*) FROM PostHolons RIGHT JOIN Posts ON PostHolons.postId = Posts.id WHERE PostHolons.HolonId = 2;
+    // Counts total number of like labels on a post: SELECT COUNT(*) FROM Labels WHERE Labels.PostId = 1 AND Labels.state = 'active' AND Labels.type = 'like';
 })
 
 router.get('/holon-followers', (req, res) => {

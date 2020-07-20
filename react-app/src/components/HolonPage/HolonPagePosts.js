@@ -10,11 +10,10 @@ import SearchBar from '../SearchBar'
 function HolonPagePosts() {
     const { setCreatePostModalOpen, pageBottomReached } = useContext(AccountContext)
     const {
-        holonContextLoading,
-        holonData,
+        holonContextLoading, holonData,
         holonPosts, getHolonPosts, getNextHolonPosts,
-        holonPostSearchFilter,
         setSelectedHolonSubPage,
+        holonPostSearchFilter,
         holonPostFiltersOpen, setHolonPostFiltersOpen,
         holonPostTimeRangeFilter,
         holonPostTypeFilter,
@@ -31,7 +30,7 @@ function HolonPagePosts() {
     }, [holonContextLoading, holonPostSearchFilter, holonPostTimeRangeFilter, holonPostTypeFilter, holonPostSortByFilter, holonPostSortOrderFilter])
 
     useEffect(() => {
-        if (!holonContextLoading && holonData.id) { getNextHolonPosts() }
+        if (pageBottomReached && !holonContextLoading && holonData.id) { getNextHolonPosts() }
     }, [pageBottomReached])
 
     return (
