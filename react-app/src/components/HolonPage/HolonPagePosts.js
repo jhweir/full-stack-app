@@ -19,6 +19,7 @@ function HolonPagePosts() {
         holonPostTypeFilter,
         holonPostSortByFilter,
         holonPostSortOrderFilter,
+        holonPostScopeFilter
     } = useContext(HolonContext)
 
     useEffect(() => {
@@ -27,7 +28,7 @@ function HolonPagePosts() {
 
     useEffect(() => {
         if (!holonContextLoading && holonData.id) { getHolonPosts() }
-    }, [holonContextLoading, holonPostSearchFilter, holonPostTimeRangeFilter, holonPostTypeFilter, holonPostSortByFilter, holonPostSortOrderFilter])
+    }, [holonContextLoading, holonPostSearchFilter, holonPostTimeRangeFilter, holonPostTypeFilter, holonPostSortByFilter, holonPostSortOrderFilter, holonPostScopeFilter])
 
     useEffect(() => {
         if (pageBottomReached && !holonContextLoading && holonData.id) { getNextHolonPosts() }

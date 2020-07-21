@@ -1,42 +1,37 @@
 import React, { useContext } from 'react'
-import { HolonContext } from '../../contexts/HolonContext'
-import styles from '../../styles/components/HolonPagePostsFilters.module.scss'
+import { UserContext } from '../../contexts/UserContext'
+import styles from '../../styles/components/UserPagePostFilters.module.scss'
 import DropDownMenu from '../DropDownMenu'
 
-function HolonPagePostsFilters() {
-    const { holonPostFiltersOpen } = useContext(HolonContext)
+function UserPagePostFilters() {
+    const { createdPostFiltersOpen } = useContext(UserContext)
 
-    if (holonPostFiltersOpen) {
+    if (createdPostFiltersOpen) {
         return (
             <div className={styles.filters}>
                 <DropDownMenu
                     title='Time Range'
                     options={['All Time', 'Last Year', 'Last Month', 'Last Week', 'Last 24 Hours', 'Last Hour']}
-                    type='holon-posts'
+                    type='user-posts'
                 />
                 <DropDownMenu
                     title='Post Type'
                     options={['All Types', 'Text', 'Poll', 'Task']}
-                    type='holon-posts'
+                    type='user-posts'
                 />
                 <DropDownMenu
                     title='Sort By'
                     options={['Comments', 'Date', 'Reactions', 'Likes', 'Hearts', 'Ratings', 'Links']}
-                    type='holon-posts'
+                    type='user-posts'
                 />
                 <DropDownMenu
                     title='Sort Order'
                     options={['Descending', 'Ascending']}
-                    type='holon-posts'
-                />
-                <DropDownMenu
-                    title='Scope'
-                    options={['All Contained Posts']} // include 'Only Direct Posts To Space'
-                    type='holon-posts'
+                    type='user-posts'
                 />
             </div>
         )
     } else { return null }
 }
 
-export default HolonPagePostsFilters
+export default UserPagePostFilters

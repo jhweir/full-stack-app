@@ -29,7 +29,7 @@ function UserPageSideBarLeft() {
                 />
                 <SideBarButton
                     text='Created Posts'
-                    path='created-posts'
+                    path='posts'
                     icon='edit-solid.svg'
                     type='user-page-left'
                 />

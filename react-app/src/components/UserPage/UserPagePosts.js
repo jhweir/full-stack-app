@@ -1,13 +1,20 @@
 import React, { useContext, useEffect } from 'react'
 import { UserContext } from '../../contexts/UserContext'
-import styles from '../../styles/components/UserPageCreatedPosts.module.scss'
+import styles from '../../styles/components/UserPagePosts.module.scss'
+import SearchBar from '../SearchBar'
+import UserPagePostFilters from './UserPagePostFilters'
 import PostCard from '../Cards/PostCard'
 
-function UserPageCreatedPosts() {
-    const { userContextLoading, userData, setSelectedUserSubPage, getCreatedPosts, createdPosts } = useContext(UserContext)
+function UserPagePosts() {
+    const {
+        userContextLoading, userData,
+        setSelectedUserSubPage,
+        getCreatedPosts, createdPosts,
+        createdPostFiltersOpen, setCreatedPostFiltersOpen
+    } = useContext(UserContext)
 
     useEffect(() => {
-        setSelectedUserSubPage('created-posts')
+        setSelectedUserSubPage('posts')
     }, [])
 
     useEffect(() => {
@@ -19,8 +26,14 @@ function UserPageCreatedPosts() {
     return (
         <div className={styles.wrapper}>
             <div className={styles.header}>Created posts</div>
-            <div className={styles.createdPostsHeader}>
-                [search and filters go here...]
+            <div className='wecoPageHeader'>
+                <div className='wecoPageHeaderRow'>
+                    <SearchBar type='user-posts'/>
+                    <button className='wecoButton mr-10' onClick={() => setCreatedPostFiltersOpen(!createdPostFiltersOpen)}>
+                        <img className='wecoButtonIcon' src='/icons/sliders-h-solid.svg'/>
+                    </button>
+                </div>
+                <UserPagePostFilters/>
             </div>
             {visiblePosts.length 
                 ? <ul className={styles.createdPosts}>
@@ -30,7 +43,7 @@ function UserPageCreatedPosts() {
                             key={index}
                             index={index}
                         />
-                    )} 
+                    )}
                 </ul>
                 : <div>No posts created yet</div>
             }
@@ -38,4 +51,4 @@ function UserPageCreatedPosts() {
     )
 }
 
-export default UserPageCreatedPosts
+export default UserPagePosts

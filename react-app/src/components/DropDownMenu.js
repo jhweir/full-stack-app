@@ -11,16 +11,25 @@ function DropDownMenu(props) {
         holonPostTypeFilter, setHolonPostTypeFilter,
         holonPostSortByFilter, setHolonPostSortByFilter,
         holonPostSortOrderFilter, setHolonPostSortOrderFilter,
+        holonPostScopeFilter, setHolonPostScopeFilter,
 
         holonSpaceTimeRangeFilter, setHolonSpaceTimeRangeFilter,
         holonSpaceSortByFilter, setHolonSpaceSortByFilter,
         holonSpaceSortOrderFilter, setHolonSpaceSortOrderFilter,
-        holonSpaceScopeFilter, setHolonSpaceScopeOrderFilter,
+        holonSpaceScopeFilter, setHolonSpaceScopeFilter,
 
         holonUserTimeRangeFilter, setHolonUserTimeRangeFilter,
         holonUserSortByFilter, setHolonUserSortByFilter,
         holonUserSortOrderFilter, setHolonUserSortOrderFilter
     } = useContext(HolonContext)
+
+    const {
+        createdPostTimeRangeFilter, setCreatedPostTimeRangeFilter,
+        createdPostTypeFilter, setCreatedPostTypeFilter,
+        createdPostSortByFilter, setCreatedPostSortByFilter,
+        createdPostSortOrderFilter, setCreatedPostSortOrderFilter
+    } = useContext(UserContext)
+
     const [menuOpen, setMenuOpen] = useState(false)
 
     // close menu if user clicks outside ref
@@ -38,19 +47,27 @@ function DropDownMenu(props) {
         if (title === 'Post Type') { selectedOption = holonPostTypeFilter; setSelectedOption = setHolonPostTypeFilter }
         if (title === 'Sort By') { selectedOption = holonPostSortByFilter; setSelectedOption = setHolonPostSortByFilter }
         if (title === 'Sort Order') { selectedOption = holonPostSortOrderFilter; setSelectedOption = setHolonPostSortOrderFilter }
+        if (title === 'Scope') { selectedOption = holonPostScopeFilter; setSelectedOption = setHolonPostScopeFilter }
     }
 
     if (type === 'holon-spaces') {
         if (title === 'Time Range') { selectedOption = holonSpaceTimeRangeFilter; setSelectedOption = setHolonSpaceTimeRangeFilter }
         if (title === 'Sort By') { selectedOption = holonSpaceSortByFilter; setSelectedOption = setHolonSpaceSortByFilter }
         if (title === 'Sort Order') { selectedOption = holonSpaceSortOrderFilter; setSelectedOption = setHolonSpaceSortOrderFilter }
-        if (title === 'Scope') { selectedOption = holonSpaceScopeFilter; setSelectedOption = setHolonSpaceScopeOrderFilter }
+        if (title === 'Scope') { selectedOption = holonSpaceScopeFilter; setSelectedOption = setHolonSpaceScopeFilter }
     }
 
     if (type === 'holon-users') {
         if (title === 'Time Range') { selectedOption = holonUserTimeRangeFilter; setSelectedOption = setHolonUserTimeRangeFilter }
         if (title === 'Sort By') { selectedOption = holonUserSortByFilter; setSelectedOption = setHolonUserSortByFilter }
         if (title === 'Sort Order') { selectedOption = holonUserSortOrderFilter; setSelectedOption = setHolonUserSortOrderFilter }
+    }
+
+    if (type === 'user-posts') {
+        if (title === 'Time Range') { selectedOption = createdPostTimeRangeFilter; setSelectedOption = setCreatedPostTimeRangeFilter }
+        if (title === 'Post Type') { selectedOption = createdPostTypeFilter; setSelectedOption = setCreatedPostTypeFilter }
+        if (title === 'Sort By') { selectedOption = createdPostSortByFilter; setSelectedOption = setCreatedPostSortByFilter }
+        if (title === 'Sort Order') { selectedOption = createdPostSortOrderFilter; setSelectedOption = setCreatedPostSortOrderFilter }
     }
 
     return (

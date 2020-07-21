@@ -6,7 +6,7 @@ import styles from '../styles/pages/UserPage.module.scss'
 import CoverImage from '../components/CoverImage'
 import UserPageAbout from '../components/UserPage/UserPageAbout'
 import UserPageSettings from '../components/UserPage/UserPageSettings'
-import UserPageCreatedPosts from '../components/UserPage/UserPageCreatedPosts'
+import UserPagePosts from '../components/UserPage/UserPagePosts'
 import UserPageSideBarLeft from '../components/UserPage/UserPageSideBarLeft'
 import UserPageSideBarRight from '../components/UserPage/UserPageSideBarRight'
 
@@ -32,7 +32,7 @@ function UserPage({ match }) {
                             {isOwnAccount && <Route path={`${url}/settings`} component={ UserPageSettings } exact/>}
                             <Redirect from={`${url}`} to={`${url}/about`} exact/>
                             <Route path={`${url}/about`} component={ UserPageAbout } exact/>
-                            <Route path={`${url}/created-posts`} component={ UserPageCreatedPosts } exact/>
+                            <Route path={`${url}/posts`} component={ UserPagePosts } exact/>
                         </Switch>
                     </div>
                     <UserPageSideBarRight/>

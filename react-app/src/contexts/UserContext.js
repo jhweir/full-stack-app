@@ -9,14 +9,20 @@ function UserContextProvider(props) {
     const { accountContextLoading, isLoggedIn, accountData } = useContext(AccountContext)
     const [userContextLoading, setUserContextLoading] = useState(true)
     const [userHandle, setUserHandle] = useState('')
-    const [userData, setUserData] = useState({
-        Posts: [],
-        FollowedHolons: [],
-        ModeratedHolons: []
-    })
+    const [userData, setUserData] = useState({ Posts: [], FollowedHolons: [], ModeratedHolons: [] })
     const [selectedUserSubPage, setSelectedUserSubPage] = useState('')
-    const [createdPosts, setCreatedPosts] = useState([])
     const [isOwnAccount, setIsOwnAccount] = useState(false)
+
+    const [createdPosts, setCreatedPosts] = useState([])
+    const [createdPostPaginationLimit, setCreatedPostPaginationLimit] = useState(5)
+    const [createdPostPaginationOffset, setCreatedPostPaginationOffset] = useState(0)
+    const [createdPostPaginationHasMore, setCreatedPostPaginationHasMore] = useState(true)
+    const [createdPostFiltersOpen, setCreatedPostFiltersOpen] = useState(false)
+    const [createdPostSearchFilter, setCreatedPostSearchFilter] = useState('')
+    const [createdPostTimeRangeFilter, setCreatedPostTimeRangeFilter] = useState('All Time')
+    const [createdPostTypeFilter, setCreatedPostTypeFilter] = useState('All Types')
+    const [createdPostSortByFilter, setCreatedPostSortByFilter] = useState('Posts')
+    const [createdPostSortOrderFilter, setCreatedPostSortOrderFilter] = useState('Descending')
 
     function getUserData() {
         console.log('UserContext: getUserData')
@@ -29,7 +35,7 @@ function UserContextProvider(props) {
         console.log('UserContext: getCreatedPosts')
         axios
             .get(config.environmentURL + 
-            `/created-posts?userId=${userData.id ? userData.id : null}&accountId=${isLoggedIn ? accountData.id : null}`)
+            `/user-posts?userId=${userData.id ? userData.id : null}&accountId=${isLoggedIn ? accountData.id : null}`)
             .then(res => { setCreatedPosts(res.data); setUserContextLoading(false) })
     }
 
@@ -44,12 +50,21 @@ function UserContextProvider(props) {
 
     return (
         <UserContext.Provider value={{
-            isOwnAccount,
+            userContextLoading, setUserContextLoading,
             userHandle, setUserHandle,
             userData, getUserData,
+            isOwnAccount,
             selectedUserSubPage, setSelectedUserSubPage,
             createdPosts, getCreatedPosts,
-            userContextLoading, setUserContextLoading
+            createdPostPaginationLimit, setCreatedPostPaginationLimit,
+            createdPostPaginationOffset, setCreatedPostPaginationOffset,
+            createdPostPaginationHasMore, setCreatedPostPaginationHasMore,
+            createdPostFiltersOpen, setCreatedPostFiltersOpen,
+            createdPostSearchFilter, setCreatedPostSearchFilter,
+            createdPostTimeRangeFilter, setCreatedPostTimeRangeFilter,
+            createdPostTypeFilter, setCreatedPostTypeFilter,
+            createdPostSortByFilter, setCreatedPostSortByFilter,
+            createdPostSortOrderFilter, setCreatedPostSortOrderFilter
         }}>
             {props.children}
         </UserContext.Provider>

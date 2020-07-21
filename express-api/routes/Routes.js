@@ -97,7 +97,7 @@ router.get('/holon-data', (req, res) => {
 })
 
 router.get('/holon-posts', (req, res) => {
-    const { userId, handle, timeRange, postType, sortBy, sortOrder, searchQuery, limit, offset } = req.query
+    const { userId, handle, timeRange, postType, sortBy, sortOrder, scope, searchQuery, limit, offset } = req.query
 
     function findStartDate() {
         let offset = undefined
@@ -151,10 +151,41 @@ router.get('/holon-posts', (req, res) => {
         return firstAttributes
     }
 
+    // TODO: set up 'Only Direct Posts To Space' when direct holons set up on posts
+    function findWhere() {
+        let where
+        if (scope === 'All Contained Posts') { 
+            where =
+            { 
+                '$PostHolons.handle$': handle,
+                createdAt: { [Op.between]: [startDate, Date.now()] },
+                type,
+                [Op.or]: [
+                    { title: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } },
+                    { description: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } }
+                ]
+            } 
+        }
+        if (scope === 'Only Direct Posts To Space') {
+            where =
+            { 
+                '$PostHolons.handle$': handle,
+                createdAt: { [Op.between]: [startDate, Date.now()] },
+                type,
+                [Op.or]: [
+                    { title: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } },
+                    { description: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } }
+                ]
+            }
+        }
+        return where
+    }
+
     let startDate = findStartDate()
     let type = findType()
     let order = findOrder()
     let firstAttributes = findFirstAttributes()
+    let where = findWhere()
 
     // Double query required to to prevent results and pagination being effected by top level where clause.
     // Intial query used to find correct posts with calculated stats and pagination applied.
@@ -162,15 +193,7 @@ router.get('/holon-posts', (req, res) => {
     // Final function used to replace PostHolons object with a simpler array.
     Post.findAll({
         subQuery: false,
-        where: { 
-            '$PostHolons.handle$': handle,
-            createdAt: { [Op.between]: [startDate, Date.now()] },
-            type,
-            [Op.or]: [
-                { title: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } },
-                { description: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } }
-            ]
-        },
+        where,
         order,
         limit: Number(limit),
         offset: Number(offset),
@@ -760,7 +783,7 @@ router.get('/user-data', (req, res) => {
     .catch(err => console.log(err))
 })
 
-router.get('/created-posts', (req, res) => {
+router.get('/user-posts', (req, res) => {
     const { accountId, userId } = req.query
     // Add account reaction data to post attributes
     let attributes = [
