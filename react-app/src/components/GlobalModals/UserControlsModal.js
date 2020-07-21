@@ -6,7 +6,7 @@ import styles from '../../styles/components/UserControlsModal.module.scss'
 
 function UserControlsModal() {
     const { userControlsModalOpen, setUserControlsModalOpen, setAccountData, accountData, logOut } = useContext(AccountContext)
-    const { getUserData, setUserName, userData } = useContext(UserContext)
+    const { getUserData, setUserHandle, userData } = useContext(UserContext)
 
     if (userControlsModalOpen) {
         return (
@@ -20,8 +20,8 @@ function UserControlsModal() {
                         />
                         <span className={styles.title}>User Controls</span>
                         <Link className={styles.link}
-                            to={ `/u/${accountData.name}` }
-                            onClick={() => { setUserControlsModalOpen(false); setUserName() }}>
+                            to={ `/u/${accountData.handle}` }
+                            onClick={() => { setUserControlsModalOpen(false); setUserHandle(accountData.handle) }}>
                             Profile page
                         </Link>
                         <div className="wecoButton" onClick={() => { setAccountData(null); logOut(); setUserControlsModalOpen(false) }}>Log Out</div>

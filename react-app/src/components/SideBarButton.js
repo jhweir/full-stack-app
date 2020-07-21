@@ -17,7 +17,7 @@ function SideBarButton(props) {
     }
 
     if (type === 'user-page-left') { 
-        url = `/u/${userData.name}/${path}`
+        url = `/u/${userData.handle}/${path}`
         selectedSubPage = selectedUserSubPage
     }
 

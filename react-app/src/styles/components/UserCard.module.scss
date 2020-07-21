@@ -42,7 +42,8 @@
     flex-shrink: 0;
 }
 .flagImagePlaceholder {
-    width: 60%;
+    margin-top: -5px;
+    width: 50%;
     opacity: 0.2;
 }
 .content {
@@ -54,8 +55,9 @@
 }
 .text {
     font-size: 16px;
+    margin-bottom: 5px;
     &.grey {
-        color: #888;
+        color: #c5c5c5;
     }
 }
 .stats {

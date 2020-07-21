@@ -231,7 +231,7 @@ router.get('/holon-posts', (req, res) => {
                 {
                     model: User,
                     as: 'creator',
-                    attributes: ['name', 'flagImagePath'],
+                    attributes: ['id', 'handle', 'name', 'flagImagePath'],
                 }
             ]
         })
@@ -250,7 +250,7 @@ router.get('/holon-posts', (req, res) => {
 })
 
 router.get('/holon-spaces', (req, res) => {
-    const { userId, handle, timeRange, spaceType, sortBy, sortOrder, searchQuery, limit, offset } = req.query
+    const { userId, handle, timeRange, spaceType, sortBy, sortOrder, scope, searchQuery, limit, offset } = req.query
 
     function findStartDate() {
         let offset = undefined
@@ -372,33 +372,63 @@ router.get('/holon-spaces', (req, res) => {
         return firstAttributes
     }
 
+    function findWhere() {
+        let where
+        if (scope === 'All Contained Spaces') { 
+            where =
+            { 
+                '$HolonHandles.handle$': handle,
+                handle: { [Op.ne]: [handle] },
+                createdAt: { [Op.between]: [startDate, Date.now()] },
+                [Op.or]: [
+                    { name: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } },
+                    { description: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } }
+                ]
+            } 
+        }
+        if (scope === 'Only Direct Descendants') {
+            where =
+            { 
+                '$DirectParentHolons.handle$': handle,
+                createdAt: { [Op.between]: [startDate, Date.now()] },
+                [Op.or]: [
+                    { name: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } },
+                    { description: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } }
+                ]
+            }
+        }
+        return where
+    }
+
     let startDate = findStartDate()
     let order = findOrder()
     let firstAttributes = findFirstAttributes()
+    let where = findWhere()
 
     // Double query required to to prevent results and pagination being effected by top level where clause.
     // Intial query used to find correct posts with calculated stats and pagination applied.
     // Second query used to return related models.
     Holon.findAll({
-        where: { 
-            '$DirectParentHolons.handle$': handle,
-            createdAt: { [Op.between]: [startDate, Date.now()] },
-            [Op.or]: [
-                { name: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } },
-                { description: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } }
-            ]
-        },
+        where,
         order,
         limit: Number(limit),
         offset: Number(offset),
         attributes: firstAttributes,
         subQuery: false,
-        include: [{ 
-            model: Holon,
-            as: 'DirectParentHolons',
-            attributes: [],
-            through: { attributes: [] }
-        }]
+        include: [
+            { 
+                model: Holon,
+                as: 'DirectParentHolons',
+                attributes: [],
+                through: { attributes: [] }
+            },
+            { 
+                model: Holon,
+                as: 'HolonHandles',
+                attributes: [],
+                through: { attributes: [] }
+            },
+        ]
     })
     .then(holons => {
         Holon.findAll({ 
@@ -553,9 +583,6 @@ router.get('/holon-users', (req, res) => {
     let order = findOrder()
     let firstAttributes = findFirstAttributes()
 
-    // Double query required to to prevent results and pagination being effected by top level where clause.
-    // Intial query used to find correct posts with calculated stats and pagination applied.
-    // Second query used to return related models.
     User.findAll({
         where: { 
             '$FollowedHolons.id$': holonId,
@@ -648,9 +675,6 @@ router.get('/all-users', (req, res) => {
     let order = findOrder()
     let firstAttributes = findFirstAttributes()
 
-    // Double query required to to prevent results and pagination being effected by top level where clause.
-    // Intial query used to find correct posts with calculated stats and pagination applied.
-    // Second query used to return related models.
     User.findAll({
         where: { 
             createdAt: { [Op.between]: [startDate, Date.now()] },
@@ -692,8 +716,9 @@ router.get('/all-users', (req, res) => {
 })
 
 router.get('/user-data', (req, res) => {
+    console.log('req.query', req.query)
     User.findOne({ 
-        where: { name: req.query.userName },
+        where: { handle: req.query.userHandle },
         attributes: ['id', 'handle', 'name', 'bio', 'flagImagePath', 'coverImagePath', 'createdAt'],
         include: [
             { 
@@ -1081,13 +1106,13 @@ router.post('/cast-vote', (req, res) => {
 
 // Register account
 router.post('/register', async (req, res) => {
-    const { newUserName, newEmail, newPassword } = req.body
+    const { newHandle, newName, newEmail, newPassword } = req.body
 
     // Check username and email is available
     User
-        .findOne({ where: { name: newUserName } })
+        .findOne({ where: { handle: newHandle } })
         .then(user => {
-            if (user) { res.send('username-taken') }
+            if (user) { res.send('handle-taken') }
             else { User.findOne({ where: { email: newEmail } })
                 .then(async user => {
                     if (user) { res.send('email-taken') }
@@ -1095,7 +1120,8 @@ router.post('/register', async (req, res) => {
                         try {
                             const hashedPassword = await bcrypt.hash(newPassword, 10)
                             User.create({
-                                name: newUserName,
+                                handle: newHandle,
+                                name: newName,
                                 email: newEmail,
                                 password: hashedPassword
                             })

@@ -11,7 +11,8 @@ function AuthModal() {
     //const { setAuthModalOpen } = props
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-    const [newUserName, setNewUserName] = useState('')
+    const [newHandle, setNewHandle] = useState('')
+    const [newName, setNewName] = useState('')
     const [newEmail, setNewEmail] = useState('')
     const [newPassword, setNewPassword] = useState('')
     const [newPasswordTwo, setNewPasswordTwo] = useState('')
@@ -19,7 +20,8 @@ function AuthModal() {
     const [registerFlashMessage, setRegisterFlashMessage] = useState('')
     const [emailError, setEmailError] = useState(false)
     const [passwordError, setPasswordError] = useState(false)
-    const [newUserNameError, setNewUserNameError] = useState(false)
+    const [newHandleError, setNewHandleError] = useState(false)
+    const [newNameError, setNewNameError] = useState(false)
     const [newEmailError, setNewEmailError] = useState(false)
     const [newPasswordError, setNewPasswordError] = useState(false)
     const [newPasswordTwoError, setNewPasswordTwoError] = useState(false)
@@ -47,24 +49,26 @@ function AuthModal() {
 
     function register(e) {
         e.preventDefault()
-        let invalidNewUserName = newUserName.length === 0 || newUserName.length > 20
+        let invalidNewHandle = newHandle.length === 0 || newHandle.length > 10 || newHandle.includes(' ')
+        let invalidNewName = newName.length === 0 || newName.length > 30
         let invalidNewEmail = newEmail.length === 0 || newEmail.length > 500
         let invalidNewPassword = newPassword.length === 0
         let invalidNewPasswordTwo = newPasswordTwo !== newPassword
-        if (invalidNewUserName) { setNewUserNameError(true) }
+        if (invalidNewHandle) { setNewHandleError(true) }
+        if (invalidNewName) { setNewNameError(true) }
         if (invalidNewEmail) { setNewEmailError(true) }
         if (invalidNewPassword) { setNewPasswordError(true) }
         if (invalidNewPasswordTwo) { 
             setNewPasswordTwoError(true)
-            setRegisterFlashMessage('Passwords don\'t match')
+            setRegisterFlashMessage("Passwords don't match")
         }
-        if (!invalidNewUserName && !invalidNewEmail && !invalidNewPassword && !invalidNewPasswordTwo) {
+        if (!invalidNewHandle && !invalidNewName && !invalidNewEmail && !invalidNewPassword && !invalidNewPasswordTwo) {
             axios
-                .post(config.environmentURL + '/register', { newUserName, newEmail, newPassword })
+                .post(config.environmentURL + '/register', { newHandle, newName, newEmail, newPassword })
                 .then(res => {
-                    if (res.data === 'username-taken') { 
-                        setRegisterFlashMessage('Username already taken')
-                        setNewUserNameError(true)
+                    if (res.data === 'handle-taken') { 
+                        setRegisterFlashMessage('Handle already taken')
+                        setNewHandleError(true)
                     }
                     if (res.data === 'email-taken') {
                         setRegisterFlashMessage('Email already taken')
@@ -72,7 +76,7 @@ function AuthModal() {
                     }
                     if (res.data === 'account-registered') { 
                         setRegisterFlashMessage('Account registered! You can now log in.')
-                        setNewUserName(''); setNewEmail(''); setNewPassword(''); setNewPasswordTwo('')
+                        setNewHandle(''); setNewName(''); setNewEmail(''); setNewPassword(''); setNewPasswordTwo('')
                     }
                 })
         }
@@ -125,10 +129,16 @@ function AuthModal() {
                         <span className={styles.authModalFlashMessage}>{ registerFlashMessage }</span>
                         <form className={styles.authModalForm} onSubmit={ register }>
                             <input
-                                className={`wecoInput mb-10 ${newUserNameError && 'error'}`}
-                                placeholder='Username'
-                                type="text" value={newUserName}
-                                onChange={(e) => { setNewUserName(e.target.value); setNewUserNameError(false) }}
+                                className={`wecoInput mb-10 ${newHandleError && 'error'}`}
+                                placeholder='Unique handle'
+                                type="text" value={newHandle}
+                                onChange={(e) => { setNewHandle(e.target.value); setNewHandleError(false) }}
+                            />
+                            <input
+                                className={`wecoInput mb-10 ${newNameError && 'error'}`}
+                                placeholder='Name'
+                                type="text" value={newName}
+                                onChange={(e) => { setNewName(e.target.value); setNewNameError(false) }}
                             />
                             <input 
                                 className={`wecoInput mb-10 ${newEmailError && 'error'}`}

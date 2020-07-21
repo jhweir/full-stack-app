@@ -15,6 +15,7 @@ function DropDownMenu(props) {
         holonSpaceTimeRangeFilter, setHolonSpaceTimeRangeFilter,
         holonSpaceSortByFilter, setHolonSpaceSortByFilter,
         holonSpaceSortOrderFilter, setHolonSpaceSortOrderFilter,
+        holonSpaceScopeFilter, setHolonSpaceScopeOrderFilter,
 
         holonUserTimeRangeFilter, setHolonUserTimeRangeFilter,
         holonUserSortByFilter, setHolonUserSortByFilter,
@@ -43,6 +44,7 @@ function DropDownMenu(props) {
         if (title === 'Time Range') { selectedOption = holonSpaceTimeRangeFilter; setSelectedOption = setHolonSpaceTimeRangeFilter }
         if (title === 'Sort By') { selectedOption = holonSpaceSortByFilter; setSelectedOption = setHolonSpaceSortByFilter }
         if (title === 'Sort Order') { selectedOption = holonSpaceSortOrderFilter; setSelectedOption = setHolonSpaceSortOrderFilter }
+        if (title === 'Scope') { selectedOption = holonSpaceScopeFilter; setSelectedOption = setHolonSpaceScopeOrderFilter }
     }
 
     if (type === 'holon-users') {

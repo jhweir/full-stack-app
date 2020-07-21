@@ -21,16 +21,16 @@ function UserCard(props) {
     return (
         <div className={styles.userCard}>
             <div className={styles.index}>{ props.index + 1 }</div>
-            <Link to={ `/u/${name}` }>
+            <Link to={ `/u/${handle}` }>
                 {flagImagePath === null
                     ? <div className={styles.flagImagePlaceholderWrapper}>
-                        <img className={styles.flagImagePlaceholder} src='/icons/users-solid.svg' alt=''/>
+                        <img className={styles.flagImagePlaceholder} src='/icons/user-solid.svg' alt=''/>
                     </div>
                     : <img className={styles.flagImage} src={flagImagePath} alt=''/>
                 }
             </Link>
             <div className={styles.content}>
-                <Link className={styles.title} to={ `/u/${name}` }>
+                <Link className={styles.title} to={ `/u/${handle}` }>
                     { name }
                 </Link>
                 <span className={`${styles.text} ${styles.grey}`}>u/{ handle }</span>

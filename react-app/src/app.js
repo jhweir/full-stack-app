@@ -34,7 +34,7 @@ function App() {
                 <Route path="/" exact component={Homepage}/>
                 <Route path="/h/:holonHandle" component={HolonPage}/>
                 <Route path="/p/:postId" component={PostPage}/>
-                <Route path="/u/:userName" component={UserPage}/>
+                <Route path="/u/:userHandle" component={UserPage}/>
                 <Route component={EmptyPage}/>
               </Switch>
             </UserContextProvider>

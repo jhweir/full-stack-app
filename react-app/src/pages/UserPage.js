@@ -11,16 +11,13 @@ import UserPageSideBarLeft from '../components/UserPage/UserPageSideBarLeft'
 import UserPageSideBarRight from '../components/UserPage/UserPageSideBarRight'
 
 function UserPage({ match }) {
-    // update userName to userHandle?
     const { url } = match
-    const { userName } = match.params
+    const { userHandle } = match.params
     const { accountContextLoading } = useContext(AccountContext)
-    const { userData, setUserName, isOwnAccount } = useContext(UserContext)
+    const { userData, setUserHandle, isOwnAccount } = useContext(UserContext)
 
     useEffect(() => {
-        // make sure AccountContext has finished loading so we know if the user
-        // is logged in or not and then set the userName in the UserContext
-        if (!accountContextLoading) { setUserName(userName) }
+        if (!accountContextLoading) { setUserHandle(userHandle) }
     }, [accountContextLoading])
 
     return (

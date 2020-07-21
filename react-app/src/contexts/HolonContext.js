@@ -25,6 +25,7 @@ function HolonContextProvider({ children }) {
     const [holonSpaceTypeFilter, setHolonSpaceTypeFilter] = useState('All Types')
     const [holonSpaceSortByFilter, setHolonSpaceSortByFilter] = useState('Posts')
     const [holonSpaceSortOrderFilter, setHolonSpaceSortOrderFilter] = useState('Descending')
+    const [holonSpaceScopeFilter, setHolonSpaceScopeOrderFilter] = useState('All Contained Spaces')
 
     const [holonPosts, setHolonPosts] = useState([])
     const [holonPostPaginationLimit, setHolonPostPaginationLimit] = useState(5)
@@ -105,6 +106,7 @@ function HolonContextProvider({ children }) {
             }&spaceType=${holonSpaceTypeFilter
             }&sortBy=${holonSpaceSortByFilter
             }&sortOrder=${holonSpaceSortOrderFilter
+            }&scope=${holonSpaceScopeFilter
             }&searchQuery=${holonSpaceSearchFilter
             }&limit=${holonSpacePaginationLimit
             }&offset=0`)
@@ -124,6 +126,7 @@ function HolonContextProvider({ children }) {
                 }&postType=${holonSpaceTypeFilter
                 }&sortBy=${holonSpaceSortByFilter
                 }&sortOrder=${holonSpaceSortOrderFilter
+                }&scope=${holonSpaceScopeFilter
                 }&searchQuery=${holonSpaceSearchFilter
                 }&limit=${holonSpacePaginationLimit
                 }&offset=${holonSpacePaginationOffset}`)
@@ -218,6 +221,7 @@ function HolonContextProvider({ children }) {
             holonSpaceTypeFilter, setHolonSpaceTypeFilter,
             holonSpaceSortByFilter, setHolonSpaceSortByFilter,
             holonSpaceSortOrderFilter, setHolonSpaceSortOrderFilter,
+            holonSpaceScopeFilter, setHolonSpaceScopeOrderFilter,
 
             holonPosts, setHolonPosts, getHolonPosts, getNextHolonPosts,
             holonPostPaginationLimit, setHolonPostPaginationLimit,

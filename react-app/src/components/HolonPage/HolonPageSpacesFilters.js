@@ -20,6 +20,11 @@ function HolonPageSpacesFilters() {
                     type='holon-spaces'
                 />
                 <DropDownMenu
+                    title='Scope'
+                    options={['All Contained Spaces', 'Only Direct Descendants']}
+                    type='holon-spaces'
+                />
+                <DropDownMenu
                     title='Sort Order'
                     options={['Descending', 'Ascending']}
                     type='holon-spaces'

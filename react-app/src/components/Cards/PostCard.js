@@ -174,7 +174,7 @@ function PostCard(props) {
             <div className={styles.postBody}>
                 <div className={styles.postTags}>
                     {creator &&
-                        <Link to={ `/u/${creator.name}`} className={styles.postCreator}>
+                        <Link to={ `/u/${creator.handle}`} className={styles.postCreator}>
                             {creator.flagImagePath ?
                                 <img className={styles.userImage} src={creator.flagImagePath} alt=''/> :
                                 <div className={styles.userImageWrapper}>

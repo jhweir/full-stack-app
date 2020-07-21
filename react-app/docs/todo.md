@@ -4,8 +4,7 @@ Last updated: 20-07-2020
 - Add user to created holons
 - Add clickoutside approach from drop down menu to other modals
 - Add basic mod controls (image upload, name change, handle change)
-- show all spaces vs direct child spaces ('holon handles' vs. 'verticle holon relationships')
-- show all posts vs direct posts ('post holons' vs. 'visible handles')
+- show all posts vs direct posts ('post holons' / 'visible handles') ('all contained' vs. 'posted directly to space')
 - getHolonPosts run from sidebar buttons but not getHolonData (best approach?)
 - Create links between posts
 - Include interests and location on register form
@@ -74,3 +73,4 @@ Last updated: 20-07-2020
     - Sort by (Total Reactions, Total Likes, Total Hearts, Total Ratings, Total Links, ...)
 - work out how to get holon stats for sorting ()
 - Set up filters on child-holons page
+- show all spaces vs direct child spaces ('holon handles' / 'verticle holon relationships') ('all contained spaces' vs. 'only direct descendents')

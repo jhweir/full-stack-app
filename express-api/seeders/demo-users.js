@@ -5,7 +5,7 @@ module.exports = {
     return queryInterface.bulkInsert('Users', [
       {
         id: 1,
-        handle: null,
+        handle: 'user-1',
         name: 'User 1',
         bio: '...',
         flagImagePath: null,
@@ -16,7 +16,7 @@ module.exports = {
       },
       {
         id: 2,
-        handle: null,
+        handle: 'user-2',
         name: 'User 2',
         bio: '...',
         flagImagePath: null,
@@ -27,7 +27,7 @@ module.exports = {
       },
       {
         id: 3,
-        handle: null,
+        handle: 'user-3',
         name: 'User 3',
         bio: '...',
         flagImagePath: null,
@@ -38,7 +38,7 @@ module.exports = {
       },
       {
         id: 4,
-        handle: null,
+        handle: 'user-4',
         name: 'User 4',
         bio: '...',
         flagImagePath: null,
@@ -49,7 +49,7 @@ module.exports = {
       },
       {
         id: 5,
-        handle: null,
+        handle: 'user-5',
         name: 'User 5',
         bio: '...',
         flagImagePath: null,
@@ -60,7 +60,7 @@ module.exports = {
       },
       {
         id: 6,
-        handle: null,
+        handle: 'user-6',
         name: 'User 6',
         bio: '...',
         flagImagePath: null,
@@ -71,7 +71,7 @@ module.exports = {
       },
       {
         id: 7,
-        handle: null,
+        handle: 'user-7',
         name: 'User 7',
         bio: '...',
         flagImagePath: null,

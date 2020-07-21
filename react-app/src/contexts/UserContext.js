@@ -8,9 +8,9 @@ export const UserContext = createContext()
 function UserContextProvider(props) {
     const { accountContextLoading, isLoggedIn, accountData } = useContext(AccountContext)
     const [userContextLoading, setUserContextLoading] = useState(true)
-    const [userName, setUserName] = useState('')
+    const [userHandle, setUserHandle] = useState('')
     const [userData, setUserData] = useState({
-        Posts: [], //change to 'CreatedPosts'?
+        Posts: [],
         FollowedHolons: [],
         ModeratedHolons: []
     })
@@ -21,13 +21,12 @@ function UserContextProvider(props) {
     function getUserData() {
         console.log('UserContext: getUserData')
         setUserContextLoading(true)
-        axios.get(config.environmentURL + `/user-data?userName=${userName}`)
+        axios.get(config.environmentURL + `/user-data?userHandle=${userHandle}`)
             .then(res => { setUserData(res.data); setUserContextLoading(false) })
     }
 
     function getCreatedPosts() {
         console.log('UserContext: getCreatedPosts')
-
         axios
             .get(config.environmentURL + 
             `/created-posts?userId=${userData.id ? userData.id : null}&accountId=${isLoggedIn ? accountData.id : null}`)
@@ -35,9 +34,8 @@ function UserContextProvider(props) {
     }
 
     useEffect(() => {
-        // when userName recieved from UserPage, getUserData
         if (!accountContextLoading) { getUserData() }
-    }, [userName])
+    }, [userHandle, accountData])
 
     useEffect(() => {
         if (isLoggedIn && userData && userData.id === accountData.id) { setIsOwnAccount(true) }
@@ -47,7 +45,7 @@ function UserContextProvider(props) {
     return (
         <UserContext.Provider value={{
             isOwnAccount,
-            userName, setUserName,
+            userHandle, setUserHandle,
             userData, getUserData,
             selectedUserSubPage, setSelectedUserSubPage,
             createdPosts, getCreatedPosts,
