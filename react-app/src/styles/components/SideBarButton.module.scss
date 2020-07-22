@@ -5,10 +5,10 @@
     align-items: center;
     &:hover {
         cursor: pointer;
-        .navButtonIcon { opacity: 0.4; }
+        .navButtonIcon { opacity: 0.5; }
     }
     &.selected {
-        .navButtonIcon { opacity: 0.4; }
+        .navButtonIcon { opacity: 0.5; }
     }
 }
 .navButtonIcon {

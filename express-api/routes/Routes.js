@@ -423,10 +423,32 @@ router.get('/holon-spaces', (req, res) => {
         return where
     }
 
+    function findInclude() {
+        let include
+        if (scope === 'All Contained Spaces') { 
+            include = [{ 
+                model: Holon,
+                as: 'HolonHandles',
+                attributes: [],
+                through: { attributes: [] }
+            }]
+        }
+        if (scope === 'Only Direct Descendants') { 
+            include = [{ 
+                model: Holon,
+                as: 'DirectParentHolons',
+                attributes: [],
+                through: { attributes: [] }
+            }]
+        }
+        return include
+    }
+
     let startDate = findStartDate()
     let order = findOrder()
     let firstAttributes = findFirstAttributes()
     let where = findWhere()
+    let include = findInclude()
 
     // Double query required to to prevent results and pagination being effected by top level where clause.
     // Intial query used to find correct posts with calculated stats and pagination applied.
@@ -438,20 +460,7 @@ router.get('/holon-spaces', (req, res) => {
         offset: Number(offset),
         attributes: firstAttributes,
         subQuery: false,
-        include: [
-            { 
-                model: Holon,
-                as: 'DirectParentHolons',
-                attributes: [],
-                through: { attributes: [] }
-            },
-            { 
-                model: Holon,
-                as: 'HolonHandles',
-                attributes: [],
-                through: { attributes: [] }
-            },
-        ]
+        include
     })
     .then(holons => {
         Holon.findAll({ 
