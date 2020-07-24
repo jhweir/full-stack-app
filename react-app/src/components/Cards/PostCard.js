@@ -11,8 +11,7 @@ function PostCard(props) {
     const { 
         id,
         creator,
-        title,
-        description,
+        text,
         url,
         createdAt,
         total_comments,
@@ -207,10 +206,9 @@ function PostCard(props) {
                 </div>
                 <div className={styles.postContent}>
                     {url 
-                        ? <a href={url} className={styles.postTitle}>{ title }</a>
-                        : <Link to={ `/p/${id}` } className={styles.postTitle}>{ title }</Link>
+                        ? <a href={url} className={styles.postText}>{ text }</a>
+                        : <Link to={ `/p/${id}` } className={styles.postText}>{ text }</Link>
                     }
-                    <div className={styles.postDescription}>{ description }</div>    
                     <div className={styles.postInteract}>
                         <div className={styles.postInteractItem} onClick={() => setReactionModalOpen(true)}>
                             <img 

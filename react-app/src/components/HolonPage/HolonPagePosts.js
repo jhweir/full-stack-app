@@ -8,7 +8,7 @@ import HolonPagePostsPlaceholder from './HolonPagePostsPlaceholder'
 import SearchBar from '../SearchBar'
 
 function HolonPagePosts() {
-    const { setCreatePostModalOpen, pageBottomReached } = useContext(AccountContext)
+    const { setCreatePostModalOpen, pageBottomReached, isLoggedIn, setAlertModalOpen, setAlertMessage } = useContext(AccountContext)
     const {
         holonContextLoading, holonData,
         holonPosts, getHolonPosts, getNextHolonPosts,
@@ -34,6 +34,11 @@ function HolonPagePosts() {
         if (pageBottomReached && !holonContextLoading && holonData.id) { getNextHolonPosts() }
     }, [pageBottomReached])
 
+    function openCreatePostModal() {
+        if (!isLoggedIn) { setAlertModalOpen(true); setAlertMessage('Log in to create a post') }
+        else { setCreatePostModalOpen(true) }
+    }
+
     return (
         <div className={styles.wall}>
             <div className='wecoPageHeader'>
@@ -42,7 +47,7 @@ function HolonPagePosts() {
                     <button className='wecoButton mr-10' onClick={() => setHolonPostFiltersOpen(!holonPostFiltersOpen)}>
                         <img className='wecoButtonIcon' src='/icons/sliders-h-solid.svg'/>
                     </button>
-                    <button className='wecoButton mr-10' onClick={() => setCreatePostModalOpen(true)}>
+                    <button className='wecoButton mr-10' onClick={() => openCreatePostModal()}>
                         Create Post
                     </button>
                 </div>

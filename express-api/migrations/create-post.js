@@ -17,19 +17,10 @@ module.exports = {
       globalState: {
         type: Sequelize.STRING
       },
-      privacySetting: {
-        type: Sequelize.STRING
-      },
       creatorId: {
         type: Sequelize.INTEGER
       },
-      note: {
-        type: Sequelize.STRING
-      },
-      title: {
-        type: Sequelize.STRING
-      },
-      description: {
+      text: {
         type: Sequelize.STRING
       },
       url: {

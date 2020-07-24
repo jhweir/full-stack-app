@@ -26,7 +26,7 @@ function NavBar() {
                     <Link to="/h/root"
                         className={styles.navBarLink}
                         onClick={() => { setHolonHandle('root') }}>
-                        <img className={styles.navBarIcon} src="/icons/globe-americas-solid.svg" alt=''/>
+                        <img className={styles.navBarIcon} src="/icons/edit-solid.svg" alt=''/>
                         <div className={styles.navBarText}>Posts</div>
                     </Link> | 
                     <Link to="/h/root/spaces"

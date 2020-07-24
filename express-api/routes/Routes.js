@@ -20,7 +20,7 @@ const PollAnswer = require('../models').PollAnswer
 
 //const postAttributes = (userId) => [
 const postAttributes = [
-    'id', 'type', 'subType', 'globalState', 'title', 'description', 'url', 'createdAt',
+    'id', 'type', 'subType', 'globalState', 'text', 'url', 'createdAt',
     [sequelize.literal(
         `(SELECT COUNT(*) FROM Comments AS Comment WHERE Comment.postId = Post.id)`
         ),'total_comments'
@@ -161,10 +161,7 @@ router.get('/holon-posts', (req, res) => {
                 globalState: 'visible',
                 createdAt: { [Op.between]: [startDate, Date.now()] },
                 type,
-                [Op.or]: [
-                    { title: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } },
-                    { description: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } }
-                ]
+                text: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` }
             } 
         }
         if (scope === 'Only Direct Posts To Space') {
@@ -174,10 +171,11 @@ router.get('/holon-posts', (req, res) => {
                 globalState: 'visible',
                 createdAt: { [Op.between]: [startDate, Date.now()] },
                 type,
-                [Op.or]: [
-                    { title: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } },
-                    { description: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } }
-                ]
+                text: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` }
+                // [Op.or]: [
+                //     { title: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } },
+                //     { description: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } }
+                // ]
             }
         }
         return where
@@ -406,6 +404,7 @@ router.get('/holon-spaces', (req, res) => {
                 handle: { [Op.ne]: [handle] },
                 createdAt: { [Op.between]: [startDate, Date.now()] },
                 [Op.or]: [
+                    { handle: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } },
                     { name: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } },
                     { description: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } }
                 ]
@@ -417,6 +416,7 @@ router.get('/holon-spaces', (req, res) => {
                 '$DirectParentHolons.handle$': handle,
                 createdAt: { [Op.between]: [startDate, Date.now()] },
                 [Op.or]: [
+                    { handle: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } },
                     { name: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } },
                     { description: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } }
                 ]
@@ -899,10 +899,11 @@ router.get('/user-posts', (req, res) => {
             globalState: 'visible',
             createdAt: { [Op.between]: [startDate, Date.now()] },
             type,
-            [Op.or]: [
-                { title: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } },
-                { description: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } }
-            ]
+            text: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` }
+            // [Op.or]: [
+            //     { title: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } },
+            //     { description: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } }
+            // ]
         },
         order,
         limit: Number(limit),
@@ -1121,7 +1122,7 @@ router.post('/create-holon', (req, res) => {
 })
 
 router.post('/create-post', (req, res) => {
-    const { type, subType, creatorId, title, description, url, holonHandles, pollAnswers } = req.body.post
+    const { type, subType, creatorId, text, url, holonHandles, pollAnswers } = req.body.post
     let holonIds = []
 
     async function asyncForEach(array, callback) {
@@ -1159,7 +1160,7 @@ router.post('/create-post', (req, res) => {
 
     // Create the post and all of its assosiated content
     Post.create({
-        type, subType, creatorId, title, description, url, globalState: 'visible'
+        type, subType, creatorId, text, url, globalState: 'visible'
     })
     .then(post => {
         createNewPostHolons(post)

@@ -4,11 +4,8 @@ module.exports = (sequelize, DataTypes) => {
     type: DataTypes.STRING,
     subType: DataTypes.STRING,
     globalState: DataTypes.STRING,
-    privacySetting: DataTypes.STRING,
     creatorId: DataTypes.INTEGER,
-    note: DataTypes.STRING,
-    title: DataTypes.STRING,
-    description: DataTypes.STRING,
+    text: DataTypes.STRING,
     url: DataTypes.STRING,
     imagePath: DataTypes.STRING
   }, {})
