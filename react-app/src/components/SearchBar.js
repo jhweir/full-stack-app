@@ -1,11 +1,12 @@
 import React, { useState, useContext } from 'react'
 import { HolonContext } from '../contexts/HolonContext'
+import { UserContext } from '../contexts/UserContext'
 import styles from '../styles/components/SearchBar.module.scss'
 
 function SearchBar(props) {
     const { type } = props
     const { setHolonPostSearchFilter, setHolonSpaceSearchFilter, setHolonUserSearchFilter } = useContext(HolonContext)
-    //const { setUserSearchFilter } = useContext(HolonContext)
+    const { setCreatedPostSearchFilter } = useContext(UserContext)
     const [newSearch, setNewSearch] = useState('')
 
     let setSearchFilter, placeholder
@@ -13,6 +14,7 @@ function SearchBar(props) {
     if (type === 'holon-posts') { setSearchFilter = setHolonPostSearchFilter; placeholder = 'Search posts...' }
     if (type === 'holon-spaces') { setSearchFilter = setHolonSpaceSearchFilter; placeholder = 'Search spaces...' }
     if (type === 'holon-users') { setSearchFilter = setHolonUserSearchFilter; placeholder = 'Search users...' }
+    if (type === 'user-posts') { setSearchFilter = setCreatedPostSearchFilter; placeholder = 'Search posts...' }
 
     function applySearch(e) {
         e.preventDefault()

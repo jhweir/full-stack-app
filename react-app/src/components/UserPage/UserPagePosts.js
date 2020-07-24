@@ -1,4 +1,5 @@
 import React, { useContext, useEffect } from 'react'
+import { AccountContext } from '../../contexts/AccountContext'
 import { UserContext } from '../../contexts/UserContext'
 import styles from '../../styles/components/UserPagePosts.module.scss'
 import SearchBar from '../SearchBar'
@@ -6,11 +7,17 @@ import UserPagePostFilters from './UserPagePostFilters'
 import PostCard from '../Cards/PostCard'
 
 function UserPagePosts() {
+    const { pageBottomReached } = useContext(AccountContext)
     const {
         userContextLoading, userData,
-        setSelectedUserSubPage,
-        getCreatedPosts, createdPosts,
-        createdPostFiltersOpen, setCreatedPostFiltersOpen
+        setSelectedUserSubPage, createdPostPaginationOffset,
+        getCreatedPosts, getNextCreatedPosts, createdPosts,
+        createdPostFiltersOpen, setCreatedPostFiltersOpen,
+        createdPostSearchFilter,
+        createdPostTimeRangeFilter,
+        createdPostTypeFilter,
+        createdPostSortByFilter,
+        createdPostSortOrderFilter
     } = useContext(UserContext)
 
     useEffect(() => {
@@ -19,9 +26,11 @@ function UserPagePosts() {
 
     useEffect(() => {
         if (!userContextLoading && userData.id) { getCreatedPosts() }
-    }, [userContextLoading])
+    }, [userContextLoading, createdPostSearchFilter, createdPostTimeRangeFilter, createdPostTypeFilter, createdPostSortByFilter, createdPostSortOrderFilter])
 
-    let visiblePosts = createdPosts.filter(post => { return post.globalState === 'visible' })
+    useEffect(() => {
+        if (pageBottomReached && !userContextLoading && userData.id) { getNextCreatedPosts() }
+    }, [pageBottomReached])
 
     return (
         <div className={styles.wrapper}>
@@ -35,9 +44,9 @@ function UserPagePosts() {
                 </div>
                 <UserPagePostFilters/>
             </div>
-            {visiblePosts.length 
-                ? <ul className={styles.createdPosts}>
-                    {visiblePosts.map((post, index) =>
+            {createdPosts.length > 0 &&
+                <ul className={styles.createdPosts}>
+                    {createdPosts.map((post, index) =>
                         <PostCard
                             post={post}
                             key={index}
@@ -45,7 +54,11 @@ function UserPagePosts() {
                         />
                     )}
                 </ul>
-                : <div>No posts created yet</div>
+            }
+            {createdPostPaginationOffset > 0 && createdPosts.length < 1 &&
+                <div className='wecoNoContentPlaceholder'>
+                    No posts yet that match those settings...
+                </div>
             }
         </div>
     )

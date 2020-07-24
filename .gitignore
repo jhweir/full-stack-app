@@ -1,3 +1,5 @@
+/.VSCodeCounter
+
 /express-api/node_modules/
 
 /old-express-api/node_modules/

@@ -19,7 +19,7 @@ function CommentCard(props) {
 
                 <div className={styles.commentTags}>
                     {commentCreator &&
-                        <Link to={ `/u/${commentCreator.name}`} className={styles.commentCreator}>
+                        <Link to={ `/u/${commentCreator.handle}`} className={styles.commentCreator}>
                             {commentCreator.flagImagePath ?
                                 <img className={styles.userImage} src={commentCreator.flagImagePath} alt=''/> :
                                 <div className={styles.userImageWrapper}>

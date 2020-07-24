@@ -7,8 +7,7 @@ import styles from '../../styles/components/CreateHolonModal.module.scss'
 // import CreatePostModalHolonHandleInput from './CreatePostModalHolonHandleInput'
 
 function CreateHolonModal() {
-    // const { setCreateHolonModalOpen } = props
-    const { createHolonModalOpen, setCreateHolonModalOpen } = useContext(AccountContext)
+    const { accountData, getAccountData, createHolonModalOpen, setCreateHolonModalOpen } = useContext(AccountContext)
     const { holonData, getHolonData } = useContext(HolonContext)
     
     const [name, setName] = useState('')
@@ -24,15 +23,19 @@ function CreateHolonModal() {
         let invalidHandle = handle.length === 0 || handle.length > 15
         let invalidName = name.length === 0 || name.length > 25
         let invalidDescription = description.length === 0 || description.length > 10000
-        if (invalidHandle) { setHandleError(true) }
-        if (invalidName) { setNameError(true) }
-        if (invalidDescription) { setDescriptionError(true) }
+        if (invalidHandle) { setHandleError(true); setFlashMessage('Invalid handle') }
+        if (invalidName) { setNameError(true); setFlashMessage('Invalid name') }
+        if (invalidDescription) { setDescriptionError(true); setFlashMessage('Invalid description') }
         if (!invalidHandle && !invalidName && !invalidDescription) {
-            const data = { name, handle, description, parentHolonId: holonData.id }
+            const data = { creatorId: accountData.id, handle, name, description, parentHolonId: holonData.id }
             axios.post(config.environmentURL + `/create-holon`, data)
                 .then(res => {
-                    if (res.data === 'holon-handle-taken') { setFlashMessage('Holon handle already taken') }
-                    if (res.data === 'success') { setCreateHolonModalOpen(false); setTimeout(() => { getHolonData() }, 200) }
+                    if (res.data === 'holon-handle-taken') { setHandleError(true); setFlashMessage('Holon handle already taken') }
+                    if (res.data === 'success') {
+                        setCreateHolonModalOpen(false)
+                        getAccountData()
+                        setTimeout(() => { getHolonData() }, 200)
+                    }
                 })
         }
     }
@@ -53,20 +56,20 @@ function CreateHolonModal() {
                             className={`wecoInput mb-10 ${handleError && 'error'}`}
                             placeholder="Handle (must be unique)"
                             type="text" value={ handle }
-                            onChange={(e) => { setHandle(e.target.value); setHandleError(false) }}
+                            onChange={(e) => { setHandle(e.target.value); setHandleError(false); setFlashMessage('') }}
                         />
                         <input 
                             className={`wecoInput mb-10 ${nameError && 'error'}`}
                             placeholder="Name"
                             type="text" value={ name }
-                            onChange={(e) => { setName(e.target.value); setNameError(false) }}
+                            onChange={(e) => { setName(e.target.value); setNameError(false); setFlashMessage('') }}
                         />
                         <textarea 
                             className={`wecoInput mb-10 ${descriptionError && 'error'}`}
                             style={{ height:'auto', paddingTop:10 }}
                             placeholder="Description" rows="3"
                             type="text" value={ description }
-                            onChange={(e) => { setDescription(e.target.value); setDescriptionError(false) }}
+                            onChange={(e) => { setDescription(e.target.value); setDescriptionError(false); setFlashMessage('') }}
                         />
                         <span className={styles.text}>You will be the default moderator. Navigate to the space while logged in to this account to access its settings.</span>
                         <button className="wecoButton">Create Holon</button>

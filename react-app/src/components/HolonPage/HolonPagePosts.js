@@ -12,7 +12,7 @@ function HolonPagePosts() {
     const {
         holonContextLoading, holonData,
         holonPosts, getHolonPosts, getNextHolonPosts,
-        setSelectedHolonSubPage,
+        setSelectedHolonSubPage, holonPostPaginationOffset,
         holonPostSearchFilter,
         holonPostFiltersOpen, setHolonPostFiltersOpen,
         holonPostTimeRangeFilter,
@@ -49,11 +49,18 @@ function HolonPagePosts() {
                 <HolonPagePostsFilters/>
             </div>
             {/* <HolonPagePostsPlaceholder/> */}
-            <ul className={`${styles.posts} ${holonContextLoading && styles.hidden}`}>
-                {holonPosts.map((post, index) =>
-                    <PostCard post={post} key={index} index={index}/>
-                )}
-            </ul>
+            {holonPosts.length > 0 &&
+                <ul className={`${styles.posts} ${holonContextLoading && styles.hidden}`}>
+                    {holonPosts.map((post, index) =>
+                        <PostCard post={post} key={index} index={index}/>
+                    )}
+                </ul>
+            }
+            {holonPostPaginationOffset > 0 && holonPosts.length < 1 &&
+                <div className='wecoNoContentPlaceholder'>
+                    No posts yet that match those settings...
+                </div>
+            }
         </div>
     )
 }

@@ -16,7 +16,7 @@ function HolonPageUsers() {
         holonUserTimeRangeFilter,
         holonUserSortByFilter,
         holonUserSortOrderFilter,
-        setSelectedHolonSubPage
+        setSelectedHolonSubPage, holonUserPaginationOffset
     } = useContext(HolonContext)
 
     useEffect(() => {
@@ -43,15 +43,22 @@ function HolonPageUsers() {
                 <HolonPageUsersFilters/>
             </div>
             {/* <HolonPageSpacesPlaceholder/> */}
-            <ul className={styles.users}>
-                {holonUsers.length > 0 && holonUsers.map((user, index) =>
-                    <UserCard
-                        key={index} 
-                        index={index}
-                        user={user}
-                    />
-                )} 
-            </ul>
+            {holonUsers.length > 0 &&
+                <ul className={styles.users}>
+                    {holonUsers.map((user, index) =>
+                        <UserCard
+                            key={index} 
+                            index={index}
+                            user={user}
+                        />
+                    )} 
+                </ul>
+            }
+            {holonUserPaginationOffset > 0 && holonUsers.length < 1 &&
+                <div className='wecoNoContentPlaceholder'>
+                    No users yet that match those settings...
+                </div>
+            }
         </div>
     )
 }

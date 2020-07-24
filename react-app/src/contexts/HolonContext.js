@@ -16,39 +16,39 @@ function HolonContextProvider({ children }) {
     const [selectedHolonSubPage, setSelectedHolonSubPage] = useState('')
 
     const [holonSpaces, setHolonSpaces] = useState([])
-    const [holonSpacePaginationLimit, setHolonSpacePaginationLimit] = useState(5)
-    const [holonSpacePaginationOffset, setHolonSpacePaginationOffset] = useState(0)
-    const [holonSpacePaginationHasMore, setHolonSpacePaginationHasMore] = useState(true)
     const [holonSpaceFiltersOpen, setHolonSpaceFiltersOpen] = useState(false)
-    const [holonSpaceSearchFilter, setHolonSpaceSearchFilter] = useState('')
     const [holonSpaceTimeRangeFilter, setHolonSpaceTimeRangeFilter] = useState('All Time')
     const [holonSpaceTypeFilter, setHolonSpaceTypeFilter] = useState('All Types')
     const [holonSpaceSortByFilter, setHolonSpaceSortByFilter] = useState('Posts')
     const [holonSpaceSortOrderFilter, setHolonSpaceSortOrderFilter] = useState('Descending')
     const [holonSpaceScopeFilter, setHolonSpaceScopeFilter] = useState('All Contained Spaces')
+    const [holonSpaceSearchFilter, setHolonSpaceSearchFilter] = useState('')
+    const [holonSpacePaginationLimit, setHolonSpacePaginationLimit] = useState(10)
+    const [holonSpacePaginationOffset, setHolonSpacePaginationOffset] = useState(0)
+    const [holonSpacePaginationHasMore, setHolonSpacePaginationHasMore] = useState(true)
 
     const [holonPosts, setHolonPosts] = useState([])
-    const [holonPostPaginationLimit, setHolonPostPaginationLimit] = useState(5)
-    const [holonPostPaginationOffset, setHolonPostPaginationOffset] = useState(0)
-    const [holonPostPaginationHasMore, setHolonPostPaginationHasMore] = useState(true)
     const [holonPostFiltersOpen, setHolonPostFiltersOpen] = useState(false)
-    const [holonPostSearchFilter, setHolonPostSearchFilter] = useState('')
     const [holonPostTimeRangeFilter, setHolonPostTimeRangeFilter] = useState('All Time')
     const [holonPostTypeFilter, setHolonPostTypeFilter] = useState('All Types')
     const [holonPostSortByFilter, setHolonPostSortByFilter] = useState('Likes')
     const [holonPostSortOrderFilter, setHolonPostSortOrderFilter] = useState('Descending')
     const [holonPostScopeFilter, setHolonPostScopeFilter] = useState('All Contained Posts')
+    const [holonPostSearchFilter, setHolonPostSearchFilter] = useState('')
+    const [holonPostPaginationLimit, setHolonPostPaginationLimit] = useState(10)
+    const [holonPostPaginationOffset, setHolonPostPaginationOffset] = useState(0)
+    const [holonPostPaginationHasMore, setHolonPostPaginationHasMore] = useState(true)
 
     const [holonUsers, setHolonUsers] = useState([])
-    const [holonUserPaginationLimit, setHolonUserPaginationLimit] = useState(9)
-    const [holonUserPaginationOffset, setHolonUserPaginationOffset] = useState(0)
-    const [holonUserPaginationHasMore, setHolonUserPaginationHasMore] = useState(true)
     const [holonUserFiltersOpen, setHolonUserFiltersOpen] = useState(false)
-    const [holonUserSearchFilter, setHolonUserSearchFilter] = useState('')
     const [holonUserTimeRangeFilter, setHolonUserTimeRangeFilter] = useState('All Time')
     const [holonUserTypeFilter, setHolonUserTypeFilter] = useState('All Types')
     const [holonUserSortByFilter, setHolonUserSortByFilter] = useState('Date')
     const [holonUserSortOrderFilter, setHolonUserSortOrderFilter] = useState('Descending')
+    const [holonUserSearchFilter, setHolonUserSearchFilter] = useState('')
+    const [holonUserPaginationLimit, setHolonUserPaginationLimit] = useState(10)
+    const [holonUserPaginationOffset, setHolonUserPaginationOffset] = useState(0)
+    const [holonUserPaginationHasMore, setHolonUserPaginationHasMore] = useState(true)
 
     function getHolonData() {
         console.log('HolonContext: getHolonData')
@@ -71,7 +71,8 @@ function HolonContextProvider({ children }) {
             }&searchQuery=${holonPostSearchFilter
             }&limit=${holonPostPaginationLimit
             }&offset=0`)
-            .then(res => { 
+            .then(res => {
+                if (res.data.length < holonPostPaginationLimit) { setHolonPostPaginationHasMore(false) }
                 setHolonPosts(res.data)
                 setHolonPostPaginationOffset(holonPostPaginationLimit)
             })
@@ -113,7 +114,8 @@ function HolonContextProvider({ children }) {
             }&searchQuery=${holonSpaceSearchFilter
             }&limit=${holonSpacePaginationLimit
             }&offset=0`)
-            .then(res => { 
+            .then(res => {
+                if (res.data.length < holonSpacePaginationLimit) { setHolonSpacePaginationHasMore(false) }
                 setHolonSpaces(res.data)
                 setHolonSpacePaginationOffset(holonPostPaginationLimit)
             })
@@ -157,7 +159,8 @@ function HolonContextProvider({ children }) {
             }&searchQuery=${holonUserSearchFilter
             }&limit=${holonUserPaginationLimit
             }&offset=0`)
-            .then(res => { 
+            .then(res => {
+                if (res.data.length < holonUserPaginationLimit) { setHolonUserPaginationHasMore(false) }
                 setHolonUsers(res.data)
                 setHolonUserPaginationOffset(holonUserPaginationLimit)
             })
