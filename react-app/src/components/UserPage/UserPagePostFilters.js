@@ -4,7 +4,13 @@ import styles from '../../styles/components/UserPagePostFilters.module.scss'
 import DropDownMenu from '../DropDownMenu'
 
 function UserPagePostFilters() {
-    const { createdPostFiltersOpen } = useContext(UserContext)
+    const {
+        createdPostFiltersOpen,
+        createdPostTimeRangeFilter, setCreatedPostTimeRangeFilter,
+        createdPostTypeFilter, setCreatedPostTypeFilter,
+        createdPostSortByFilter, setCreatedPostSortByFilter,
+        createdPostSortOrderFilter, setCreatedPostSortOrderFilter
+    } = useContext(UserContext)
 
     if (createdPostFiltersOpen) {
         return (
@@ -12,22 +18,26 @@ function UserPagePostFilters() {
                 <DropDownMenu
                     title='Time Range'
                     options={['All Time', 'Last Year', 'Last Month', 'Last Week', 'Last 24 Hours', 'Last Hour']}
-                    type='user-posts'
+                    selectedOption={createdPostTimeRangeFilter}
+                    setSelectedOption={setCreatedPostTimeRangeFilter}
                 />
                 <DropDownMenu
                     title='Post Type'
                     options={['All Types', 'Text', 'Poll', 'Task']}
-                    type='user-posts'
+                    selectedOption={createdPostTypeFilter}
+                    setSelectedOption={setCreatedPostTypeFilter}
                 />
                 <DropDownMenu
                     title='Sort By'
                     options={['Comments', 'Date', 'Reactions', 'Likes', 'Hearts', 'Ratings', 'Links']}
-                    type='user-posts'
+                    selectedOption={createdPostSortByFilter}
+                    setSelectedOption={setCreatedPostSortByFilter}
                 />
                 <DropDownMenu
                     title='Sort Order'
                     options={['Descending', 'Ascending']}
-                    type='user-posts'
+                    selectedOption={createdPostSortOrderFilter}
+                    setSelectedOption={setCreatedPostSortOrderFilter}
                 />
             </div>
         )

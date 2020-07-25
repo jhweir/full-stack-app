@@ -4,7 +4,12 @@ import styles from '../../styles/components/HolonPagePostsFilters.module.scss'
 import DropDownMenu from '../DropDownMenu'
 
 function HolonPageUsersFilters() {
-    const { holonUserFiltersOpen } = useContext(HolonContext)
+    const {
+        holonUserFiltersOpen,
+        holonUserTimeRangeFilter, setHolonUserTimeRangeFilter,
+        holonUserSortByFilter, setHolonUserSortByFilter,
+        holonUserSortOrderFilter, setHolonUserSortOrderFilter
+    } = useContext(HolonContext)
 
     if (holonUserFiltersOpen) {
         return (
@@ -12,17 +17,20 @@ function HolonPageUsersFilters() {
                 <DropDownMenu
                     title='Time Range'
                     options={['All Time', 'Last Year', 'Last Month', 'Last Week', 'Last 24 Hours', 'Last Hour']}
-                    type='holon-users'
+                    selectedOption={holonUserTimeRangeFilter}
+                    setSelectedOption={setHolonUserTimeRangeFilter}
                 />
                 <DropDownMenu
                     title='Sort By'
                     options={['Posts', 'Comments', 'Date']}
-                    type='holon-users'
+                    selectedOption={holonUserSortByFilter}
+                    setSelectedOption={setHolonUserSortByFilter}
                 />
                 <DropDownMenu
                     title='Sort Order'
                     options={['Descending', 'Ascending']}
-                    type='holon-users'
+                    selectedOption={holonUserSortOrderFilter}
+                    setSelectedOption={setHolonUserSortOrderFilter}
                 />
             </div>
         )

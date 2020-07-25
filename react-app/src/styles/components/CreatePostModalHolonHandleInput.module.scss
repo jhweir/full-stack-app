@@ -1,55 +1,21 @@
 .holonHandleInput {
-    width: 100%;
+    max-width: 500px;
 }
-.holonHandleInputTitle {
-    //width: 400px;
-    margin-bottom: 20px;
-    // @media screen and (max-width: 700px) {
-    //     width: auto;
-    // }
+.text {
+    margin-bottom: 10px;
 }
-.holonHandleInputErrorMessage {
+.flashMessage {
     width: 400px;
 }
-.holonHandleInputForm {
-    margin-bottom: 20px;
+.inputForm {
+    margin-bottom: 10px;
     display: flex;
     flex-direction: row;
     align-items: flex-start;
     flex-wrap: wrap;
 }
-.holonHandleInputFormInput {
-    font-size: 14px;
-    height: 40px;
-    //width: 100%;
-    border-radius: 5px;
-    padding: 0px 15px;
-    margin: 0 15px 15px 0;
-    outline: none;
-    border: none;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    background-color: white;
-    box-shadow: 0 1px 10px 0 rgba(10, 8, 72, 0.1);
-    transition-property: box-shadow, background-color;
-    transition-duration: 0.3s, 2s;
-    &.textArea {
-        height: auto;
-        padding: 10px 15px 0 15px;
-    }
-    &.error {
-        box-shadow: 0 0 5px 5px rgba(255, 0, 0, 0.6);
-    }
-    &:hover {
-        box-shadow: 0 0 5px 6px rgba(58,136,240,0.4);
-    }
-}
-.holonHandleInputSubTitle {
-    margin-bottom: 20px;
-}
-.holonHandleInputHolons {
-    margin-bottom: 20px;
+.handles {
+    margin-bottom: 10px;
     display: flex;
     flex-direction: row;
     align-items: center;

@@ -4,7 +4,13 @@ import styles from '../../styles/components/HolonPagePostsFilters.module.scss'
 import DropDownMenu from '../DropDownMenu'
 
 function HolonPageSpacesFilters() {
-    const { holonSpaceFiltersOpen } = useContext(HolonContext)
+    const {
+        holonSpaceFiltersOpen,
+        holonSpaceTimeRangeFilter, setHolonSpaceTimeRangeFilter,
+        holonSpaceSortByFilter, setHolonSpaceSortByFilter,
+        holonSpaceSortOrderFilter, setHolonSpaceSortOrderFilter,
+        holonSpaceScopeFilter, setHolonSpaceScopeFilter,
+    } = useContext(HolonContext)
 
     if (holonSpaceFiltersOpen) {
         return (
@@ -12,22 +18,26 @@ function HolonPageSpacesFilters() {
                 <DropDownMenu
                     title='Time Range'
                     options={['All Time', 'Last Year', 'Last Month', 'Last Week', 'Last 24 Hours', 'Last Hour']}
-                    type='holon-spaces'
+                    selectedOption={holonSpaceTimeRangeFilter}
+                    setSelectedOption={setHolonSpaceTimeRangeFilter}
                 />
                 <DropDownMenu
                     title='Sort By'
                     options={['Followers', 'Posts', 'Comments', 'Date', 'Reactions', 'Likes', 'Hearts', 'Ratings', 'Links']}
-                    type='holon-spaces'
+                    selectedOption={holonSpaceSortByFilter}
+                    setSelectedOption={setHolonSpaceSortByFilter}
                 />
                 <DropDownMenu
                     title='Sort Order'
                     options={['Descending', 'Ascending']}
-                    type='holon-spaces'
+                    selectedOption={holonSpaceSortOrderFilter}
+                    setSelectedOption={setHolonSpaceSortOrderFilter}
                 />
                 <DropDownMenu
                     title='Scope'
                     options={['All Contained Spaces', 'Only Direct Descendants']}
-                    type='holon-spaces'
+                    selectedOption={holonSpaceScopeFilter}
+                    setSelectedOption={setHolonSpaceScopeFilter}
                 />
             </div>
         )

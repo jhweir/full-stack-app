@@ -47,10 +47,10 @@ function CreatePostModalHolonHandleInput(props) {
 
     return (
         <div className={styles.holonHandleInput}>
-            <div className={styles.holonHandleInputTitle}>Add the names of spaces you want the post to appear in below:</div>
-            <div className={styles.holonHandleInputForm}>
-                <input className={`${styles.holonHandleInputFormInput} ${(holonError && styles.error)}`}
-                    type="text" placeholder="Add spaces..." value={ props.newHolonHandle }
+            <div className={styles.text}>Add the names of spaces you want the post to appear in below:</div>
+            <div className={styles.inputForm}>
+                <input className={`wecoInput mr-10 ${holonError && 'error'}`} style={{ width: 200 }}
+                    type="text" placeholder="Add spaces..." value={ newHolonHandle }
                     onChange={(e) => {
                         setNewHolonHandle(e.target.value)
                         setHolonError(false)
@@ -60,15 +60,15 @@ function CreatePostModalHolonHandleInput(props) {
                 <button className="button" style={{ flexShrink: 0 }} onClick={ addHolonHandle }>Add space</button>
             </div>
             {holonErrorMessage && 
-                <div className={styles.holonHandleInputSubTitle}>
+                <div className={styles.flashMessage}>
                     Sorry, that space doesn't exist yet. You'll need to create it first on the 
                     <Link to="/h/root/spaces"> Spaces</Link> page.
                 </div>
             }
-            {(newHolonHandle !== '' && suggestedHolonHandles.length !== 0) &&
+            {newHolonHandle !== '' && suggestedHolonHandles.length !== 0 &&
                 <>
-                    <div className={styles.holonHandleInputSubTitle}>Suggested spaces: </div>
-                    <ul className={styles.holonHandleInputHolons}>
+                    <div className={styles.text}>Suggested spaces: </div>
+                    <ul className={styles.handles}>
                         {suggestedHolonHandles.map((holonHandle, index) => 
                             <CreatePostModalHolonHandle 
                                 key={index}
@@ -83,8 +83,8 @@ function CreatePostModalHolonHandleInput(props) {
             }
             {holonHandles.length !== 0 &&
                 <>
-                    <div className={styles.holonHandleInputSubTitle}>Added spaces: </div>
-                    <ul className={styles.holonHandleInputHolons}>
+                    <div className={styles.text}>Added spaces: </div>
+                    <ul className={styles.handles}>
                         {holonHandles.map((holonHandle, index) => 
                             <CreatePostModalHolonHandle holonHandle={holonHandle} key={index} removeHolonHandle={removeHolonHandle} added={true}/>
                         )}

@@ -152,6 +152,10 @@ input {
     //box-shadow: 0 1px 10px 0 rgba(10, 8, 72, 0.2);
     transition-property: box-shadow, background-color;
     transition-duration: 0.3s, 1s;
+    &.textArea {
+        height: 100px;
+        padding: 10px 15px;
+    }
     &.error {
         box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.6);
     }

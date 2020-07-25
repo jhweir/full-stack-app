@@ -6,29 +6,30 @@ import config from '../../Config'
 import styles from '../../styles/components/CreatePostModal.module.scss'
 import CreatePostModalHolonHandleInput from './CreatePostModalHolonHandleInput'
 import PollAnswerForm from './../PostPage/Poll/PollAnswerForm'
+import DropDownMenu from '../DropDownMenu'
 
-function CreatePostModal(props) {
+function CreatePostModal() {
     const { globalData, accountData, createPostModalOpen, setCreatePostModalOpen } = useContext(AccountContext)
     const { holonData, holonContextLoading, getHolonPosts } = useContext(HolonContext)
-    const [type, setPostType] = useState('')
-    // const [user, setUser] = useState('')
+
+    const [postType, setPostType] = useState('Text')
     const [text, setText] = useState('')
-    const [description, setDescription] = useState('')
     const [url, setUrl] = useState('')
     const [holonHandles, setHolonHandles] = useState([])
     const [newHolonHandle, setNewHolonHandle] = useState('')
-    const [pollType, setPollType] = useState('single-choice')
-    const [pollAnswers, setPollAnswers] = useState([])
-    const [newPollAnswer, setNewPollAnswer] = useState('')
     const [textError, setTextError] = useState(false)
     const [holonError, setHolonError] = useState(false)
     const [holonErrorMessage, setHolonErrorMessage] = useState(false)
 
+    const [pollType, setPollType] = useState('single-choice')
+    const [pollAnswers, setPollAnswers] = useState([])
+    const [newPollAnswer, setNewPollAnswer] = useState('')
+
     // TODO: look into whether it would be better to strip out the unnecissary data included in 'HolonData' when passing it into the holonHandles
     // Also may be possible to move this use of state into a simpler variable
     useEffect(() => {
-        setHolonHandles([...holonHandles, holonData.handle]) //holonData.HolonTags...
-    }, [])
+        if (holonData.id) { setHolonHandles([holonData.handle]) }
+    }, [holonData])
 
     function submitPost(e) {
         e.preventDefault()
@@ -38,7 +39,7 @@ function CreatePostModal(props) {
         if (invalidHolons) { setHolonError(true) }
         if (!invalidText && !invalidHolons) {
             //console.log('accountData.name:', accountData.name)
-            let post = { type, subType: pollType, creatorId: accountData.id, text, url, holonHandles, pollAnswers }
+            let post = { type: postType, subType: pollType, creatorId: accountData.id, text, url, holonHandles, pollAnswers }
             axios.post(config.environmentURL + '/create-post', { post })
                 //.then(res => { console.log(res) })
                 .then(setCreatePostModalOpen(false))
@@ -51,10 +52,17 @@ function CreatePostModal(props) {
             <div className={styles.createPostModalWrapper}>
                 <div className={styles.createPostModal}>
                     <div className={styles.createPostModalTitle}>
-                        Create a new {type} post in '{ holonData.name }'
+                        Create a new {postType} post in '{ holonData.name }'
                     </div>
+                    <DropDownMenu
+                        title='Post Type'
+                        options={['Text', 'Poll', 'Task']}
+                        type='create-post'
+                        selectedOption={postType}
+                        setSelectedOption={setPostType}
+                    />
                     <form className={styles.createPostModalForm} onSubmit={ submitPost }>
-                        {type === 'poll' &&
+                        {postType === 'poll' &&
                             <div className={styles.pollTypeSelector}>
                                 <span className={styles.pollTypeSelectorText}>Choose a poll type</span>
                                 <div className={styles.pollTypeSelectorOptions}>
@@ -65,17 +73,12 @@ function CreatePostModal(props) {
                                 <span className={styles.pollTypeSelectorText}>Selected poll type: {pollType}</span>
                             </div>
                         }
-                        <input className={`wecoInput mb-10 ${textError && 'error'}`}
+                        <textarea className={`wecoInput textArea mb-10 ${textError && 'error'}`}
                             placeholder="Text (max 20,000 characters)"
                             type="text" value={ text }
                             onChange={(e) => { setText(e.target.value); setTextError(false) }}
                         />
-                        {/* <textarea className={`${styles.createPostModalFormInput} ${styles.textArea} ${(descriptionError && styles.error)}`}
-                            placeholder="Description... (optional, max 20,000 characters)"
-                            rows="5" type="text" value={description}
-                            onChange={(e) => { setDescription(e.target.value); setDescriptionError(false) }}
-                        /> */}
-                        <input className={styles.createPostModalFormInput}
+                        <input className={`wecoInput mb-20`}
                             placeholder="URL"
                             type="text" value={url}
                             onChange={(e) => { setUrl(e.target.value) }}
@@ -91,7 +94,7 @@ function CreatePostModal(props) {
                             holonErrorMessage={holonErrorMessage}
                             setHolonErrorMessage={setHolonErrorMessage}
                         />
-                        {type === 'poll' &&
+                        {postType === 'poll' &&
                             <PollAnswerForm
                                 pollAnswers={pollAnswers}
                                 setPollAnswers={setPollAnswers}

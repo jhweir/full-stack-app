@@ -52,6 +52,7 @@
     overflow: hidden;
 }
 .postTags {
+    margin-bottom: 10px;
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
@@ -99,21 +100,12 @@
     display: flex;
     flex-direction: column;
 }
-// .postTitle {
-//     color: black;
-//     font-size: 24px;
-//     font-weight: 600;
-//     text-decoration: none;
-//     margin-bottom: 5px;
-//     transition-property: color;
-//     transition-duration: 2s;
-// }
 .postText {
     color: black;
     font-size: 16px;
     font-weight: 400;
     text-decoration: none;
-    padding-bottom: 10px;
+    margin-bottom: 10px;
     transition-property: color;
     transition-duration: 2s;
     //overflow: hidden;

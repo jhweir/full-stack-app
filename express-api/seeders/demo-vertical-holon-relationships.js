@@ -53,6 +53,27 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date()
       },
+      {
+        state: 'open',
+        holonAId: 1,
+        holonBId: 9,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        state: 'open',
+        holonAId: 9,
+        holonBId: 10,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        state: 'open',
+        holonAId: 9,
+        holonBId: 11,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
     ]);
   },
 

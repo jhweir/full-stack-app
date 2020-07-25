@@ -3,74 +3,112 @@
 module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.bulkInsert('Holons', [
-      { // id: 1
+      {
+        id: 1,
         handle: 'root',
         name: 'All',
         description: 'This is the root holon...',
-        flagImagePath: 'https://assets.weforum.org/project/image/HTpPcpjX9elUNR5L6VvDaixzL9GgCoGaasn1nTj74e0.jpeg',
+        flagImagePath: 'https://new-weco-holon-flag-images.s3.eu-west-1.amazonaws.com/1595681318669',
         coverImagePath: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
-      { // id: 2
+      {
+        id: 2,
         handle: 'science',
         name: 'Science',
         description: 'Welcome to the Science holon...',
-        flagImagePath: 'https://schoolsweek.co.uk/wp-content/uploads/2020/04/Science-scientists-SM.jpg',
+        flagImagePath: 'https://new-weco-holon-flag-images.s3.eu-west-1.amazonaws.com/1595681353083',
         coverImagePath: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
-      { // id: 3
+      {
+        id: 3,
         handle: 'physics',
         name: 'Physics',
         description: 'Welcome to Physics',
-        flagImagePath: 'https://images.theconversation.com/files/191827/original/file-20171025-25516-g7rtyl.jpg',
+        flagImagePath: 'https://new-weco-holon-flag-images.s3.eu-west-1.amazonaws.com/1595681388013',
         coverImagePath: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
-      { // id: 4
+      {
+        id: 4,
         handle: 'biology',
         name: 'Biology',
         description: 'Welcome to Biology',
-        flagImagePath: 'https://ugc.futurelearn.com/uploads/images/31/5b/header_315b07b5-ecbc-46ef-a0ce-a9e551381864.jpg',
+        flagImagePath: 'https://new-weco-holon-flag-images.s3.eu-west-1.amazonaws.com/1595681419303',
         coverImagePath: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
-      { // id: 5
+      {
+        id: 5,
         handle: 'chemistry',
         name: 'Chemistry',
         description: 'Welcome to Chemistry',
-        flagImagePath: 'https://images2.minutemediacdn.com/image/upload/c_crop,h_1221,w_2171,x_142,y_0/v1554734406/shape/mentalfloss/65139-istock-660523940.jpg',
+        flagImagePath: 'https://new-weco-holon-flag-images.s3.eu-west-1.amazonaws.com/1595681449075',
         coverImagePath: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
-      { // id: 6
+      {
+        id: 6,
         handle: 'qm',
         name: 'Quantum Mechanics',
         description: 'Welcome to Quantum Mechanics',
-        flagImagePath: 'https://images.ctfassets.net/cnu0m8re1exe/3DufMfv3s61Wgqem0jxOaI/06d4769516e09575754c8779f5596f0b/waroverreality.jpg',
+        flagImagePath: 'https://new-weco-holon-flag-images.s3.eu-west-1.amazonaws.com/1595681483358',
         coverImagePath: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
-      { // id: 7
+      {
+        id: 7,
         handle: 'bristol',
         name: 'Bristol',
         description: 'The Bristol space',
-        flagImagePath: 'https://i2-prod.bristolpost.co.uk/incoming/article987658.ece/ALTERNATES/s1200b/Bristol-vista.jpg',
+        flagImagePath: 'https://new-weco-holon-flag-images.s3.eu-west-1.amazonaws.com/1595681510559',
         coverImagePath: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
-      { // id: 8
+      {
+        id: 8,
         handle: 'art',
         name: 'Art',
         description: 'Art wooooo...',
-        flagImagePath: 'https://cdn.britannica.com/78/43678-050-F4DC8D93/Starry-Night-canvas-Vincent-van-Gogh-New-1889.jpg',
+        flagImagePath: 'https://new-weco-holon-flag-images.s3.eu-west-1.amazonaws.com/1595681536074',
+        coverImagePath: null,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        id: 9,
+        handle: 'gameb',
+        name: 'Game-B',
+        description: 'A space for all Game-B related discussion, sharing, decision making, and mapping',
+        flagImagePath: 'https://new-weco-holon-flag-images.s3.eu-west-1.amazonaws.com/1595681571975',
+        coverImagePath: null,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        id: 10,
+        handle: 'gbprojects',
+        name: 'Game-B Projects',
+        description: 'A space for Game-B projects',
+        flagImagePath: 'https://new-weco-holon-flag-images.s3.eu-west-1.amazonaws.com/1595681691378',
+        coverImagePath: null,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        id: 11,
+        handle: 'gbmapping',
+        name: 'Game-B Mapping',
+        description: 'A space for Game-B mapping',
+        flagImagePath: 'https://new-weco-holon-flag-images.s3.eu-west-1.amazonaws.com/1595681627574',
         coverImagePath: null,
         createdAt: new Date(),
         updatedAt: new Date()

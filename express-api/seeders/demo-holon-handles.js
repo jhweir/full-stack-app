@@ -144,6 +144,62 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date()
       },
+      {
+        state: 'open',
+        holonAId: 9,
+        holonBId: 1,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        state: 'open',
+        holonAId: 9,
+        holonBId: 9,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        state: 'open',
+        holonAId: 10,
+        holonBId: 1,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        state: 'open',
+        holonAId: 10,
+        holonBId: 9,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        state: 'open',
+        holonAId: 10,
+        holonBId: 10,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        state: 'open',
+        holonAId: 11,
+        holonBId: 1,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        state: 'open',
+        holonAId: 11,
+        holonBId: 9,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        state: 'open',
+        holonAId: 11,
+        holonBId: 11,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
     ]);
   },
 

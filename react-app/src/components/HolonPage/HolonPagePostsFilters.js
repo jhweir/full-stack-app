@@ -4,7 +4,14 @@ import styles from '../../styles/components/HolonPagePostsFilters.module.scss'
 import DropDownMenu from '../DropDownMenu'
 
 function HolonPagePostsFilters() {
-    const { holonPostFiltersOpen } = useContext(HolonContext)
+    const {
+        holonPostFiltersOpen,
+        holonPostTimeRangeFilter, setHolonPostTimeRangeFilter,
+        holonPostTypeFilter, setHolonPostTypeFilter,
+        holonPostSortByFilter, setHolonPostSortByFilter,
+        holonPostSortOrderFilter, setHolonPostSortOrderFilter,
+        holonPostScopeFilter, setHolonPostScopeFilter
+    } = useContext(HolonContext)
 
     if (holonPostFiltersOpen) {
         return (
@@ -12,27 +19,32 @@ function HolonPagePostsFilters() {
                 <DropDownMenu
                     title='Time Range'
                     options={['All Time', 'Last Year', 'Last Month', 'Last Week', 'Last 24 Hours', 'Last Hour']}
-                    type='holon-posts'
+                    selectedOption={holonPostTimeRangeFilter}
+                    setSelectedOption={setHolonPostTimeRangeFilter}
                 />
                 <DropDownMenu
                     title='Post Type'
                     options={['All Types', 'Text', 'Poll', 'Task']}
-                    type='holon-posts'
+                    selectedOption={holonPostTypeFilter}
+                    setSelectedOption={setHolonPostTypeFilter}
                 />
                 <DropDownMenu
                     title='Sort By'
                     options={['Comments', 'Date', 'Reactions', 'Likes', 'Hearts', 'Ratings', 'Links']}
-                    type='holon-posts'
+                    selectedOption={holonPostSortByFilter}
+                    setSelectedOption={setHolonPostSortByFilter}
                 />
                 <DropDownMenu
                     title='Sort Order'
                     options={['Descending', 'Ascending']}
-                    type='holon-posts'
+                    selectedOption={holonPostSortOrderFilter}
+                    setSelectedOption={setHolonPostSortOrderFilter}
                 />
                 <DropDownMenu
                     title='Scope'
                     options={['All Contained Posts']} // include 'Only Direct Posts To Space'
-                    type='holon-posts'
+                    selectedOption={holonPostScopeFilter}
+                    setSelectedOption={setHolonPostScopeFilter}
                 />
             </div>
         )
