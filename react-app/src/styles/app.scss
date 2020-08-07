@@ -192,6 +192,10 @@ input {
     &.mr-10 {
         margin-right: 10px;
     }
+
+    &.centered {
+        margin: 0 auto;
+    }
  
     &:hover { 
         outline: none;

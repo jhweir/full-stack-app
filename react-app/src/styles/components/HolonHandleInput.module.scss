@@ -1,0 +1,41 @@
+.holonHandleInput {
+    max-width: 500px;
+}
+.text {
+    margin-bottom: 10px;
+}
+.form {
+    margin-bottom: 10px;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+.flashMessage {
+    width: 400px;
+}
+.dropDown {
+    position: absolute;
+    top: 50px;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: rgb(230, 230, 230);
+    box-shadow: 0 1px 10px 0 rgba(10, 8, 72, 0.05);
+    z-index: 5;
+}
+.dropDownOption {
+    font-size: 14px;
+    line-height: 1;
+    white-space: nowrap;
+    margin-bottom: 10px;
+    &:hover { cursor: pointer; }
+    &:last-child { margin-bottom: 0; }
+}
+// .handles {
+//     margin-bottom: 10px;
+//     display: flex;
+//     flex-direction: row;
+//     align-items: center;
+//     flex-wrap: wrap;
+// }

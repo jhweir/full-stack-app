@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import styles from '../styles/components/DropDownMenu.module.scss'
 
 function DropDownMenu(props) {
-    const { title, options, selectedOption, setSelectedOption } = props
+    const { title, options, selectedOption, setSelectedOption, style } = props
     const [menuOpen, setMenuOpen] = useState(false)
 
     // close menu if user clicks outside ref
@@ -14,9 +14,9 @@ function DropDownMenu(props) {
     })
 
     return (
-        <div className={styles.dropDownMenu}>
+        <div className={`${styles.dropDownMenu} ${style === 'horizontal' && styles.horizontal}`}>
             <span className={styles.title}>{title.toUpperCase()}</span>
-            <div ref={ref}>
+            <div ref={ref} className={styles.dropDown}>
                 <div className={styles.selectedOption} onClick={() => setMenuOpen(!menuOpen)}>
                     {selectedOption}
                     <img className={styles.icon} src='/icons/sort-down-solid.svg'/>

@@ -4,29 +4,28 @@ import { AccountContext } from '../../contexts/AccountContext'
 import axios from 'axios'
 import config from '../../Config'
 import styles from '../../styles/components/CreatePostModal.module.scss'
-import CreatePostModalHolonHandleInput from './CreatePostModalHolonHandleInput'
+import HolonHandleInput from './HolonHandleInput'
 import PollAnswerForm from './../PostPage/Poll/PollAnswerForm'
 import DropDownMenu from '../DropDownMenu'
 
 function CreatePostModal() {
     const { globalData, accountData, createPostModalOpen, setCreatePostModalOpen } = useContext(AccountContext)
-    const { holonData, holonContextLoading, getHolonPosts } = useContext(HolonContext)
+    const { holonData, getHolonPosts } = useContext(HolonContext)
 
     const [postType, setPostType] = useState('Text')
+    const [pollType, setPollType] = useState('Single-Choice')
     const [text, setText] = useState('')
     const [url, setUrl] = useState('')
     const [holonHandles, setHolonHandles] = useState([])
-    const [newHolonHandle, setNewHolonHandle] = useState('')
+    const [newHandle, setNewHandle] = useState('')
+    const [suggestedHandlesOpen, setSuggestedHandlesOpen] = useState(false)
+    const [suggestedHandles, setSuggestedHandles] = useState([])
     const [textError, setTextError] = useState(false)
-    const [holonError, setHolonError] = useState(false)
-    const [holonErrorMessage, setHolonErrorMessage] = useState(false)
-
-    const [pollType, setPollType] = useState('single-choice')
+    const [handleError, setHandleError] = useState(false)
+    const [flashMessage, setflashMessage] = useState(false)
     const [pollAnswers, setPollAnswers] = useState([])
     const [newPollAnswer, setNewPollAnswer] = useState('')
 
-    // TODO: look into whether it would be better to strip out the unnecissary data included in 'HolonData' when passing it into the holonHandles
-    // Also may be possible to move this use of state into a simpler variable
     useEffect(() => {
         if (holonData.id) { setHolonHandles([holonData.handle]) }
     }, [holonData])
@@ -36,46 +35,58 @@ function CreatePostModal() {
         let invalidText = text.length === 0 || text.length > 2000
         let invalidHolons = holonHandles.length === 0
         if (invalidText) { setTextError(true) }
-        if (invalidHolons) { setHolonError(true) }
+        if (invalidHolons) { setHandleError(true) }
         if (!invalidText && !invalidHolons) {
-            //console.log('accountData.name:', accountData.name)
-            let post = { type: postType, subType: pollType, creatorId: accountData.id, text, url, holonHandles, pollAnswers }
+            let subType, answers
+            if (postType === 'Poll') { subType = pollType.toLowerCase(); answers = pollAnswers } else { subType = null; answers = null }
+            let post = { type: postType.toLowerCase(), subType, creatorId: accountData.id, text, url, holonHandles, pollAnswers: answers }
             axios.post(config.environmentURL + '/create-post', { post })
-                //.then(res => { console.log(res) })
-                .then(setCreatePostModalOpen(false))
+                .then(() => { 
+                    setCreatePostModalOpen(false)
+                    setPostType('Text')
+                    setPollType('Single-Choice')
+                    setText('')
+                    setUrl('')
+                    setPollAnswers([])
+                })
                 .then(setTimeout(() => { getHolonPosts() }, 200))
         }
     }
 
     if (createPostModalOpen) {
         return (
-            <div className={styles.createPostModalWrapper}>
-                <div className={styles.createPostModal}>
-                    <div className={styles.createPostModalTitle}>
-                        Create a new {postType} post in '{ holonData.name }'
-                    </div>
-                    <DropDownMenu
-                        title='Post Type'
-                        options={['Text', 'Poll', 'Task']}
-                        type='create-post'
-                        selectedOption={postType}
-                        setSelectedOption={setPostType}
+            <div className={styles.modalWrapper}>
+                <div className={styles.modal}>
+                    <img 
+                        className={styles.closeModalButton}
+                        src="/icons/close-01.svg"
+                        onClick={() => setCreatePostModalOpen(false)}
                     />
-                    <form className={styles.createPostModalForm} onSubmit={ submitPost }>
-                        {postType === 'poll' &&
-                            <div className={styles.pollTypeSelector}>
-                                <span className={styles.pollTypeSelectorText}>Choose a poll type</span>
-                                <div className={styles.pollTypeSelectorOptions}>
-                                    <div className="button" onClick={() => { setPollType('single-choice') }}>Single Choice</div>
-                                    <div className="button" onClick={() => { setPollType('multiple-choice') }}>Multiple Choice</div>
-                                    <div className="button" onClick={() => { setPollType('weighted-choice') }}>Weighted Choice</div>
-                                </div>
-                                <span className={styles.pollTypeSelectorText}>Selected poll type: {pollType}</span>
-                            </div>
+                    <div className={styles.title}>
+                        Create a new {postType} post in '{holonData.name}'
+                    </div>
+                    <div className={styles.dropDownOptions}>
+                        <DropDownMenu
+                            title='Post Type'
+                            options={['Text', 'Poll', 'Task']}
+                            selectedOption={postType}
+                            setSelectedOption={setPostType}
+                            style='horizontal'
+                        />
+                        {postType === 'Poll' &&
+                            <DropDownMenu
+                                title='Poll Type'
+                                options={['Single Choice', 'Multiple Choice', 'Weighted Choice']}
+                                selectedOption={pollType}
+                                setSelectedOption={setPollType}
+                                style='horizontal'
+                            />
                         }
+                    </div>
+                    <form className={styles.createPostModalForm} onSubmit={ submitPost }>
                         <textarea className={`wecoInput textArea mb-10 ${textError && 'error'}`}
                             placeholder="Text (max 20,000 characters)"
-                            type="text" value={ text }
+                            type="text" value={text}
                             onChange={(e) => { setText(e.target.value); setTextError(false) }}
                         />
                         <input className={`wecoInput mb-20`}
@@ -83,18 +94,22 @@ function CreatePostModal() {
                             type="text" value={url}
                             onChange={(e) => { setUrl(e.target.value) }}
                         />
-                        <CreatePostModalHolonHandleInput 
-                            globalData={globalData}
+                        <HolonHandleInput 
+                            //globalData={globalData}
                             holonHandles={holonHandles}
                             setHolonHandles={setHolonHandles}
-                            newHolonHandle={newHolonHandle}
-                            setNewHolonHandle={setNewHolonHandle}
-                            holonError={holonError}
-                            setHolonError={setHolonError}
-                            holonErrorMessage={holonErrorMessage}
-                            setHolonErrorMessage={setHolonErrorMessage}
+                            newHandle={newHandle}
+                            setNewHandle={setNewHandle}
+                            suggestedHandlesOpen={suggestedHandlesOpen}
+                            setSuggestedHandlesOpen={setSuggestedHandlesOpen}
+                            suggestedHandles={suggestedHandles}
+                            setSuggestedHandles={setSuggestedHandles}
+                            handleError={handleError}
+                            setHandleError={setHandleError}
+                            flashMessage={flashMessage}
+                            setflashMessage={setflashMessage}
                         />
-                        {postType === 'poll' &&
+                        {postType === 'Poll' &&
                             <PollAnswerForm
                                 pollAnswers={pollAnswers}
                                 setPollAnswers={setPollAnswers}
@@ -102,10 +117,7 @@ function CreatePostModal() {
                                 setNewPollAnswer={setNewPollAnswer}
                             />
                         }
-                        <div className={styles.createPostModalFormButtons}>
-                            <button className="button">Post</button>
-                            <div className="button" onClick={() => setCreatePostModalOpen(false)}>Cancel</div>
-                        </div>
+                        <button className="wecoButton centered">Post</button>
                     </form>
                 </div>
             </div>
@@ -114,6 +126,18 @@ function CreatePostModal() {
 }
 
 export default CreatePostModal
+
+// {postType === 'Poll' &&
+// <div className={styles.pollTypeSelector}>
+//     <span className={styles.pollTypeSelectorText}>Choose a poll type</span>
+//     <div className={styles.pollTypeSelectorOptions}>
+//         <div className="button" onClick={() => { setPollType('single-choice') }}>Single Choice</div>
+//         <div className="button" onClick={() => { setPollType('multiple-choice') }}>Multiple Choice</div>
+//         <div className="button" onClick={() => { setPollType('weighted-choice') }}>Weighted Choice</div>
+//     </div>
+//     <span className={styles.pollTypeSelectorText}>Selected poll type: {pollType}</span>
+// </div>
+// }
 
 {/* <div className={styles.createPostModalSubTitle}>Chose a post type:</div>
 <div className={styles.createPostModalTypeSelector}>

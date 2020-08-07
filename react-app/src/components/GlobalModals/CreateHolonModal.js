@@ -4,7 +4,7 @@ import config from '../../Config'
 import { AccountContext } from '../../contexts/AccountContext'
 import { HolonContext } from '../../contexts/HolonContext'
 import styles from '../../styles/components/CreateHolonModal.module.scss'
-// import CreatePostModalHolonHandleInput from './CreatePostModalHolonHandleInput'
+// import HolonHandleInput from './HolonHandleInput'
 
 function CreateHolonModal() {
     const { accountData, getAccountData, createHolonModalOpen, setCreateHolonModalOpen } = useContext(AccountContext)
