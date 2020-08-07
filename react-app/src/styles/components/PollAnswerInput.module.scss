@@ -24,6 +24,7 @@
     padding: 0;
     opacity: 0.4;
     margin-right: 5px;
+    flex-shrink: 0;
     &:hover {
         cursor: pointer;
     }

@@ -41,6 +41,9 @@
     opacity: 0.8;
     filter: invert(100%)
 }
+.text {
+    margin: 20px 0;
+}
 .totalUsedPointsText {
     margin: 10px 0;
     &.error {

@@ -3,6 +3,9 @@
     margin-bottom: 20px;
     //height: 500px;
 }
+.text {
+    margin-bottom: 10px;
+}
 .pollAnswerFormTop {
     width: 100%;
     display: flex;
@@ -57,5 +60,43 @@
     font-size: 24px;
 }
 .pollAnswers {
+    max-width: 800px;
     margin-top: 10px;
+}
+.pollAnswer {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #ddd;
+    border-radius: 5px;
+    padding: 10px 10px 10px 15px;
+    margin: 0 10px 10px 0;
+    &:hover {
+        cursor: pointer;
+    }
+}
+.pollAnswerText {
+    margin-right: 20px;
+}
+.pollAnswerCloseButton {
+    position: absolute;
+    right: 10px;
+    top: 13px;
+    background-image: url(/icons/close-01.svg);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-color: transparent;
+    border: none;
+    height: 17px;
+    width: 17px;
+    padding: 0;
+    opacity: 0.4;
+    //margin-right: 5px;
+    flex-shrink: 0;
+    &:hover {
+        cursor: pointer;
+    }
 }

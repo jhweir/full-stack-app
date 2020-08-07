@@ -1,5 +1,5 @@
 .modalWrapper {
-    padding: 80px 20px 20px 20px;
+    padding: 120px 20px 20px 20px;
     position: fixed;
     top: 0;
     left: 0;
@@ -12,11 +12,11 @@
     // animation-duration: 0.5s;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    //justify-content: center;
     align-items: center;
 }
 .modal {
-    //width: 1000px;
+    //max-width: 1000px;
     padding: 40px 60px;
     background-color: white;
     box-shadow: 0 1px 30px 0 rgba(0,0,0,0.2);
@@ -41,6 +41,7 @@
     position: absolute;
     top: 10px;
     right: 10px;
+    flex-shrink: 0;
     &:hover {
         cursor: pointer;
     }
@@ -69,36 +70,6 @@
         width: 100%;
     }
 }
-// .input {
-//     font-size: 14px;
-//     height: 40px;
-//     width: 100%;
-//     border-radius: 5px;
-//     padding: 0px 15px;
-//     margin-bottom: 20px;
-//     outline: none;
-//     border: none;
-//     display: flex;
-//     flex-direction: row;
-//     align-items: center;
-//     background-color: white;
-//     box-shadow: 0 1px 10px 0 rgba(10, 8, 72, 0.1);
-//     transition-property: box-shadow, background-color;
-//     transition-duration: 0.3s, 2s;
-//     &.textArea {
-//         height: auto;
-//         padding: 10px 15px 0 15px;
-//     }
-//     &.error {
-//         box-shadow: 0 0 5px 5px rgba(255, 0, 0, 0.6);
-//     }
-//     &:hover {
-//         box-shadow: 0 0 5px 6px rgba(58,136,240,0.4);
-//     }
-//     @media screen and (max-width: 700px) {
-//         width: 100%;
-//     }
-// }
 .buttons {
     display: flex;
     flex-direction: row;

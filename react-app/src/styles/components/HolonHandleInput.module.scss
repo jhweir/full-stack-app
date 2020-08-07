@@ -1,5 +1,6 @@
 .holonHandleInput {
     max-width: 500px;
+    margin-bottom: 10px;
 }
 .text {
     margin-bottom: 10px;
@@ -13,15 +14,16 @@
     flex-wrap: wrap;
 }
 .flashMessage {
-    width: 400px;
+    width: 100%;
+    margin-bottom: 10px;
 }
 .dropDown {
     position: absolute;
     top: 50px;
     padding: 10px;
     border-radius: 5px;
-    background-color: rgb(230, 230, 230);
-    box-shadow: 0 1px 10px 0 rgba(10, 8, 72, 0.05);
+    background-color: white;//rgb(230, 230, 230);
+    box-shadow: 0 1px 10px 0 rgba(10, 8, 72, 0.15);
     z-index: 5;
 }
 .dropDownOption {
@@ -32,10 +34,43 @@
     &:hover { cursor: pointer; }
     &:last-child { margin-bottom: 0; }
 }
-// .handles {
-//     margin-bottom: 10px;
-//     display: flex;
-//     flex-direction: row;
-//     align-items: center;
-//     flex-wrap: wrap;
-// }
+.addedSpaces {
+    display: flex;
+    flex-direction: column;
+}
+.handles {
+    //margin-bottom: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.handle {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    background-color: rgb(230, 230, 230);
+    border-radius: 5px;
+    padding: 10px 10px 10px 15px;
+    margin: 0 10px 10px 0;
+}
+.handleText {
+    margin-right: 10px;
+}
+.handleCloseIcon {
+    background-image: url(/icons/close-01.svg);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-color: transparent;
+    border: none;
+    height: 17px;
+    width: 17px;
+    padding: 0;
+    opacity: 0.4;
+    margin-right: 5px;
+    &:hover {
+        cursor: pointer;
+    }
+}

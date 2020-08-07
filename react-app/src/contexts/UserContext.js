@@ -5,7 +5,7 @@ import { AccountContext } from './AccountContext'
 
 export const UserContext = createContext()
 
-function UserContextProvider(props) {
+function UserContextProvider({ children }) {
     const { accountContextLoading, isLoggedIn, accountData } = useContext(AccountContext)
     const [userContextLoading, setUserContextLoading] = useState(true)
     const [userHandle, setUserHandle] = useState('')
@@ -99,7 +99,7 @@ function UserContextProvider(props) {
             createdPostSortByFilter, setCreatedPostSortByFilter,
             createdPostSortOrderFilter, setCreatedPostSortOrderFilter
         }}>
-            {props.children}
+            {children}
         </UserContext.Provider>
     )
 }

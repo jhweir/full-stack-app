@@ -17,6 +17,7 @@ function PostPagePollVote(props) {
 
     return (
         <div className={styles.pollVote}>
+            <div className={styles.text}>Poll type: <b>{pollType}</b></div>
             <div className={styles.castVoteSection}>
                 <div className={`${styles.castVoteButton} ${validVote && styles.validVote}`}
                     onClick={() => { castVote() }}>
@@ -32,10 +33,7 @@ function PostPagePollVote(props) {
                     </div>
                 }
             </div>
-            <div style={{margin: "10px 0"}}>Poll type: <b>{pollType}</b></div>
-            {pollType === 'weighted-choice' &&
-                <div style={{margin: "10px 0"}}>Split 100 points across the poll answers...</div>
-            }
+            {pollType === 'weighted-choice' && <div className={styles.text}>Split 100 points across the poll answers...</div>}
             {pollAnswersSortedById.map((answer, index) => 
                 <PollAnswer
                     key={index}

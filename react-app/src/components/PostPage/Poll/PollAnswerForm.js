@@ -7,12 +7,15 @@ function PollAnswerForm(props) {
         pollAnswers,
         setPollAnswers,
         newPollAnswer,
-        setNewPollAnswer
+        setNewPollAnswer,
+        newPollAnswerError,
+        setNewPollAnswerError
     } = props
 
     function addPollAnswer(pollAnswer) {
-        setPollAnswers([...pollAnswers, pollAnswer])
-        setNewPollAnswer('')
+        let invalidPollAnswer = pollAnswer.length === 0 || pollAnswer.length > 1000
+        if (invalidPollAnswer) { setNewPollAnswerError(true) }
+        else { setPollAnswers([...pollAnswers, pollAnswer]); setNewPollAnswer('') }
     }
 
     function removePollAnswer(pollAnswer) {
@@ -22,10 +25,11 @@ function PollAnswerForm(props) {
 
     return (
         <div className={styles.pollAnswerForm}>
+            <div className={styles.text}>Add poll answers below: </div>
             <div className={styles.pollAnswerFormTop}>
-                <textarea className={styles.pollAnswerFormInput}
-                    rows="5" type="text" placeholder="Answer... (max 2,000 characters)" value={newPollAnswer}
-                    onChange={(e) => { setNewPollAnswer(e.target.value) }}/>
+                <textarea className={`wecoInput textArea mb-10 ${newPollAnswerError && 'error'}`} style={{height: 40}}
+                    type="text" placeholder="Answer... (max 2,000 characters)" value={newPollAnswer}
+                    onChange={(e) => { setNewPollAnswer(e.target.value); setNewPollAnswerError(false) }}/>
                 <div className={styles.pollAnswerFormButton} onClick={() => { addPollAnswer(newPollAnswer) }}>
                     Add answer
                 </div>
@@ -35,7 +39,10 @@ function PollAnswerForm(props) {
                     <div>Added answers: </div>
                     <ul className={styles.pollAnswers}>
                         {pollAnswers.map((answer, index) => 
-                            <PollAnswerInput key={index} pollAnswer={answer} removePollAnswer={removePollAnswer}/>
+                            <div className={styles.pollAnswer} key={index}>
+                                <div className={styles.pollAnswerText}>{answer}</div>
+                                <div className={styles.pollAnswerCloseButton} onClick={() => { removePollAnswer(answer) }}/>
+                            </div>
                         )}
                     </ul>
                 </>

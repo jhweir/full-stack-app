@@ -9,7 +9,7 @@ import PollAnswerForm from './../PostPage/Poll/PollAnswerForm'
 import DropDownMenu from '../DropDownMenu'
 
 function CreatePostModal() {
-    const { globalData, accountData, createPostModalOpen, setCreatePostModalOpen } = useContext(AccountContext)
+    const { accountData, createPostModalOpen, setCreatePostModalOpen } = useContext(AccountContext)
     const { holonData, getHolonPosts } = useContext(HolonContext)
 
     const [postType, setPostType] = useState('Text')
@@ -20,34 +20,41 @@ function CreatePostModal() {
     const [newHandle, setNewHandle] = useState('')
     const [suggestedHandlesOpen, setSuggestedHandlesOpen] = useState(false)
     const [suggestedHandles, setSuggestedHandles] = useState([])
-    const [textError, setTextError] = useState(false)
-    const [handleError, setHandleError] = useState(false)
-    const [flashMessage, setflashMessage] = useState(false)
     const [pollAnswers, setPollAnswers] = useState([])
     const [newPollAnswer, setNewPollAnswer] = useState('')
+    const [textError, setTextError] = useState(false)
+    const [newHandleError, setNewHandleError] = useState(false)
+    const [newPollAnswerError, setNewPollAnswerError] = useState(false)
+    const [flashMessage, setflashMessage] = useState(false)
 
     useEffect(() => {
         if (holonData.id) { setHolonHandles([holonData.handle]) }
     }, [holonData])
 
+    function resetForm() {
+        setPostType('Text')
+        setPollType('Single-Choice')
+        setText('')
+        setUrl('')
+        setPollAnswers([])
+    }
+
     function submitPost(e) {
         e.preventDefault()
-        let invalidText = text.length === 0 || text.length > 2000
-        let invalidHolons = holonHandles.length === 0
+        let invalidText = text.length < 1 || text.length > 2000
+        let invalidHolons = holonHandles.length < 1
+        let invalidPollAnswers = pollAnswers.length < 1
         if (invalidText) { setTextError(true) }
-        if (invalidHolons) { setHandleError(true) }
-        if (!invalidText && !invalidHolons) {
+        if (invalidHolons) { setNewHandleError(true) }
+        if (invalidPollAnswers) { setNewPollAnswerError(true) }
+        if (!invalidText && !invalidHolons && !invalidPollAnswers) {
             let subType, answers
             if (postType === 'Poll') { subType = pollType.toLowerCase(); answers = pollAnswers } else { subType = null; answers = null }
             let post = { type: postType.toLowerCase(), subType, creatorId: accountData.id, text, url, holonHandles, pollAnswers: answers }
             axios.post(config.environmentURL + '/create-post', { post })
                 .then(() => { 
                     setCreatePostModalOpen(false)
-                    setPostType('Text')
-                    setPollType('Single-Choice')
-                    setText('')
-                    setUrl('')
-                    setPollAnswers([])
+                    resetForm()
                 })
                 .then(setTimeout(() => { getHolonPosts() }, 200))
         }
@@ -60,7 +67,7 @@ function CreatePostModal() {
                     <img 
                         className={styles.closeModalButton}
                         src="/icons/close-01.svg"
-                        onClick={() => setCreatePostModalOpen(false)}
+                        onClick={() => { setCreatePostModalOpen(false); resetForm() }}
                     />
                     <div className={styles.title}>
                         Create a new {postType} post in '{holonData.name}'
@@ -68,7 +75,7 @@ function CreatePostModal() {
                     <div className={styles.dropDownOptions}>
                         <DropDownMenu
                             title='Post Type'
-                            options={['Text', 'Poll', 'Task']}
+                            options={['Text', 'Poll']}
                             selectedOption={postType}
                             setSelectedOption={setPostType}
                             style='horizontal'
@@ -95,7 +102,6 @@ function CreatePostModal() {
                             onChange={(e) => { setUrl(e.target.value) }}
                         />
                         <HolonHandleInput 
-                            //globalData={globalData}
                             holonHandles={holonHandles}
                             setHolonHandles={setHolonHandles}
                             newHandle={newHandle}
@@ -104,10 +110,11 @@ function CreatePostModal() {
                             setSuggestedHandlesOpen={setSuggestedHandlesOpen}
                             suggestedHandles={suggestedHandles}
                             setSuggestedHandles={setSuggestedHandles}
-                            handleError={handleError}
-                            setHandleError={setHandleError}
+                            newHandleError={newHandleError}
+                            setNewHandleError={setNewHandleError}
                             flashMessage={flashMessage}
                             setflashMessage={setflashMessage}
+                            setCreatePostModalOpen={setCreatePostModalOpen}
                         />
                         {postType === 'Poll' &&
                             <PollAnswerForm
@@ -115,9 +122,11 @@ function CreatePostModal() {
                                 setPollAnswers={setPollAnswers}
                                 newPollAnswer={newPollAnswer}
                                 setNewPollAnswer={setNewPollAnswer}
+                                newPollAnswerError={newPollAnswerError}
+                                setNewPollAnswerError={setNewPollAnswerError}
                             />
                         }
-                        <button className="wecoButton centered">Post</button>
+                        <button className="wecoButton centered">Submit Post</button>
                     </form>
                 </div>
             </div>

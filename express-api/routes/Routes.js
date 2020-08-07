@@ -1067,6 +1067,16 @@ router.get('/suggested-holon-handles', (req, res) => {
     .catch(err => console.log(err))
 })
 
+router.get('/validate-holon-handle', (req, res) => {
+    const { searchQuery } = req.query
+    Holon.findAll({
+        where: { handle: searchQuery },
+        attributes: ['handle']
+    })
+    .then(handle => { res.json(handle) })
+    .catch(err => console.log(err))
+})
+
 router.get('/poll-votes', (req, res) => {
     Label.findAll({ 
         where: { type: 'vote', postId: req.query.postId },

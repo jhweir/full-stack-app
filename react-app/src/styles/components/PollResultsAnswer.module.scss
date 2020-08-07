@@ -13,6 +13,7 @@
     width: 40px;
     height: 40px;
     border-radius: 5px;
+    flex-shrink: 0;
     //background-color: rgb(240, 240, 240);
     display: flex;
     align-items: center;
@@ -24,6 +25,7 @@
 .pollAnswerScoreRatio {
     width: 80px;
     font-weight: 800;
+    flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -32,6 +34,7 @@
     margin-right: 20px;
     width: 100px;
     height: 40px;
+    flex-shrink: 0;
     background-color: rgba(0,0,0,0.1);
     position: relative;
 }

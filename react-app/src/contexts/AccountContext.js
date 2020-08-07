@@ -40,11 +40,11 @@ function AccountContextProvider({ children, pageBottomReached, setPageBottomReac
         }
     }
 
-    function getGlobalData() {
-        console.log('AccountContext: getGlobalData')
-        axios.get(config.environmentURL + '/global-data')
-        .then(res => { setGlobalData(res.data) })
-    }
+    // function getGlobalData() {
+    //     console.log('AccountContext: getGlobalData')
+    //     axios.get(config.environmentURL + '/global-data')
+    //     .then(res => { setGlobalData(res.data) })
+    // }
 
     function logOut() {
         console.log('AccountContext: logOut')
@@ -54,7 +54,7 @@ function AccountContextProvider({ children, pageBottomReached, setPageBottomReac
     }
 
     useEffect(() => {
-        getGlobalData()
+        //getGlobalData()
         getAccountData()
     }, [])
 
@@ -63,7 +63,7 @@ function AccountContextProvider({ children, pageBottomReached, setPageBottomReac
             accountContextLoading,
             pageBottomReached,
             isLoggedIn, logOut,
-            globalData, getGlobalData,
+            //globalData, getGlobalData,
             accountData, getAccountData, setAccountData,
             filtersOpen, setFiltersOpen,
             authModalOpen, setAuthModalOpen,
