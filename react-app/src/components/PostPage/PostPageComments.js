@@ -1,16 +1,16 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import styles from '../../styles/components/PostPageComments.module.scss'
 import CommentCard from '../Cards/CommentCard'
+import { PostContext } from '../../contexts/PostContext'
 
-function PostPageComments(props) {
+function PostPageComments() {
     const {
+        post,
         submitComment,
-        commentError,
-        newComment,
-        setNewComment,
-        setCommentError,
-        post
-    } = props
+        commentError, setCommentError,
+        newComment, setNewComment
+    } = useContext(PostContext)
+
     return (
         <div className={styles.postPageComments}>
             <form className={styles.commentForm} onSubmit={submitComment}> 

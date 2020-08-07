@@ -1,107 +1,102 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import axios from 'axios'
 import config from '../Config'
+import * as d3 from 'd3'
 import { AccountContext } from './AccountContext'
 
 export const PostContext = createContext()
 
 function PostContextProvider({ children }) {
-    const { accountContextLoading, isLoggedIn, accountData } = useContext(AccountContext)
-    // const [userContextLoading, setUserContextLoading] = useState(true)
-    // const [userHandle, setUserHandle] = useState('')
-    // const [userData, setUserData] = useState({ Posts: [], FollowedHolons: [], ModeratedHolons: [] })
-    // const [selectedUserSubPage, setSelectedUserSubPage] = useState('')
-    // const [isOwnAccount, setIsOwnAccount] = useState(false)
+    const { accountContextLoading, accountData, isLoggedIn, setAlertMessage, setAlertModalOpen } = useContext(AccountContext)
+    const [postContextLoading, setPostContextLoading] = useState(true)
+    const [postId, setPostId] = useState('')
+    const [post, setPost] = useState({ spaces: [], Comments: [], PollAnswers: [] })
+    const [newComment, setNewComment] = useState('')
+    const [commentError, setCommentError] = useState(false)
+    const [postPageLoading, setPostPageLoading] = useState(true)
+    const [selectedPollAnswers, setSelectedPollAnswers] = useState([])
+    const [voteCast, setVoteCast] = useState(false)
 
-    // const [createdPosts, setCreatedPosts] = useState([])
-    // const [createdPostFiltersOpen, setCreatedPostFiltersOpen] = useState(false)
-    // const [createdPostTimeRangeFilter, setCreatedPostTimeRangeFilter] = useState('All Time')
-    // const [createdPostTypeFilter, setCreatedPostTypeFilter] = useState('All Types')
-    // const [createdPostSortByFilter, setCreatedPostSortByFilter] = useState('Date')
-    // const [createdPostSortOrderFilter, setCreatedPostSortOrderFilter] = useState('Descending')
-    // const [createdPostSearchFilter, setCreatedPostSearchFilter] = useState('')
-    // const [createdPostPaginationLimit, setCreatedPostPaginationLimit] = useState(10)
-    // const [createdPostPaginationOffset, setCreatedPostPaginationOffset] = useState(0)
-    // const [createdPostPaginationHasMore, setCreatedPostPaginationHasMore] = useState(true)
+    const pollAnswersSortedById = post.PollAnswers.map((a)=>a).sort((a, b) => a.id - b.id)
+    let pollAnswersSortedByScore = post.PollAnswers.map((a)=>a).sort((a, b) => b.total_votes - a.total_votes) 
+    let totalPollVotes = post.PollAnswers.map((answer) => { return answer.total_votes }).reduce((a, b) => a + b, 0)
 
-    // function getUserData() {
-    //     console.log('UserContext: getUserData')
-    //     setUserContextLoading(true)
-    //     axios.get(config.environmentURL + `/user-data?userHandle=${userHandle}`)
-    //         .then(res => { setUserData(res.data); setUserContextLoading(false) })
-    // }
+    if (post.subType === 'weighted-choice') { 
+        totalPollVotes = post.PollAnswers.map((answer) => { return answer.total_score }).reduce((a, b) => a + b, 0)
+        pollAnswersSortedByScore = post.PollAnswers.map((a)=>a).sort((a, b) => b.total_score - a.total_score) 
+    }
 
-    // function getCreatedPosts() {
-    //     console.log(`UserContext: getCreatedPosts (0 to ${createdPostPaginationLimit})`)
-    //     axios.get(config.environmentURL + 
-    //         `/user-posts?accountId=${isLoggedIn ? accountData.id : null
-    //         }&userId=${userData.id ? userData.id : null
-    //         }&timeRange=${createdPostTimeRangeFilter
-    //         }&postType=${createdPostTypeFilter
-    //         }&sortBy=${createdPostSortByFilter
-    //         }&sortOrder=${createdPostSortOrderFilter
-    //         }&searchQuery=${createdPostSearchFilter
-    //         }&limit=${createdPostPaginationLimit
-    //         }&offset=0`)
-    //         .then(res => {
-    //             if (res.data.length < createdPostPaginationLimit) { setCreatedPostPaginationHasMore(false) }
-    //             setCreatedPosts(res.data)
-    //             setCreatedPostPaginationOffset(createdPostPaginationLimit)
-    //             setUserContextLoading(false)
-    //         })
-    // }
+    //console.log('totalPollVotes', totalPollVotes)
+    const totalUsedPoints = selectedPollAnswers.map((answer) => { return answer.value }).reduce((a, b) => a + b, 0)
+    const validVote = selectedPollAnswers.length !== 0 && (post.subType !== 'weighted-choice' || totalUsedPoints == 100)
 
-    // function getNextCreatedPosts() {
-    //     if (createdPostPaginationHasMore) {
-    //         console.log(`UserContext: getNextCreatedPosts (${createdPostPaginationOffset} to ${createdPostPaginationOffset + createdPostPaginationLimit})`)
-    //         axios.get(config.environmentURL + 
-    //             `/user-posts?accountId=${isLoggedIn ? accountData.id : null
-    //             }&userId=${userData.id ? userData.id : null
-    //             }&timeRange=${createdPostTimeRangeFilter
-    //             }&postType=${createdPostTypeFilter
-    //             }&sortBy=${createdPostSortByFilter
-    //             }&sortOrder=${createdPostSortOrderFilter
-    //             }&searchQuery=${createdPostSearchFilter
-    //             }&limit=${createdPostPaginationLimit
-    //             }&offset=${createdPostPaginationOffset}`)
-    //             .then(res => { 
-    //                 if (res.data.length < createdPostPaginationLimit) { setCreatedPostPaginationHasMore(false) }
-    //                 setCreatedPosts([...createdPosts, ...res.data])
-    //                 setCreatedPostPaginationOffset(createdPostPaginationOffset + createdPostPaginationLimit)
-    //             })
-    //     }
-    // }
+    const colorScale = d3
+        .scaleSequential()
+        .domain([0, post.PollAnswers.length])
+        .interpolator(d3.interpolateViridis)
+
+    function getPostData() {
+        console.log('PostContext: getPostData')
+        setPostContextLoading(true)
+        axios.get(config.environmentURL + `/post?accountId=${isLoggedIn ? accountData.id : null}&postId=${postId}`)
+            .then(res => {
+                setPost(res.data)
+                setPostPageLoading(false)
+            })
+    }
+
+    function submitComment(e) {
+        e.preventDefault()
+        if (newComment === '') { setCommentError(true) }
+        if (newComment !== '' && !isLoggedIn) { setAlertMessage('Log in to comment'); setAlertModalOpen(true) }
+        if (newComment !== '' && isLoggedIn) {
+            axios.post(config.environmentURL + '/add-comment', { creatorId: accountData.id, postId, text: newComment })
+                .then(setNewComment(''))
+                .then(setTimeout(() => { getPostData() }, 200))
+        }
+    }
+
+    function castVote() {
+        if (validVote) {
+            let voteData = { postId, pollType: post.subType, selectedPollAnswers }
+            console.log('voteData', voteData)
+            axios.post(config.environmentURL + '/cast-vote', { voteData })
+                .then(setSelectedPollAnswers([]))
+                .then(setVoteCast(true))
+                .then(setTimeout(() => { getPostData() }, 200))
+        }
+    }
 
     useEffect(() => {
-        if (!accountContextLoading) { getUserData() }
-    }, [userHandle, accountData])
-
-    useEffect(() => {
-        if (isLoggedIn && userData && userData.id === accountData.id) { setIsOwnAccount(true) }
-        else { setIsOwnAccount(false) }
-    }, [isLoggedIn, userData])
+        if (!accountContextLoading) { getPostData() }
+    }, [postId, accountData])
 
     return (
-        <UserContext.Provider value={{
-            // userContextLoading, setUserContextLoading,
-            // userHandle, setUserHandle,
-            // userData, getUserData,
-            // isOwnAccount,
-            // selectedUserSubPage, setSelectedUserSubPage,
-            // createdPosts, getCreatedPosts, getNextCreatedPosts,
-            // createdPostPaginationLimit, setCreatedPostPaginationLimit,
-            // createdPostPaginationOffset, setCreatedPostPaginationOffset,
-            // createdPostPaginationHasMore, setCreatedPostPaginationHasMore,
-            // createdPostFiltersOpen, setCreatedPostFiltersOpen,
-            // createdPostSearchFilter, setCreatedPostSearchFilter,
-            // createdPostTimeRangeFilter, setCreatedPostTimeRangeFilter,
-            // createdPostTypeFilter, setCreatedPostTypeFilter,
-            // createdPostSortByFilter, setCreatedPostSortByFilter,
-            // createdPostSortOrderFilter, setCreatedPostSortOrderFilter
+        <PostContext.Provider value={{
+            // state
+            postContextLoading, setPostContextLoading,
+            postId, setPostId,
+            post, setPost,
+            newComment, setNewComment,
+            commentError, setCommentError,
+            postPageLoading, setPostPageLoading,
+            selectedPollAnswers, setSelectedPollAnswers,
+            voteCast, setVoteCast,
+            colorScale,
+            pollAnswersSortedById,
+            pollAnswersSortedByScore,
+            totalPollVotes,
+            totalUsedPoints,
+            validVote,
+
+            // functions
+            getPostData,
+            submitComment,
+            castVote
         }}>
             {children}
-        </UserContext.Provider>
+        </PostContext.Provider>
     )
 }
 
-export default UserContextProvider
+export default PostContextProvider

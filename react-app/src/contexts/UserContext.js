@@ -85,10 +85,11 @@ function UserContextProvider({ children }) {
         <UserContext.Provider value={{
             userContextLoading, setUserContextLoading,
             userHandle, setUserHandle,
-            userData, getUserData,
-            isOwnAccount,
+            userData, setUserData,
             selectedUserSubPage, setSelectedUserSubPage,
-            createdPosts, getCreatedPosts, getNextCreatedPosts,
+            isOwnAccount, setIsOwnAccount,
+            
+            createdPosts, setCreatedPosts,
             createdPostPaginationLimit, setCreatedPostPaginationLimit,
             createdPostPaginationOffset, setCreatedPostPaginationOffset,
             createdPostPaginationHasMore, setCreatedPostPaginationHasMore,
@@ -97,7 +98,11 @@ function UserContextProvider({ children }) {
             createdPostTimeRangeFilter, setCreatedPostTimeRangeFilter,
             createdPostTypeFilter, setCreatedPostTypeFilter,
             createdPostSortByFilter, setCreatedPostSortByFilter,
-            createdPostSortOrderFilter, setCreatedPostSortOrderFilter
+            createdPostSortOrderFilter, setCreatedPostSortOrderFilter,
+
+            // functions
+            getUserData,
+            getCreatedPosts, getNextCreatedPosts,
         }}>
             {children}
         </UserContext.Provider>

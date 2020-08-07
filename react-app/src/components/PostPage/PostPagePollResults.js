@@ -1,53 +1,27 @@
-import React from 'react'
-import * as d3 from 'd3'
+import React, { useContext } from 'react'
 import styles from '../../styles/components/PostPagePollResults.module.scss'
-//import PollResultsFilters from './PollResultsFilters'
-import PollResultsDisplay from './Poll/PollResultsDisplay'
+import PollResultsPieChart from './Poll/PollResultsPieChart'
+import PollResultsTimeGraph from './Poll/PollResultsTimeGraph'
 import PollResultsAnswer from './Poll/PollResultsAnswer'
+import { PostContext } from '../../contexts/PostContext'
 
-function PostPagePollResults(props) {
-    const {
-        post,
-        postId,
-        //pageUrl,
-        parsedQuery,
-        pollAnswers,
-        pollAnswersSortedByScore,
-        totalPollVotes,
-        //totalPollScore
-    } = props
-
-    var colorScale = d3.scaleSequential()
-        .domain([0, pollAnswers.length])
-        .interpolator(d3.interpolateViridis)
-        // https://github.com/d3/d3-scale-chromatic/blob/master/README.md
+function PostPagePollResults() {
+    const { pollAnswersSortedByScore } = useContext(PostContext)
 
     return (
         <div className={styles.pollResults}>
-            {/* <PollResultsFilters pageUrl={pageUrl} /> */}
-            <PollResultsDisplay
-                post={post}
-                postId={postId}
-                parsedQuery={parsedQuery}
-                pollAnswers={pollAnswers}
-                totalPollVotes={totalPollVotes}
-                pollAnswersSortedByScore={pollAnswersSortedByScore}
-                colorScale={colorScale}
-            />
+            <div className={styles.display}>
+                <PollResultsPieChart/>
+                <PollResultsTimeGraph/>
+            </div>
             {pollAnswersSortedByScore.map((answer, index) => 
-                <PollResultsAnswer
-                    color={colorScale(index)}
-                    key={index}
-                    index={index} 
-                    answer={answer}
-                    totalPollVotes={totalPollVotes}
-                    post={post}
-                    //totalPollScore={totalPollScore}
-                    //totalScore={answer.total_score}
-                />
+                <PollResultsAnswer answer={answer} key={index} index={index}/>
             )}
         </div>
     )
 }
 
 export default PostPagePollResults
+
+// import PollResultsFilters from './PollResultsFilters'
+// <PollResultsFilters pageUrl={pageUrl} />

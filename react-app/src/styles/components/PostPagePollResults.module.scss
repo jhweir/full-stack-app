@@ -1,3 +1,10 @@
 .pollResults {
     width: 100%;
 }
+.display {
+    width: 100%;
+    min-height: 350px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

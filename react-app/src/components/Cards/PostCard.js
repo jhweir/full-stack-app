@@ -4,6 +4,7 @@ import axios from 'axios'
 import config from '../../Config'
 import { AccountContext } from '../../contexts/AccountContext'
 import { HolonContext } from '../../contexts/HolonContext'
+import { PostContext } from '../../contexts/PostContext'
 import styles from '../../styles/components/PostCard.module.scss'
 import PostCardReactionModal from './PostCardReactionModal'
 
@@ -29,6 +30,7 @@ function PostCard(props) {
 
     const { isLoggedIn, accountData, setAlertMessage, setAlertModalOpen } = useContext(AccountContext)
     const { holonData, setHolonHandle, getHolonPosts } = useContext(HolonContext)
+    const { postContextLoading } = useContext(PostContext)
 
     const [reactionModalOpen, setReactionModalOpen] = useState(false)
     const [ratingModalOpen, setRatingModalOpen] = useState(false)
@@ -200,7 +202,7 @@ function PostCard(props) {
                             </Link>}
                     </div>
                     <span className={styles.postSubText}>|</span>
-                    {!props.postPageLoading && /* Wait until the post has finished loading before formatting the date to prevent errors */
+                    {!postContextLoading && /* Wait until the post has finished loading before formatting the date to prevent errors */
                         <span className={styles.postSubText}>{ formatDate() || 'no date' }</span>
                     }
                 </div>

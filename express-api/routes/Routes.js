@@ -59,12 +59,12 @@ const postAttributes = [
     // ]
 ]
 
-router.get('/global-data', (req, res) => {
-    Holon
-        .findAll({ attributes: ['handle'] })
-        .then(handles => res.json(handles.map(h => h.handle)))
-        .catch(err => console.log(err))
-})
+// router.get('/global-data', (req, res) => {
+//     Holon
+//         .findAll({ attributes: ['handle'] })
+//         .then(handles => res.json(handles.map(h => h.handle)))
+//         .catch(err => console.log(err))
+// })
 
 router.get('/holon-data', (req, res) => {
     Holon.findOne({ 
@@ -96,8 +96,8 @@ router.get('/holon-data', (req, res) => {
 })
 
 router.get('/holon-posts', (req, res) => {
-    const { userId, handle, timeRange, postType, sortBy, sortOrder, scope, searchQuery, limit, offset } = req.query
-    console.log('req.query: ', req.query)
+    const { accountId, handle, timeRange, postType, sortBy, sortOrder, scope, searchQuery, limit, offset } = req.query
+    // console.log('req.query: ', req.query)
 
     function findStartDate() {
         let offset = undefined
@@ -214,7 +214,7 @@ router.get('/holon-posts', (req, res) => {
                 FROM Labels
                 AS Label
                 WHERE Label.postId = Post.id
-                AND Label.userId = ${userId}
+                AND Label.userId = ${accountId}
                 AND Label.type = 'like'
                 AND Label.state = 'active'
                 )`),'account_like'
@@ -224,7 +224,7 @@ router.get('/holon-posts', (req, res) => {
                 FROM Labels
                 AS Label
                 WHERE Label.postId = Post.id
-                AND Label.userId = ${userId}
+                AND Label.userId = ${accountId}
                 AND Label.type = 'heart'
                 AND Label.state = 'active'
                 )`),'account_heart'
@@ -234,7 +234,7 @@ router.get('/holon-posts', (req, res) => {
                 FROM Labels
                 AS Label
                 WHERE Label.postId = Post.id
-                AND Label.userId = ${userId}
+                AND Label.userId = ${accountId}
                 AND Label.type = 'rating'
                 AND Label.state = 'active'
                 )`),'account_rating'
@@ -273,7 +273,7 @@ router.get('/holon-posts', (req, res) => {
 })
 
 router.get('/holon-spaces', (req, res) => {
-    const { userId, handle, timeRange, spaceType, sortBy, sortOrder, scope, searchQuery, limit, offset } = req.query
+    const { accountId, handle, timeRange, spaceType, sortBy, sortOrder, scope, searchQuery, limit, offset } = req.query
 
     function findStartDate() {
         let offset = undefined
@@ -573,7 +573,7 @@ router.get('/holon-spaces', (req, res) => {
 })
 
 router.get('/holon-users', (req, res) => {
-    const { userId, holonId, timeRange, userType, sortBy, sortOrder, searchQuery, limit, offset } = req.query
+    const { accountId, holonId, timeRange, userType, sortBy, sortOrder, searchQuery, limit, offset } = req.query
 
     function findStartDate() {
         let offset = undefined
@@ -666,7 +666,7 @@ router.get('/holon-users', (req, res) => {
 })
 
 router.get('/all-users', (req, res) => {
-    const { userId, timeRange, userType, sortBy, sortOrder, searchQuery, limit, offset } = req.query
+    const { accountId, timeRange, userType, sortBy, sortOrder, searchQuery, limit, offset } = req.query
 
     function findStartDate() {
         let offset = undefined
@@ -752,7 +752,7 @@ router.get('/all-users', (req, res) => {
 })
 
 router.get('/user-data', (req, res) => {
-    console.log('req.query', req.query)
+    //console.log('req.query', req.query)
     User.findOne({ 
         where: { handle: req.query.userHandle },
         attributes: ['id', 'handle', 'name', 'bio', 'flagImagePath', 'coverImagePath', 'createdAt'],
@@ -984,23 +984,23 @@ router.get('/user-posts', (req, res) => {
 })
 
 router.get('/post', (req, res) => {
-    const { userId } = req.query
+    const { accountId, postId } = req.query
     let attributes = [...postAttributes,
         [sequelize.literal(
-            `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.userId = ${userId} AND Label.type = 'like' AND Label.state = 'active')`
+            `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.userId = ${accountId} AND Label.type = 'like' AND Label.state = 'active')`
             ),'account_like'
         ],
         [sequelize.literal(
-            `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.userId = ${userId} AND Label.type = 'heart' AND Label.state = 'active')`
+            `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.userId = ${accountId} AND Label.type = 'heart' AND Label.state = 'active')`
             ),'account_heart'
         ],
         [sequelize.literal(
-            `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.userId = ${userId} AND Label.type = 'rating' AND Label.state = 'active')`
+            `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.userId = ${accountId} AND Label.type = 'rating' AND Label.state = 'active')`
             ),'account_rating'
         ]
     ]
     Post.findOne({ 
-        where: { id: req.query.id },
+        where: { id: postId },
         attributes: attributes,
         include: [
             { 
@@ -1042,15 +1042,10 @@ router.get('/post', (req, res) => {
         ]
     })
     .then(post => {
-        // replace PostHolons array of objects with simpler Post_Holons array of strings
+        // replace PostHolons array of objects with simpler 'spaces' array of strings
         const spaces = post.PostHolons.map(ph => ph.handle)
         post.setDataValue("spaces", spaces)
         delete post.dataValues.PostHolons
-        // replace raw createdAt dates in PollAnswer.Labels with parsed number strings
-        // post.PollAnswers.forEach(answer => answer.Votes.forEach(label => {
-        //     label.setDataValue("parsedCreatedAt", Date.parse(label.createdAt))
-        //     delete label.dataValues.createdAt
-        // }))
         return post
     })
     .then(post => { res.json(post) })
@@ -1190,6 +1185,7 @@ router.post('/create-post', (req, res) => {
 })
 
 router.delete('/deletePost', (req, res) => {
+    // TODO: endpoints like this are currently unsafe/open to anyone. include authenticate middleware.
     //console.log(req.body.id)
     Post.update({ globalState: 'hidden' }, {
         where: { id: req.body.id }
@@ -1775,3 +1771,9 @@ module.exports = router
 // const passportJWT = require('passport-jwt')
 // const JwtStrategy = passportJWT.Strategy
 // const ExtractJwt = passportJWT.ExtractJwt
+
+// replace raw createdAt dates in PollAnswer.Labels with parsed number strings
+// post.PollAnswers.forEach(answer => answer.Votes.forEach(label => {
+//     label.setDataValue("parsedCreatedAt", Date.parse(label.createdAt))
+//     delete label.dataValues.createdAt
+// }))

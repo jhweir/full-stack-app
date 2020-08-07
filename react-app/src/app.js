@@ -5,6 +5,7 @@ import { createBrowserHistory } from 'history'
 import AccountContextProvider from './contexts/AccountContext'
 import HolonContextProvider from './contexts/HolonContext'
 import UserContextProvider from './contexts/UserContext'
+import PostContextProvider from './contexts/PostContext'
 import Homepage from './pages/Homepage'
 import HolonPage from './pages/HolonPage'
 import PostPage from './pages/PostPage'
@@ -28,15 +29,17 @@ function App() {
         <AccountContextProvider pageBottomReached={pageBottomReached}>
           <HolonContextProvider>
             <UserContextProvider>
-              <NavBar/>
-              <GlobalModals/>
-              <Switch>
-                <Route path="/" exact component={Homepage}/>
-                <Route path="/h/:holonHandle" component={HolonPage}/>
-                <Route path="/p/:postId" component={PostPage}/>
-                <Route path="/u/:userHandle" component={UserPage}/>
-                <Route component={EmptyPage}/>
-              </Switch>
+              <PostContextProvider>
+                <NavBar/>
+                <GlobalModals/>
+                <Switch>
+                  <Route path="/" exact component={Homepage}/>
+                  <Route path="/h/:holonHandle" component={HolonPage}/>
+                  <Route path="/p/:postId" component={PostPage}/>
+                  <Route path="/u/:userHandle" component={UserPage}/>
+                  <Route component={EmptyPage}/>
+                </Switch>
+              </PostContextProvider>
             </UserContextProvider>
           </HolonContextProvider>
         </AccountContextProvider>

@@ -1,7 +1,14 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useContext } from 'react'
 import * as d3 from "d3"
+import { PostContext } from '../../../contexts/PostContext'
 
-function PollResultsPieChart(props) {
+function PollResultsPieChart() {
+    const {
+        post,
+        totalPollVotes,
+        pollAnswersSortedByScore,
+        colorScale
+    } = useContext(PostContext)
     // const { post, pollAnswersSortedByScore, totalPollVotes, colorScale } = props
     // let width = 450,
     // height = 450,
@@ -9,7 +16,7 @@ function PollResultsPieChart(props) {
     useEffect(() => {
         // console.log('pollAnswers: ', pollAnswers)
         // console.log('pollAnswersSortedByScore: ', pollAnswersSortedByScore)
-        const { post, pollAnswersSortedByScore, totalPollVotes, colorScale } = props
+        // const { post, pollAnswersSortedByScore, totalPollVotes, colorScale } = props
         let width = 450,
         height = 450,
         radius = 150
@@ -145,7 +152,7 @@ function PollResultsPieChart(props) {
             .transition()
             .duration(2000)
             .style("opacity", 1)
-    }, [props])
+    }, [post])
     return (
         <div className="chart" style={{width: 450}}></div>
     )

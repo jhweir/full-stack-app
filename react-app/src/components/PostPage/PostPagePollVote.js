@@ -1,50 +1,35 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import styles from '../../styles/components/PostPagePollVote.module.scss'
 import PollAnswer from './Poll/PollAnswer'
+import { PostContext } from '../../contexts/PostContext'
 
-function PostPagePollVote(props) {
+function PostPagePollVote() {
     const {
-        pollType,
+        post,
         validVote,
         castVote,
         voteCast,
-        setVoteCast,
         pollAnswersSortedById,
-        selectedPollAnswers,
-        setSelectedPollAnswers,
         totalUsedPoints
-    } = props
+    } = useContext(PostContext)
 
     return (
         <div className={styles.pollVote}>
-            <div className={styles.text}>Poll type: <b>{pollType}</b></div>
+            <div className={styles.text}>Poll type: <b>{post.subType}</b></div>
             <div className={styles.castVoteSection}>
-                <div className={`${styles.castVoteButton} ${validVote && styles.validVote}`}
-                    onClick={() => { castVote() }}>
+                <div className={`${styles.castVoteButton} ${validVote && styles.validVote}`} onClick={() => { castVote() }}>
                     Cast your vote
                 </div>
                 {voteCast &&
                     <div className={styles.voteCastAlert}>
-                        <img 
-                            className={styles.voteCastAlertCheck}
-                            src="/icons/check-solid.svg"
-                        />
+                        <img className={styles.voteCastAlertCheck} src="/icons/check-solid.svg"/>
                         Vote cast!
                     </div>
                 }
             </div>
-            {pollType === 'weighted-choice' && <div className={styles.text}>Split 100 points across the poll answers...</div>}
-            {pollAnswersSortedById.map((answer, index) => 
-                <PollAnswer
-                    key={index}
-                    pollType={pollType}
-                    answer={answer}
-                    selectedPollAnswers={selectedPollAnswers}
-                    setSelectedPollAnswers={setSelectedPollAnswers}
-                    setVoteCast={setVoteCast}
-                />
-            )}
-            {pollType === 'weighted-choice' &&
+            {post.subType === 'weighted-choice' && <div className={styles.text}>Split 100 points across the poll answers...</div>}
+            {pollAnswersSortedById.map((answer, index) => <PollAnswer key={index} answer={answer}/> )}
+            {post.subType === 'weighted-choice' &&
                 <div className={`${styles.totalUsedPointsText} ${totalUsedPoints !== 100 && styles.error}`}>
                     Total used points: {totalUsedPoints}
                     <br/>

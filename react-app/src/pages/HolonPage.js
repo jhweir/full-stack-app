@@ -16,7 +16,7 @@ function HolonPage({ match }) {
     const { url } = match
     const { holonHandle } = match.params
     const { accountContextLoading } = useContext(AccountContext)
-    const { setHolonHandle, getHolonData, holonData, isModerator } = useContext(HolonContext)
+    const { setHolonHandle } = useContext(HolonContext)
 
     useEffect(() => {
         if (!accountContextLoading) { setHolonHandle(holonHandle) }

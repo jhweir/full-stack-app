@@ -1,17 +1,16 @@
-import React, { useState, useEffect } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import axios from 'axios'
 import config from '../../../Config'
 import * as d3 from 'd3'
+import { PostContext } from '../../../contexts/PostContext'
 
-function PollResultsTimeGraph(props) {
-    const { 
+function PollResultsTimeGraph() {
+    const {
         post,
         postId,
-        pollAnswers,
-        //totalPollVotes,
-        //pollAnswersSortedByScore,
         colorScale
-    } = props
+    } = useContext(PostContext)
+
     const [pollVotes, setPollVotes] = useState([])
     const [bezierCurves, setBezierCurves] = useState(false)
     //const [isMounted, setIsMounted] = useState(false)
@@ -107,7 +106,7 @@ function PollResultsTimeGraph(props) {
 
     useEffect(() => {
         console.log('second useEffect run on TimeGraph comp')
-        if (pollAnswers.length) {
+        if (post.PollAnswers.length) {
             pollVotesGroupedByAnswer.forEach((answer, i) => {
                 if (answer.values[0].parsedCreatedAt) {
                     let line = d3.selectAll(`#line-${answer.key}`)

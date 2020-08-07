@@ -1,22 +1,28 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import styles from '../../../styles/components/PollAnswer.module.scss'
+import { PostContext } from '../../../contexts/PostContext'
 
 function PollAnswer(props) {
-    const { pollType, answer, selectedPollAnswers, setSelectedPollAnswers, setVoteCast } = props
+    const { answer } = props
+    const {
+        post,
+        selectedPollAnswers, setSelectedPollAnswers,
+        setVoteCast
+    } = useContext(PostContext)
     const [answerValue, setAnswerValue] = useState('')
 
     const matchingSelectedAnswer = selectedPollAnswers.filter(pollAnswer => pollAnswer.id === answer.id)
 
     function addPollAnswer(value) {
         setVoteCast(false)
-        if (pollType === 'single-choice') {
+        if (post.subType === 'single-choice') {
             if (matchingSelectedAnswer.length) {
                 setSelectedPollAnswers([...selectedPollAnswers.filter(pollAnswer => { return pollAnswer.id !== answer.id })])
             } else {
                 setSelectedPollAnswers([{id: answer.id}])
             }
         }
-        if (pollType === 'multiple-choice') {
+        if (post.subType === 'multiple-choice') {
             // if poll answer already included in selectedPollAnswers..
             if (matchingSelectedAnswer.length) {
                 // remove answer from selectedPollAnswers
@@ -26,7 +32,7 @@ function PollAnswer(props) {
                 setSelectedPollAnswers([...selectedPollAnswers, {id: answer.id}])
             }
         }
-        if (pollType === 'weighted-choice') {
+        if (post.subType === 'weighted-choice') {
             // if poll answer already included in selectedPollAnswers...
             if (matchingSelectedAnswer.length) {
                 // remove answer from selectedPollAnswers and re-add answer with new value
@@ -51,14 +57,14 @@ function PollAnswer(props) {
 
     return (
         <div className={`${styles.pollAnswer} ${matchingSelectedAnswer.length && styles.answerSelected}`}
-            onClick={() => { if (pollType !== 'weighted-choice') addPollAnswer() }}>
-            {pollType !== 'weighted-choice' &&
+            onClick={() => { if (post.subType !== 'weighted-choice') addPollAnswer() }}>
+            {post.subType !== 'weighted-choice' &&
                 <img 
                     className={styles.pollAnswerCheckBox}
                     src={matchingSelectedAnswer.length ? "/icons/check-circle-regular.svg" : "/icons/circle-regular.svg"}
                 />
             }
-            {pollType === 'weighted-choice' &&
+            {post.subType === 'weighted-choice' &&
                 <input className={styles.pollAnswerInput}
                     placeholder="0" min="0" 
                     type="number" value={answerValue}

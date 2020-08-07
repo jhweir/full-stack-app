@@ -1,7 +1,8 @@
 # Todos
-Last updated: 20-07-2020
+Last updated: 07-08-2020
 
-- Add user to created holons
++ Re-create PostContext and then remove cascading props to clean up components
+- Add holon Id to comments when created
 - Add clickoutside approach from drop down menu to other modals
 - Add basic mod controls (image upload, name change, handle change)
 - show all posts vs direct posts ('post holons' / 'visible handles') ('all contained' vs. 'posted directly to space')
@@ -18,14 +19,10 @@ Last updated: 20-07-2020
     - [ ] notifications
     - [ ] messages
 - set up JWT refresh token (https://www.youtube.com/watch?v=iD49_NIQ-R4&t=9s)
-+ Re-create PostContext and then remove cascading props to clean up components
 - Re-consider layout/approach used for pie chart and time graph components
 - Set up 'visible holons' on post (vs. all included holons)
 - Set up verification/welcome emails
-- create seperate Authentication server?
-- Merge title and description into one text field (character limit around 3000)?
 - Add privacy setting to labels (public, anonymous etc.)
-- Set up reverse orders for wall filters
 - create expandable comments
 - Holon visualisations
     - Bubble map
@@ -74,3 +71,6 @@ Last updated: 20-07-2020
 - work out how to get holon stats for sorting ()
 - Set up filters on child-holons page
 - show all spaces vs direct child spaces ('holon handles' / 'verticle holon relationships') ('all contained spaces' vs. 'only direct descendents')
+- Add user to created holons
+- Merge title and description into one text field (character limit around 3000)?
+- Set up reverse orders for wall filters

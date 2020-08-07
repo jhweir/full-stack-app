@@ -6,7 +6,7 @@ import { AccountContext } from './AccountContext'
 export const HolonContext = createContext()
 
 function HolonContextProvider({ children }) {
-    const { accountContextLoading, accountData } = useContext(AccountContext)
+    const { accountContextLoading, accountData, isLoggedIn } = useContext(AccountContext)
 
     const [holonContextLoading, setHolonContextLoading] = useState(true)
     const [holonHandle, setHolonHandle] = useState('')
@@ -14,18 +14,6 @@ function HolonContextProvider({ children }) {
     const [isFollowing, setIsFollowing] = useState(false)
     const [isModerator, setIsModerator] = useState(false)
     const [selectedHolonSubPage, setSelectedHolonSubPage] = useState('')
-
-    const [holonSpaces, setHolonSpaces] = useState([])
-    const [holonSpaceFiltersOpen, setHolonSpaceFiltersOpen] = useState(false)
-    const [holonSpaceTimeRangeFilter, setHolonSpaceTimeRangeFilter] = useState('All Time')
-    const [holonSpaceTypeFilter, setHolonSpaceTypeFilter] = useState('All Types')
-    const [holonSpaceSortByFilter, setHolonSpaceSortByFilter] = useState('Posts')
-    const [holonSpaceSortOrderFilter, setHolonSpaceSortOrderFilter] = useState('Descending')
-    const [holonSpaceScopeFilter, setHolonSpaceScopeFilter] = useState('All Contained Spaces')
-    const [holonSpaceSearchFilter, setHolonSpaceSearchFilter] = useState('')
-    const [holonSpacePaginationLimit, setHolonSpacePaginationLimit] = useState(10)
-    const [holonSpacePaginationOffset, setHolonSpacePaginationOffset] = useState(0)
-    const [holonSpacePaginationHasMore, setHolonSpacePaginationHasMore] = useState(true)
 
     const [holonPosts, setHolonPosts] = useState([])
     const [holonPostFiltersOpen, setHolonPostFiltersOpen] = useState(false)
@@ -38,6 +26,18 @@ function HolonContextProvider({ children }) {
     const [holonPostPaginationLimit, setHolonPostPaginationLimit] = useState(10)
     const [holonPostPaginationOffset, setHolonPostPaginationOffset] = useState(0)
     const [holonPostPaginationHasMore, setHolonPostPaginationHasMore] = useState(true)
+
+    const [holonSpaces, setHolonSpaces] = useState([])
+    const [holonSpaceFiltersOpen, setHolonSpaceFiltersOpen] = useState(false)
+    const [holonSpaceTimeRangeFilter, setHolonSpaceTimeRangeFilter] = useState('All Time')
+    const [holonSpaceTypeFilter, setHolonSpaceTypeFilter] = useState('All Types')
+    const [holonSpaceSortByFilter, setHolonSpaceSortByFilter] = useState('Posts')
+    const [holonSpaceSortOrderFilter, setHolonSpaceSortOrderFilter] = useState('Descending')
+    const [holonSpaceScopeFilter, setHolonSpaceScopeFilter] = useState('All Contained Spaces')
+    const [holonSpaceSearchFilter, setHolonSpaceSearchFilter] = useState('')
+    const [holonSpacePaginationLimit, setHolonSpacePaginationLimit] = useState(10)
+    const [holonSpacePaginationOffset, setHolonSpacePaginationOffset] = useState(0)
+    const [holonSpacePaginationHasMore, setHolonSpacePaginationHasMore] = useState(true)
 
     const [holonUsers, setHolonUsers] = useState([])
     const [holonUserFiltersOpen, setHolonUserFiltersOpen] = useState(false)
@@ -61,7 +61,7 @@ function HolonContextProvider({ children }) {
         setHolonPostPaginationHasMore(true)
         console.log(`HolonContext: getHolonPosts (0 to ${holonPostPaginationLimit})`)
         axios.get(config.environmentURL + 
-            `/holon-posts?userId=${accountData.id ? accountData.id : null
+            `/holon-posts?accountId=${isLoggedIn ? accountData.id : null
             }&handle=${holonHandle
             }&timeRange=${holonPostTimeRangeFilter
             }&postType=${holonPostTypeFilter
@@ -82,7 +82,7 @@ function HolonContextProvider({ children }) {
         if (holonPostPaginationHasMore) {
             console.log(`HolonContext: getNextHolonPosts (${holonPostPaginationOffset} to ${holonPostPaginationOffset + holonPostPaginationLimit})`)
             axios.get(config.environmentURL + 
-                `/holon-posts?userId=${accountData.id ? accountData.id : null
+                `/holon-posts?accountId=${isLoggedIn ? accountData.id : null
                 }&handle=${holonHandle
                 }&timeRange=${holonPostTimeRangeFilter
                 }&postType=${holonPostTypeFilter
@@ -104,7 +104,7 @@ function HolonContextProvider({ children }) {
         setHolonSpacePaginationHasMore(true)
         console.log(`HolonContext: getHolonSpaces (0 to ${holonSpacePaginationLimit})`)
         axios.get(config.environmentURL + 
-            `/holon-spaces?userId=${accountData.id ? accountData.id : null
+            `/holon-spaces?accountId=${isLoggedIn ? accountData.id : null
             }&handle=${holonHandle
             }&timeRange=${holonSpaceTimeRangeFilter
             }&spaceType=${holonSpaceTypeFilter
@@ -125,7 +125,7 @@ function HolonContextProvider({ children }) {
         if (holonSpacePaginationHasMore) {
             console.log(`HolonContext: getNextHolonSpaces (${holonSpacePaginationOffset} to ${holonSpacePaginationOffset + holonSpacePaginationLimit})`)
             axios.get(config.environmentURL + 
-                `/holon-spaces?userId=${accountData.id ? accountData.id : null
+                `/holon-spaces?accountId=${isLoggedIn ? accountData.id : null
                 }&handle=${holonHandle
                 }&timeRange=${holonSpaceTimeRangeFilter
                 }&postType=${holonSpaceTypeFilter
@@ -150,7 +150,7 @@ function HolonContextProvider({ children }) {
         setHolonUserPaginationHasMore(true)
         console.log(`HolonContext: getHolonUsers (0 to ${holonUserPaginationLimit})`)
         axios.get(config.environmentURL + 
-            `/${queryPath}?userId=${accountData.id ? accountData.id : null
+            `/${queryPath}?accountId=${isLoggedIn ? accountData.id : null
             }&holonId=${holonData.id
             }&timeRange=${holonUserTimeRangeFilter
             }&spaceType=${holonUserTypeFilter
@@ -170,7 +170,7 @@ function HolonContextProvider({ children }) {
         if (holonUserPaginationHasMore) {
             console.log(`HolonContext: getNextHolonUsers (${holonUserPaginationOffset} to ${holonUserPaginationOffset + holonUserPaginationLimit})`)
             axios.get(config.environmentURL + 
-                `/${queryPath}?userId=${accountData.id ? accountData.id : null
+                `/${queryPath}?accountId=${isLoggedIn ? accountData.id : null
                 }&holonId=${holonData.id
                 }&timeRange=${holonUserTimeRangeFilter
                 }&postType=${holonUserTypeFilter
@@ -200,6 +200,7 @@ function HolonContextProvider({ children }) {
         }
     }, [holonData])
 
+    // TODO: Create reset functions for posts, spaces, and users, then add here
     useEffect(() => {
         setHolonPostFiltersOpen(false)
         setHolonPostTimeRangeFilter('All Time')
@@ -210,26 +211,15 @@ function HolonContextProvider({ children }) {
 
     return (
         <HolonContext.Provider value={{
+            // state
             holonContextLoading, setHolonContextLoading,
             holonHandle, setHolonHandle,
-            holonData, setHolonData, getHolonData,
+            holonData, setHolonData,
             isFollowing, setIsFollowing,
             isModerator, setIsModerator,
             selectedHolonSubPage, setSelectedHolonSubPage,
 
-            holonSpaces, setHolonSpaces, getHolonSpaces, getNextHolonSpaces,
-            holonSpacePaginationLimit, setHolonSpacePaginationLimit,
-            holonSpacePaginationOffset, setHolonSpacePaginationOffset,
-            holonSpacePaginationHasMore, setHolonSpacePaginationHasMore,
-            holonSpaceFiltersOpen, setHolonSpaceFiltersOpen,
-            holonSpaceSearchFilter, setHolonSpaceSearchFilter,
-            holonSpaceTimeRangeFilter, setHolonSpaceTimeRangeFilter,
-            holonSpaceTypeFilter, setHolonSpaceTypeFilter,
-            holonSpaceSortByFilter, setHolonSpaceSortByFilter,
-            holonSpaceSortOrderFilter, setHolonSpaceSortOrderFilter,
-            holonSpaceScopeFilter, setHolonSpaceScopeFilter,
-
-            holonPosts, setHolonPosts, getHolonPosts, getNextHolonPosts,
+            holonPosts, setHolonPosts,
             holonPostPaginationLimit, setHolonPostPaginationLimit,
             holonPostPaginationOffset, setHolonPostPaginationOffset,
             holonPostPaginationHasMore, setHolonPostPaginationHasMore,
@@ -241,7 +231,19 @@ function HolonContextProvider({ children }) {
             holonPostSortOrderFilter, setHolonPostSortOrderFilter,
             holonPostScopeFilter, setHolonPostScopeFilter,
 
-            holonUsers, setHolonUsers, getHolonUsers, getNextHolonUsers,
+            holonSpaces, setHolonSpaces,
+            holonSpacePaginationLimit, setHolonSpacePaginationLimit,
+            holonSpacePaginationOffset, setHolonSpacePaginationOffset,
+            holonSpacePaginationHasMore, setHolonSpacePaginationHasMore,
+            holonSpaceFiltersOpen, setHolonSpaceFiltersOpen,
+            holonSpaceSearchFilter, setHolonSpaceSearchFilter,
+            holonSpaceTimeRangeFilter, setHolonSpaceTimeRangeFilter,
+            holonSpaceTypeFilter, setHolonSpaceTypeFilter,
+            holonSpaceSortByFilter, setHolonSpaceSortByFilter,
+            holonSpaceSortOrderFilter, setHolonSpaceSortOrderFilter,
+            holonSpaceScopeFilter, setHolonSpaceScopeFilter,
+
+            holonUsers, setHolonUsers,
             holonUserPaginationLimit, setHolonUserPaginationLimit,
             holonUserPaginationOffset, setHolonUserPaginationOffset,
             holonUserPaginationHasMore, setHolonUserPaginationHasMore,
@@ -250,7 +252,13 @@ function HolonContextProvider({ children }) {
             holonUserTimeRangeFilter, setHolonUserTimeRangeFilter,
             holonUserTypeFilter, setHolonUserTypeFilter,
             holonUserSortByFilter, setHolonUserSortByFilter,
-            holonUserSortOrderFilter, setHolonUserSortOrderFilter
+            holonUserSortOrderFilter, setHolonUserSortOrderFilter,
+
+            // functions
+            getHolonData,
+            getHolonPosts, getNextHolonPosts,
+            getHolonSpaces, getNextHolonSpaces,
+            getHolonUsers, getNextHolonUsers
         }}>
             {children}
         </HolonContext.Provider>

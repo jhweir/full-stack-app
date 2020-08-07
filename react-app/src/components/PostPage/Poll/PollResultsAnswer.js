@@ -1,9 +1,12 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import styles from '../../../styles/components/PollResultsAnswer.module.scss'
+import { PostContext } from '../../../contexts/PostContext'
 
 function PollResultsAnswer(props) {
-    const { post, answer, index, totalPollVotes, color } = props
+    const { answer, index } = props
+    const { post, totalPollVotes, colorScale } = useContext(PostContext)
 
+    let color = colorScale(index)
     let pollAnswerVotes = answer.total_votes
     let pollAnswerScore = ((answer.total_votes / totalPollVotes) * 100).toFixed(1)
 
