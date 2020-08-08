@@ -17,20 +17,8 @@ function HolonPagePostsFilters() {
         return (
             <div className={styles.filters}>
                 <DropDownMenu
-                    title='Time Range'
-                    options={['All Time', 'Last Year', 'Last Month', 'Last Week', 'Last 24 Hours', 'Last Hour']}
-                    selectedOption={holonPostTimeRangeFilter}
-                    setSelectedOption={setHolonPostTimeRangeFilter}
-                />
-                <DropDownMenu
-                    title='Post Type'
-                    options={['All Types', 'Text', 'Poll', 'Task']}
-                    selectedOption={holonPostTypeFilter}
-                    setSelectedOption={setHolonPostTypeFilter}
-                />
-                <DropDownMenu
                     title='Sort By'
-                    options={['Comments', 'Date', 'Reactions', 'Likes', 'Hearts', 'Ratings', 'Links']}
+                    options={['Date', 'Comments', 'Reactions', 'Likes', 'Hearts', 'Ratings', 'Links']}
                     selectedOption={holonPostSortByFilter}
                     setSelectedOption={setHolonPostSortByFilter}
                 />
@@ -41,7 +29,19 @@ function HolonPagePostsFilters() {
                     setSelectedOption={setHolonPostSortOrderFilter}
                 />
                 <DropDownMenu
-                    title='Scope'
+                    title='Time Range'
+                    options={['All Time', 'Last Year', 'Last Month', 'Last Week', 'Last 24 Hours', 'Last Hour']}
+                    selectedOption={holonPostTimeRangeFilter}
+                    setSelectedOption={setHolonPostTimeRangeFilter}
+                />
+                <DropDownMenu
+                    title='Post Type'
+                    options={['All Types', 'Text', 'Poll']}
+                    selectedOption={holonPostTypeFilter}
+                    setSelectedOption={setHolonPostTypeFilter}
+                />
+                <DropDownMenu
+                    title='Depth'
                     options={['All Contained Posts']} // include 'Only Direct Posts To Space'
                     selectedOption={holonPostScopeFilter}
                     setSelectedOption={setHolonPostScopeFilter}

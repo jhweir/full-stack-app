@@ -15,12 +15,6 @@ function HolonPageUsersFilters() {
         return (
             <div className={styles.filters}>
                 <DropDownMenu
-                    title='Time Range'
-                    options={['All Time', 'Last Year', 'Last Month', 'Last Week', 'Last 24 Hours', 'Last Hour']}
-                    selectedOption={holonUserTimeRangeFilter}
-                    setSelectedOption={setHolonUserTimeRangeFilter}
-                />
-                <DropDownMenu
                     title='Sort By'
                     options={['Posts', 'Comments', 'Date']}
                     selectedOption={holonUserSortByFilter}
@@ -31,6 +25,12 @@ function HolonPageUsersFilters() {
                     options={['Descending', 'Ascending']}
                     selectedOption={holonUserSortOrderFilter}
                     setSelectedOption={setHolonUserSortOrderFilter}
+                />
+                <DropDownMenu
+                    title='Time Range'
+                    options={['All Time', 'Last Year', 'Last Month', 'Last Week', 'Last 24 Hours', 'Last Hour']}
+                    selectedOption={holonUserTimeRangeFilter}
+                    setSelectedOption={setHolonUserTimeRangeFilter}
                 />
             </div>
         )

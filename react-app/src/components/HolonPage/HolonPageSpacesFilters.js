@@ -16,12 +16,6 @@ function HolonPageSpacesFilters() {
         return (
             <div className={styles.filters}>
                 <DropDownMenu
-                    title='Time Range'
-                    options={['All Time', 'Last Year', 'Last Month', 'Last Week', 'Last 24 Hours', 'Last Hour']}
-                    selectedOption={holonSpaceTimeRangeFilter}
-                    setSelectedOption={setHolonSpaceTimeRangeFilter}
-                />
-                <DropDownMenu
                     title='Sort By'
                     options={['Followers', 'Posts', 'Comments', 'Date', 'Reactions', 'Likes', 'Hearts', 'Ratings', 'Links']}
                     selectedOption={holonSpaceSortByFilter}
@@ -34,7 +28,13 @@ function HolonPageSpacesFilters() {
                     setSelectedOption={setHolonSpaceSortOrderFilter}
                 />
                 <DropDownMenu
-                    title='Scope'
+                    title='Time Range'
+                    options={['All Time', 'Last Year', 'Last Month', 'Last Week', 'Last 24 Hours', 'Last Hour']}
+                    selectedOption={holonSpaceTimeRangeFilter}
+                    setSelectedOption={setHolonSpaceTimeRangeFilter}
+                />
+                <DropDownMenu
+                    title='Depth'
                     options={['All Contained Spaces', 'Only Direct Descendants']}
                     selectedOption={holonSpaceScopeFilter}
                     setSelectedOption={setHolonSpaceScopeFilter}

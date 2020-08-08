@@ -13,10 +13,24 @@ function PostContextProvider({ children }) {
     const [post, setPost] = useState({ spaces: [], Comments: [], PollAnswers: [] })
     const [newComment, setNewComment] = useState('')
     const [commentError, setCommentError] = useState(false)
-    const [postPageLoading, setPostPageLoading] = useState(true)
     const [selectedPollAnswers, setSelectedPollAnswers] = useState([])
     const [voteCast, setVoteCast] = useState(false)
 
+    const [postComments, setPostComments] = useState([])
+    const [postCommentFiltersOpen, setPostCommentFiltersOpen] = useState(false)
+    const [postCommentTimeRangeFilter, setPostCommentTimeRangeFilter] = useState('All Time')
+    const [postCommentTypeFilter, setPostCommentTypeFilter] = useState('All Types')
+    const [postCommentSortByFilter, setPostCommentSortByFilter] = useState('Likes')
+    const [postCommentSortOrderFilter, setPostCommentSortOrderFilter] = useState('Descending')
+    const [postCommentScopeFilter, setPostCommentScopeFilter] = useState('All Contained Posts')
+    const [postCommentSearchFilter, setPostCommentSearchFilter] = useState('')
+    const [postCommentPaginationLimit, setPostCommentPaginationLimit] = useState(10)
+    const [postCommentPaginationOffset, setPostCommentPaginationOffset] = useState(0)
+    const [postCommentPaginationHasMore, setPostCommentPaginationHasMore] = useState(true)
+
+    const validVote = selectedPollAnswers.length !== 0 && (post.subType !== 'weighted-choice' || totalUsedPoints == 100)
+    const colorScale = d3.scaleSequential().domain([0, post.PollAnswers.length]).interpolator(d3.interpolateViridis)
+    const totalUsedPoints = selectedPollAnswers.map((answer) => { return answer.value }).reduce((a, b) => a + b, 0)
     const pollAnswersSortedById = post.PollAnswers.map((a)=>a).sort((a, b) => a.id - b.id)
     let pollAnswersSortedByScore = post.PollAnswers.map((a)=>a).sort((a, b) => b.total_votes - a.total_votes) 
     let totalPollVotes = post.PollAnswers.map((answer) => { return answer.total_votes }).reduce((a, b) => a + b, 0)
@@ -26,23 +40,57 @@ function PostContextProvider({ children }) {
         pollAnswersSortedByScore = post.PollAnswers.map((a)=>a).sort((a, b) => b.total_score - a.total_score) 
     }
 
-    //console.log('totalPollVotes', totalPollVotes)
-    const totalUsedPoints = selectedPollAnswers.map((answer) => { return answer.value }).reduce((a, b) => a + b, 0)
-    const validVote = selectedPollAnswers.length !== 0 && (post.subType !== 'weighted-choice' || totalUsedPoints == 100)
-
-    const colorScale = d3
-        .scaleSequential()
-        .domain([0, post.PollAnswers.length])
-        .interpolator(d3.interpolateViridis)
-
     function getPostData() {
         console.log('PostContext: getPostData')
         setPostContextLoading(true)
         axios.get(config.environmentURL + `/post?accountId=${isLoggedIn ? accountData.id : null}&postId=${postId}`)
             .then(res => {
                 setPost(res.data)
-                setPostPageLoading(false)
+                setPostContextLoading(false)
             })
+    }
+
+    function getPostComments() {
+        // setHolonPostPaginationHasMore(true)
+        // console.log(`HolonContext: getHolonPosts (0 to ${holonPostPaginationLimit})`)
+        // axios.get(config.environmentURL + 
+        //     `/holon-posts?accountId=${isLoggedIn ? accountData.id : null
+        //     }&handle=${holonHandle
+        //     }&timeRange=${holonPostTimeRangeFilter
+        //     }&postType=${holonPostTypeFilter
+        //     }&sortBy=${holonPostSortByFilter
+        //     }&sortOrder=${holonPostSortOrderFilter
+        //     }&scope=${holonPostScopeFilter
+        //     }&searchQuery=${holonPostSearchFilter
+        //     }&limit=${holonPostPaginationLimit
+        //     }&offset=0`)
+        //     .then(res => {
+        //         if (res.data.length < holonPostPaginationLimit) { setHolonPostPaginationHasMore(false) }
+        //         setHolonPosts(res.data)
+        //         setHolonPostPaginationOffset(holonPostPaginationLimit)
+        //     })
+    }
+
+    function getNextPostComments() {
+        // if (holonPostPaginationHasMore) {
+        //     console.log(`HolonContext: getNextHolonPosts (${holonPostPaginationOffset} to ${holonPostPaginationOffset + holonPostPaginationLimit})`)
+        //     axios.get(config.environmentURL + 
+        //         `/holon-posts?accountId=${isLoggedIn ? accountData.id : null
+        //         }&handle=${holonHandle
+        //         }&timeRange=${holonPostTimeRangeFilter
+        //         }&postType=${holonPostTypeFilter
+        //         }&sortBy=${holonPostSortByFilter
+        //         }&sortOrder=${holonPostSortOrderFilter
+        //         }&scope=${holonPostScopeFilter
+        //         }&searchQuery=${holonPostSearchFilter
+        //         }&limit=${holonPostPaginationLimit
+        //         }&offset=${holonPostPaginationOffset}`)
+        //         .then(res => { 
+        //             if (res.data.length < holonPostPaginationLimit) { setHolonPostPaginationHasMore(false) }
+        //             setHolonPosts([...holonPosts, ...res.data])
+        //             setHolonPostPaginationOffset(holonPostPaginationOffset + holonPostPaginationLimit)
+        //         })
+        // }
     }
 
     function submitComment(e) {
@@ -79,9 +127,9 @@ function PostContextProvider({ children }) {
             post, setPost,
             newComment, setNewComment,
             commentError, setCommentError,
-            postPageLoading, setPostPageLoading,
             selectedPollAnswers, setSelectedPollAnswers,
             voteCast, setVoteCast,
+
             colorScale,
             pollAnswersSortedById,
             pollAnswersSortedByScore,
