@@ -9,6 +9,7 @@ import styles from '../../styles/components/PostCard.module.scss'
 import PostCardReactionModal from './PostCardReactionModal'
 
 function PostCard(props) {
+    const { isPostPage } = props
     const { 
         id,
         creator,
@@ -31,10 +32,13 @@ function PostCard(props) {
     const { isLoggedIn, accountData, setAlertMessage, setAlertModalOpen } = useContext(AccountContext)
     const { holonData, setHolonHandle, getHolonPosts } = useContext(HolonContext)
     const { postContextLoading } = useContext(PostContext)
-
     const [reactionModalOpen, setReactionModalOpen] = useState(false)
     const [ratingModalOpen, setRatingModalOpen] = useState(false)
+    // TODO: Move the rating state below to the PostCardRatingModal component?
+    const [newRating, setNewRating] = useState('')
+    const [newRatingError, setNewRatingError] = useState(false)
 
+    // local state for post
     const [totalComments, setTotalComments] = useState(0)
     const [totalReactions, setTotalReactions] = useState(0)
     const [totalLikes, setTotalLikes] = useState(0)
@@ -44,10 +48,6 @@ function PostCard(props) {
     const [accountLike, setAccountLike] = useState(0)
     const [accountHeart, setAccountHeart] = useState(0)
     const [accountRating, setAccountRating] = useState(0)
-
-    // TODO: Move the rating state below to the PostCardRatingModal component?
-    const [newRating, setNewRating] = useState('')
-    const [newRatingError, setNewRatingError] = useState(false)
 
     useEffect(() => {
         setTotalComments(total_comments)
@@ -156,9 +156,11 @@ function PostCard(props) {
     // }
 
     function formatDate() {
-        const a = createdAt.split(/[-.T :]/)
-        const formattedDate = a[3]+':'+a[4]+' on '+a[2]+'-'+a[1]+'-'+a[0]
-        return formattedDate
+        if (!isPostPage || !postContextLoading) {
+            let a = createdAt.split(/[-.T :]/)
+            let formattedDate = a[3]+':'+a[4]+' on '+a[2]+'-'+a[1]+'-'+a[0]
+            return formattedDate
+        }
     }
 
     function totalRatingScore() { // TODO: Move to rating component
@@ -169,12 +171,12 @@ function PostCard(props) {
     return ( 
         <div className={`${styles.post} ${(pins && styles.pinnedPost)}`}>
             {/* {pins && <div className={styles.pinFlag} onClick={ unpinPost }></div>} */}
-            {!pins && !props.isPostPage && 
+            {!isPostPage && 
                 <div className={styles.postId}>{ props.index + 1 }</div>
             }
             <div className={styles.postBody}>
                 <div className={styles.postTags}>
-                    {creator &&
+                    {creator && // TODO: check 'creator &&' necissary
                         <Link to={ `/u/${creator.handle}`} className={styles.postCreator}>
                             {creator.flagImagePath ?
                                 <img className={styles.userImage} src={creator.flagImagePath} alt=''/> :
@@ -202,9 +204,9 @@ function PostCard(props) {
                             </Link>}
                     </div>
                     <span className={styles.postSubText}>|</span>
-                    {!postContextLoading && /* Wait until the post has finished loading before formatting the date to prevent errors */
+                    {/* {(!postContextLoading && isPostPage) && */}
                         <span className={styles.postSubText}>{ formatDate() || 'no date' }</span>
-                    }
+                    {/* } */}
                 </div>
                 <div className={styles.postContent}>
                     {url 
