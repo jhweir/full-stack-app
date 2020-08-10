@@ -1,19 +1,19 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styles from '../../styles/components/PostCardRatingModal.module.scss'
 
 function PostCardRatingModal(props) {
     const {
-        ratingModalOpen,
+        totalRatingScore,
         newRating,
         newRatingError,
-        totalRatingScore,
         setNewRating,
         setNewRatingError,
         addRating
     } = props
+
     
     return (
-        <div className={`${styles.postRatingModal} ${(ratingModalOpen && styles.visible)}`}>
+        <div className={styles.postRatingModal}>
             <div className={styles.postRatingModalTotalScore}>
                 <div className={styles.postRatingModalTotalScoreBar}>
                     <div className={styles.postRatingModalTotalScorePercentage} style={{width: totalRatingScore()}}/>
@@ -21,10 +21,10 @@ function PostCardRatingModal(props) {
                 </div>
             </div>
             <div className={styles.postRatingModalInputWrapper}>
-                <input className={`${styles.postRatingModalInput} ${(newRatingError && styles.error)}`}
-                    type="text"
-                    value={ newRating }
-                    onChange={(e) => { setNewRating(e.target.value); setNewRatingError(false) }}/>
+                <input className={`${styles.postRatingModalInput} ${newRatingError && styles.error}`}
+                    value={newRating} type="text"
+                    onChange={(e) => { setNewRating(e.target.value); setNewRatingError(false) }}
+                />
                 <div>/ 100</div>
             </div>
             <div className={styles.postRatingModalButton}

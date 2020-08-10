@@ -1186,9 +1186,9 @@ router.post('/create-post', (req, res) => {
 
 router.delete('/deletePost', (req, res) => {
     // TODO: endpoints like this are currently unsafe/open to anyone. include authenticate middleware.
-    //console.log(req.body.id)
+    const { postId } = req.body
     Post.update({ globalState: 'hidden' }, {
-        where: { id: req.body.id }
+        where: { id: postId }
     })
     // Post.destroy({ where: { id: req.body.id }})
 })

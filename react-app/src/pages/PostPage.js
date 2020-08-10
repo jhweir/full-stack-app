@@ -25,7 +25,7 @@ function PostPage({ match }) {
 
     return (
         <div className={styles.postPage}>
-            <PostCard post={post} isPostPage={true}/>
+            <PostCard post={post} location='post-page'/>
             {post.type === 'poll' && <PageSectionSelector url={url}/>}
             <Switch>
                 <Redirect from={`${url}`} to={`${url}/comments`} exact/>

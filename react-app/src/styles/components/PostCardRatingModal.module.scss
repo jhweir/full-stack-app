@@ -1,13 +1,13 @@
 .postRatingModal {
-    z-index: 0;
-    display: none;
+    // z-index: 0;
+    // display: none;
     flex-direction: column;
     //align-items: center;
     margin: 5px 0;
-    &.visible {
-        display: flex;
-        z-index: 1;
-    }
+    // &.visible {
+    //     display: flex;
+    //     z-index: 1;
+    // }
 }
 .postRatingModalTotalScore {
     width: 100%;

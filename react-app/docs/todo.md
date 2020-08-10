@@ -1,7 +1,6 @@
 # Todos
 Last updated: 07-08-2020
 
-+ Re-create PostContext and then remove cascading props to clean up components
 - Add holon Id to comments when created
 - Add clickoutside approach from drop down menu to other modals
 - Add basic mod controls (image upload, name change, handle change)
@@ -74,3 +73,5 @@ Last updated: 07-08-2020
 - Add user to created holons
 - Merge title and description into one text field (character limit around 3000)?
 - Set up reverse orders for wall filters
+- Re-create PostContext and then remove cascading props to clean up components
+- Change 'isPostPage' prop to 'location' prop ('holon-posts', 'post-page', 'user-created-posts')

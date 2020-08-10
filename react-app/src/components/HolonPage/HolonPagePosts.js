@@ -57,7 +57,7 @@ function HolonPagePosts() {
             {holonPosts.length > 0 &&
                 <ul className={`${styles.posts} ${holonContextLoading && styles.hidden}`}>
                     {holonPosts.map((post, index) =>
-                        <PostCard post={post} isPostPage={false} key={index} index={index}/>
+                        <PostCard post={post} key={index} index={index} location='holon-posts'/>
                     )}
                 </ul>
             }

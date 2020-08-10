@@ -47,7 +47,7 @@ function UserPagePosts() {
             {createdPosts.length > 0 &&
                 <ul className={styles.createdPosts}>
                     {createdPosts.map((post, index) =>
-                        <PostCard post={post} isPostPage={false} key={index} index={index}/>
+                        <PostCard post={post} key={index} index={index} location='user-created-posts'/>
                     )}
                 </ul>
             }
