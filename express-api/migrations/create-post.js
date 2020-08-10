@@ -14,7 +14,7 @@ module.exports = {
       subType: {
         type: Sequelize.STRING
       },
-      globalState: {
+      state: {
         type: Sequelize.STRING
       },
       creatorId: {

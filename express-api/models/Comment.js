@@ -1,6 +1,7 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   const Comment = sequelize.define('Comment', {
+    state: DataTypes.STRING,
     creatorId: DataTypes.INTEGER,
     parentCommentId: DataTypes.INTEGER,
     postId: DataTypes.INTEGER,

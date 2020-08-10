@@ -5,7 +5,7 @@ import { PostContext } from '../../../contexts/PostContext'
 function PollAnswer(props) {
     const { answer } = props
     const {
-        post,
+        postData,
         selectedPollAnswers, setSelectedPollAnswers,
         setVoteCast
     } = useContext(PostContext)
@@ -15,14 +15,14 @@ function PollAnswer(props) {
 
     function addPollAnswer(value) {
         setVoteCast(false)
-        if (post.subType === 'single-choice') {
+        if (postData.subType === 'single-choice') {
             if (matchingSelectedAnswer.length) {
                 setSelectedPollAnswers([...selectedPollAnswers.filter(pollAnswer => { return pollAnswer.id !== answer.id })])
             } else {
                 setSelectedPollAnswers([{id: answer.id}])
             }
         }
-        if (post.subType === 'multiple-choice') {
+        if (postData.subType === 'multiple-choice') {
             // if poll answer already included in selectedPollAnswers..
             if (matchingSelectedAnswer.length) {
                 // remove answer from selectedPollAnswers
@@ -32,7 +32,7 @@ function PollAnswer(props) {
                 setSelectedPollAnswers([...selectedPollAnswers, {id: answer.id}])
             }
         }
-        if (post.subType === 'weighted-choice') {
+        if (postData.subType === 'weighted-choice') {
             // if poll answer already included in selectedPollAnswers...
             if (matchingSelectedAnswer.length) {
                 // remove answer from selectedPollAnswers and re-add answer with new value
@@ -57,14 +57,14 @@ function PollAnswer(props) {
 
     return (
         <div className={`${styles.pollAnswer} ${matchingSelectedAnswer.length && styles.answerSelected}`}
-            onClick={() => { if (post.subType !== 'weighted-choice') addPollAnswer() }}>
-            {post.subType !== 'weighted-choice' &&
+            onClick={() => { if (postData.subType !== 'weighted-choice') addPollAnswer() }}>
+            {postData.subType !== 'weighted-choice' &&
                 <img 
                     className={styles.pollAnswerCheckBox}
                     src={matchingSelectedAnswer.length ? "/icons/check-circle-regular.svg" : "/icons/circle-regular.svg"}
                 />
             }
-            {post.subType === 'weighted-choice' &&
+            {postData.subType === 'weighted-choice' &&
                 <input className={styles.pollAnswerInput}
                     placeholder="0" min="0" 
                     type="number" value={answerValue}

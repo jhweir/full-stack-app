@@ -18,7 +18,7 @@ function HolonPageSideBarRight() {
                             <ul className={styles.sideBarRightHolons}>
                                 {holonData.DirectParentHolons.map((holon, index) => 
                                     <Link className={styles.sideBarRightHolon}
-                                        to={ `/h/${holon.handle}` }
+                                        to={ `/s/${holon.handle}` }
                                         key={index}
                                         onClick={ () => { setHolonHandle(holon.handle) } }>
                                         {holon.flagImagePath === null
@@ -39,7 +39,7 @@ function HolonPageSideBarRight() {
                             <ul className={styles.sideBarRightHolons}>
                                 {holonData.DirectChildHolons.map((holon, index) => 
                                     <Link className={styles.sideBarRightHolon}
-                                        to={ `/h/${holon.handle}` }
+                                        to={ `/s/${holon.handle}` }
                                         key={index}
                                         onClick={ () => { setHolonHandle(holon.handle) } }>
                                         {holon.flagImagePath === null

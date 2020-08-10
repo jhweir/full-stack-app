@@ -5,7 +5,7 @@ import { PostContext } from '../../contexts/PostContext'
 
 function PostPagePollVote() {
     const {
-        post,
+        postData,
         validVote,
         castVote,
         voteCast,
@@ -15,7 +15,7 @@ function PostPagePollVote() {
 
     return (
         <div className={styles.pollVote}>
-            <div className={styles.text}>Poll type: <b>{post.subType}</b></div>
+            <div className={styles.text}>Poll type: <b>{postData.subType}</b></div>
             <div className={styles.castVoteSection}>
                 <div className={`${styles.castVoteButton} ${validVote && styles.validVote}`} onClick={() => { castVote() }}>
                     Cast your vote
@@ -27,9 +27,9 @@ function PostPagePollVote() {
                     </div>
                 }
             </div>
-            {post.subType === 'weighted-choice' && <div className={styles.text}>Split 100 points across the poll answers...</div>}
+            {postData.subType === 'weighted-choice' && <div className={styles.text}>Split 100 points across the poll answers...</div>}
             {pollAnswersSortedById.map((answer, index) => <PollAnswer key={index} answer={answer}/> )}
-            {post.subType === 'weighted-choice' &&
+            {postData.subType === 'weighted-choice' &&
                 <div className={`${styles.totalUsedPointsText} ${totalUsedPoints !== 100 && styles.error}`}>
                     Total used points: {totalUsedPoints}
                     <br/>

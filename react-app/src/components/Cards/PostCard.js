@@ -57,7 +57,7 @@ function PostCard(props) {
             .then(setTimeout(() => { 
                 if (location === 'holon-posts') { getHolonPosts() }
                 if (location === 'user-created-posts') { getCreatedPosts() }
-                if (location === 'post-page') { history.push('/h/root') }
+                if (location === 'post-page') { history.push('/s/all') }
             }, 200))
             .catch(error => { console.log(error) })
     }
@@ -91,14 +91,14 @@ function PostCard(props) {
                         <div className={styles.holonNames}>
                             {spaces.length > 0
                                 ? spaces.map((holon, index) =>
-                                    <Link to={`/h/${holon}`}
+                                    <Link to={`/s/${holon}`}
                                         onClick={ () => {setHolonHandle(holon)} }
                                         style={{marginRight: 10}}
                                         key={index}>
                                         {holon}
                                     </Link>)
-                                : <Link to={`/h/root`}
-                                    onClick={ () => {setHolonHandle('root')} }
+                                : <Link to={`/s/all`}
+                                    onClick={ () => {setHolonHandle('all')} }
                                     style={{marginRight: 10}}>
                                     all
                                 </Link>}
@@ -165,7 +165,7 @@ export default PostCard
 //     <div className={styles.holonNames}>
 //         {props.post.Holons.length >= 1 ? 
 //             props.post.Holons.map((holon, index) =>
-//                 <Link to={ `/h/${holon.handle}` }
+//                 <Link to={ `/s/${holon.handle}` }
 //                     onClick={ () => { updateHolonContext(holon.handle) } }
 //                     style={{marginRight: 10}}
 //                     key={index}>

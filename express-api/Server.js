@@ -451,7 +451,7 @@ app.post('/api/holon-cover-image-upload', authenticateToken, function(req, res) 
 //   passport.authenticate('facebook', { failureRedirect: '/login' }),
 //   function(req, res) {
 //     // Successful authentication, redirect home.
-//     res.redirect('http://localhost:3000/h/root')
+//     res.redirect('http://localhost:3000/h/all')
 //   })
 
 // const options = {

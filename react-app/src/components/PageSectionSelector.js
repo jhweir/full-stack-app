@@ -1,14 +1,23 @@
-import React from 'react'
+import React, { useContext, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import styles from '../styles/components/PageSectionSelector.module.scss'
+import { PostContext } from '../contexts/PostContext'
 
 function PageSectionSelector(props) {
-    const { url } = props
+    const { url, pathname } = props
+    const { getPostData, selectedSubPage, setSelectedSubPage } = useContext(PostContext)
+
+    useEffect(() => {
+        if (pathname.includes('comments')) { setSelectedSubPage('comments') }
+        if (pathname.includes('vote')) { setSelectedSubPage('vote') }
+        if (pathname.includes('results')) { setSelectedSubPage('results') }
+    }, [pathname])
+
     return (
         <div className={styles.pageSectionSelector}>
-            <Link className={styles.button} to={ `${url}` }>Comments</Link>
-            <Link className={styles.button} to={ `${url}/vote` }>Vote</Link>
-            <Link className={styles.button} to={ `${url}/results` }>Results</Link>
+            <Link className={`${styles.tab} ${selectedSubPage === 'comments' && styles.selected}`} to={`${url}`}>Comments</Link>
+            <Link className={`${styles.tab} ${selectedSubPage === 'vote' && styles.selected}`} to={`${url}/vote`}>Vote</Link>
+            <Link className={`${styles.tab} ${selectedSubPage === 'results' && styles.selected}`} to={`${url}/results`} onClick={() => getPostData()}>Results</Link>
         </div>
     )
 }

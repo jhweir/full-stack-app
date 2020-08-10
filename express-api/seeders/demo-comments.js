@@ -5,6 +5,7 @@ module.exports = {
     return queryInterface.bulkInsert('Comments', [
       {
         id: 1,
+        state: 'visible',
         creatorId: 1,
         postId: 4,
         text: 'Comment 1...',
@@ -13,6 +14,7 @@ module.exports = {
       },
       {
         id: 2,
+        state: 'visible',
         creatorId: 2,
         postId: 4,
         text: 'Comment 2...',
@@ -21,6 +23,7 @@ module.exports = {
       },
       {
         id: 3,
+        state: 'visible',
         creatorId: 1,
         postId: 4,
         text: 'Comment 3...',
@@ -29,6 +32,7 @@ module.exports = {
       },
       {
         id: 4,
+        state: 'visible',
         creatorId: 2,
         postId: 4,
         text: 'Comment 4...',
@@ -37,6 +41,7 @@ module.exports = {
       },
       {
         id: 5,
+        state: 'visible',
         creatorId: 3,
         postId: 4,
         text: 'Comment 5...',

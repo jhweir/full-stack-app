@@ -34,7 +34,7 @@ function App() {
                 <GlobalModals/>
                 <Switch>
                   <Route path="/" exact component={Homepage}/>
-                  <Route path="/h/:holonHandle" component={HolonPage}/>
+                  <Route path="/s/:holonHandle" component={HolonPage}/>
                   <Route path="/p/:postId" component={PostPage}/>
                   <Route path="/u/:userHandle" component={UserPage}/>
                   <Route component={EmptyPage}/>
@@ -59,7 +59,7 @@ export default App
 //       <CSSTransition key={location.key} classNames="fade" timeout={1000}>
 //           <Switch location={location}>
 //               <Route path="/" exact component={ Homepage }/>
-//               <Route path="/h/:holonHandle" component={ HolonPage }/>
+//               <Route path="/s/:holonHandle" component={ HolonPage }/>
 //               {/* <Route path="/" component={Home} exact />
 //               <Route path="/first" component={First} />
 //               <Route path="/second" component={Second} /> */}

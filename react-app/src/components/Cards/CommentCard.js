@@ -6,11 +6,12 @@ import styles from '../../styles/components/CommentCard.module.scss'
 import { PostContext } from '../../contexts/PostContext'
 
 function CommentCard(props) {
-    const { postId, commentCreator, text, createdAt } = props.comment
+    const { index, comment } = props
+    const { postId, commentCreator, text, createdAt } = comment
     const { getPostComments } = useContext(PostContext)
 
     function deleteComment() {
-        axios.delete(config.environmentURL  + '/delete-comment', { data: { postId } })
+        axios.delete(config.environmentURL  + '/delete-comment', { data: { commentId: comment.id } })
             .then(setTimeout(() => { getPostComments() }, 200))
             .catch(error => { console.log(error) })
     }
@@ -22,20 +23,19 @@ function CommentCard(props) {
     }
 
     return (
-        <div className={styles.comment}>
-            {/* <div className={styles.commentId}>{ props.index + 1 || '' }</div> */}
-            <div className={styles.commentBody}>
-
-                <div className={styles.commentTags}>
+        <div className={styles.commentCard}>
+            {/* <div className={styles.index}>{index + 1 || ''}</div> */}
+            <div className={styles.body}>
+                <div className={styles.tags}>
                     {commentCreator &&
-                        <Link to={ `/u/${commentCreator.handle}`} className={styles.commentCreator}>
+                        <Link to={ `/u/${commentCreator.handle}`} className={styles.user}>
                             {commentCreator.flagImagePath ?
                                 <img className={styles.userImage} src={commentCreator.flagImagePath} alt=''/> :
-                                <div className={styles.userImageWrapper}>
+                                <div className={styles.userImagePlaceholderWrapper}>
                                     <img className={styles.userImagePlaceholder} src={'/icons/user-solid.svg'} alt=''/>
                                 </div>
                             }
-                            <span className={styles.commentSubText}>{ commentCreator && commentCreator.name || 'Anonymous' }</span>
+                            <span className={styles.subText}>{ commentCreator && commentCreator.name || 'Anonymous' }</span>
                         </Link>
                     }
                     {/* <span className={styles.userThumbnail}></span>
@@ -44,22 +44,16 @@ function CommentCard(props) {
                     <span className={styles.subText}>{ formatDate() || 'no date' }</span>
                 </div>
 
-                <div className={styles.commentContent}>
-                    <div className={styles.commentText}>{ text }</div>
+                <div className={styles.content}>
+                    <div className={styles.text}>{ text }</div>
                     
-                    <div className={styles.commentInteract}>
-                        {/* <div className="post-interact-item" onClick={ addLike }>
-                            <div className="like-icon"/>
-                            <span>{ likes } Likes</span>
-                        </div>
-                        <div className="post-interact-item" onClick={ deletePost }>
-                            <div className="delete-icon"/>
-                            <span>Delete</span>
-                        </div>
-                        <div className="post-interact-item" onClick={ pins === null ? pinPost : unpinPost }>
-                            <div className="pin-icon"/>
-                            <span>{pins === null ? 'Pin post' : 'Unpin post'}</span>
-                        </div> */}
+                    <div className={styles.interact}>
+                        {/* {isOwnComment && */}
+                            <div className={styles.interactItem} onClick={deleteComment}>
+                                <img className={styles.icon} src="/icons/trash-alt-solid.svg" alt=''/>
+                                <span>Delete</span>
+                            </div>
+                        {/* } */}
                     </div>
                 </div>
             </div>

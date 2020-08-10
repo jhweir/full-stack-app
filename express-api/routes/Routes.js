@@ -20,7 +20,7 @@ const PollAnswer = require('../models').PollAnswer
 
 //const postAttributes = (userId) => [
 const postAttributes = [
-    'id', 'type', 'subType', 'globalState', 'text', 'url', 'createdAt',
+    'id', 'type', 'subType', 'state', 'text', 'url', 'createdAt',
     [sequelize.literal(
         `(SELECT COUNT(*) FROM Comments AS Comment WHERE Comment.postId = Post.id)`
         ),'total_comments'
@@ -151,7 +151,7 @@ router.get('/holon-posts', (req, res) => {
             where =
             { 
                 '$PostHolons.handle$': handle,
-                globalState: 'visible',
+                state: 'visible',
                 createdAt: { [Op.between]: [startDate, Date.now()] },
                 type,
                 text: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` }
@@ -161,7 +161,7 @@ router.get('/holon-posts', (req, res) => {
             where =
             { 
                 '$PostHolons.handle$': handle,
-                globalState: 'visible',
+                state: 'visible',
                 createdAt: { [Op.between]: [startDate, Date.now()] },
                 type,
                 text: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` }
@@ -307,7 +307,7 @@ router.get('/holon-spaces', (req, res) => {
         if (sortBy === 'Posts') { firstAttributes.push([sequelize.literal(`(
             SELECT COUNT(*)
                 FROM Posts
-                WHERE Posts.globalState = 'visible'
+                WHERE Posts.state = 'visible'
                 AND Posts.id IN (
                     SELECT PostHolons.postId
                     FROM PostHolons
@@ -547,7 +547,7 @@ router.get('/holon-spaces', (req, res) => {
                 [sequelize.literal(`(
                     SELECT COUNT(*)
                         FROM Posts
-                        WHERE Posts.globalState = 'visible'
+                        WHERE Posts.state = 'visible'
                         AND Posts.id IN (
                             SELECT PostHolons.postId
                             FROM PostHolons
@@ -593,7 +593,7 @@ router.get('/holon-users', (req, res) => {
         if (sortBy === 'Posts') { firstAttributes.push([sequelize.literal(`(
             SELECT COUNT(*)
                 FROM Posts
-                WHERE Posts.globalState = 'visible'
+                WHERE Posts.state = 'visible'
                 AND Posts.creatorId = User.id
             )`), 'total_posts'
         ])}
@@ -640,7 +640,7 @@ router.get('/holon-users', (req, res) => {
                 [sequelize.literal(`(
                     SELECT COUNT(*)
                         FROM Posts
-                        WHERE Posts.globalState = 'visible'
+                        WHERE Posts.state = 'visible'
                         AND Posts.creatorId = User.id
                     )`), 'total_posts'
                 ],
@@ -686,7 +686,7 @@ router.get('/all-users', (req, res) => {
         if (sortBy === 'Posts') { firstAttributes.push([sequelize.literal(`(
             SELECT COUNT(*)
                 FROM Posts
-                WHERE Posts.globalState = 'visible'
+                WHERE Posts.state = 'visible'
                 AND Posts.creatorId = User.id
             )`), 'total_posts'
         ])}
@@ -726,7 +726,7 @@ router.get('/all-users', (req, res) => {
                 [sequelize.literal(`(
                     SELECT COUNT(*)
                         FROM Posts
-                        WHERE Posts.globalState = 'visible'
+                        WHERE Posts.state = 'visible'
                         AND Posts.creatorId = User.id
                     )`), 'total_posts'
                 ],
@@ -889,7 +889,7 @@ router.get('/user-posts', (req, res) => {
         subQuery: false,
         where: { 
             creatorId: userId,
-            globalState: 'visible',
+            state: 'visible',
             createdAt: { [Op.between]: [startDate, Date.now()] },
             type,
             text: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` }
@@ -1065,7 +1065,7 @@ router.get('/post-comments', (req, res) => {
         where: {
             postId,
             text: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` },
-            //globalState: 'visible',
+            //state: 'visible',
             createdAt: { [Op.between]: [startDate, Date.now()] },
             // [Op.or]: [
             //     { text: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } },
@@ -1075,7 +1075,7 @@ router.get('/post-comments', (req, res) => {
         order,
         limit: Number(limit),
         offset: Number(offset),
-        attributes: ['creatorId', 'text', 'createdAt'],
+        attributes: ['id', 'creatorId', 'text', 'createdAt'],
         include: [
             {
                 model: User,
@@ -1173,8 +1173,9 @@ router.post('/create-holon', (req, res) => {
 })
 
 router.post('/create-post', (req, res) => {
-    const { type, subType, creatorId, text, url, holonHandles, pollAnswers } = req.body.post
+    const { type, subType, state, creatorId, text, url, holonHandles, pollAnswers } = req.body.post
     let holonIds = []
+    console.log('req.body.post: ', req.body.post)
 
     async function asyncForEach(array, callback) {
         for (let index = 0; index < array.length; index++) {
@@ -1211,7 +1212,7 @@ router.post('/create-post', (req, res) => {
 
     // Create the post and all of its assosiated content
     Post.create({
-        type, subType, creatorId, text, url, globalState: 'visible'
+        type, subType, state, creatorId, text, url, state: 'visible'
     })
     .then(post => {
         createNewPostHolons(post)
@@ -1223,7 +1224,16 @@ router.post('/create-post', (req, res) => {
 router.delete('/delete-post', (req, res) => {
     // TODO: endpoints like this are currently unsafe/open to anyone. include authenticate middleware.
     const { postId } = req.body
-    Post.update({ globalState: 'hidden' }, {
+    Post.update({ state: 'hidden' }, {
+        where: { id: postId }
+    })
+    // Post.destroy({ where: { id: req.body.id }})
+})
+
+router.delete('/delete-comment', (req, res) => {
+    // TODO: endpoints like this are currently unsafe/open to anyone. include authenticate middleware.
+    const { commentId } = req.body
+    Post.update({ state: 'hidden' }, {
         where: { id: postId }
     })
     // Post.destroy({ where: { id: req.body.id }})
@@ -1590,7 +1600,7 @@ module.exports = router
 //     attributes: [
 //         'id',
 //         'type',
-//         'globalState',
+//         'state',
 //         'creator',
 //         'title',
 //         'description',

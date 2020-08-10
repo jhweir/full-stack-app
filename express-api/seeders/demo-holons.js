@@ -5,7 +5,7 @@ module.exports = {
     return queryInterface.bulkInsert('Holons', [
       {
         id: 1,
-        handle: 'root',
+        handle: 'all',
         name: 'All',
         description: 'This is the root holon...',
         flagImagePath: 'https://new-weco-holon-flag-images.s3.eu-west-1.amazonaws.com/1595681318669',

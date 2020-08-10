@@ -36,7 +36,7 @@ function HolonPageSideBarLeft() {
                     icon='crown-solid.svg'
                     marginBottom={10}
                 />}
-                {isLoggedIn && holonData.handle !== 'root' && <SideBarButton
+                {isLoggedIn && holonData.handle !== 'all' && <SideBarButton
                     text={isFollowing ? 'Following' : 'Not Following'}
                     icon={isFollowing ? 'eye-solid.svg' : 'eye-slash-solid.svg'}
                     marginBottom={10}
@@ -61,7 +61,7 @@ function HolonPageSideBarLeft() {
                     type='holon-page-left'
                 />
                 <SideBarButton
-                    text={holonData.handle === 'root' ? 'Users' : 'Followers'}
+                    text={holonData.handle === 'all' ? 'Users' : 'Followers'}
                     path='users'
                     icon='users-solid.svg'
                     type='holon-page-left'

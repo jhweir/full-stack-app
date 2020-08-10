@@ -3,7 +3,7 @@ module.exports = (sequelize, DataTypes) => {
   const Post = sequelize.define('Post', {
     type: DataTypes.STRING,
     subType: DataTypes.STRING,
-    globalState: DataTypes.STRING,
+    state: DataTypes.STRING,
     creatorId: DataTypes.INTEGER,
     text: DataTypes.STRING,
     url: DataTypes.STRING,

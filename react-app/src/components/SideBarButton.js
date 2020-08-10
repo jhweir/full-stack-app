@@ -12,7 +12,7 @@ function SideBarButton(props) {
     let url, selectedSubPage
 
     if (type === 'holon-page-left') {
-        url = `/h/${holonData.handle}/${path}`
+        url = `/s/${holonData.handle}/${path}`
         selectedSubPage = selectedHolonSubPage
     }
 

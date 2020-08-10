@@ -107,7 +107,7 @@ export default HolonPagePosts
 
 // Apply search filter to posts
 // const filteredPosts = holonPosts.filter(post => {
-//     return post.title.toUpperCase().includes(holonPostSearchFilter.toUpperCase()) && post.globalState === 'visible'
+//     return post.title.toUpperCase().includes(holonPostSearchFilter.toUpperCase()) && post.state === 'visible'
 //     //&& post.pins == null
 // })
 

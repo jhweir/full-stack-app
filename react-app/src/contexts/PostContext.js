@@ -7,11 +7,14 @@ import { AccountContext } from './AccountContext'
 export const PostContext = createContext()
 
 function PostContextProvider({ children }) {
-    const { accountContextLoading, accountData, isLoggedIn, setAlertMessage, setAlertModalOpen } = useContext(AccountContext)
+    const { accountContextLoading, accountData, isLoggedIn } = useContext(AccountContext)
     const [postContextLoading, setPostContextLoading] = useState(true)
     const [postId, setPostId] = useState('')
     const [postData, setPostData] = useState({ spaces: [], PollAnswers: [] })
+    const [selectedSubPage, setSelectedSubPage] = useState('')
     const [selectedPollAnswers, setSelectedPollAnswers] = useState([])
+
+    // to be moved... 
     const [voteCast, setVoteCast] = useState(false)
 
     const [postComments, setPostComments] = useState([])
@@ -85,14 +88,14 @@ function PostContextProvider({ children }) {
         }
     }
 
+    // TODO: move to PostPagePollVote, set up infinite scroll for poll answers in 'vote' and 'results' sections
     function castVote() {
         if (validVote) {
             let voteData = { postId, pollType: postData.subType, selectedPollAnswers }
-            console.log('voteData', voteData)
+            console.log('voteData: ', voteData)
             axios.post(config.environmentURL + '/cast-vote', { voteData })
                 .then(setSelectedPollAnswers([]))
                 .then(setVoteCast(true))
-                .then(setTimeout(() => { getPostData() }, 200))
         }
     }
 
@@ -106,7 +109,9 @@ function PostContextProvider({ children }) {
             postContextLoading, setPostContextLoading,
             postId, setPostId,
             postData, setPostData,
+            selectedSubPage, setSelectedSubPage,
             selectedPollAnswers, setSelectedPollAnswers,
+
             voteCast, setVoteCast,
 
             postComments, setPostComments,

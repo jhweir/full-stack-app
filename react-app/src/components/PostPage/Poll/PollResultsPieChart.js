@@ -4,7 +4,7 @@ import { PostContext } from '../../../contexts/PostContext'
 
 function PollResultsPieChart() {
     const {
-        post,
+        postData,
         totalPollVotes,
         pollAnswersSortedByScore,
         colorScale
@@ -28,7 +28,7 @@ function PollResultsPieChart() {
         let pie = d3.pie()
             //.sort(null)
             .value(function(d) {
-                if (post.subType === 'weighted-choice') { return d.total_score }
+                if (postData.subType === 'weighted-choice') { return d.total_score }
                 else { return d.total_votes }
             })
 
@@ -84,7 +84,7 @@ function PollResultsPieChart() {
             .duration(2000)
             .style("opacity", 1)
             .text(function(d) {
-                if (post.subType === 'weighted-choice') {
+                if (postData.subType === 'weighted-choice') {
                     if (((d.data.total_score / totalPollVotes) * 100) < 4) { return '' }
                     return `${d.data.total_score} ↑` //↑⇧⇑⇪⬆
                 } else {
@@ -152,7 +152,7 @@ function PollResultsPieChart() {
             .transition()
             .duration(2000)
             .style("opacity", 1)
-    }, [post])
+    }, [postData])
     return (
         <div className="chart" style={{width: 450}}></div>
     )

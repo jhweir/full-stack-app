@@ -5,7 +5,6 @@ function DropDownMenu(props) {
     const { title, options, selectedOption, setSelectedOption, style } = props
     const [menuOpen, setMenuOpen] = useState(false)
 
-    // close menu if user clicks outside ref
     const ref = useRef()
     function handleClickOutside(e) { if (!ref.current.contains(e.target)) { setMenuOpen(false) } }
     useEffect(() => {

@@ -71,7 +71,7 @@ function HolonHandleInput(props) {
             {flashMessage && 
                 <div className={styles.flashMessage}>
                     Sorry, that space doesn't exist yet. You'll need to create it first on the 
-                    <Link to="/h/root/spaces" onClick={() => setCreatePostModalOpen(false)}> <b>Spaces</b></Link> page.
+                    <Link to="/s/all/spaces" onClick={() => setCreatePostModalOpen(false)}> <b>Spaces</b></Link> page.
                 </div>
             }
             {holonHandles.length > 0 &&

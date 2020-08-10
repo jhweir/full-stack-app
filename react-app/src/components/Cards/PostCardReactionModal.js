@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState, useEffect, useRef } from 'react'
 import axios from 'axios'
 import config from '../../Config'
 import styles from '../../styles/components/PostCardReactionModal.module.scss'
@@ -104,8 +104,15 @@ function PostCardReactionModal(props) {
         }
     }
 
+    const ref = useRef()
+    function handleClickOutside(e) { if (!ref.current.contains(e.target)) { setReactionModalOpen(false) } }
+    useEffect(() => {
+        document.addEventListener("mousedown", handleClickOutside)
+        return () => document.removeEventListener("mousedown", handleClickOutside)
+    })
+
     return (
-        <div className={styles.postReactionModal}>
+        <div ref={ref} className={styles.postReactionModal}>
             <img className={styles.postReactionModalCloseButton}
                 src="/icons/close-01.svg" alt=''
                 onClick={() => setReactionModalOpen(false)}

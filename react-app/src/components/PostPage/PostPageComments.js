@@ -56,6 +56,7 @@ function PostPageComments() {
                 {postComments.map((comment, index) => 
                     <CommentCard
                         key={index}
+                        index={index}
                         comment={comment}
                     /> 
                 )}

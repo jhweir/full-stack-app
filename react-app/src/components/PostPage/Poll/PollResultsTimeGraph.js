@@ -6,7 +6,7 @@ import { PostContext } from '../../../contexts/PostContext'
 
 function PollResultsTimeGraph() {
     const {
-        post,
+        postData,
         postId,
         colorScale
     } = useContext(PostContext)
@@ -30,7 +30,7 @@ function PollResultsTimeGraph() {
         //setIsMounted(true)
         //isMounted = true
         //if(isMounted) {
-        if (post.id && !pollVotes.length) {
+        if (postData.id && !pollVotes.length) {
             getPollVotes()
             console.log('first useEffect run on TimeGraph comp')
         }
@@ -52,8 +52,8 @@ function PollResultsTimeGraph() {
         // add accumulated values to votes
         answer.values.forEach((vote, i) => vote.accumulatedValue = accumulatedValuesArray[i])
         // add start and end values to vote arrays
-        //console.log('post.createdAt', post.createdAt)
-        answer.values.unshift({ accumulatedValue: 0, parsedCreatedAt: Date.parse(new Date(post.createdAt)) })
+        //console.log('postData.createdAt', postData.createdAt)
+        answer.values.unshift({ accumulatedValue: 0, parsedCreatedAt: Date.parse(new Date(postData.createdAt)) })
         answer.values.push({ accumulatedValue: accumulatedValuesArray[accumulatedValuesArray.length - 1], parsedCreatedAt: Date.parse(new Date) })
         // add total score to answer
         answer.total_score = answer.values[answer.values.length - 1].accumulatedValue
@@ -65,7 +65,7 @@ function PollResultsTimeGraph() {
     // console.log('pollVotesGroupedByAnswer', pollVotesGroupedByAnswer)
 
     // X-axis (horizontal) = time
-    const minX = Date.parse(post.createdAt)
+    const minX = Date.parse(postData.createdAt)
     const maxX = Date.parse(new Date)
     // Y-axis (vertical) = points
     const minY = 0
@@ -106,7 +106,7 @@ function PollResultsTimeGraph() {
 
     useEffect(() => {
         console.log('second useEffect run on TimeGraph comp')
-        if (post.PollAnswers.length) {
+        if (postData.PollAnswers.length) {
             pollVotesGroupedByAnswer.forEach((answer, i) => {
                 if (answer.values[0].parsedCreatedAt) {
                     let line = d3.selectAll(`#line-${answer.key}`)
@@ -160,7 +160,7 @@ function PollResultsTimeGraph() {
             </button>
             <svg id={'time-graph-svg'} height={height} width={width}>
                 <g>
-                    {post.createdAt && pollVotesGroupedByAnswer.map((answer, i) =>
+                    {postData.createdAt && pollVotesGroupedByAnswer.map((answer, i) =>
                         <path
                             key={i}
                             id={`line-${answer.key}`}

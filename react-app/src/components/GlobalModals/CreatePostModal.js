@@ -43,14 +43,14 @@ function CreatePostModal() {
         e.preventDefault()
         let invalidText = text.length < 1 || text.length > 2000
         let invalidHolons = holonHandles.length < 1
-        let invalidPollAnswers = pollAnswers.length < 1
+        let invalidPollAnswers = postType === 'Poll' && pollAnswers.length < 1
         if (invalidText) { setTextError(true) }
         if (invalidHolons) { setNewHandleError(true) }
         if (invalidPollAnswers) { setNewPollAnswerError(true) }
         if (!invalidText && !invalidHolons && !invalidPollAnswers) {
             let subType, answers
             if (postType === 'Poll') { subType = pollType.toLowerCase(); answers = pollAnswers } else { subType = null; answers = null }
-            let post = { type: postType.toLowerCase(), subType, creatorId: accountData.id, text, url, holonHandles, pollAnswers: answers }
+            let post = { type: postType.toLowerCase(), subType, state: 'visible', creatorId: accountData.id, text, url, holonHandles, pollAnswers: answers }
             axios.post(config.environmentURL + '/create-post', { post })
                 .then(() => { 
                     setCreatePostModalOpen(false)

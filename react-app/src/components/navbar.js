@@ -23,21 +23,21 @@ function NavBar() {
                         <img className={styles.navBarIcon} src="/icons/home-solid.svg" alt=''/>
                         <div className={styles.navBarText}>Home</div>
                     </Link> |
-                    <Link to="/h/root"
+                    <Link to="/s/all"
                         className={styles.navBarLink}
-                        onClick={() => { setHolonHandle('root') }}>
+                        onClick={() => { setHolonHandle('all') }}>
                         <img className={styles.navBarIcon} src="/icons/edit-solid.svg" alt=''/>
                         <div className={styles.navBarText}>Posts</div>
                     </Link> | 
-                    <Link to="/h/root/spaces"
+                    <Link to="/s/all/spaces"
                         className={styles.navBarLink}
-                        onClick={() => { setHolonHandle('root') }}>
+                        onClick={() => { setHolonHandle('all') }}>
                         <img className={styles.navBarIcon} src="/icons/overlapping-circles-thick.svg" alt=''/>
                         <div className={styles.navBarText}>Spaces</div>
                     </Link> | 
-                    <Link to="/h/root/users"
+                    <Link to="/s/all/users"
                         className={styles.navBarLink}
-                        onClick={() => { setHolonHandle('root') }}>
+                        onClick={() => { setHolonHandle('all') }}>
                         <img className={styles.navBarIcon} src="/icons/users-solid.svg" alt=''/>
                         <div className={styles.navBarText}>Users</div>
                     </Link>
@@ -89,11 +89,11 @@ export default NavBar
 
 
 /* <div className="navBar-text" 
-        onClick={() => redirectTo('/h/root', 'root')}>
+        onClick={() => redirectTo('/s/all', 'all')}>
         HolonPagePosts
     </div> |
     <div className="navBar-text"
-        onClick={() => redirectTo('/h/root/spaces', 'root')}>
+        onClick={() => redirectTo('/s/all/spaces', 'all')}>
         Child-holons
     </div> */
 
@@ -103,19 +103,19 @@ export default NavBar
 
         // function redirect(path) {
     //     setHolonContextLoading(true)
-    //     //updateHolonContext('root')
+    //     //updateHolonContext('all')
     //     setTimeout(function() { 
     //         history.push(path)
-    //         updateHolonContext('root')
+    //         updateHolonContext('all')
     //     }, 500)
     //     // updateContext()
-    //     // setTimeout(function() { history.push(path); updateHolonContext('root') }, 500)
+    //     // setTimeout(function() { history.push(path); updateHolonContext('all') }, 500)
     //     // history.push(path)
     // }
 
 
         // function navigate() {
-    //     updateHolonContext('root')
+    //     updateHolonContext('all')
     // }
 
     // function delayedRedirect() {

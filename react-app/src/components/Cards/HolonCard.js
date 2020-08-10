@@ -25,7 +25,7 @@ function HolonCard(props) {
         <div className={styles.holonCard}>
             <div className={styles.index}>{ props.index + 1 }</div>
             <Link className={styles.flagImage}
-                to={ `/h/${handle}` }
+                to={ `/s/${handle}` }
                 onClick={ () => { setHolonHandle(handle) } }>
                     {flagImagePath === null
                         ? <div className={styles.flagImagePlaceholderWrapper}>
@@ -36,7 +36,7 @@ function HolonCard(props) {
             </Link>
             <div className={styles.info}>
                 <Link className={styles.title}
-                    to={ `/h/${handle}` }
+                    to={ `/s/${handle}` }
                     onClick={ () => { setHolonHandle(handle) } }>
                     { name }
                 </Link>
