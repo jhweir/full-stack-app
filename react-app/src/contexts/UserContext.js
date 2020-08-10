@@ -72,6 +72,22 @@ function UserContextProvider({ children }) {
         }
     }
 
+    function resetCreatedPostFilters() {
+        setCreatedPostFiltersOpen(false)
+        setCreatedPostTimeRangeFilter('All Time')
+        setCreatedPostTypeFilter('All Types')
+        setCreatedPostSortByFilter('Date')
+        setCreatedPostSortOrderFilter('Descending')
+        setCreatedPostSearchFilter('')
+        setCreatedPostPaginationLimit(10)
+        setCreatedPostPaginationOffset(0)
+        setCreatedPostPaginationHasMore(true)
+    }
+
+    useEffect(() => {
+        resetCreatedPostFilters()
+    }, [userHandle])
+
     useEffect(() => {
         if (!accountContextLoading) { getUserData() }
     }, [userHandle, accountData])

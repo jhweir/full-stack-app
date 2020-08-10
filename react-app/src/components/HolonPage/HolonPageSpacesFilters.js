@@ -9,7 +9,7 @@ function HolonPageSpacesFilters() {
         holonSpaceTimeRangeFilter, setHolonSpaceTimeRangeFilter,
         holonSpaceSortByFilter, setHolonSpaceSortByFilter,
         holonSpaceSortOrderFilter, setHolonSpaceSortOrderFilter,
-        holonSpaceScopeFilter, setHolonSpaceScopeFilter,
+        holonSpaceDepthFilter, setHolonSpaceDepthFilter,
     } = useContext(HolonContext)
 
     if (holonSpaceFiltersOpen) {
@@ -36,8 +36,8 @@ function HolonPageSpacesFilters() {
                 <DropDownMenu
                     title='Depth'
                     options={['All Contained Spaces', 'Only Direct Descendants']}
-                    selectedOption={holonSpaceScopeFilter}
-                    setSelectedOption={setHolonSpaceScopeFilter}
+                    selectedOption={holonSpaceDepthFilter}
+                    setSelectedOption={setHolonSpaceDepthFilter}
                 />
             </div>
         )

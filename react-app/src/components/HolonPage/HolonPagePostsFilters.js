@@ -10,7 +10,7 @@ function HolonPagePostsFilters() {
         holonPostTypeFilter, setHolonPostTypeFilter,
         holonPostSortByFilter, setHolonPostSortByFilter,
         holonPostSortOrderFilter, setHolonPostSortOrderFilter,
-        holonPostScopeFilter, setHolonPostScopeFilter
+        holonPostDepthFilter, setHolonPostDepthFilter
     } = useContext(HolonContext)
 
     if (holonPostFiltersOpen) {
@@ -43,8 +43,8 @@ function HolonPagePostsFilters() {
                 <DropDownMenu
                     title='Depth'
                     options={['All Contained Posts']} // include 'Only Direct Posts To Space'
-                    selectedOption={holonPostScopeFilter}
-                    setSelectedOption={setHolonPostScopeFilter}
+                    selectedOption={holonPostDepthFilter}
+                    setSelectedOption={setHolonPostDepthFilter}
                 />
             </div>
         )

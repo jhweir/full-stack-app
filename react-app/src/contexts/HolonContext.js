@@ -21,7 +21,7 @@ function HolonContextProvider({ children }) {
     const [holonPostTypeFilter, setHolonPostTypeFilter] = useState('All Types')
     const [holonPostSortByFilter, setHolonPostSortByFilter] = useState('Likes')
     const [holonPostSortOrderFilter, setHolonPostSortOrderFilter] = useState('Descending')
-    const [holonPostScopeFilter, setHolonPostScopeFilter] = useState('All Contained Posts')
+    const [holonPostDepthFilter, setHolonPostDepthFilter] = useState('All Contained Posts')
     const [holonPostSearchFilter, setHolonPostSearchFilter] = useState('')
     const [holonPostPaginationLimit, setHolonPostPaginationLimit] = useState(10)
     const [holonPostPaginationOffset, setHolonPostPaginationOffset] = useState(0)
@@ -33,7 +33,7 @@ function HolonContextProvider({ children }) {
     const [holonSpaceTypeFilter, setHolonSpaceTypeFilter] = useState('All Types')
     const [holonSpaceSortByFilter, setHolonSpaceSortByFilter] = useState('Posts')
     const [holonSpaceSortOrderFilter, setHolonSpaceSortOrderFilter] = useState('Descending')
-    const [holonSpaceScopeFilter, setHolonSpaceScopeFilter] = useState('All Contained Spaces')
+    const [holonSpaceDepthFilter, setHolonSpaceDepthFilter] = useState('All Contained Spaces')
     const [holonSpaceSearchFilter, setHolonSpaceSearchFilter] = useState('')
     const [holonSpacePaginationLimit, setHolonSpacePaginationLimit] = useState(10)
     const [holonSpacePaginationOffset, setHolonSpacePaginationOffset] = useState(0)
@@ -67,7 +67,7 @@ function HolonContextProvider({ children }) {
             }&postType=${holonPostTypeFilter
             }&sortBy=${holonPostSortByFilter
             }&sortOrder=${holonPostSortOrderFilter
-            }&scope=${holonPostScopeFilter
+            }&depth=${holonPostDepthFilter
             }&searchQuery=${holonPostSearchFilter
             }&limit=${holonPostPaginationLimit
             }&offset=0`)
@@ -88,7 +88,7 @@ function HolonContextProvider({ children }) {
                 }&postType=${holonPostTypeFilter
                 }&sortBy=${holonPostSortByFilter
                 }&sortOrder=${holonPostSortOrderFilter
-                }&scope=${holonPostScopeFilter
+                }&depth=${holonPostDepthFilter
                 }&searchQuery=${holonPostSearchFilter
                 }&limit=${holonPostPaginationLimit
                 }&offset=${holonPostPaginationOffset}`)
@@ -110,7 +110,7 @@ function HolonContextProvider({ children }) {
             }&spaceType=${holonSpaceTypeFilter
             }&sortBy=${holonSpaceSortByFilter
             }&sortOrder=${holonSpaceSortOrderFilter
-            }&scope=${holonSpaceScopeFilter
+            }&depth=${holonSpaceDepthFilter
             }&searchQuery=${holonSpaceSearchFilter
             }&limit=${holonSpacePaginationLimit
             }&offset=0`)
@@ -131,7 +131,7 @@ function HolonContextProvider({ children }) {
                 }&postType=${holonSpaceTypeFilter
                 }&sortBy=${holonSpaceSortByFilter
                 }&sortOrder=${holonSpaceSortOrderFilter
-                }&scope=${holonSpaceScopeFilter
+                }&depth=${holonSpaceDepthFilter
                 }&searchQuery=${holonSpaceSearchFilter
                 }&limit=${holonSpacePaginationLimit
                 }&offset=${holonSpacePaginationOffset}`)
@@ -187,6 +187,50 @@ function HolonContextProvider({ children }) {
         }
     }
 
+    function resetHolonPostFilters() {
+        setHolonPostFiltersOpen(false)
+        setHolonPostTimeRangeFilter('All Time')
+        setHolonPostTypeFilter('All Types')
+        setHolonPostSortByFilter('Likes')
+        setHolonPostSortOrderFilter('Descending')
+        setHolonPostDepthFilter('All Contained Posts')
+        setHolonPostSearchFilter('')
+        setHolonPostPaginationLimit(10)
+        setHolonPostPaginationOffset(0)
+        setHolonPostPaginationHasMore(true)
+    }
+
+    function resetHolonSpaceFilters() {
+        setHolonSpaceFiltersOpen(false)
+        setHolonSpaceTimeRangeFilter('All Time')
+        setHolonSpaceTypeFilter('All Types')
+        setHolonSpaceSortByFilter('Posts')
+        setHolonSpaceSortOrderFilter('Descending')
+        setHolonSpaceDepthFilter('All Contained Spaces')
+        setHolonSpaceSearchFilter('')
+        setHolonSpacePaginationLimit(10)
+        setHolonSpacePaginationOffset(0)
+        setHolonSpacePaginationHasMore(true)
+    }
+
+    function resetHolonUserFilters() {
+        setHolonUserFiltersOpen(false)
+        setHolonUserTimeRangeFilter('All Time')
+        setHolonUserTypeFilter('All Types')
+        setHolonUserSortByFilter('Date')
+        setHolonUserSortOrderFilter('Descending')
+        setHolonUserSearchFilter('')
+        setHolonUserPaginationLimit(10)
+        setHolonUserPaginationOffset(0)
+        setHolonUserPaginationHasMore(true)
+    }
+
+    useEffect(() => {
+        resetHolonPostFilters()
+        resetHolonSpaceFilters()
+        resetHolonUserFilters()
+    }, [holonHandle])
+
     useEffect(() => {
         if (!accountContextLoading) { getHolonData() }
     }, [holonHandle, accountData])
@@ -199,15 +243,6 @@ function HolonContextProvider({ children }) {
             if (accountIsModerator) { setIsModerator(true) } else { setIsModerator(false) }
         }
     }, [holonData])
-
-    // TODO: Create reset functions for posts, spaces, and users, then add here
-    useEffect(() => {
-        setHolonPostFiltersOpen(false)
-        setHolonPostTimeRangeFilter('All Time')
-        setHolonPostTypeFilter('All Types')
-        setHolonPostSortByFilter('Likes')
-        setHolonPostSortOrderFilter('Descending')
-    }, [holonHandle])
 
     return (
         <HolonContext.Provider value={{
@@ -229,7 +264,7 @@ function HolonContextProvider({ children }) {
             holonPostTypeFilter, setHolonPostTypeFilter,
             holonPostSortByFilter, setHolonPostSortByFilter,
             holonPostSortOrderFilter, setHolonPostSortOrderFilter,
-            holonPostScopeFilter, setHolonPostScopeFilter,
+            holonPostDepthFilter, setHolonPostDepthFilter,
 
             holonSpaces, setHolonSpaces,
             holonSpacePaginationLimit, setHolonSpacePaginationLimit,
@@ -241,7 +276,7 @@ function HolonContextProvider({ children }) {
             holonSpaceTypeFilter, setHolonSpaceTypeFilter,
             holonSpaceSortByFilter, setHolonSpaceSortByFilter,
             holonSpaceSortOrderFilter, setHolonSpaceSortOrderFilter,
-            holonSpaceScopeFilter, setHolonSpaceScopeFilter,
+            holonSpaceDepthFilter, setHolonSpaceDepthFilter,
 
             holonUsers, setHolonUsers,
             holonUserPaginationLimit, setHolonUserPaginationLimit,
@@ -258,7 +293,10 @@ function HolonContextProvider({ children }) {
             getHolonData,
             getHolonPosts, getNextHolonPosts,
             getHolonSpaces, getNextHolonSpaces,
-            getHolonUsers, getNextHolonUsers
+            getHolonUsers, getNextHolonUsers,
+            // resetHolonPostFilters,
+            // resetHolonSpaceFilters,
+            // resetHolonUserFilters
         }}>
             {children}
         </HolonContext.Provider>

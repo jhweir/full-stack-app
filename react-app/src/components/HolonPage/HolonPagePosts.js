@@ -19,7 +19,7 @@ function HolonPagePosts() {
         holonPostTypeFilter,
         holonPostSortByFilter,
         holonPostSortOrderFilter,
-        holonPostScopeFilter
+        holonPostDepthFilter
     } = useContext(HolonContext)
 
     useEffect(() => {
@@ -28,7 +28,7 @@ function HolonPagePosts() {
 
     useEffect(() => {
         if (!holonContextLoading && holonData.id) { getHolonPosts() }
-    }, [holonContextLoading, holonPostSearchFilter, holonPostTimeRangeFilter, holonPostTypeFilter, holonPostSortByFilter, holonPostSortOrderFilter, holonPostScopeFilter])
+    }, [holonContextLoading, holonPostSearchFilter, holonPostTimeRangeFilter, holonPostTypeFilter, holonPostSortByFilter, holonPostSortOrderFilter, holonPostDepthFilter])
 
     useEffect(() => {
         if (pageBottomReached && !holonContextLoading && holonData.id) { getNextHolonPosts() }
@@ -57,7 +57,7 @@ function HolonPagePosts() {
             {holonPosts.length > 0 &&
                 <ul className={`${styles.posts} ${holonContextLoading && styles.hidden}`}>
                     {holonPosts.map((post, index) =>
-                        <PostCard post={post} key={index} index={index} location='holon-posts'/>
+                        <PostCard postData={post} key={index} index={index} location='holon-posts'/>
                     )}
                 </ul>
             }

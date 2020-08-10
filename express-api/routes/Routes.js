@@ -59,13 +59,6 @@ const postAttributes = [
     // ]
 ]
 
-// router.get('/global-data', (req, res) => {
-//     Holon
-//         .findAll({ attributes: ['handle'] })
-//         .then(handles => res.json(handles.map(h => h.handle)))
-//         .catch(err => console.log(err))
-// })
-
 router.get('/holon-data', (req, res) => {
     Holon.findOne({ 
         where: { handle: req.query.handle },
@@ -96,7 +89,7 @@ router.get('/holon-data', (req, res) => {
 })
 
 router.get('/holon-posts', (req, res) => {
-    const { accountId, handle, timeRange, postType, sortBy, sortOrder, scope, searchQuery, limit, offset } = req.query
+    const { accountId, handle, timeRange, postType, sortBy, sortOrder, depth, searchQuery, limit, offset } = req.query
     // console.log('req.query: ', req.query)
 
     function findStartDate() {
@@ -154,7 +147,7 @@ router.get('/holon-posts', (req, res) => {
     // TODO: set up 'Only Direct Posts To Space' when direct holons set up on posts
     function findWhere() {
         let where
-        if (scope === 'All Contained Posts') { 
+        if (depth === 'All Contained Posts') { 
             where =
             { 
                 '$PostHolons.handle$': handle,
@@ -164,7 +157,7 @@ router.get('/holon-posts', (req, res) => {
                 text: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` }
             } 
         }
-        if (scope === 'Only Direct Posts To Space') {
+        if (depth === 'Only Direct Posts To Space') {
             where =
             { 
                 '$PostHolons.handle$': handle,
@@ -273,7 +266,7 @@ router.get('/holon-posts', (req, res) => {
 })
 
 router.get('/holon-spaces', (req, res) => {
-    const { accountId, handle, timeRange, spaceType, sortBy, sortOrder, scope, searchQuery, limit, offset } = req.query
+    const { accountId, handle, timeRange, spaceType, sortBy, sortOrder, depth, searchQuery, limit, offset } = req.query
 
     function findStartDate() {
         let offset = undefined
@@ -397,7 +390,7 @@ router.get('/holon-spaces', (req, res) => {
 
     function findWhere() {
         let where
-        if (scope === 'All Contained Spaces') { 
+        if (depth === 'All Contained Spaces') { 
             where =
             { 
                 '$HolonHandles.handle$': handle,
@@ -410,7 +403,7 @@ router.get('/holon-spaces', (req, res) => {
                 ]
             } 
         }
-        if (scope === 'Only Direct Descendants') {
+        if (depth === 'Only Direct Descendants') {
             where =
             { 
                 '$DirectParentHolons.handle$': handle,
@@ -427,7 +420,7 @@ router.get('/holon-spaces', (req, res) => {
 
     function findInclude() {
         let include
-        if (scope === 'All Contained Spaces') { 
+        if (depth === 'All Contained Spaces') { 
             include = [{ 
                 model: Holon,
                 as: 'HolonHandles',
@@ -435,7 +428,7 @@ router.get('/holon-spaces', (req, res) => {
                 through: { attributes: [] }
             }]
         }
-        if (scope === 'Only Direct Descendants') { 
+        if (depth === 'Only Direct Descendants') { 
             include = [{ 
                 model: Holon,
                 as: 'DirectParentHolons',
@@ -855,7 +848,7 @@ router.get('/user-posts', (req, res) => {
     // TODO: set up 'Only Direct Posts To Space' when direct holons set up on posts
     // function findWhere() {
     //     let where
-    //     if (scope === 'All Contained Posts') { 
+    //     if (depth === 'All Contained Posts') { 
     //         where =
     //         { 
     //             '$PostHolons.handle$': handle,
@@ -867,7 +860,7 @@ router.get('/user-posts', (req, res) => {
     //             ]
     //         } 
     //     }
-    //     if (scope === 'Only Direct Posts To Space') {
+    //     if (depth === 'Only Direct Posts To Space') {
     //         where =
     //         { 
     //             '$PostHolons.handle$': handle,
@@ -983,7 +976,7 @@ router.get('/user-posts', (req, res) => {
     .catch(err => console.log(err))
 })
 
-router.get('/post', (req, res) => {
+router.get('/post-data', (req, res) => {
     const { accountId, postId } = req.query
     let attributes = [...postAttributes,
         [sequelize.literal(
@@ -1014,17 +1007,6 @@ router.get('/post', (req, res) => {
                 attributes: ['handle'],
                 through: { attributes: [] }
             },
-            { 
-                model: Comment,
-                attributes: ['creatorId', 'text', 'createdAt'],
-                include: [
-                    {
-                        model: User,
-                        as: 'commentCreator',
-                        attributes: ['handle', 'name', 'flagImagePath']
-                    }
-                ]
-            },
             {
                 model: PollAnswer,
                 attributes: [
@@ -1049,6 +1031,26 @@ router.get('/post', (req, res) => {
         return post
     })
     .then(post => { res.json(post) })
+    .catch(err => console.log(err))
+})
+
+router.get('/post-comments', (req, res) => {
+    const { accountId, postId, timeRange, postType, sortBy, sortOrder, searchQuery, limit, offset } = req.query
+    console.log('req.query: ', req.query)
+    Comment.findAll({ 
+        where: { postId: postId },
+        limit: Number(limit),
+        offset: Number(offset),
+        attributes: ['creatorId', 'text', 'createdAt'],
+        include: [
+            {
+                model: User,
+                as: 'commentCreator',
+                attributes: ['handle', 'name', 'flagImagePath']
+            }
+        ]
+    })
+    .then(comments => { res.json(comments) })
     .catch(err => console.log(err))
 })
 
@@ -1194,68 +1196,68 @@ router.delete('/deletePost', (req, res) => {
 })
 
 router.put('/addLike', (req, res) => {
-    const { postId, userId, holonId } = req.body
+    const { accountId, postId, holonId } = req.body
     Label.create({ 
         type: 'like',
         value: null,
         state: 'active',
         holonId,
-        userId,
+        userId: accountId,
         postId,
         commentId: null,
     }).then(res.send('Post successfully liked'))
 })
 
 router.put('/removeLike', (req, res) => {
-    const { postId, userId } = req.body
+    const { accountId, postId } = req.body
     Label.update({ state: 'removed' }, {
-        where: { type: 'like', state: 'active', postId, userId }
+        where: { type: 'like', state: 'active', postId, userId: accountId }
     })
 })
 
 router.put('/addHeart', (req, res) => {
-    const { postId, userId, holonId } = req.body
+    const { accountId, postId, holonId } = req.body
     Label.create({ 
         type: 'heart',
         value: null,
         state: 'active',
         holonId,
-        userId,
+        userId: accountId,
         postId,
         commentId: null,
     }).then(res.send('Post successfully hearted'))
 })
 
 router.put('/removeHeart', (req, res) => {
-    const { postId, userId } = req.body
+    const { accountId, postId } = req.body
     Label.update({ state: 'removed' }, {
-        where: { type: 'heart', state: 'active', postId, userId }
+        where: { type: 'heart', state: 'active', postId, userId: accountId }
     })
 })
 
 router.put('/addRating', (req, res) => {
-    const { postId, userId, holonId, newRating } = req.body
+    const { accountId, postId, holonId, newRating } = req.body
     Label.create({ 
         type: 'rating',
         value: newRating,
         state: 'active',
         holonId,
-        userId,
+        userId: accountId,
         postId,
         commentId: null,
     }).then(res.send('Post successfully rated'))
 })
 
 router.put('/updateRating', (req, res) => {
-    const { postId, userId, holonId, newRating } = req.body
-    Label.update({ state: 'removed' }, { where: { type: 'rating', state: 'active', postId, userId } })
+    const { accountId, postId, holonId, newRating } = req.body
+    Label.update({ state: 'removed' }, { where: { type: 'rating', state: 'active', postId, userId: accountId } })
     .then(() => {
         Label.create({ 
             type: 'rating',
             value: newRating,
             state: 'active',
             holonId,
-            userId,
+            userId: accountId,
             postId,
             commentId: null,
         })

@@ -1,8 +1,5 @@
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useEffect, useContext } from 'react'
 import { Route, Switch, Redirect } from "react-router-dom"
-//import queryString from 'query-string'
-// import axios from 'axios'
-// import config from '../Config'
 import styles from '../styles/pages/PostPage.module.scss'
 import { AccountContext } from '../contexts/AccountContext'
 import { PostContext } from '../contexts/PostContext'
@@ -17,7 +14,7 @@ function PostPage({ match }) {
     const { url } = match
     const { postId } = match.params
     const { accountContextLoading } = useContext(AccountContext)
-    const { setPostId, post } = useContext(PostContext)
+    const { setPostId, postData } = useContext(PostContext)
 
     useEffect(() => {
         if (!accountContextLoading) { setPostId(postId) }
@@ -25,8 +22,8 @@ function PostPage({ match }) {
 
     return (
         <div className={styles.postPage}>
-            <PostCard post={post} location='post-page'/>
-            {post.type === 'poll' && <PageSectionSelector url={url}/>}
+            <PostCard postData={postData} location='post-page'/>
+            {postData.type === 'poll' && <PageSectionSelector url={url}/>}
             <Switch>
                 <Redirect from={`${url}`} to={`${url}/comments`} exact/>
                 <Route path={`${url}/comments`} render={() => <PostPageComments/>} exact/>

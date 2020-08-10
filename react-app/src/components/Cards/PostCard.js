@@ -11,7 +11,7 @@ import styles from '../../styles/components/PostCard.module.scss'
 import PostCardReactionModal from './PostCardReactionModal'
 
 function PostCard(props) {
-    const { post, index, location } = props
+    const { postData, index, location } = props
     const { accountData } = useContext(AccountContext)
     const { setHolonHandle, getHolonPosts } = useContext(HolonContext)
     const { getCreatedPosts } = useContext(UserContext)
@@ -23,7 +23,7 @@ function PostCard(props) {
         id, creator, text, url, createdAt, spaces,
         total_comments, total_reactions, total_likes, total_hearts, total_ratings, total_rating_points,
         account_like, account_heart, account_rating
-    } = post
+    } = postData
 
     // local post state
     const [totalComments, setTotalComments] = useState(0)

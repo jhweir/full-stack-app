@@ -13,7 +13,7 @@ function HolonPageSpaces() {
         holonContextLoading, holonData,
         holonSpaces, getHolonSpaces, getNextHolonSpaces,
         holonSpaceFiltersOpen, setHolonSpaceFiltersOpen,
-        holonSpaceSearchFilter, holonSpaceTimeRangeFilter, holonSpaceSortByFilter, holonSpaceSortOrderFilter, holonSpaceScopeFilter,
+        holonSpaceSearchFilter, holonSpaceTimeRangeFilter, holonSpaceSortByFilter, holonSpaceSortOrderFilter, holonSpaceDepthFilter,
         setSelectedHolonSubPage, holonSpacePaginationOffset
     } = useContext(HolonContext)
 
@@ -23,7 +23,7 @@ function HolonPageSpaces() {
 
     useEffect(() => {
         if (!holonContextLoading && holonData.id) { getHolonSpaces() }
-    }, [holonContextLoading, holonSpaceSearchFilter, holonSpaceTimeRangeFilter, holonSpaceSortByFilter, holonSpaceSortOrderFilter, holonSpaceScopeFilter])
+    }, [holonContextLoading, holonSpaceSearchFilter, holonSpaceTimeRangeFilter, holonSpaceSortByFilter, holonSpaceSortOrderFilter, holonSpaceDepthFilter])
 
     useEffect(() => {
         if (pageBottomReached && !holonContextLoading && holonData.id) { getNextHolonSpaces() }

@@ -1,6 +1,9 @@
 # Todos
-Last updated: 07-08-2020
+Last updated: 10-08-2020
 
+- Set up comment replies
+- Notifications
+- User to user messages
 - Add holon Id to comments when created
 - Add clickoutside approach from drop down menu to other modals
 - Add basic mod controls (image upload, name change, handle change)
@@ -75,3 +78,5 @@ Last updated: 07-08-2020
 - Set up reverse orders for wall filters
 - Re-create PostContext and then remove cascading props to clean up components
 - Change 'isPostPage' prop to 'location' prop ('holon-posts', 'post-page', 'user-created-posts')
+- Set up infinite scroll on comments
+- Set up reset filter functions for holon and user contexts
