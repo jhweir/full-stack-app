@@ -4,11 +4,17 @@ import { HolonContext } from '../../contexts/HolonContext'
 import styles from '../../styles/components/HolonPagePosts.module.scss'
 import PostCard from '../Cards/PostCard'
 import HolonPagePostsFilters from './HolonPagePostsFilters'
-import HolonPagePostsPlaceholder from './HolonPagePostsPlaceholder'
 import SearchBar from '../SearchBar'
 
 function HolonPagePosts() {
-    const { setCreatePostModalOpen, pageBottomReached, isLoggedIn, setAlertModalOpen, setAlertMessage } = useContext(AccountContext)
+    const { 
+        setCreatePostModalOpen,
+        pageBottomReached,
+        isLoggedIn,
+        setAlertModalOpen,
+        setAlertMessage
+    } = useContext(AccountContext)
+
     const {
         holonContextLoading, holonData,
         holonPosts, getHolonPosts, getNextHolonPosts,
@@ -19,8 +25,14 @@ function HolonPagePosts() {
         holonPostTypeFilter,
         holonPostSortByFilter,
         holonPostSortOrderFilter,
-        holonPostDepthFilter
+        holonPostDepthFilter,
+        setHolonPostSearchFilter
     } = useContext(HolonContext)
+
+    function openCreatePostModal() {
+        if (isLoggedIn) { setCreatePostModalOpen(true) }
+        else { setAlertModalOpen(true); setAlertMessage('Log in to create a post') }
+    }
 
     useEffect(() => {
         setSelectedHolonSubPage('posts')
@@ -28,22 +40,25 @@ function HolonPagePosts() {
 
     useEffect(() => {
         if (!holonContextLoading && holonData.id) { getHolonPosts() }
-    }, [holonContextLoading, holonPostSearchFilter, holonPostTimeRangeFilter, holonPostTypeFilter, holonPostSortByFilter, holonPostSortOrderFilter, holonPostDepthFilter])
+    },[
+        holonContextLoading,
+        holonPostSearchFilter,
+        holonPostTimeRangeFilter,
+        holonPostTypeFilter,
+        holonPostSortByFilter,
+        holonPostSortOrderFilter,
+        holonPostDepthFilter
+    ])
 
     useEffect(() => {
         if (pageBottomReached && !holonContextLoading && holonData.id) { getNextHolonPosts() }
     }, [pageBottomReached])
 
-    function openCreatePostModal() {
-        if (!isLoggedIn) { setAlertModalOpen(true); setAlertMessage('Log in to create a post') }
-        else { setCreatePostModalOpen(true) }
-    }
-
     return (
         <div className={styles.wall}>
             <div className='wecoPageHeader'>
                 <div className='wecoPageHeaderRow'>
-                    <SearchBar type='holon-posts'/>
+                    <SearchBar setSearchFilter={setHolonPostSearchFilter} placeholder='Search posts...'/>
                     <button className='wecoButton mr-10' onClick={() => setHolonPostFiltersOpen(!holonPostFiltersOpen)}>
                         <img className='wecoButtonIcon' src='/icons/sliders-h-solid.svg'/>
                     </button>
@@ -51,9 +66,8 @@ function HolonPagePosts() {
                         Create Post
                     </button>
                 </div>
-                <HolonPagePostsFilters/>
+                {holonPostFiltersOpen && <HolonPagePostsFilters/>}
             </div>
-            {/* <HolonPagePostsPlaceholder/> */}
             {holonPosts.length > 0 &&
                 <ul className={`${styles.posts} ${holonContextLoading && styles.hidden}`}>
                     {holonPosts.map((post, index) =>
@@ -72,20 +86,8 @@ function HolonPagePosts() {
 
 export default HolonPagePosts
 
-/* <InfiniteScroll
-    dataLength={holonPostPaginationLimit} //This is important field to render the next data
-    next={() => getHolonPosts()}
-    hasMore={holonPostPaginationHasMore}
-    loader={<h4>Loading...</h4>}
-    endMessage={
-        <p style={{textAlign: 'center'}}>
-        <b>Yay! You have seen it all</b>
-        </p>
-    }>
-    {holonPosts.map((post, index) =>
-        <PostCard post={post} key={index} index={index}/>
-    )}
-</InfiniteScroll> */
+// import HolonPagePostsPlaceholder from './HolonPagePostsPlaceholder'
+/* <HolonPagePostsPlaceholder/> */
 
 // // Pinned posts
 // let pinnedPosts = posts.filter((post) => {

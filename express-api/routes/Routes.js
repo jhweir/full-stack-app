@@ -1036,9 +1036,43 @@ router.get('/post-data', (req, res) => {
 
 router.get('/post-comments', (req, res) => {
     const { accountId, postId, timeRange, postType, sortBy, sortOrder, searchQuery, limit, offset } = req.query
-    console.log('req.query: ', req.query)
+    // console.log('req.query: ', req.query)
+
+    function findStartDate() {
+        let offset = undefined
+        if (timeRange === 'Last Year') { offset = (24*60*60*1000) * 365 }
+        if (timeRange === 'Last Month') { offset = (24*60*60*1000) * 30 }
+        if (timeRange === 'Last Week') { offset = (24*60*60*1000) * 7 }
+        if (timeRange === 'Last 24 Hours') { offset = 24*60*60*1000 }
+        if (timeRange === 'Last Hour') { offset = 60*60*1000 }
+        var startDate = new Date()
+        startDate.setTime(startDate.getTime() - offset)
+        return startDate
+    }
+
+    function findOrder() {
+        let direction, order
+        if (sortOrder === 'Ascending') { direction = 'ASC' } else { direction = 'DESC' }
+        if (sortBy === 'Date') { order = [['createdAt', direction]] }
+        //else { order = [[sequelize.literal(`total_${sortBy.toLowerCase()}`), direction]] }
+        return order
+    }
+
+    let startDate = findStartDate()
+    let order = findOrder()
+
     Comment.findAll({ 
-        where: { postId: postId },
+        where: {
+            postId,
+            text: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` },
+            //globalState: 'visible',
+            createdAt: { [Op.between]: [startDate, Date.now()] },
+            // [Op.or]: [
+            //     { text: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } },
+            //     { commentCreator: { name: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } } }
+            // ]
+        },
+        order,
         limit: Number(limit),
         offset: Number(offset),
         attributes: ['creatorId', 'text', 'createdAt'],
@@ -1186,7 +1220,7 @@ router.post('/create-post', (req, res) => {
     .then(res.send('Post successfully created'))
 })
 
-router.delete('/deletePost', (req, res) => {
+router.delete('/delete-post', (req, res) => {
     // TODO: endpoints like this are currently unsafe/open to anyone. include authenticate middleware.
     const { postId } = req.body
     Post.update({ globalState: 'hidden' }, {
@@ -1195,7 +1229,7 @@ router.delete('/deletePost', (req, res) => {
     // Post.destroy({ where: { id: req.body.id }})
 })
 
-router.put('/addLike', (req, res) => {
+router.put('/add-like', (req, res) => {
     const { accountId, postId, holonId } = req.body
     Label.create({ 
         type: 'like',
@@ -1208,14 +1242,14 @@ router.put('/addLike', (req, res) => {
     }).then(res.send('Post successfully liked'))
 })
 
-router.put('/removeLike', (req, res) => {
+router.put('/remove-like', (req, res) => {
     const { accountId, postId } = req.body
     Label.update({ state: 'removed' }, {
         where: { type: 'like', state: 'active', postId, userId: accountId }
     })
 })
 
-router.put('/addHeart', (req, res) => {
+router.put('/add-heart', (req, res) => {
     const { accountId, postId, holonId } = req.body
     Label.create({ 
         type: 'heart',
@@ -1228,14 +1262,14 @@ router.put('/addHeart', (req, res) => {
     }).then(res.send('Post successfully hearted'))
 })
 
-router.put('/removeHeart', (req, res) => {
+router.put('/remove-heart', (req, res) => {
     const { accountId, postId } = req.body
     Label.update({ state: 'removed' }, {
         where: { type: 'heart', state: 'active', postId, userId: accountId }
     })
 })
 
-router.put('/addRating', (req, res) => {
+router.put('/add-rating', (req, res) => {
     const { accountId, postId, holonId, newRating } = req.body
     Label.create({ 
         type: 'rating',
@@ -1248,7 +1282,7 @@ router.put('/addRating', (req, res) => {
     }).then(res.send('Post successfully rated'))
 })
 
-router.put('/updateRating', (req, res) => {
+router.put('/update-rating', (req, res) => {
     const { accountId, postId, holonId, newRating } = req.body
     Label.update({ state: 'removed' }, { where: { type: 'rating', state: 'active', postId, userId: accountId } })
     .then(() => {

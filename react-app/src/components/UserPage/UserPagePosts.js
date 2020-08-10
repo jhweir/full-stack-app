@@ -17,7 +17,8 @@ function UserPagePosts() {
         createdPostTimeRangeFilter,
         createdPostTypeFilter,
         createdPostSortByFilter,
-        createdPostSortOrderFilter
+        createdPostSortOrderFilter,
+        setCreatedPostSearchFilter
     } = useContext(UserContext)
 
     useEffect(() => {
@@ -37,12 +38,12 @@ function UserPagePosts() {
             <div className={styles.header}>Created posts</div>
             <div className='wecoPageHeader'>
                 <div className='wecoPageHeaderRow'>
-                    <SearchBar type='user-posts'/>
+                    <SearchBar setSearchFilter={setCreatedPostSearchFilter} placeholder='Search posts...'/>
                     <button className='wecoButton mr-10' onClick={() => setCreatedPostFiltersOpen(!createdPostFiltersOpen)}>
                         <img className='wecoButtonIcon' src='/icons/sliders-h-solid.svg'/>
                     </button>
                 </div>
-                <UserPagePostFilters/>
+                {createdPostFiltersOpen && <UserPagePostFilters/>}
             </div>
             {createdPosts.length > 0 &&
                 <ul className={styles.createdPosts}>

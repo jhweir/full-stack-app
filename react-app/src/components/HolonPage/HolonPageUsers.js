@@ -16,7 +16,8 @@ function HolonPageUsers() {
         holonUserTimeRangeFilter,
         holonUserSortByFilter,
         holonUserSortOrderFilter,
-        setSelectedHolonSubPage, holonUserPaginationOffset
+        setSelectedHolonSubPage, holonUserPaginationOffset,
+        setHolonUserSearchFilter
     } = useContext(HolonContext)
 
     useEffect(() => {
@@ -35,12 +36,12 @@ function HolonPageUsers() {
         <div className={styles.usersWrapper}>
             <div className='wecoPageHeader'>
                 <div className='wecoPageHeaderRow'>
-                    <SearchBar type='holon-users'/>
+                    <SearchBar setSearchFilter={setHolonUserSearchFilter} placeholder='Search users...'/>
                     <button className='wecoButton mr-10' onClick={() => setHolonUserFiltersOpen(!holonUserFiltersOpen)}>
                         <img className='wecoButtonIcon' src='/icons/sliders-h-solid.svg'/>
                     </button>
                 </div>
-                <HolonPageUsersFilters/>
+                {holonUserFiltersOpen && <HolonPageUsersFilters/>}
             </div>
             {/* <HolonPageSpacesPlaceholder/> */}
             {holonUsers.length > 0 &&

@@ -218,7 +218,6 @@ input {
 
 .wecoPageHeader {
     width: 100%;
-    margin-bottom: 10px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -226,9 +225,18 @@ input {
 }
 .wecoPageHeaderRow {
     width: 100%;
+    margin-bottom: 10px;
     display: flex;
     flex-direction: row;
     align-items: center;
+    flex-wrap: wrap;
+}
+
+.wecoFilters {
+    width: 100%;
+    //margin-top: 10px;
+    display: flex;
+    flex-direction: row;
     flex-wrap: wrap;
 }
 

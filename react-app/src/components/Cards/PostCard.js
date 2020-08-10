@@ -40,8 +40,7 @@ function PostCard(props) {
     const finishedLoading = location !== 'post-page' || !postContextLoading
     const isOwnPost = finishedLoading && accountData.name === creator.name
 
-    // sync local post state with remote post state
-    useEffect(() => {
+    function syncPostState() {
         setTotalComments(total_comments)
         setTotalReactions(total_reactions)
         setTotalLikes(total_likes)
@@ -51,10 +50,10 @@ function PostCard(props) {
         setAccountLike(account_like)
         setAccountHeart(account_heart)
         setAccountRating(account_rating)
-    }, [creator])
+    }
 
     function deletePost() {
-        axios.delete(config.environmentURL  + '/deletePost', { data: { postId: id } })
+        axios.delete(config.environmentURL  + '/delete-post', { data: { postId: id } })
             .then(setTimeout(() => { 
                 if (location === 'holon-posts') { getHolonPosts() }
                 if (location === 'user-created-posts') { getCreatedPosts() }
@@ -68,6 +67,10 @@ function PostCard(props) {
         let formattedDate = a[3]+':'+a[4]+' on '+a[2]+'-'+a[1]+'-'+a[0]
         return formattedDate
     }
+
+    useEffect(() => {
+        syncPostState()
+    }, [postData])
 
     if (finishedLoading) {
         return ( 

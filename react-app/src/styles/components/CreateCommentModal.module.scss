@@ -27,20 +27,14 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    // overflow: scroll;
-    // scrollbar-width: none;
-    // -ms-overflow-style: none;
-    // ::-webkit-scrollbar {
-    //     display: none;
+    // @media screen and (max-width: 1000px) {
+    //     width: 100%;
+    //     height: 100%;
+    //     padding: 20px;
+    //     position: relative;
+    //     top: auto;
+    //     left: auto;
     // }
-    @media screen and (max-width: 1000px) {
-        width: 100%;
-        height: 100%;
-        padding: 20px;
-        position: relative;
-        top: auto;
-        left: auto;
-    }
 }
 .closeButton {
     height: 20px;

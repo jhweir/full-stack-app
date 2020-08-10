@@ -14,7 +14,8 @@ function HolonPageSpaces() {
         holonSpaces, getHolonSpaces, getNextHolonSpaces,
         holonSpaceFiltersOpen, setHolonSpaceFiltersOpen,
         holonSpaceSearchFilter, holonSpaceTimeRangeFilter, holonSpaceSortByFilter, holonSpaceSortOrderFilter, holonSpaceDepthFilter,
-        setSelectedHolonSubPage, holonSpacePaginationOffset
+        setSelectedHolonSubPage, holonSpacePaginationOffset,
+        setHolonSpaceSearchFilter
     } = useContext(HolonContext)
 
     useEffect(() => {
@@ -38,7 +39,7 @@ function HolonPageSpaces() {
         <div className={styles.childHolonsWrapper}>
             <div className='wecoPageHeader'>
                 <div className='wecoPageHeaderRow'>
-                    <SearchBar type='holon-spaces'/>
+                    <SearchBar setSearchFilter={setHolonSpaceSearchFilter} placeholder='Search spaces...'/>
                     <button className='wecoButton mr-10' onClick={() => setHolonSpaceFiltersOpen(!holonSpaceFiltersOpen)}>
                         <img className='wecoButtonIcon' src='/icons/sliders-h-solid.svg'/>
                     </button>
@@ -46,7 +47,7 @@ function HolonPageSpaces() {
                         Create Space
                     </button>
                 </div>
-                <HolonPageSpacesFilters/>
+                {holonSpaceFiltersOpen && <HolonPageSpacesFilters/>}
             </div>
             {/* <HolonPageSpacesPlaceholder/> */}
             {holonSpaces.length > 0 &&

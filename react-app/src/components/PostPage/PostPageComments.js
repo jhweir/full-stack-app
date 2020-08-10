@@ -1,23 +1,38 @@
 import React, { useContext, useEffect } from 'react'
 import styles from '../../styles/components/PostPageComments.module.scss'
-import CommentCard from '../Cards/CommentCard'
 import { AccountContext } from '../../contexts/AccountContext'
 import { PostContext } from '../../contexts/PostContext'
+import CommentCard from '../Cards/CommentCard'
+import SearchBar from '../SearchBar'
+import PostPageCommentFilters from './PostPageCommentFilters'
 
 function PostPageComments() {
-    const { pageBottomReached } = useContext(AccountContext)
+    const { isLoggedIn, pageBottomReached, setAlertModalOpen, setCreateCommentModalOpen, setAlertMessage } = useContext(AccountContext)
     const {
         postContextLoading,
         postData,
         postComments, getPostComments, getNextPostComments,
-        submitComment,
-        commentError, setCommentError,
-        newComment, setNewComment
+        postCommentFiltersOpen, setPostCommentFiltersOpen,
+        postCommentSearchFilter, setPostCommentSearchFilter,
+        postCommentSortByFilter,
+        postCommentSortOrderFilter,
+        postCommentTimeRangeFilter
     } = useContext(PostContext)
+
+    function openCreateCommentModal() {
+        if (isLoggedIn) { setCreateCommentModalOpen(true) }
+        else { setAlertModalOpen(true); setAlertMessage('Log in to add a comment') }
+    }
 
     useEffect(() => {
         if (!postContextLoading && postData.id) { getPostComments() }
-    }, [postContextLoading])
+    },[
+        postContextLoading,
+        postCommentSearchFilter,
+        postCommentSortByFilter,
+        postCommentSortOrderFilter,
+        postCommentTimeRangeFilter
+    ])
 
     useEffect(() => {
         if (pageBottomReached && !postContextLoading && postData.id) { getNextPostComments() }
@@ -25,21 +40,22 @@ function PostPageComments() {
 
     return (
         <div className={styles.postPageComments}>
-            <form className={styles.commentForm} onSubmit={submitComment}> 
-                <textarea className={`${styles.commentFormTextArea} ${(commentError && styles.error)}`}
-                    placeholder="Leave a comment..."
-                    rows="1" type="text" value={newComment}
-                    onChange={(e) => { setNewComment(e.target.value); setCommentError(false) }}
-                />
-                <div className="button-container">
-                    <button className={styles.commentFormButton}>Post comment</button>
+            <div className='wecoPageHeader'>
+                <div className='wecoPageHeaderRow'>
+                    <SearchBar setSearchFilter={setPostCommentSearchFilter} placeholder='Search comments...'/>
+                    <button className='wecoButton mr-10' onClick={() => setPostCommentFiltersOpen(!postCommentFiltersOpen)}>
+                        <img className='wecoButtonIcon' src='/icons/sliders-h-solid.svg'/>
+                    </button>
+                    <button className='wecoButton mr-10' onClick={() => openCreateCommentModal()}>
+                        Add Comment
+                    </button>
                 </div>
-            </form>
+                {postCommentFiltersOpen && <PostPageCommentFilters/>}
+            </div>
             <div className={styles.comments}>
                 {postComments.map((comment, index) => 
                     <CommentCard
                         key={index}
-                        index={index}
                         comment={comment}
                     /> 
                 )}

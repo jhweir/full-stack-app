@@ -5,18 +5,17 @@ import Cookies from 'universal-cookie'
 
 export const AccountContext = createContext()
 
-function AccountContextProvider({ children, pageBottomReached, setPageBottomReached }) {
+function AccountContextProvider({ children, pageBottomReached }) {
     const [accountContextLoading, setAccountContextLoading] = useState(true)
     const [isLoggedIn, setIsLoggedIn] = useState(false)
     const [accountData, setAccountData] = useState({ FollowedHolons: [], ModeratedHolons: [] })
-    const [globalData, setGlobalData] = useState({})
     const [alertModalOpen, setAlertModalOpen] = useState(false)
     const [alertMessage, setAlertMessage] = useState('')
-    const [filtersOpen, setFiltersOpen] = useState(false)
     const [authModalOpen, setAuthModalOpen] = useState(false)
     const [userControlsModalOpen, setUserControlsModalOpen] = useState(false)
     const [createPostModalOpen, setCreatePostModalOpen] = useState(false)
     const [createHolonModalOpen, setCreateHolonModalOpen] = useState(false)
+    const [createCommentModalOpen, setCreateCommentModalOpen] = useState(false)
     const [imageUploadModalOpen, setImageUploadModalOpen] = useState(false)
     const [imageUploadType, setImageUploadType] = useState('')
 
@@ -27,7 +26,7 @@ function AccountContextProvider({ children, pageBottomReached, setPageBottomReac
         let accessToken = cookies.get('accessToken')
         if (accessToken === undefined) { setAccountContextLoading(false) }
         if (accessToken !== undefined) {
-            // Create new axios instance with JWT in authorization header
+            // create new axios instance with JWT in authorization header
             axios.create({
                 baseURL: config.environmentURL,
                 headers: { Authorization: `Bearer ${accessToken}` }
@@ -40,12 +39,6 @@ function AccountContextProvider({ children, pageBottomReached, setPageBottomReac
         }
     }
 
-    // function getGlobalData() {
-    //     console.log('AccountContext: getGlobalData')
-    //     axios.get(config.environmentURL + '/global-data')
-    //     .then(res => { setGlobalData(res.data) })
-    // }
-
     function logOut() {
         console.log('AccountContext: logOut')
         cookies.remove('accessToken', { path: '/' })
@@ -54,7 +47,6 @@ function AccountContextProvider({ children, pageBottomReached, setPageBottomReac
     }
 
     useEffect(() => {
-        //getGlobalData()
         getAccountData()
     }, [])
 
@@ -63,9 +55,7 @@ function AccountContextProvider({ children, pageBottomReached, setPageBottomReac
             accountContextLoading,
             pageBottomReached,
             isLoggedIn, logOut,
-            //globalData, getGlobalData,
             accountData, getAccountData, setAccountData,
-            filtersOpen, setFiltersOpen,
             authModalOpen, setAuthModalOpen,
             userControlsModalOpen, setUserControlsModalOpen,
             alertMessage, setAlertMessage,
@@ -73,7 +63,8 @@ function AccountContextProvider({ children, pageBottomReached, setPageBottomReac
             imageUploadModalOpen, setImageUploadModalOpen,
             imageUploadType, setImageUploadType,
             createHolonModalOpen, setCreateHolonModalOpen,
-            createPostModalOpen, setCreatePostModalOpen
+            createPostModalOpen, setCreatePostModalOpen,
+            createCommentModalOpen, setCreateCommentModalOpen
         }}>
             {children}
         </AccountContext.Provider>

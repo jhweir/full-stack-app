@@ -1,10 +1,19 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { Link } from 'react-router-dom'
+import axios from 'axios'
+import config from '../../Config'
 import styles from '../../styles/components/CommentCard.module.scss'
+import { PostContext } from '../../contexts/PostContext'
 
 function CommentCard(props) {
+    const { postId, commentCreator, text, createdAt } = props.comment
+    const { getPostComments } = useContext(PostContext)
 
-    let { commentCreator, text, createdAt } = props.comment
+    function deleteComment() {
+        axios.delete(config.environmentURL  + '/delete-comment', { data: { postId } })
+            .then(setTimeout(() => { getPostComments() }, 200))
+            .catch(error => { console.log(error) })
+    }
 
     function formatDate() {
         const t = createdAt.split(/[-.T :]/)

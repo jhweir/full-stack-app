@@ -10,14 +10,12 @@ function PostContextProvider({ children }) {
     const { accountContextLoading, accountData, isLoggedIn, setAlertMessage, setAlertModalOpen } = useContext(AccountContext)
     const [postContextLoading, setPostContextLoading] = useState(true)
     const [postId, setPostId] = useState('')
-    const [postData, setPostData] = useState({ spaces: [], Comments: [], PollAnswers: [] })
-    const [newComment, setNewComment] = useState('')
-    const [commentError, setCommentError] = useState(false)
+    const [postData, setPostData] = useState({ spaces: [], PollAnswers: [] })
     const [selectedPollAnswers, setSelectedPollAnswers] = useState([])
     const [voteCast, setVoteCast] = useState(false)
 
     const [postComments, setPostComments] = useState([])
-    // const [postCommentFiltersOpen, setPostCommentFiltersOpen] = useState(false)
+    const [postCommentFiltersOpen, setPostCommentFiltersOpen] = useState(false)
     const [postCommentTimeRangeFilter, setPostCommentTimeRangeFilter] = useState('All Time')
     const [postCommentSortByFilter, setPostCommentSortByFilter] = useState('Likes')
     const [postCommentSortOrderFilter, setPostCommentSortOrderFilter] = useState('Descending')
@@ -54,9 +52,9 @@ function PostContextProvider({ children }) {
         axios.get(config.environmentURL + 
             `/post-comments?accountId=${isLoggedIn ? accountData.id : null
             }&postId=${postId
-            }&timeRange=${postCommentTimeRangeFilter
             }&sortBy=${postCommentSortByFilter
             }&sortOrder=${postCommentSortOrderFilter
+            }&timeRange=${postCommentTimeRangeFilter
             }&searchQuery=${postCommentSearchFilter
             }&limit=${postCommentPaginationLimit
             }&offset=0`)
@@ -73,9 +71,9 @@ function PostContextProvider({ children }) {
             axios.get(config.environmentURL + 
                 `/post-comments?accountId=${isLoggedIn ? accountData.id : null
                 }&postId=${postId
-                }&timeRange=${postCommentTimeRangeFilter
                 }&sortBy=${postCommentSortByFilter
                 }&sortOrder=${postCommentSortOrderFilter
+                }&timeRange=${postCommentTimeRangeFilter
                 }&searchQuery=${postCommentSearchFilter
                 }&limit=${postCommentPaginationLimit
                 }&offset=${postCommentPaginationOffset}`)
@@ -84,17 +82,6 @@ function PostContextProvider({ children }) {
                     setPostComments([...postComments, ...res.data])
                     setPostCommentPaginationOffset(postCommentPaginationOffset + postCommentPaginationLimit)
                 })
-        }
-    }
-
-    function submitComment(e) {
-        e.preventDefault()
-        if (newComment === '') { setCommentError(true) }
-        if (newComment !== '' && !isLoggedIn) { setAlertMessage('Log in to comment'); setAlertModalOpen(true) }
-        if (newComment !== '' && isLoggedIn) {
-            axios.post(config.environmentURL + '/add-comment', { creatorId: accountData.id, postId, text: newComment })
-                .then(setNewComment(''))
-                .then(setTimeout(() => { getPostComments() }, 200))
         }
     }
 
@@ -119,13 +106,11 @@ function PostContextProvider({ children }) {
             postContextLoading, setPostContextLoading,
             postId, setPostId,
             postData, setPostData,
-            newComment, setNewComment,
-            commentError, setCommentError,
             selectedPollAnswers, setSelectedPollAnswers,
             voteCast, setVoteCast,
 
             postComments, setPostComments,
-            // postCommentFiltersOpen, setPostCommentFiltersOpen,
+            postCommentFiltersOpen, setPostCommentFiltersOpen,
             postCommentTimeRangeFilter, setPostCommentTimeRangeFilter,
             postCommentSortByFilter, setPostCommentSortByFilter,
             postCommentSortOrderFilter, setPostCommentSortOrderFilter,
@@ -145,7 +130,6 @@ function PostContextProvider({ children }) {
             getPostData,
             getPostComments,
             getNextPostComments,
-            submitComment,
             castVote
         }}>
             {children}

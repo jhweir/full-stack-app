@@ -40,7 +40,7 @@ function PostCardReactionModal(props) {
                 setTotalLikes(totalLikes - 1)
                 setTotalReactions(totalReactions - 1)
                 setAccountLike(0)
-                axios.put(config.environmentURL + '/removeLike', { accountId: accountData.id, postId: id })
+                axios.put(config.environmentURL + '/remove-like', { accountId: accountData.id, postId: id })
                     .catch(error => { console.log(error) })
             }
             else {
@@ -48,7 +48,7 @@ function PostCardReactionModal(props) {
                 setTotalLikes(totalLikes + 1)
                 setTotalReactions(totalReactions + 1)
                 setAccountLike(accountLike + 1)
-                axios.put(config.environmentURL + '/addLike', { accountId: accountData.id, postId: id, holonId: holonData.id })
+                axios.put(config.environmentURL + '/add-like', { accountId: accountData.id, postId: id, holonId: holonData.id })
                     .catch(error => { console.log(error) })
             }
         }
@@ -61,14 +61,14 @@ function PostCardReactionModal(props) {
                 setTotalHearts(totalHearts - 1)
                 setTotalReactions(totalReactions - 1)
                 setAccountHeart(0)
-                axios.put(config.environmentURL + '/removeHeart', { accountId: accountData.id, postId: id })
+                axios.put(config.environmentURL + '/remove-heart', { accountId: accountData.id, postId: id })
                     .catch(error => { console.log(error) })
             }
             else {
                 setTotalHearts(totalHearts + 1)
                 setTotalReactions(totalReactions + 1)
                 setAccountHeart(accountHeart + 1)
-                axios.put(config.environmentURL + '/addHeart', { accountId: accountData.id, postId: id, holonId: holonData.id })
+                axios.put(config.environmentURL + '/add-heart', { accountId: accountData.id, postId: id, holonId: holonData.id })
                     .catch(error => { console.log(error) })
             }
         }
@@ -82,7 +82,7 @@ function PostCardReactionModal(props) {
                 let invalidRating = isNaN(n) || n === '' || n > 100 || n < 0
                 if (invalidRating) { setNewRatingError(true) }
                 else {
-                    axios.put(config.environmentURL + '/updateRating', { accountId: accountData.id, postId: id, holonId: holonData.id, newRating })
+                    axios.put(config.environmentURL + '/update-rating', { accountId: accountData.id, postId: id, holonId: holonData.id, newRating })
                         .then(() => { setNewRating(''); getHolonPosts() })
                         .catch(error => { console.log(error) })
                 }
@@ -96,7 +96,7 @@ function PostCardReactionModal(props) {
                     setTotalReactions(totalReactions + 1)
                     setTotalRatingPoints(totalRatingPoints + parseInt(newRating, 10))
                     setAccountRating(accountRating + 1)
-                    axios.put(config.environmentURL + '/addRating', { accountId: accountData.id, postId: id, holonId: holonData.id, newRating })
+                    axios.put(config.environmentURL + '/add-rating', { accountId: accountData.id, postId: id, holonId: holonData.id, newRating })
                         .then(setNewRating(''))
                         .catch(error => { console.log(error) })
                 }
