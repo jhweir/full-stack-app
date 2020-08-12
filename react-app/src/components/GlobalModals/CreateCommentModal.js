@@ -8,7 +8,7 @@ import styles from '../../styles/components/CreateCommentModal.module.scss'
 
 function CreateCommentModal() {
     const { accountData, isLoggedIn, setCreateCommentModalOpen, setAlertMessage, setAlertModalOpen } = useContext(AccountContext)
-    const { postData, getPostComments } = useContext(PostContext)
+    const { postData, getPostData, getPostComments } = useContext(PostContext)
     
     const [newComment, setNewComment] = useState('')
     const [commentError, setCommentError] = useState(false)
@@ -22,7 +22,7 @@ function CreateCommentModal() {
             else {
                 axios.post(config.environmentURL + '/add-comment', { creatorId: accountData.id, postId: postData.id, text: newComment })
                     .then(setCreateCommentModalOpen(false))
-                    .then(setTimeout(() => { getPostComments() }, 200))
+                    .then(setTimeout(() => { getPostData(); getPostComments() }, 200))
             }
         }
     }
@@ -35,12 +35,12 @@ function CreateCommentModal() {
                     src="/icons/close-01.svg"
                     onClick={() => setCreateCommentModalOpen(false)}
                 />
-                <span className={styles.title}>Add a new comment on {postData.creator.name}'s post</span>
+                <span className={styles.title}>Comment on {postData.creator.name}'s post</span>
                 <form className={styles.form} onSubmit={submitComment}>
                     <textarea 
                         className={`wecoInput ${commentError && 'error'}`}
                         style={{ paddingTop: 10, marginBottom: 30 }}
-                        placeholder="Comment" //rows="3"
+                        placeholder="Comment..." //rows="3"
                         type="text" value={newComment}
                         onChange={(e) => { setNewComment(e.target.value); setCommentError(false) }}
                     />

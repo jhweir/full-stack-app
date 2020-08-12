@@ -22,7 +22,7 @@ const PollAnswer = require('../models').PollAnswer
 const postAttributes = [
     'id', 'type', 'subType', 'state', 'text', 'url', 'createdAt',
     [sequelize.literal(
-        `(SELECT COUNT(*) FROM Comments AS Comment WHERE Comment.postId = Post.id)`
+        `(SELECT COUNT(*) FROM Comments AS Comment WHERE Comment.state = 'visible' AND Comment.postId = Post.id)`
         ),'total_comments'
     ],
     [sequelize.literal(
@@ -122,7 +122,7 @@ router.get('/holon-posts', (req, res) => {
     function findFirstAttributes() {
         let firstAttributes = ['id']
         if (sortBy === 'Comments') { firstAttributes.push([sequelize.literal(
-            `(SELECT COUNT(*) FROM Comments AS Comment WHERE Comment.postId = Post.id)`
+            `(SELECT COUNT(*) FROM Comments AS Comment WHERE Comment.state = 'visible' AND Comment.postId = Post.id)`
             ),'total_comments'
         ])}
         if (sortBy === 'Reactions') { firstAttributes.push([sequelize.literal(
@@ -320,7 +320,8 @@ router.get('/holon-spaces', (req, res) => {
         if (sortBy === 'Comments') { firstAttributes.push([sequelize.literal(`(
             SELECT COUNT(*)
                 FROM Comments
-                WHERE Comments.postId IN (
+                WHERE Comments.state = 'visible'
+                AND Comments.postId IN (
                     SELECT PostHolons.postId
                     FROM PostHolons
                     RIGHT JOIN Posts
@@ -479,7 +480,8 @@ router.get('/holon-spaces', (req, res) => {
                 [sequelize.literal(`(
                     SELECT COUNT(*)
                         FROM Comments
-                        WHERE Comments.postId IN (
+                        WHERE Comments.state = 'visible'
+                        AND Comments.postId IN (
                             SELECT PostHolons.postId
                             FROM PostHolons
                             RIGHT JOIN Posts
@@ -1064,8 +1066,8 @@ router.get('/post-comments', (req, res) => {
     Comment.findAll({ 
         where: {
             postId,
+            state: 'visible',
             text: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` },
-            //state: 'visible',
             createdAt: { [Op.between]: [startDate, Date.now()] },
             // [Op.or]: [
             //     { text: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } },
@@ -1175,7 +1177,6 @@ router.post('/create-holon', (req, res) => {
 router.post('/create-post', (req, res) => {
     const { type, subType, state, creatorId, text, url, holonHandles, pollAnswers } = req.body.post
     let holonIds = []
-    console.log('req.body.post: ', req.body.post)
 
     async function asyncForEach(array, callback) {
         for (let index = 0; index < array.length; index++) {
@@ -1224,18 +1225,7 @@ router.post('/create-post', (req, res) => {
 router.delete('/delete-post', (req, res) => {
     // TODO: endpoints like this are currently unsafe/open to anyone. include authenticate middleware.
     const { postId } = req.body
-    Post.update({ state: 'hidden' }, {
-        where: { id: postId }
-    })
-    // Post.destroy({ where: { id: req.body.id }})
-})
-
-router.delete('/delete-comment', (req, res) => {
-    // TODO: endpoints like this are currently unsafe/open to anyone. include authenticate middleware.
-    const { commentId } = req.body
-    Post.update({ state: 'hidden' }, {
-        where: { id: postId }
-    })
+    Post.update({ state: 'hidden' }, { where: { id: postId } })
     // Post.destroy({ where: { id: req.body.id }})
 })
 
@@ -1310,13 +1300,20 @@ router.put('/update-rating', (req, res) => {
 
 router.post('/add-comment', (req, res) => {
     let { creatorId, postId, text } = req.body
-    Comment.create({ creatorId, postId, text })
+    Comment.create({ state: 'visible', creatorId, postId, text })
         .catch(err => console.log(err))
 
     // // Update number of comments on post in Post table
     // Post.update({ comments: comments }, {
     //     where: { id: postId }
     // })
+})
+
+router.delete('/delete-comment', (req, res) => {
+    // TODO: endpoints like this are currently unsafe/open to anyone. include authenticate middleware.
+    const { commentId } = req.body
+    Comment.update({ state: 'hidden' }, { where: { id: commentId } })
+    // Post.destroy({ where: { id: req.body.id }})
 })
 
 router.post('/cast-vote', (req, res) => {

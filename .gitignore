@@ -2,12 +2,10 @@
 
 /express-api/node_modules/
 
-/old-express-api/node_modules/
-
 /react-app/node_modules/
 
-/new-express-api/node_modules
-
-/test/node_modules
+/react-app/build/
 
 .env
+
+*.pem

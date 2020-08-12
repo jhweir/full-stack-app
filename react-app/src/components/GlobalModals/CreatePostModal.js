@@ -13,7 +13,7 @@ function CreatePostModal() {
     const { holonData, getHolonPosts } = useContext(HolonContext)
 
     const [postType, setPostType] = useState('Text')
-    const [pollType, setPollType] = useState('Single-Choice')
+    const [pollType, setPollType] = useState('Single Choice')
     const [text, setText] = useState('')
     const [url, setUrl] = useState('')
     const [holonHandles, setHolonHandles] = useState([])
@@ -28,12 +28,12 @@ function CreatePostModal() {
     const [flashMessage, setflashMessage] = useState(false)
 
     useEffect(() => {
-        if (holonData.id) { setHolonHandles([holonData.handle]) }
+        if (holonData && holonData.id) { setHolonHandles([holonData.handle]) }
     }, [holonData])
 
     function resetForm() {
         setPostType('Text')
-        setPollType('Single-Choice')
+        setPollType('Single Choice')
         setText('')
         setUrl('')
         setPollAnswers([])

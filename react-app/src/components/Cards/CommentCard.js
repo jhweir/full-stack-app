@@ -8,11 +8,15 @@ import { PostContext } from '../../contexts/PostContext'
 function CommentCard(props) {
     const { index, comment } = props
     const { postId, commentCreator, text, createdAt } = comment
-    const { getPostComments } = useContext(PostContext)
+    const { getPostData, getPostComments } = useContext(PostContext)
+
+    function reply() {
+
+    }
 
     function deleteComment() {
         axios.delete(config.environmentURL  + '/delete-comment', { data: { commentId: comment.id } })
-            .then(setTimeout(() => { getPostComments() }, 200))
+            .then(setTimeout(() => { getPostData(); getPostComments() }, 200))
             .catch(error => { console.log(error) })
     }
 
@@ -35,11 +39,9 @@ function CommentCard(props) {
                                     <img className={styles.userImagePlaceholder} src={'/icons/user-solid.svg'} alt=''/>
                                 </div>
                             }
-                            <span className={styles.subText}>{ commentCreator && commentCreator.name || 'Anonymous' }</span>
+                            <span className={styles.subText}>{ commentCreator.name || 'Anonymous' }</span>
                         </Link>
                     }
-                    {/* <span className={styles.userThumbnail}></span>
-                    <span className={styles.subText}>{ commentCreator && commentCreator.name || 'Anonymous' }</span> */}
                     <span className={styles.subText}>|</span>
                     <span className={styles.subText}>{ formatDate() || 'no date' }</span>
                 </div>
@@ -48,6 +50,10 @@ function CommentCard(props) {
                     <div className={styles.text}>{ text }</div>
                     
                     <div className={styles.interact}>
+                        <div className={styles.interactItem} onClick={reply}>
+                            <img className={`${styles.icon} ${styles.reply}`} src="/icons/reply-solid.svg" alt=''/>
+                            <span>Reply</span>
+                        </div>
                         {/* {isOwnComment && */}
                             <div className={styles.interactItem} onClick={deleteComment}>
                                 <img className={styles.icon} src="/icons/trash-alt-solid.svg" alt=''/>

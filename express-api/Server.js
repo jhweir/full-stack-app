@@ -9,16 +9,6 @@ var aws = require('aws-sdk')
 var multer = require('multer')
 var multerS3 = require('multer-s3')
 
-// const passportJWT = require('passport-jwt')
-// const JwtStrategy = passportJWT.Strategy
-// const ExtractJwt = passportJWT.ExtractJwt
-//const FacebookStrategy = require("passport-facebook").Strategy
-// const LocalStrategy = require('passport-local').Strategy
-// const flash = require('express-flash')
-// const session = require('express-session')
-// const Sequelize = require('sequelize')
-// var SequelizeStore = require("connect-session-sequelize")(session.Store)
-
 const express = require('express')
 const bodyParser = require('body-parser')
 const cors = require('cors')
@@ -42,12 +32,12 @@ app.post('/api/log-in', async (req, res) => {
       //res.send(user)
       if (!user) { return res.send('user-not-found') }
       bcrypt.compare(password, user.password, function(error, success) {
-          if (error) { res.send('incorrect-password') /* handle error */ }
+          if (error) { res.send('incorrect-password') }
           if (success) { 
               const payload = { id: user.id }
               const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '30m' })
-              const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' })
-              //res.cookie('cookie_name', accessToken, { httpOnly: true })
+              // const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' })
+              // res.cookie('cookie_name', accessToken, { httpOnly: true })
               res.send(accessToken)
           }
           else { res.send('incorrect-password') }
@@ -68,10 +58,10 @@ function authenticateToken(req, res, next) {
   })
 }
 
-app.post('/api/protected', authenticateToken, (req, res) => {
-  console.log(req.user.name)
-  res.send('success. UserId: ' + req.user.id)
-})
+// app.post('/api/protected', authenticateToken, (req, res) => {
+//   console.log(req.user.name)
+//   res.send('success. UserId: ' + req.user.id)
+// })
 
 app.get('/api/account-data', authenticateToken, (req, res) => {
   //console.log('req.user.id: ', req.user.id)
@@ -111,31 +101,17 @@ app.get('/api/user-holons', (req, res) => {
 })
 
 aws.config.update({
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   region: 'eu-west-1'
 })
 
-var s3 = new aws.S3({ /* ... */ })
- 
-// var upload = multer({
-//   storage: multerS3({
-//     s3: s3,
-//     bucket: 'new-weco-user-profile-images',
-//     acl: 'public-read',
-//     metadata: function (req, file, cb) {
-//       cb(null, {fieldName: 'testing...'});
-//     },
-//     key: function (req, file, cb) {
-//       cb(null, Date.now().toString())
-//     }
-//   })
-// })
+var s3 = new aws.S3({})
 
 var userFlagImageUpload = multer({
   storage: multerS3({
     s3: s3,
-    bucket: 'new-weco-user-flag-images',
+    bucket: `weco-${process.env.NODE_ENV}-user-flag-images`,
     acl: 'public-read',
     metadata: function (req, file, cb) {
       cb(null, {fieldName: 'testing...'});
@@ -149,7 +125,7 @@ var userFlagImageUpload = multer({
 var userCoverImageUpload = multer({
   storage: multerS3({
     s3: s3,
-    bucket: 'new-weco-user-cover-images',
+    bucket: `weco-${process.env.NODE_ENV}-user-cover-images`,
     acl: 'public-read',
     metadata: function (req, file, cb) {
       cb(null, {fieldName: 'testing...'});
@@ -163,7 +139,7 @@ var userCoverImageUpload = multer({
 var holonFlagImageUpload = multer({
   storage: multerS3({
     s3: s3,
-    bucket: 'new-weco-holon-flag-images',
+    bucket: `weco-${process.env.NODE_ENV}-holon-flag-images`,
     acl: 'public-read',
     metadata: function (req, file, cb) {
       cb(null, {fieldName: 'testing...'});
@@ -177,7 +153,7 @@ var holonFlagImageUpload = multer({
 var holonCoverImageUpload = multer({
   storage: multerS3({
     s3: s3,
-    bucket: 'new-weco-holon-cover-images',
+    bucket: `weco-${process.env.NODE_ENV}-holon-cover-images`,
     acl: 'public-read',
     metadata: function (req, file, cb) {
       cb(null, {fieldName: 'testing...'});
@@ -240,6 +216,15 @@ app.post('/api/holon-cover-image-upload', authenticateToken, function(req, res) 
 })
 
 
+// const passportJWT = require('passport-jwt')
+// const JwtStrategy = passportJWT.Strategy
+// const ExtractJwt = passportJWT.ExtractJwt
+//const FacebookStrategy = require("passport-facebook").Strategy
+// const LocalStrategy = require('passport-local').Strategy
+// const flash = require('express-flash')
+// const session = require('express-session')
+// const Sequelize = require('sequelize')
+// var SequelizeStore = require("connect-session-sequelize")(session.Store)
 
 // app.use(function (req, res, next) {
 //   res.header('Access-Control-Allow-Credentials', true);

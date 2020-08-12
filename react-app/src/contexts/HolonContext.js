@@ -144,7 +144,7 @@ function HolonContextProvider({ children }) {
     }
 
     let queryPath
-    if (holonData.id === 1) { queryPath = 'all-users' } else { queryPath = 'holon-users' }
+    if (holonData && holonData.id === 1) { queryPath = 'all-users' } else { queryPath = 'holon-users' }
 
     function getHolonUsers() {
         setHolonUserPaginationHasMore(true)
