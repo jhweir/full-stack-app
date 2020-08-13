@@ -10,7 +10,7 @@ import SideBarButton from '../SideBarButton'
 
 function HolonPageSideBarLeft() {
     const { isLoggedIn, accountData } = useContext(AccountContext)
-    const { getHolonUsers, holonData, isFollowing, setIsFollowing, isModerator } = useContext(HolonContext)
+    const { getHolonUsers, holonData, isFollowing, setIsFollowing, isModerator, selectedHolonSubPage } = useContext(HolonContext)
 
     function followSpace() {
         if (isFollowing) {
@@ -35,39 +35,45 @@ function HolonPageSideBarLeft() {
             <div className={styles.name}>{ holonData.name }</div>
             <div className={styles.navButtons}>
                 {isModerator && <SideBarButton
-                    text='Moderator'
                     icon='crown-solid.svg'
+                    text='Moderator'
                     marginBottom={10}
                 />}
                 {isLoggedIn && holonData.handle !== 'all' && <SideBarButton
-                    text={isFollowing ? 'Following' : 'Not Following'}
                     icon={isFollowing ? 'eye-solid.svg' : 'eye-slash-solid.svg'}
-                    marginBottom={10}
+                    text={isFollowing ? 'Following' : 'Not Following'}
                     onClickFunction={followSpace}
+                    marginBottom={10}
+                />}
+                {isModerator && <SideBarButton
+                    icon='cog-solid.svg'
+                    text='Settings'
+                    url='settings'
+                    selected={selectedHolonSubPage === 'settings'}
                 />}
                 <SideBarButton
-                    text='About'
-                    path='about'
                     icon='book-open-solid.svg'
-                    type='holon-page-left'
+                    text='About'
+                    url='about'
+                    selected={selectedHolonSubPage === 'about'}
                 />
                 <SideBarButton
-                    text='Posts'
-                    path='posts'
                     icon='edit-solid.svg'
-                    type='holon-page-left'
+                    text='Posts'
+                    url='posts'
+                    selected={selectedHolonSubPage === 'posts'}
                 />
                 <SideBarButton
-                    text='Spaces'
-                    path='spaces'
                     icon='overlapping-circles-thick.svg'
-                    type='holon-page-left'
+                    text='Spaces'
+                    url='spaces'
+                    selected={selectedHolonSubPage === 'spaces'}
                 />
                 <SideBarButton
-                    text={holonData.handle === 'all' ? 'Users' : 'Followers'}
-                    path='users'
                     icon='users-solid.svg'
-                    type='holon-page-left'
+                    text={holonData.handle === 'all' ? 'Users' : 'Followers'}
+                    url='users'
+                    selected={selectedHolonSubPage === 'users'}
                 />
             </div>
             <div className={styles.description}>{holonData.description}</div>

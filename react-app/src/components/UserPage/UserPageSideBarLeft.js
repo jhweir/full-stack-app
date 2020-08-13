@@ -6,11 +6,10 @@ import SideBarButton from '../SideBarButton'
 //import HolonPageSideBarLeftPlaceholder from '../components/HolonPageSideBarLeftPlaceholder'
 
 function UserPageSideBarLeft() {
-    const { userData, isOwnAccount } = useContext(UserContext)
+    const { userData, isOwnAccount, selectedUserSubPage } = useContext(UserContext)
 
     return (
         <div className={styles.sideBarLeft}>
-            {/* <FlagImage type='user'/> */}
             <FlagImage
                 flagImagePath={userData.flagImagePath}
                 imageUploadType='user-flag-image'
@@ -19,23 +18,23 @@ function UserPageSideBarLeft() {
             <div className={styles.userName}>{ userData.name }</div>
             <div className={styles.navButtons}>
                 {isOwnAccount && <SideBarButton
-                    text='Settings'
-                    path='settings'
                     icon='cog-solid.svg'
-                    type='user-page-left'
+                    text='Settings'
+                    url='settings'
+                    selected={selectedUserSubPage === 'settings'}
                     marginBottom={10}
                 />}
                 <SideBarButton
-                    text='About'
-                    path='about'
                     icon='book-open-solid.svg'
-                    type='user-page-left'
+                    text='About'
+                    url='about'
+                    selected={selectedUserSubPage === 'about'}
                 />
                 <SideBarButton
-                    text='Created Posts'
-                    path='posts'
                     icon='edit-solid.svg'
-                    type='user-page-left'
+                    text='Created Posts'
+                    url='posts'
+                    selected={selectedUserSubPage === 'posts'}
                 />
                 <span className={styles.bio}>{userData.bio}</span>
             </div>
