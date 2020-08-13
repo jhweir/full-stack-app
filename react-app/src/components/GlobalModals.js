@@ -9,16 +9,24 @@ import CreateHolonModal from './GlobalModals/CreateHolonModal'
 import CreateCommentModal from './GlobalModals/CreateCommentModal'
 
 function GlobalModals() {
-    const { createCommentModalOpen } = useContext(AccountContext)
+    const {
+        alertModalOpen,
+        authModalOpen,
+        userControlsModalOpen,
+        imageUploadModalOpen,
+        createPostModalOpen,
+        createHolonModalOpen,
+        createCommentModalOpen
+    } = useContext(AccountContext)
 
     return (
         <>
-            <AlertModal/>
-            <AuthModal/>
-            <UserControlsModal/>
-            <ImageUploadModal/>
-            <CreatePostModal/>
-            <CreateHolonModal/>
+            {alertModalOpen && <AlertModal/>}
+            {authModalOpen && <AuthModal/>}
+            {userControlsModalOpen && <UserControlsModal/>}
+            {imageUploadModalOpen && <ImageUploadModal/>}
+            {createPostModalOpen && <CreatePostModal/>}
+            {createHolonModalOpen && <CreateHolonModal/>}
             {createCommentModalOpen && <CreateCommentModal/>}
         </>
     )

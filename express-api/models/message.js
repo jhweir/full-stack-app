@@ -5,7 +5,7 @@ module.exports = (sequelize, DataTypes) => {
     state: DataTypes.STRING,
     from: DataTypes.INTEGER,
     to: DataTypes.INTEGER,
-    text: DataTypes.STRING
+    text: DataTypes.TEXT
   }, {});
   Message.associate = function(models) {
     // associations can be defined here

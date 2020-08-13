@@ -90,7 +90,7 @@ function UserContextProvider({ children }) {
 
     useEffect(() => {
         if (!accountContextLoading) { getUserData() }
-    }, [userHandle, accountData])
+    }, [userHandle, accountData.id])
 
     useEffect(() => {
         if (isLoggedIn && userData && userData.id === accountData.id) { setIsOwnAccount(true) }

@@ -7,8 +7,8 @@ export const AccountContext = createContext()
 
 function AccountContextProvider({ children, pageBottomReached }) {
     const [accountContextLoading, setAccountContextLoading] = useState(true)
-    const [isLoggedIn, setIsLoggedIn] = useState(false)
     const [accountData, setAccountData] = useState({ FollowedHolons: [], ModeratedHolons: [] })
+    const [isLoggedIn, setIsLoggedIn] = useState(false)
     const [alertModalOpen, setAlertModalOpen] = useState(false)
     const [alertMessage, setAlertMessage] = useState('')
     const [authModalOpen, setAuthModalOpen] = useState(false)

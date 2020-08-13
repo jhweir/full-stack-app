@@ -22,7 +22,12 @@ function UserPage({ match }) {
 
     return (
         <div className={styles.userPage}>
-            <CoverImage type='user'/>
+            {/* <CoverImage type='user'/> */}
+            <CoverImage
+                coverImagePath={userData.coverImagePath}
+                imageUploadType='user-cover-image'
+                canEdit={isOwnAccount}
+            />
             {!userData && <span style={{padding: 20}}>No user with that name!</span>}
             {userData &&
                 <div className={styles.userPageContainer}>

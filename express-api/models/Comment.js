@@ -5,7 +5,7 @@ module.exports = (sequelize, DataTypes) => {
     creatorId: DataTypes.INTEGER,
     parentCommentId: DataTypes.INTEGER,
     postId: DataTypes.INTEGER,
-    text: DataTypes.STRING
+    text: DataTypes.TEXT
   }, {});
   Comment.associate = function(models) {
     Comment.belongsTo(models.Post, {

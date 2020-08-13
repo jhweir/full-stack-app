@@ -3,9 +3,9 @@ module.exports = (sequelize, DataTypes) => {
   const Holon = sequelize.define('Holon', {
     handle: DataTypes.STRING,
     name: DataTypes.STRING,
-    description: DataTypes.STRING,
-    flagImagePath: DataTypes.STRING,
-    coverImagePath: DataTypes.STRING
+    description: DataTypes.TEXT,
+    flagImagePath: DataTypes.TEXT,
+    coverImagePath: DataTypes.TEXT
   }, {});
   Holon.associate = function(models) {
     // VHR relationship

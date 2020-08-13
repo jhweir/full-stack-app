@@ -3,15 +3,19 @@ import { Link } from 'react-router-dom'
 import axios from 'axios'
 import config from '../../Config'
 import styles from '../../styles/components/CommentCard.module.scss'
+import { AccountContext } from '../../contexts/AccountContext'
 import { PostContext } from '../../contexts/PostContext'
 
 function CommentCard(props) {
     const { index, comment } = props
     const { postId, commentCreator, text, createdAt } = comment
+    const { accountData, isLoggedIn } = useContext(AccountContext)
     const { getPostData, getPostComments } = useContext(PostContext)
 
-    function reply() {
+    const isOwnComment = accountData.id === commentCreator.id
 
+    function reply() {
+        //...
     }
 
     function deleteComment() {
@@ -50,16 +54,18 @@ function CommentCard(props) {
                     <div className={styles.text}>{ text }</div>
                     
                     <div className={styles.interact}>
-                        <div className={styles.interactItem} onClick={reply}>
-                            <img className={`${styles.icon} ${styles.reply}`} src="/icons/reply-solid.svg" alt=''/>
-                            <span>Reply</span>
-                        </div>
-                        {/* {isOwnComment && */}
+                        {isLoggedIn &&
+                            <div className={styles.interactItem} onClick={reply}>
+                                <img className={`${styles.icon} ${styles.reply}`} src="/icons/reply-solid.svg" alt=''/>
+                                <span>Reply</span>
+                            </div>
+                        }
+                        {isOwnComment &&
                             <div className={styles.interactItem} onClick={deleteComment}>
                                 <img className={styles.icon} src="/icons/trash-alt-solid.svg" alt=''/>
                                 <span>Delete</span>
                             </div>
-                        {/* } */}
+                        }
                     </div>
                 </div>
             </div>

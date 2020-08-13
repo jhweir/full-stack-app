@@ -101,7 +101,7 @@ function PostContextProvider({ children }) {
 
     useEffect(() => {
         if (!accountContextLoading) { getPostData() }
-    }, [postId, accountData])
+    }, [postId, accountData.id])
 
     return (
         <PostContext.Provider value={{

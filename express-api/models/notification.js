@@ -2,7 +2,7 @@
 module.exports = (sequelize, DataTypes) => {
   const Notification = sequelize.define('Notification', {
     type: DataTypes.STRING,
-    text: DataTypes.STRING,
+    text: DataTypes.TEXT,
     holonId: DataTypes.INTEGER,
     userId: DataTypes.INTEGER,
     postId: DataTypes.INTEGER,

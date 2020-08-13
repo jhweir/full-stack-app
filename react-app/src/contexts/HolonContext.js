@@ -6,7 +6,7 @@ import { AccountContext } from './AccountContext'
 export const HolonContext = createContext()
 
 function HolonContextProvider({ children }) {
-    const { accountContextLoading, accountData, isLoggedIn } = useContext(AccountContext)
+    const { accountContextLoading, accountData, getAccountData, isLoggedIn } = useContext(AccountContext)
 
     const [holonContextLoading, setHolonContextLoading] = useState(true)
     const [holonHandle, setHolonHandle] = useState('')
@@ -187,6 +187,7 @@ function HolonContextProvider({ children }) {
         }
     }
 
+    // TODO: check if below is best approach, could maybe use reset key to re-render component instead
     function resetHolonPostFilters() {
         setHolonPostFiltersOpen(false)
         setHolonPostTimeRangeFilter('All Time')
@@ -233,7 +234,7 @@ function HolonContextProvider({ children }) {
 
     useEffect(() => {
         if (!accountContextLoading) { getHolonData() }
-    }, [holonHandle, accountData])
+    }, [holonHandle, accountData.id])
 
     useEffect(() => {
         if (accountData && holonData) {

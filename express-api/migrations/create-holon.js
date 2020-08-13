@@ -16,13 +16,13 @@ module.exports = {
         type: Sequelize.STRING
       },
       description: {
-        type: Sequelize.STRING
+        type: Sequelize.TEXT
       },
       flagImagePath: {
-        type: Sequelize.STRING
+        type: Sequelize.TEXT
       },
       coverImagePath: {
-        type: Sequelize.STRING
+        type: Sequelize.TEXT
       },
       createdAt: {
         allowNull: false,

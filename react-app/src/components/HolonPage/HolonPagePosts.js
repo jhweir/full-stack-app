@@ -39,7 +39,7 @@ function HolonPagePosts() {
     }, [])
 
     useEffect(() => {
-        if (!holonContextLoading && holonData.id) { getHolonPosts() }
+        if (!holonContextLoading && holonData) { getHolonPosts() }
     },[
         holonContextLoading,
         holonPostSearchFilter,
@@ -51,7 +51,7 @@ function HolonPagePosts() {
     ])
 
     useEffect(() => {
-        if (pageBottomReached && !holonContextLoading && holonData.id) { getNextHolonPosts() }
+        if (pageBottomReached && !holonContextLoading && holonData) { getNextHolonPosts() }
     }, [pageBottomReached])
 
     return (

@@ -9,15 +9,10 @@ import config from '../../Config'
 import Cookies from 'universal-cookie';
 
 function ImageUploadModal() {
-    const { imageUploadModalOpen, setImageUploadModalOpen, imageUploadType } = useContext(AccountContext)
+    const { setImageUploadModalOpen, imageUploadType, getAccountData } = useContext(AccountContext)
     const { holonData, getHolonData } = useContext(HolonContext)
     const { getUserData, userData } = useContext(UserContext)
     const [image, setImage] = useState([])
-
-    // does this require a function?
-    function imageSelected(image) {
-        setImage(image)
-    }
 
     let cookies = new Cookies()
 
@@ -39,38 +34,36 @@ function ImageUploadModal() {
                 if (res.data === 'success') { 
                     setImageUploadModalOpen(false)
                     setTimeout(() => {
-                        if (imageUploadType.includes('holon')) { getHolonData() }
-                        if (imageUploadType.includes('user')) { getUserData(userData.name) }
+                        if (imageUploadType.includes('holon')) { getHolonData(); getAccountData() }
+                        if (imageUploadType.includes('user')) { getUserData(userData.name); getAccountData() }
                     }, 200)
                 }
             })
     }
 
-    if (imageUploadModalOpen) {
-        return (
-            <div className={styles.imageUploadModalWrapper}>
-                <div className={styles.imageUploadModal}>
-                    <img 
-                        className={styles.imageUploadModalCloseButton}
-                        src="/icons/close-01.svg"
-                        onClick={() => setImageUploadModalOpen(false)}
-                    />
-                    <ImageUploader
-                        withIcon={true}
-                        withPreview={true}
-                        buttonText='Choose images'
-                        onChange={imageSelected}
-                        imgExtension={['.jpg', '.jpeg', '.gif', '.png']}
-                        maxFileSize={5242880}
-                        singleImage={true}
-                    />
-                    <div className="wecoButton" onClick={() => saveImage()}>
-                        Save image
-                    </div>
+    return (
+        <div className={styles.imageUploadModalWrapper}>
+            <div className={styles.imageUploadModal}>
+                <img 
+                    className={styles.imageUploadModalCloseButton}
+                    src="/icons/close-01.svg"
+                    onClick={() => setImageUploadModalOpen(false)}
+                />
+                <ImageUploader
+                    withIcon={true}
+                    withPreview={true}
+                    buttonText='Choose images'
+                    onChange={image => setImage(image)}
+                    imgExtension={['.jpg', '.jpeg', '.gif', '.png']}
+                    maxFileSize={5242880}
+                    singleImage={true}
+                />
+                <div className="wecoButton" onClick={() => saveImage()}>
+                    Save image
                 </div>
             </div>
-        )
-    } else { return null }
+        </div>
+    )
 }
 
 export default ImageUploadModal

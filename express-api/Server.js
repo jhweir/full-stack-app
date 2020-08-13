@@ -139,7 +139,7 @@ var userCoverImageUpload = multer({
 var holonFlagImageUpload = multer({
   storage: multerS3({
     s3: s3,
-    bucket: `weco-${process.env.NODE_ENV}-holon-flag-images`,
+    bucket: `weco-${process.env.NODE_ENV}-space-flag-images`,
     acl: 'public-read',
     metadata: function (req, file, cb) {
       cb(null, {fieldName: 'testing...'});
@@ -153,7 +153,7 @@ var holonFlagImageUpload = multer({
 var holonCoverImageUpload = multer({
   storage: multerS3({
     s3: s3,
-    bucket: `weco-${process.env.NODE_ENV}-holon-cover-images`,
+    bucket: `weco-${process.env.NODE_ENV}-space-cover-images`,
     acl: 'public-read',
     metadata: function (req, file, cb) {
       cb(null, {fieldName: 'testing...'});

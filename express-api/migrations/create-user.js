@@ -21,13 +21,13 @@ module.exports = {
         type: Sequelize.STRING
       },
       bio: {
-        type: Sequelize.STRING
+        type: Sequelize.TEXT
       },
       flagImagePath: {
-        type: Sequelize.STRING
+        type: Sequelize.TEXT
       },
       coverImagePath: {
-        type: Sequelize.STRING
+        type: Sequelize.TEXT
       },
       facebookId: {
         type: Sequelize.STRING

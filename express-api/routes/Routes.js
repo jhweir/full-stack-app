@@ -1082,7 +1082,7 @@ router.get('/post-comments', (req, res) => {
             {
                 model: User,
                 as: 'commentCreator',
-                attributes: ['handle', 'name', 'flagImagePath']
+                attributes: ['id', 'handle', 'name', 'flagImagePath']
             }
         ]
     })

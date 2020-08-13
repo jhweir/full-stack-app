@@ -9,7 +9,7 @@ import PollAnswerForm from './../PostPage/Poll/PollAnswerForm'
 import DropDownMenu from '../DropDownMenu'
 
 function CreatePostModal() {
-    const { accountData, createPostModalOpen, setCreatePostModalOpen } = useContext(AccountContext)
+    const { accountData, setCreatePostModalOpen } = useContext(AccountContext)
     const { holonData, getHolonPosts } = useContext(HolonContext)
 
     const [postType, setPostType] = useState('Text')
@@ -60,78 +60,76 @@ function CreatePostModal() {
         }
     }
 
-    if (createPostModalOpen) {
-        return (
-            <div className={styles.modalWrapper}>
-                <div className={styles.modal}>
-                    <img 
-                        className={styles.closeModalButton}
-                        src="/icons/close-01.svg"
-                        onClick={() => { setCreatePostModalOpen(false); resetForm() }}
+    return (
+        <div className={styles.modalWrapper}>
+            <div className={styles.modal}>
+                <img 
+                    className={styles.closeModalButton}
+                    src="/icons/close-01.svg"
+                    onClick={() => { setCreatePostModalOpen(false); resetForm() }}
+                />
+                <div className={styles.title}>
+                    Create a new {postType} post in '{holonData.name}'
+                </div>
+                <div className={styles.dropDownOptions}>
+                    <DropDownMenu
+                        title='Post Type'
+                        options={['Text', 'Poll']}
+                        selectedOption={postType}
+                        setSelectedOption={setPostType}
+                        style='horizontal'
                     />
-                    <div className={styles.title}>
-                        Create a new {postType} post in '{holonData.name}'
-                    </div>
-                    <div className={styles.dropDownOptions}>
+                    {postType === 'Poll' &&
                         <DropDownMenu
-                            title='Post Type'
-                            options={['Text', 'Poll']}
-                            selectedOption={postType}
-                            setSelectedOption={setPostType}
+                            title='Poll Type'
+                            options={['Single Choice', 'Multiple Choice', 'Weighted Choice']}
+                            selectedOption={pollType}
+                            setSelectedOption={setPollType}
                             style='horizontal'
                         />
-                        {postType === 'Poll' &&
-                            <DropDownMenu
-                                title='Poll Type'
-                                options={['Single Choice', 'Multiple Choice', 'Weighted Choice']}
-                                selectedOption={pollType}
-                                setSelectedOption={setPollType}
-                                style='horizontal'
-                            />
-                        }
-                    </div>
-                    <form className={styles.createPostModalForm} onSubmit={ submitPost }>
-                        <textarea className={`wecoInput textArea mb-10 ${textError && 'error'}`}
-                            placeholder="Text (max 20,000 characters)"
-                            type="text" value={text}
-                            onChange={(e) => { setText(e.target.value); setTextError(false) }}
-                        />
-                        <input className={`wecoInput mb-20`}
-                            placeholder="URL"
-                            type="text" value={url}
-                            onChange={(e) => { setUrl(e.target.value) }}
-                        />
-                        <HolonHandleInput 
-                            holonHandles={holonHandles}
-                            setHolonHandles={setHolonHandles}
-                            newHandle={newHandle}
-                            setNewHandle={setNewHandle}
-                            suggestedHandlesOpen={suggestedHandlesOpen}
-                            setSuggestedHandlesOpen={setSuggestedHandlesOpen}
-                            suggestedHandles={suggestedHandles}
-                            setSuggestedHandles={setSuggestedHandles}
-                            newHandleError={newHandleError}
-                            setNewHandleError={setNewHandleError}
-                            flashMessage={flashMessage}
-                            setflashMessage={setflashMessage}
-                            setCreatePostModalOpen={setCreatePostModalOpen}
-                        />
-                        {postType === 'Poll' &&
-                            <PollAnswerForm
-                                pollAnswers={pollAnswers}
-                                setPollAnswers={setPollAnswers}
-                                newPollAnswer={newPollAnswer}
-                                setNewPollAnswer={setNewPollAnswer}
-                                newPollAnswerError={newPollAnswerError}
-                                setNewPollAnswerError={setNewPollAnswerError}
-                            />
-                        }
-                        <button className="wecoButton centered">Submit Post</button>
-                    </form>
+                    }
                 </div>
+                <form className={styles.createPostModalForm} onSubmit={ submitPost }>
+                    <textarea className={`wecoInput textArea mb-10 ${textError && 'error'}`}
+                        placeholder="Text (max 20,000 characters)"
+                        type="text" value={text}
+                        onChange={(e) => { setText(e.target.value); setTextError(false) }}
+                    />
+                    <input className={`wecoInput mb-20`}
+                        placeholder="URL"
+                        type="text" value={url}
+                        onChange={(e) => { setUrl(e.target.value) }}
+                    />
+                    <HolonHandleInput 
+                        holonHandles={holonHandles}
+                        setHolonHandles={setHolonHandles}
+                        newHandle={newHandle}
+                        setNewHandle={setNewHandle}
+                        suggestedHandlesOpen={suggestedHandlesOpen}
+                        setSuggestedHandlesOpen={setSuggestedHandlesOpen}
+                        suggestedHandles={suggestedHandles}
+                        setSuggestedHandles={setSuggestedHandles}
+                        newHandleError={newHandleError}
+                        setNewHandleError={setNewHandleError}
+                        flashMessage={flashMessage}
+                        setflashMessage={setflashMessage}
+                        setCreatePostModalOpen={setCreatePostModalOpen}
+                    />
+                    {postType === 'Poll' &&
+                        <PollAnswerForm
+                            pollAnswers={pollAnswers}
+                            setPollAnswers={setPollAnswers}
+                            newPollAnswer={newPollAnswer}
+                            setNewPollAnswer={setNewPollAnswer}
+                            newPollAnswerError={newPollAnswerError}
+                            setNewPollAnswerError={setNewPollAnswerError}
+                        />
+                    }
+                    <button className="wecoButton centered">Submit Post</button>
+                </form>
             </div>
-        )
-    } else { return null }
+        </div>
+    )
 }
 
 export default CreatePostModal

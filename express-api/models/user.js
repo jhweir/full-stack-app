@@ -5,9 +5,9 @@ module.exports = (sequelize, DataTypes) => {
     name: DataTypes.STRING,
     email: DataTypes.STRING,
     password: DataTypes.STRING,
-    bio: DataTypes.STRING,
-    flagImagePath: DataTypes.STRING,
-    coverImagePath: DataTypes.STRING,
+    bio: DataTypes.TEXT,
+    flagImagePath: DataTypes.TEXT,
+    coverImagePath: DataTypes.TEXT,
     facebookId: DataTypes.STRING
   }, {});
   User.associate = function(models) {

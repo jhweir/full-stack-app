@@ -25,10 +25,13 @@ function HolonPageSideBarLeft() {
         }
     }
 
-    return (
+    if (holonData) { return (
         <div className={styles.sideBarLeft}>
-            {/* <HolonPageSideBarLeftPlaceholder/> */}
-            <FlagImage type='holon'/>
+            <FlagImage
+                flagImagePath={holonData.flagImagePath}
+                imageUploadType='holon-flag-image'
+                canEdit={isModerator}
+            />
             <div className={styles.name}>{ holonData.name }</div>
             <div className={styles.navButtons}>
                 {isModerator && <SideBarButton
@@ -69,7 +72,7 @@ function HolonPageSideBarLeft() {
             </div>
             <div className={styles.description}>{holonData.description}</div>
         </div>
-    )
+    )} else { return null } //add side bar placeholder here? {/* <HolonPageSideBarLeftPlaceholder/> */}
 }
 
 export default HolonPageSideBarLeft

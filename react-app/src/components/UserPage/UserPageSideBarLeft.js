@@ -10,8 +10,12 @@ function UserPageSideBarLeft() {
 
     return (
         <div className={styles.sideBarLeft}>
-            {/* <HolonPageSideBarLeftPlaceholder/> */}
-            <FlagImage type='user'/>
+            {/* <FlagImage type='user'/> */}
+            <FlagImage
+                flagImagePath={userData.flagImagePath}
+                imageUploadType='user-flag-image'
+                canEdit={isOwnAccount}
+            />
             <div className={styles.userName}>{ userData.name }</div>
             <div className={styles.navButtons}>
                 {isOwnAccount && <SideBarButton
@@ -40,3 +44,5 @@ function UserPageSideBarLeft() {
 }
 
 export default UserPageSideBarLeft
+
+{/* <HolonPageSideBarLeftPlaceholder/> */}

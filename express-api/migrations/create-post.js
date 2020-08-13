@@ -21,13 +21,13 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       text: {
-        type: Sequelize.STRING
+        type: Sequelize.TEXT
       },
       url: {
-        type: Sequelize.STRING
+        type: Sequelize.TEXT
       },
       imagePath: {
-        type: Sequelize.STRING
+        type: Sequelize.TEXT
       },
       createdAt: {
         allowNull: false,

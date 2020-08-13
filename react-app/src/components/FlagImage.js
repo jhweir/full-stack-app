@@ -1,35 +1,26 @@
 import React, { useContext } from 'react'
 import { AccountContext } from '../contexts/AccountContext'
-import { HolonContext } from '../contexts/HolonContext'
-import { UserContext } from '../contexts/UserContext'
 import styles from '../styles/components/FlagImage.module.scss'
 
 function FlagImage(props) {
-    const { type } = props
+    const { flagImagePath, imageUploadType, canEdit } = props
     const { setImageUploadType, setImageUploadModalOpen } = useContext(AccountContext)
-    const { holonData, isModerator } = useContext(HolonContext)
-    const { userData, isOwnAccount } = useContext(UserContext)
-
-    let data = []
-    let canEdit = false
-    if (type === 'holon') { data = holonData; canEdit = isModerator }
-    if (type === 'user') { data = userData; canEdit = isOwnAccount }
 
     return (
         <div className={styles.flagImageWrapper}>
-            {data.flagImagePath === null
-                ? <div className={styles.placeholderContainer}>
+            {flagImagePath === null
+                ? <div className={styles.placeholderWrapper}>
                     <img className={styles.placeholder} src='/icons/users-solid.svg' alt=''/>
                 </div>
-                : <img className={styles.flagImage} src={data.flagImagePath} alt=''/>
+                : <img className={styles.flagImage} src={flagImagePath} alt=''/>
             }
-            {/* {canEdit && */}
+            {canEdit &&
                 <div 
                     className={styles.uploadButton}
-                    onClick={() => { setImageUploadType(`${type}-flag-image`); setImageUploadModalOpen(true)  }}>
+                    onClick={() => { setImageUploadType(imageUploadType); setImageUploadModalOpen(true) }}>
                     Upload new flag image
                 </div>
-            {/* } */}
+            }
         </div>
     )
 }
