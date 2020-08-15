@@ -1,0 +1,62 @@
+.container {
+    width: 100%;
+    height: 120px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    // border: 1px solid rgba(0, 0, 0, 0.05);
+    background-color: rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: row;
+}
+.image {
+    width: 200px;
+    height: 120px;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    margin-right: 15px;
+    object-fit: cover;
+}
+.text {
+    width: 360px;
+    padding: 10px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+.title {
+    max-width: 360px;
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: 600;
+    margin-bottom: 2px;
+    flex-shrink: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.description {
+    font-size: 14px;
+    line-height: 18px;
+    height: 36px;
+    margin-bottom: 5px;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+.domain {
+    font-size: 14px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    &:hover { cursor: pointer; }
+}
+.icon {
+    width: 15px;
+    height: 15px;
+    opacity: 0.3;
+    margin-right: 5px;
+}
+.domainText {
+    font-size: 14px;
+    line-height: 14px;
+    opacity: 0.5;
+}

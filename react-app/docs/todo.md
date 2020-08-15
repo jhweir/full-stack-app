@@ -1,6 +1,11 @@
 # Todos
 Last updated: 10-08-2020
 
++ build scraper for url posts
++ add 'no comments with those settings' placeholder on post page
++ bug: after new log-in, going to profile page fails and user has to refresh page
++ reposition drop-downs and remove 'hearts'
+
 - Set up comment replies
 - Notifications
 - User to user messages

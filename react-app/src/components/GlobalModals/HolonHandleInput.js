@@ -44,7 +44,7 @@ function HolonHandleInput(props) {
 
     return (
         <div className={styles.holonHandleInput}>
-            <div className={styles.text}>Add the names of spaces you want the post to appear in below:</div>
+            <div className={styles.text}>Tag the spaces you want the post to appear in:</div>
             <div className={styles.form}>
                 <input className={`wecoInput mr-10 ${newHandleError && 'error'}`} style={{width: 200}}
                     type="text" placeholder="Add spaces..." value={newHandle}
@@ -66,7 +66,7 @@ function HolonHandleInput(props) {
                         )}
                     </div>
                 }
-                <button className="wecoButton" style={{flexShrink: 0}} onClick={addHolonHandle}>Add Space</button>
+                <button className="wecoButton" style={{flexShrink: 0}} onClick={addHolonHandle}>Add</button>
             </div>
             {flashMessage && 
                 <div className={styles.flashMessage}>

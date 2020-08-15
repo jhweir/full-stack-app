@@ -4,6 +4,7 @@ import { AccountContext } from '../../contexts/AccountContext'
 import axios from 'axios'
 import config from '../../Config'
 import styles from '../../styles/components/CreatePostModal.module.scss'
+import CreatePostModalUrlPreview from './CreatePostModalUrlPreview'
 import HolonHandleInput from './HolonHandleInput'
 import PollAnswerForm from './../PostPage/Poll/PollAnswerForm'
 import DropDownMenu from '../DropDownMenu'
@@ -16,6 +17,11 @@ function CreatePostModal() {
     const [pollType, setPollType] = useState('Single Choice')
     const [text, setText] = useState('')
     const [url, setUrl] = useState('')
+    const [urlLoading, setUrlLoading] = useState(false)
+    const [urlImage, setUrlImage] = useState('')
+    const [urlDomain, setUrlDomain] = useState('')
+    const [urlTitle, setUrlTitle] = useState('')
+    const [urlDescription, setUrlDescription] = useState('')
     const [holonHandles, setHolonHandles] = useState([])
     const [newHandle, setNewHandle] = useState('')
     const [suggestedHandlesOpen, setSuggestedHandlesOpen] = useState(false)
@@ -27,9 +33,19 @@ function CreatePostModal() {
     const [newPollAnswerError, setNewPollAnswerError] = useState(false)
     const [flashMessage, setflashMessage] = useState(false)
 
-    useEffect(() => {
-        if (holonData && holonData.id) { setHolonHandles([holonData.handle]) }
-    }, [holonData])
+    function scrapeURL(url) {
+        setUrlLoading(true)
+        axios
+            .post(config.environmentURL + '/scrape-url', { url })
+            .then(res => {
+                const { description, domain, img, title } = res.data
+                setUrlDescription(description)
+                setUrlDomain(domain)
+                setUrlImage(img)
+                setUrlTitle(title)
+            })
+            .then(() => { setUrlLoading(false) })
+    }
 
     function resetForm() {
         setPostType('Text')
@@ -50,15 +66,25 @@ function CreatePostModal() {
         if (!invalidText && !invalidHolons && !invalidPollAnswers) {
             let subType, answers
             if (postType === 'Poll') { subType = pollType.toLowerCase(); answers = pollAnswers } else { subType = null; answers = null }
-            let post = { type: postType.toLowerCase(), subType, state: 'visible', creatorId: accountData.id, text, url, holonHandles, pollAnswers: answers }
+            let post = { 
+                type: postType.toLowerCase(),
+                subType,
+                state: 'visible',
+                creatorId: accountData.id,
+                text,
+                url,
+                holonHandles,
+                pollAnswers: answers
+            }
             axios.post(config.environmentURL + '/create-post', { post })
-                .then(() => { 
-                    setCreatePostModalOpen(false)
-                    resetForm()
-                })
+                .then(() => { setCreatePostModalOpen(false); resetForm() })
                 .then(setTimeout(() => { getHolonPosts() }, 200))
         }
     }
+
+    useEffect(() => {
+        if (holonData && holonData.id) { setHolonHandles([holonData.handle]) }
+    }, [holonData])
 
     return (
         <div className={styles.modalWrapper}>
@@ -69,12 +95,12 @@ function CreatePostModal() {
                     onClick={() => { setCreatePostModalOpen(false); resetForm() }}
                 />
                 <div className={styles.title}>
-                    Create a new {postType} post in '{holonData.name}'
+                    Create a new post
                 </div>
                 <div className={styles.dropDownOptions}>
                     <DropDownMenu
                         title='Post Type'
-                        options={['Text', 'Poll']}
+                        options={['Text', 'Poll', 'URL']}
                         selectedOption={postType}
                         setSelectedOption={setPostType}
                         style='horizontal'
@@ -89,17 +115,33 @@ function CreatePostModal() {
                         />
                     }
                 </div>
-                <form className={styles.createPostModalForm} onSubmit={ submitPost }>
+                <form className={styles.form} onSubmit={ submitPost }>
                     <textarea className={`wecoInput textArea mb-10 ${textError && 'error'}`}
                         placeholder="Text (max 20,000 characters)"
                         type="text" value={text}
                         onChange={(e) => { setText(e.target.value); setTextError(false) }}
                     />
-                    <input className={`wecoInput mb-20`}
-                        placeholder="URL"
-                        type="text" value={url}
-                        onChange={(e) => { setUrl(e.target.value) }}
-                    />
+                    {postType === 'URL' &&
+                        <input className={`wecoInput mb-10`}
+                            placeholder="URL"
+                            type="text" value={url}
+                            onChange={(e) => { setUrl(e.target.value); scrapeURL(e.target.value) }}
+                        />
+                    }
+                    {urlLoading && 
+                        // <div className={styles.domainText}>Loading...</div>
+                        <img className={styles.loadingImage} src="/images/cube-loading.gif"/>
+                    }
+                    {urlImage !== '' && //needs to be changed...
+                        <CreatePostModalUrlPreview
+                            url={url}
+                            urlLoading={urlLoading}
+                            urlImage={urlImage}
+                            urlDomain={urlDomain}
+                            urlTitle={urlTitle}
+                            urlDescription={urlDescription}
+                        />
+                    }
                     <HolonHandleInput 
                         holonHandles={holonHandles}
                         setHolonHandles={setHolonHandles}
@@ -133,6 +175,9 @@ function CreatePostModal() {
 }
 
 export default CreatePostModal
+
+// {postType.toLowerCase()}
+
 
 // {postType === 'Poll' &&
 // <div className={styles.pollTypeSelector}>

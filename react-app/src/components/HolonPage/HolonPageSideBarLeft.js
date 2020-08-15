@@ -25,60 +25,63 @@ function HolonPageSideBarLeft() {
         }
     }
 
-    if (holonData) { return (
-        <div className={styles.sideBarLeft}>
-            <FlagImage
-                flagImagePath={holonData.flagImagePath}
-                imageUploadType='holon-flag-image'
-                canEdit={isModerator}
-            />
-            <div className={styles.name}>{ holonData.name }</div>
-            <div className={styles.navButtons}>
-                {isModerator && <SideBarButton
-                    icon='crown-solid.svg'
-                    text='Moderator'
-                    marginBottom={10}
-                />}
-                {isLoggedIn && holonData.handle !== 'all' && <SideBarButton
-                    icon={isFollowing ? 'eye-solid.svg' : 'eye-slash-solid.svg'}
-                    text={isFollowing ? 'Following' : 'Not Following'}
-                    onClickFunction={followSpace}
-                    marginBottom={10}
-                />}
-                {isModerator && <SideBarButton
-                    icon='cog-solid.svg'
-                    text='Settings'
-                    url='settings'
-                    selected={selectedHolonSubPage === 'settings'}
-                />}
-                <SideBarButton
-                    icon='book-open-solid.svg'
-                    text='About'
-                    url='about'
-                    selected={selectedHolonSubPage === 'about'}
+    if (holonData) { 
+        return (
+            <div className={styles.sideBarLeft}>
+                <FlagImage
+                    flagImagePath={holonData.flagImagePath}
+                    imageUploadType='holon-flag-image'
+                    canEdit={isModerator}
                 />
-                <SideBarButton
-                    icon='edit-solid.svg'
-                    text='Posts'
-                    url='posts'
-                    selected={selectedHolonSubPage === 'posts'}
-                />
-                <SideBarButton
-                    icon='overlapping-circles-thick.svg'
-                    text='Spaces'
-                    url='spaces'
-                    selected={selectedHolonSubPage === 'spaces'}
-                />
-                <SideBarButton
-                    icon='users-solid.svg'
-                    text={holonData.handle === 'all' ? 'Users' : 'Followers'}
-                    url='users'
-                    selected={selectedHolonSubPage === 'users'}
-                />
+                <div className={styles.name}>{ holonData.name }</div>
+                <div className={styles.navButtons}>
+                    {isModerator && <SideBarButton
+                        icon='crown-solid.svg'
+                        text='Moderator'
+                        marginBottom={10}
+                    />}
+                    {isLoggedIn && holonData.handle !== 'all' && <SideBarButton
+                        icon={isFollowing ? 'eye-solid.svg' : 'eye-slash-solid.svg'}
+                        text={isFollowing ? 'Following' : 'Not Following'}
+                        onClickFunction={followSpace}
+                        marginBottom={10}
+                    />}
+                    {isModerator && <SideBarButton
+                        icon='cog-solid.svg'
+                        text='Settings'
+                        url='settings'
+                        selected={selectedHolonSubPage === 'settings'}
+                        // marginBottom={10}
+                    />}
+                    <SideBarButton
+                        icon='book-open-solid.svg'
+                        text='About'
+                        url='about'
+                        selected={selectedHolonSubPage === 'about'}
+                    />
+                    <SideBarButton
+                        icon='edit-solid.svg'
+                        text='Posts'
+                        url='posts'
+                        selected={selectedHolonSubPage === 'posts'}
+                    />
+                    <SideBarButton
+                        icon='overlapping-circles-thick.svg'
+                        text='Spaces'
+                        url='spaces'
+                        selected={selectedHolonSubPage === 'spaces'}
+                    />
+                    <SideBarButton
+                        icon='users-solid.svg'
+                        text={holonData.handle === 'all' ? 'Users' : 'Followers'}
+                        url='users'
+                        selected={selectedHolonSubPage === 'users'}
+                    />
+                </div>
+                <div className={styles.description}>{holonData.description}</div>
             </div>
-            <div className={styles.description}>{holonData.description}</div>
-        </div>
-    )} else { return null } //add side bar placeholder here? {/* <HolonPageSideBarLeftPlaceholder/> */}
+        )
+    } else { return null } //add side bar placeholder here? {/* <HolonPageSideBarLeftPlaceholder/> */}
 }
 
 export default HolonPageSideBarLeft

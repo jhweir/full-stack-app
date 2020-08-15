@@ -5,6 +5,7 @@ var sequelize = require('sequelize')
 const bcrypt = require('bcrypt')
 const Op = sequelize.Op
 const db = require('../models/index')
+const linkPreviewGenerator = require("link-preview-generator")
 
 const Holon = require('../models').Holon
 const VerticalHolonRelationship = require('../models').VerticalHolonRelationship
@@ -1368,6 +1369,12 @@ router.post('/followHolon', (req, res) => {
 router.put('/unfollowHolon', (req, res) => {
     const { holonId, userId } = req.body
     HolonUser.update({ state: 'removed' }, { where: { relationship: 'follower', holonId, userId }})
+})
+
+router.post('/scrape-url', async (req, res) => {
+    const { url } = req.body
+    const previewData = await linkPreviewGenerator(url)
+    res.send(previewData)
 })
 
 module.exports = router

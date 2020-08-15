@@ -17,11 +17,11 @@ function HolonPageAbout() {
             <div className={styles.header}>
                 About
             </div>
-            <div className={styles.body}>
-                <div><b>Name:</b> {holonData.name}</div>
-                <div><b>Handle:</b> {holonData.handle}</div>
-                <div><b>Description:</b> {holonData.description}</div>
-                <div><b>Created:</b> {dateCreated}</div>
+            <div className={styles.content}>
+                <div className={styles.text}><b>Name:</b> {holonData.name}</div>
+                <div className={styles.text}><b>Handle:</b> {holonData.handle}</div>
+                <div className={styles.text}><b>Created:</b> {dateCreated} by ...</div>
+                <div className={styles.text}><b>Description:</b> {holonData.description}</div>
             </div>
         </div>
     )
