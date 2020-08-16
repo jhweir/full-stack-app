@@ -4,7 +4,7 @@ import config from '../../Config'
 import { AccountContext } from '../../contexts/AccountContext'
 import { PostContext } from '../../contexts/PostContext'
 import styles from '../../styles/components/CreateCommentModal.module.scss'
-// import HolonHandleInput from './HolonHandleInput'
+// import HandleInput from './HandleInput'
 
 function CreateCommentModal() {
     const { accountData, isLoggedIn, setCreateCommentModalOpen, setAlertMessage, setAlertModalOpen } = useContext(AccountContext)

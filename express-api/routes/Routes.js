@@ -1373,8 +1373,21 @@ router.put('/unfollowHolon', (req, res) => {
 
 router.post('/scrape-url', async (req, res) => {
     const { url } = req.body
-    const previewData = await linkPreviewGenerator(url)
-    res.send(previewData)
+    // https://andrejgajdos.com/how-to-create-a-link-preview/
+    try {
+        const previewData = await linkPreviewGenerator(url)
+        res.send(previewData)
+      } catch(err) {
+        res.send('failed')
+      }
+    // const previewData = await linkPreviewGenerator(url)
+    // console.log('previewData: ', previewData)
+    // previewData
+    //     //.then(res.send(previewData))
+    //     .catch(err => console.log('test error: ', err))
+    //if (previewData) { console.log(previewData) }
+    //else { console.log('failed') }
+    // res.send(previewData)
 })
 
 module.exports = router

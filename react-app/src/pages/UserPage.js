@@ -22,9 +22,8 @@ function UserPage({ match }) {
 
     return (
         <div className={styles.userPage}>
-            {/* <CoverImage type='user'/> */}
             <CoverImage
-                coverImagePath={userData.coverImagePath}
+                coverImagePath={userData ? userData.coverImagePath : null}
                 imageUploadType='user-cover-image'
                 canEdit={isOwnAccount}
             />

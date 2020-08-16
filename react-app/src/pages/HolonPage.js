@@ -25,7 +25,7 @@ function HolonPage({ match }) {
     return (
         <div className={styles.holonPage}>
             <CoverImage
-                coverImagePath={holonData.coverImagePath}
+                coverImagePath={holonData ? holonData.coverImagePath : null}
                 imageUploadType='holon-cover-image'
                 canEdit={isModerator}
             />

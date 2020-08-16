@@ -4,8 +4,8 @@ import { AccountContext } from '../../contexts/AccountContext'
 import axios from 'axios'
 import config from '../../Config'
 import styles from '../../styles/components/CreatePostModal.module.scss'
-import CreatePostModalUrlPreview from './CreatePostModalUrlPreview'
-import HolonHandleInput from './HolonHandleInput'
+import UrlPreview from './UrlPreview'
+import HandleInput from './HandleInput'
 import PollAnswerForm from './../PostPage/Poll/PollAnswerForm'
 import DropDownMenu from '../DropDownMenu'
 
@@ -33,18 +33,35 @@ function CreatePostModal() {
     const [newPollAnswerError, setNewPollAnswerError] = useState(false)
     const [flashMessage, setflashMessage] = useState(false)
 
+    function isValidUrl(string) {
+        try { new URL(string) }
+        catch (_) { return false }
+        return true
+    }
+    
     function scrapeURL(url) {
-        setUrlLoading(true)
-        axios
-            .post(config.environmentURL + '/scrape-url', { url })
-            .then(res => {
-                const { description, domain, img, title } = res.data
-                setUrlDescription(description)
-                setUrlDomain(domain)
-                setUrlImage(img)
-                setUrlTitle(title)
-            })
-            .then(() => { setUrlLoading(false) })
+        if (isValidUrl(url)) {
+            setUrlLoading(true)
+            axios
+                .post(config.environmentURL + '/scrape-url', { url })
+                .then(res => {
+                    if (res.data === 'failed') {
+                        setUrlDescription('')
+                        setUrlDomain('')
+                        setUrlImage('')
+                        setUrlTitle('')
+                        //setUrlFlashMessage()
+                    }
+                    else {
+                        const { description, domain, img, title } = res.data
+                        setUrlDescription(description)
+                        setUrlDomain(domain)
+                        setUrlImage(img)
+                        setUrlTitle(title)
+                    }
+                })
+                .then(() => { setUrlLoading(false) })
+        } else { console.log('invalid Url') }
     }
 
     function resetForm() {
@@ -52,6 +69,10 @@ function CreatePostModal() {
         setPollType('Single Choice')
         setText('')
         setUrl('')
+        setUrlImage('')
+        setUrlDomain('')
+        setUrlTitle('')
+        setUrlDescription('')
         setPollAnswers([])
     }
 
@@ -100,7 +121,7 @@ function CreatePostModal() {
                 <div className={styles.dropDownOptions}>
                     <DropDownMenu
                         title='Post Type'
-                        options={['Text', 'Poll', 'URL']}
+                        options={['Text', 'Poll', 'Url']}
                         selectedOption={postType}
                         setSelectedOption={setPostType}
                         style='horizontal'
@@ -121,28 +142,25 @@ function CreatePostModal() {
                         type="text" value={text}
                         onChange={(e) => { setText(e.target.value); setTextError(false) }}
                     />
-                    {postType === 'URL' &&
+                    {postType === 'Url' &&
                         <input className={`wecoInput mb-10`}
-                            placeholder="URL"
-                            type="text" value={url}
-                            onChange={(e) => { setUrl(e.target.value); scrapeURL(e.target.value) }}
+                            placeholder="Url"
+                            type="url" value={url}
+                            onChange={(e) => { 
+                                setUrl(e.target.value)
+                                scrapeURL(e.target.value)
+                            }}
                         />
                     }
-                    {urlLoading && 
-                        // <div className={styles.domainText}>Loading...</div>
-                        <img className={styles.loadingImage} src="/images/cube-loading.gif"/>
-                    }
-                    {urlImage !== '' && //needs to be changed...
-                        <CreatePostModalUrlPreview
-                            url={url}
-                            urlLoading={urlLoading}
-                            urlImage={urlImage}
-                            urlDomain={urlDomain}
-                            urlTitle={urlTitle}
-                            urlDescription={urlDescription}
-                        />
-                    }
-                    <HolonHandleInput 
+                    <UrlPreview
+                        url={url}
+                        urlLoading={urlLoading}
+                        urlImage={urlImage}
+                        urlDomain={urlDomain}
+                        urlTitle={urlTitle}
+                        urlDescription={urlDescription}
+                    />
+                    <HandleInput 
                         holonHandles={holonHandles}
                         setHolonHandles={setHolonHandles}
                         newHandle={newHandle}

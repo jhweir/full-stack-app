@@ -2,9 +2,9 @@ import React, { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
 import config from '../../Config'
-import styles from '../../styles/components/HolonHandleInput.module.scss'
+import styles from '../../styles/components/HandleInput.module.scss'
 
-function HolonHandleInput(props) {
+function HandleInput(props) {
     const { 
         holonHandles, setHolonHandles,
         newHandle, setNewHandle,
@@ -43,7 +43,7 @@ function HolonHandleInput(props) {
     }, [newHandle])
 
     return (
-        <div className={styles.holonHandleInput}>
+        <div className={styles.HandleInput}>
             <div className={styles.text}>Tag the spaces you want the post to appear in:</div>
             <div className={styles.form}>
                 <input className={`wecoInput mr-10 ${newHandleError && 'error'}`} style={{width: 200}}
@@ -91,7 +91,7 @@ function HolonHandleInput(props) {
     )
 }
 
-export default HolonHandleInput
+export default HandleInput
 
 // Find holons that match the search filter
 //const filteredHolonHandles = globalData.filter(handle => handle.includes(newHandle))
