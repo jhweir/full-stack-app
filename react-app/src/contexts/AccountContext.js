@@ -16,6 +16,8 @@ function AccountContextProvider({ children, pageBottomReached }) {
     const [createPostModalOpen, setCreatePostModalOpen] = useState(false)
     const [createHolonModalOpen, setCreateHolonModalOpen] = useState(false)
     const [createCommentModalOpen, setCreateCommentModalOpen] = useState(false)
+    const [settingModalOpen, setSettingModalOpen] = useState(false)
+    const [settingModalType, setSettingModalType] = useState('')
     const [imageUploadModalOpen, setImageUploadModalOpen] = useState(false)
     const [imageUploadType, setImageUploadType] = useState('')
 
@@ -64,7 +66,9 @@ function AccountContextProvider({ children, pageBottomReached }) {
             imageUploadType, setImageUploadType,
             createHolonModalOpen, setCreateHolonModalOpen,
             createPostModalOpen, setCreatePostModalOpen,
-            createCommentModalOpen, setCreateCommentModalOpen
+            createCommentModalOpen, setCreateCommentModalOpen,
+            settingModalOpen, setSettingModalOpen,
+            settingModalType, setSettingModalType
         }}>
             {children}
         </AccountContext.Provider>

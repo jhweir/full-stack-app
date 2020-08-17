@@ -32,7 +32,7 @@ function UserPageSideBarLeft() {
                 />
                 <SideBarButton
                     icon='edit-solid.svg'
-                    text='Created Posts'
+                    text='Posts'
                     url='posts'
                     selected={selectedUserSubPage === 'posts'}
                 />

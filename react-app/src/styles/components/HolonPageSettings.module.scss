@@ -23,15 +23,27 @@
     border-radius: 10px;
     padding: 20px;
 }
-.name {
-    font-size: 24px;
+.section {
+    //margin-bottom: 20px;
 }
-.handle {
-    font-size: 16px;
-    color: grey;
+.title {
+    font-size: 20px;
     margin-bottom: 10px;
 }
-.text {
+.field {
     margin-bottom: 10px;
     &:last-child { margin-bottom: 0; }
+    display: flex;
+    flex-direction: row;
+    //align-items: flex-start;
+}
+.text {
+    margin-right: 10px;
+    // &:last-child { margin-bottom: 0; }
+}
+.linkText {
+    text-decoration: underline;
+    color: rgb(0, 160, 253);
+    //margin-left: 10px;
+    &:hover { cursor: pointer }
 }

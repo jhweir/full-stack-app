@@ -4,6 +4,7 @@ import { AccountContext } from '../contexts/AccountContext'
 import { Route, Switch, Redirect } from "react-router-dom"
 import styles from '../styles/pages/HolonPage.module.scss'
 import CoverImage from '../components/CoverImage'
+import HolonPageSettings from '../components/HolonPage/HolonPageSettings'
 import HolonPageAbout from '../components/HolonPage/HolonPageAbout'
 import HolonPagePosts from '../components/HolonPage/HolonPagePosts'
 import HolonPageSpaces from '../components/HolonPage/HolonPageSpaces'
@@ -34,6 +35,7 @@ function HolonPage({ match }) {
                 <div className={styles.holonPageCenterPanel}>
                     <Switch>
                         <Redirect from={url} to={`${url}/posts`} exact/>
+                        <Route path={`${url}/settings`} component={ HolonPageSettings } exact/>
                         <Route path={`${url}/about`} component={ HolonPageAbout } exact/>
                         <Route path={`${url}/posts`} component={ HolonPagePosts } exact/>
                         <Route path={`${url}/spaces`} component={ HolonPageSpaces } exact/>

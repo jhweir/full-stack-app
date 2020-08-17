@@ -27,17 +27,17 @@ const postAttributes = [
         ),'total_comments'
     ],
     [sequelize.literal(
-        `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.type != "vote" AND Label.state = 'active')`
+        `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.type != "vote" AND Label.type != "heart" AND Label.state = 'active')`
         ),'total_reactions'
     ],
     [sequelize.literal(
         `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.type = "like" AND Label.state = 'active')`
         ),'total_likes'
     ],
-    [sequelize.literal(
-        `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.type = "heart" AND Label.state = 'active')`
-        ),'total_hearts'
-    ],
+    // [sequelize.literal(
+    //     `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.type = "heart" AND Label.state = 'active')`
+    //     ),'total_hearts'
+    // ],
     [sequelize.literal(
         `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.type = "rating" AND Label.state = 'active')`
         ),'total_ratings'
@@ -134,10 +134,10 @@ router.get('/holon-posts', (req, res) => {
             `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.type = "like" AND Label.state = 'active')`
             ),'total_likes'
         ])}
-        if (sortBy === 'Hearts') { firstAttributes.push([sequelize.literal(
-            `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.type = "heart" AND Label.state = 'active')`
-            ),'total_hearts'
-        ])}
+        // if (sortBy === 'Hearts') { firstAttributes.push([sequelize.literal(
+        //     `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.type = "heart" AND Label.state = 'active')`
+        //     ),'total_hearts'
+        // ])}
         if (sortBy === 'Ratings') { firstAttributes.push([sequelize.literal(
             `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.type = "rating" AND Label.state = 'active')`
             ),'total_ratings'
@@ -216,16 +216,16 @@ router.get('/holon-posts', (req, res) => {
                 AND Label.state = 'active'
                 )`),'account_like'
             ],
-            [sequelize.literal(`(
-                SELECT COUNT(*)
-                FROM Labels
-                AS Label
-                WHERE Label.postId = Post.id
-                AND Label.userId = ${accountId}
-                AND Label.type = 'heart'
-                AND Label.state = 'active'
-                )`),'account_heart'
-            ],
+            // [sequelize.literal(`(
+            //     SELECT COUNT(*)
+            //     FROM Labels
+            //     AS Label
+            //     WHERE Label.postId = Post.id
+            //     AND Label.userId = ${accountId}
+            //     AND Label.type = 'heart'
+            //     AND Label.state = 'active'
+            //     )`),'account_heart'
+            // ],
             [sequelize.literal(`(
                 SELECT COUNT(*)
                 FROM Labels
@@ -1405,6 +1405,86 @@ router.post('/scrape-url', async (req, res) => {
     } catch(err) {
         res.send(err.toString())
     }
+})
+
+router.post('/update-holon-setting', (req, res) => {
+    let { holonId, setting, newValue } = req.body
+    console.log('req.body', req.body)
+    if (setting === 'change-holon-handle') {
+        Holon.update({ handle: newValue }, { where : { id: holonId } })
+            .then(res.send('success'))
+            .catch(err => console.log(err))
+    }
+    if (setting === 'change-holon-name') {
+        Holon.update({ name: newValue }, { where : { id: holonId } })
+            .then(res.send('success'))
+            .catch(err => console.log(err))
+    }
+    if (setting === 'change-holon-description') {
+        Holon.update({ description: newValue }, { where : { id: holonId } })
+            .then(res.send('success'))
+            .catch(err => console.log(err))
+    }
+    if (setting === 'add-new-moderator') {
+        User.findOne({ where: { handle: newValue } })
+            .then(user => {
+                if (user) {
+                    HolonUser
+                        .create({
+                            relationship: 'moderator',
+                            state: 'active',
+                            holonId,
+                            userId: user.id
+                        })
+                        .then(res.send('success'))
+                }
+                else { res.send('No user with that handle') }
+            })
+    }
+    if (setting === 'add-parent-space') {
+        Holon.findOne({
+            where: { handle: newValue },
+            include: [{ model: Holon, as: 'HolonHandles' }]
+        })
+        .then(holon => {
+            if (holon) {
+                VerticalHolonRelationship.create({
+                    state: 'open',
+                    holonAId: holon.id,
+                    holonBId: holonId,
+                })
+                .then(() => {
+                    holon.HolonHandles.forEach((handle) => {
+                        HolonHandle.create({ //post to holon A appear with B
+                            state: 'open',
+                            holonAId: holonId,
+                            holonBId: handle.id,
+                        })
+                    })
+                })
+                .then(res.send('success'))
+            }
+            else { res.send('No space with that handle') }
+        })
+    }
+    if (setting === 'remove-parent-space') {
+        Holon.findOne({
+            where: { handle: newValue },
+            include: [{ model: Holon, as: 'HolonHandles' }]
+        })
+        .then(holon => {
+            if (holon) {
+                VerticalHolonRelationship.findAll({
+                    where: { holonBId: holon.id }
+                })
+                .then(holons => {
+                    console.log('holons: ', holons)
+                })
+            }
+            else { res.send('No space with that handle') }
+        })
+    }
+
 })
 
 module.exports = router

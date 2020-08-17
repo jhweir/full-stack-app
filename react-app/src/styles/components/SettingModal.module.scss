@@ -1,0 +1,78 @@
+.modalWrapper {
+    padding: 120px 20px 20px 20px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.3);
+    //backdrop-filter: blur(30px);
+    z-index: 5;
+    // animation-name: fade-in;
+    // animation-duration: 0.5s;
+    display: flex;
+    flex-direction: column;
+    //justify-content: center;
+    align-items: center;
+}
+.modal {
+    //width: 600px;
+    padding: 40px 60px;
+    background-color: white;
+    box-shadow: 0 1px 30px 0 rgba(0,0,0,0.2);
+    border-radius: 5px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    // overflow: scroll;
+    // scrollbar-width: none;
+    // -ms-overflow-style: none;
+    // ::-webkit-scrollbar {
+    //     display: none;
+    // }
+    @media screen and (max-width: 1000px) {
+        width: 100%;
+        height: 100%;
+        padding: 20px;
+        position: relative;
+        top: auto;
+        left: auto;
+    }
+}
+.closeButton {
+    height: 20px;
+    width: 20px;
+    opacity: 0.2;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    &:hover {
+        cursor: pointer;
+    }
+}
+.title {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+.subTitle {
+    margin-bottom: 20px;
+}
+.text {
+    font-size: 16px;
+    text-align: center;
+    width: 300px;
+    margin-bottom: 20px;
+}
+.form {
+    min-width: 450px;
+    //margin: 0 80px;
+    display: flex;
+    flex-direction: row;
+    // justify-content: center;
+    // align-items: center;
+}
+.errorMessage {
+    width: 100%;
+    color: red;
+}

@@ -35,7 +35,7 @@ function UserPagePosts() {
 
     return (
         <div className={styles.wrapper}>
-            <div className={styles.header}>Created posts</div>
+            <div className={styles.header}>Created</div>
             <div className='wecoPageHeader'>
                 <div className='wecoPageHeaderRow'>
                     <SearchBar setSearchFilter={setCreatedPostSearchFilter} placeholder='Search posts...'/>

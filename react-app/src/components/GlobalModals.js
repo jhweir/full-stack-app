@@ -7,6 +7,7 @@ import ImageUploadModal from './GlobalModals/ImageUploadModal'
 import CreatePostModal from './GlobalModals/CreatePostModal'
 import CreateHolonModal from './GlobalModals/CreateHolonModal'
 import CreateCommentModal from './GlobalModals/CreateCommentModal'
+import SettingModal from './GlobalModals/SettingModal'
 
 function GlobalModals() {
     const {
@@ -16,7 +17,8 @@ function GlobalModals() {
         imageUploadModalOpen,
         createPostModalOpen,
         createHolonModalOpen,
-        createCommentModalOpen
+        createCommentModalOpen,
+        settingModalOpen
     } = useContext(AccountContext)
 
     return (
@@ -28,6 +30,7 @@ function GlobalModals() {
             {createPostModalOpen && <CreatePostModal/>}
             {createHolonModalOpen && <CreateHolonModal/>}
             {createCommentModalOpen && <CreateCommentModal/>}
+            {settingModalOpen && <SettingModal/>}
         </>
     )
 }

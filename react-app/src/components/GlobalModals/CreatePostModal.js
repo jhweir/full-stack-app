@@ -145,7 +145,7 @@ function CreatePostModal() {
                         />
                     }
                 </div>
-                <form className={styles.form} onSubmit={ submitPost }>
+                <form className={styles.form} onSubmit={submitPost}>
                     <textarea className={`wecoInput textArea mb-10 ${textError && 'error'}`}
                         placeholder="Text (max 20,000 characters)"
                         type="text" value={text}
