@@ -6,8 +6,6 @@ Last updated: 17-08-2020
     + handle change
     + delete space
     + location chnage
-+ add 'no comments with those settings' placeholder on post page
-+ reposition drop-downs and remove 'hearts'
 
 - Set up comment replies
 - Notifications
@@ -89,3 +87,5 @@ Last updated: 17-08-2020
 - Set up reset filter functions for holon and user contexts
 - bug: after new log-in, going to profile page fails and user has to refresh page
 - build scraper for url posts
+- reposition post-reactions and remove 'hearts'
+- add 'no comments with those settings' placeholder on post page

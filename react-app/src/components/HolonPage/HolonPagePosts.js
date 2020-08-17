@@ -75,7 +75,7 @@ function HolonPagePosts() {
                     )}
                 </ul>
             }
-            {holonPostPaginationOffset > 0 && holonPosts.length < 1 &&
+            {holonPosts.length < 1 && holonPostPaginationOffset > 0 &&
                 <div className='wecoNoContentPlaceholder'>
                     No posts yet that match those settings...
                 </div>

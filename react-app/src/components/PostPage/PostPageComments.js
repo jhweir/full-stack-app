@@ -16,7 +16,8 @@ function PostPageComments() {
         postCommentSearchFilter, setPostCommentSearchFilter,
         postCommentSortByFilter,
         postCommentSortOrderFilter,
-        postCommentTimeRangeFilter
+        postCommentTimeRangeFilter,
+        postCommentPaginationOffset
     } = useContext(PostContext)
 
     function openCreateCommentModal() {
@@ -52,15 +53,22 @@ function PostPageComments() {
                 </div>
                 {postCommentFiltersOpen && <PostPageCommentFilters/>}
             </div>
-            <div className={styles.comments}>
-                {postComments.map((comment, index) => 
-                    <CommentCard
-                        key={index}
-                        index={index}
-                        comment={comment}
-                    /> 
-                )}
-            </div>
+            {postComments.length > 0 &&
+                <div className={styles.comments}>
+                    {postComments.map((comment, index) => 
+                        <CommentCard
+                            key={index}
+                            index={index}
+                            comment={comment}
+                        /> 
+                    )}
+                </div>
+            }
+            {postComments.length < 1 && postCommentPaginationOffset > 0 &&
+                <div className='wecoNoContentPlaceholder'>
+                    No comments yet that match those settings...
+                </div>
+            }
         </div>
     )
 }
