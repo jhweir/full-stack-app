@@ -1308,20 +1308,20 @@ router.put('/add-rating', (req, res) => {
     }).then(res.send('Post successfully rated'))
 })
 
-router.put('/update-rating', (req, res) => {
-    const { accountId, postId, holonId, newRating } = req.body
+router.put('/remove-rating', (req, res) => {
+    const { accountId, postId, holonId } = req.body
     Label.update({ state: 'removed' }, { where: { type: 'rating', state: 'active', postId, userId: accountId } })
-    .then(() => {
-        Label.create({ 
-            type: 'rating',
-            value: newRating,
-            state: 'active',
-            holonId,
-            userId: accountId,
-            postId,
-            commentId: null,
-        })
-    }).then(res.send('Post successfully rated'))
+    // .then(() => {
+    //     Label.create({ 
+    //         type: 'rating',
+    //         value: newRating,
+    //         state: 'active',
+    //         holonId,
+    //         userId: accountId,
+    //         postId,
+    //         commentId: null,
+    //     })
+    .then(res.send('Post successfully rated'))
 })
 
 router.post('/add-comment', (req, res) => {

@@ -1,23 +1,20 @@
 .postReactionModal {
-    //width: 160px;
-    height: 30px;
+    width: 160px;
     background-color: white;
     border-radius: 10px;
-    //padding: 10px 20px;
-    display: flex;
-    align-items: center;
-    // position: absolute;
-    // top: 170px;
-    // left: 50px;
-    // box-shadow: 0 1px 10px 0 rgba(10, 8, 72, 0.15);
-    // z-index: 3;
+    padding: 10px 20px;
+    position: absolute;
+    top: 170px;
+    left: 50px;
+    box-shadow: 0 1px 10px 0 rgba(10, 8, 72, 0.15);
+    z-index: 3;
     //display: none;
     // &.visible {
     //     display: block;
     //     z-index: 2;
     // }
 }
-.closeButton {
+.postReactionModalCloseButton {
     height: 17px;
     width: 17px;
     padding: 0;
@@ -30,13 +27,11 @@
         opacity: 0.4;
     }
 }
-.item {
+.postReactionModalItem {
     height: 30px;
-    margin-right: 15px;
     display: flex;
     flex-direction: row;
     align-items: center;
-    flex-shrink: 0;
     &:hover {
         cursor: pointer;
     }
@@ -49,7 +44,7 @@
     // &:hover {
     //     opacity: 0.5;
     // }
-    &.selected {
+    &.selectedOrange {
         opacity: 0.8;
         filter: invert(.5) sepia(1) saturate(5) hue-rotate(190deg);
     }

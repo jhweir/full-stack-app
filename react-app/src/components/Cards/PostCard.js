@@ -120,27 +120,13 @@ function PostCard(props) {
                             />
                         }
                         <div className={styles.interact}>
-                            <div className={styles.interactItem} onClick={() => setReactionModalOpen(true)}>
+                            <div className={styles.interactItem} onClick={() => setReactionModalOpen(!reactionModalOpen)}>
                                 <img 
                                     className={`${styles.icon} ${(accountLike || accountHeart || accountRating !== 0) && styles.selected}`}
                                     src="/icons/fire-alt-solid.svg" alt=''
                                 />
                                 <span>{totalReactions} Reactions</span>
                             </div>
-                            {reactionModalOpen &&
-                                <PostCardReactionModal
-                                    id={id}
-                                    totalReactions={totalReactions} setTotalReactions={setTotalReactions}
-                                    totalLikes={totalLikes} setTotalLikes={setTotalLikes}
-                                    totalHearts={totalHearts} setTotalHearts={setTotalHearts}
-                                    totalRatings={totalRatings} setTotalRatings={setTotalRatings}
-                                    totalRatingPoints={totalRatingPoints} setTotalRatingPoints={setTotalRatingPoints}
-                                    accountLike={accountLike} setAccountLike={setAccountLike}
-                                    accountHeart={accountHeart} setAccountHeart={setAccountHeart}
-                                    accountRating={accountRating} setAccountRating={setAccountRating}
-                                    setReactionModalOpen={setReactionModalOpen}
-                                />
-                            }
                             <Link className={styles.interactItem}
                                 to={`/p/${id}`}>
                                 <img className={styles.icon} src="/icons/comment-solid.svg" alt=''/>
@@ -153,6 +139,20 @@ function PostCard(props) {
                                 </div>
                             }
                         </div>
+                        {reactionModalOpen &&
+                            <PostCardReactionModal
+                                id={id}
+                                totalReactions={totalReactions} setTotalReactions={setTotalReactions}
+                                totalLikes={totalLikes} setTotalLikes={setTotalLikes}
+                                totalHearts={totalHearts} setTotalHearts={setTotalHearts}
+                                totalRatings={totalRatings} setTotalRatings={setTotalRatings}
+                                totalRatingPoints={totalRatingPoints} setTotalRatingPoints={setTotalRatingPoints}
+                                accountLike={accountLike} setAccountLike={setAccountLike}
+                                accountHeart={accountHeart} setAccountHeart={setAccountHeart}
+                                accountRating={accountRating} setAccountRating={setAccountRating}
+                                setReactionModalOpen={setReactionModalOpen}
+                            />
+                        }
                     </div>
                 </div>
             </div>

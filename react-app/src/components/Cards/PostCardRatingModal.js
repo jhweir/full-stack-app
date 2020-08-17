@@ -3,34 +3,47 @@ import styles from '../../styles/components/PostCardRatingModal.module.scss'
 
 function PostCardRatingModal(props) {
     const {
-        totalRatingScore,
+        isLoggedIn,
+        totalRatings,
+        totalRatingPoints,
         newRating,
         newRatingError,
         setNewRating,
         setNewRatingError,
-        addRating
+        addRating,
+        removeRating,
+        accountRating
     } = props
 
-    
+    const alreadyRatedByUser = accountRating !== 0
+
+    function totalRatingScore() {
+        if (totalRatings) { return (totalRatingPoints / totalRatings).toFixed(2) + '%' }
+        else { return 'N/A' }
+    }
+
+    console.log('totalRatingScore: ', totalRatingScore)
     return (
-        <div className={styles.postRatingModal}>
-            <div className={styles.postRatingModalTotalScore}>
-                <div className={styles.postRatingModalTotalScoreBar}>
-                    <div className={styles.postRatingModalTotalScorePercentage} style={{width: totalRatingScore()}}/>
-                    <div className={styles.postRatingModalTotalScoreText}>{ totalRatingScore() }</div>
+        <div className={styles.postCardRatingModal}>
+            <div className={styles.totalScore}>
+                <div className={styles.totalScoreBar}>
+                    <div className={styles.totalScorePercentage} style={{width: totalRatings ? totalRatingScore() : 0}}/>
+                    <div className={styles.totalScoreText}>{ totalRatingScore() }</div>
                 </div>
             </div>
-            <div className={styles.postRatingModalInputWrapper}>
-                <input className={`${styles.postRatingModalInput} ${newRatingError && styles.error}`}
-                    value={newRating} type="text"
-                    onChange={(e) => { setNewRating(e.target.value); setNewRatingError(false) }}
-                />
-                <div>/ 100</div>
-            </div>
-            <div className={styles.postRatingModalButton}
-                onClick={() => addRating()}>
-                Add rating
-            </div>
+            {isLoggedIn && !alreadyRatedByUser &&
+                <>
+                    <div className={styles.inputWrapper}>
+                        <input className={`${styles.input} ${newRatingError && styles.error}`}
+                            value={newRating} type="text"
+                            onChange={(e) => { setNewRating(e.target.value); setNewRatingError(false) }}
+                        />
+                        <div>/ 100</div>
+                    </div>
+                    <div className='wecoButton' style={{height: 30}} onClick={() => { addRating() }}>Add</div>
+                </>
+            }
+            {isLoggedIn && alreadyRatedByUser && <div className='wecoButton' style={{height: 30}} onClick={() => { removeRating() }}>Remove</div>}
         </div>
     )
 }

@@ -11,8 +11,6 @@ function PostCardUrlPreview(props) {
         urlDescription
     } = props
 
-    console.log('props: ', props)
-
     return (
         <>
             {(urlImage !== null || urlDomain !== null || urlTitle !== null || urlDescription !== null) &&

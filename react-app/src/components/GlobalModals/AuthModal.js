@@ -127,7 +127,7 @@ function AuthModal() {
                     <form className={styles.authModalForm} onSubmit={ register }>
                         <input
                             className={`wecoInput mb-10 ${newHandleError && 'error'}`}
-                            placeholder='Unique handle'
+                            placeholder='Handle (must be unique)'
                             type="text" value={newHandle}
                             onChange={(e) => { setNewHandle(e.target.value); setNewHandleError(false) }}
                         />

@@ -15,7 +15,7 @@ function HolonPagePostsFilters() {
         <div className='wecoFilters'>
             <DropDownMenu
                 title='Sort By'
-                options={['Date', 'Comments', 'Reactions', 'Likes', 'Hearts', 'Ratings', 'Links']}
+                options={['Date', 'Comments', 'Reactions', 'Likes', 'Ratings']}
                 selectedOption={holonPostSortByFilter}
                 setSelectedOption={setHolonPostSortByFilter}
             />

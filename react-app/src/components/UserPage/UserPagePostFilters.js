@@ -26,7 +26,7 @@ function UserPagePostFilters() {
             />
             <DropDownMenu
                 title='Sort By'
-                options={['Comments', 'Date', 'Reactions', 'Likes', 'Hearts', 'Ratings', 'Links']}
+                options={['Comments', 'Date', 'Reactions', 'Likes', 'Ratings']}
                 selectedOption={createdPostSortByFilter}
                 setSelectedOption={setCreatedPostSortByFilter}
             />

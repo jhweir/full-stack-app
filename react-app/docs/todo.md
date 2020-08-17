@@ -1,6 +1,11 @@
 # Todos
 Last updated: 17-08-2020
 
++ Add basic mod controls
+    + name change
+    + handle change
+    + delete space
+    + location chnage
 + add 'no comments with those settings' placeholder on post page
 + reposition drop-downs and remove 'hearts'
 
@@ -9,13 +14,12 @@ Last updated: 17-08-2020
 - User to user messages
 - Add holon Id to comments when created
 - Add clickoutside approach from drop down menu to other modals
-- Add basic mod controls (image upload, name change, handle change)
 - show all posts vs direct posts ('post holons' / 'visible handles') ('all contained' vs. 'posted directly to space')
 - getHolonPosts run from sidebar buttons but not getHolonData (best approach?)
 - Create links between posts
 - Include interests and location on register form
 - Set up social media log-in strategies
-- Multiple choice polls should spread value by number of selected answers (i.e 1 vote = 100 points, 3 votes = 3 * 33.3 points)
+- Multiple choice polls should spread value by number of selected answers (i.e 1 vote = 100 points, 3 votes = 3 * 33.3 points) ?
 - Set up user profiles
     - [x] about page
     - [x] created posts page

@@ -11,14 +11,16 @@ function PostCardReactionModal(props) {
         id,
         totalReactions, setTotalReactions,
         totalLikes, setTotalLikes,
-        totalHearts, setTotalHearts,
+        // totalHearts, setTotalHearts,
         totalRatings, setTotalRatings,
         totalRatingPoints, setTotalRatingPoints,
         accountLike, setAccountLike,
-        accountHeart, setAccountHeart,
+        // accountHeart, setAccountHeart,
         accountRating, setAccountRating,
-        setReactionModalOpen
+        // setReactionModalOpen
     } = props
+
+    console.log('accountRating', accountRating)
 
     const { isLoggedIn, accountData, setAlertMessage, setAlertModalOpen } = useContext(AccountContext)
     const { holonData, getHolonPosts } = useContext(HolonContext)
@@ -27,10 +29,7 @@ function PostCardReactionModal(props) {
     const [newRating, setNewRating] = useState('')
     const [newRatingError, setNewRatingError] = useState(false)
 
-    function totalRatingScore() {
-        if (totalRatings) { return (totalRatingPoints / totalRatings).toFixed(2) + '%' }
-        else { return 'N/A' }
-    }
+
 
     function addLike() {
         if (!isLoggedIn) { setAlertMessage('Log in to like post'); setAlertModalOpen(true) }
@@ -54,102 +53,65 @@ function PostCardReactionModal(props) {
         }
     }
 
-    function addHeart() {
-        if (!isLoggedIn) { setAlertMessage('Log in to heart post'); setAlertModalOpen(true) }
-        else {
-            if (accountHeart !== 0) {
-                setTotalHearts(totalHearts - 1)
-                setTotalReactions(totalReactions - 1)
-                setAccountHeart(0)
-                axios.put(config.environmentURL + '/remove-heart', { accountId: accountData.id, postId: id })
-                    .catch(error => { console.log(error) })
-            }
-            else {
-                setTotalHearts(totalHearts + 1)
-                setTotalReactions(totalReactions + 1)
-                setAccountHeart(accountHeart + 1)
-                axios.put(config.environmentURL + '/add-heart', { accountId: accountData.id, postId: id, holonId: holonData.id })
-                    .catch(error => { console.log(error) })
-            }
-        }
-    }
-
     function addRating() {
+        console.log('addRating')
         if (!isLoggedIn) { setAlertMessage('Log in to add rating'); setAlertModalOpen(true) }
         else {
-            if (accountRating !== 0) {
-                let n = newRating
-                let invalidRating = isNaN(n) || n === '' || n > 100 || n < 0
-                if (invalidRating) { setNewRatingError(true) }
-                else {
-                    axios.put(config.environmentURL + '/update-rating', { accountId: accountData.id, postId: id, holonId: holonData.id, newRating })
-                        .then(() => { setNewRating(''); getHolonPosts() })
-                        .catch(error => { console.log(error) })
-                }
-            }
+            const invalidRating = isNaN(newRating) || newRating === '' || newRating > 100 || newRating < 0
+            if (invalidRating) { setNewRatingError(true) }
             else {
-                const invalidRating = isNaN(newRating) || newRating === '' || newRating > 100 || newRating < 0
-                if (invalidRating) { setNewRatingError(true) }
-                else {
-                    console.log('creating new rating')
-                    setTotalRatings(totalRatings + 1)
-                    setTotalReactions(totalReactions + 1)
-                    setTotalRatingPoints(totalRatingPoints + parseInt(newRating, 10))
-                    setAccountRating(accountRating + 1)
-                    axios.put(config.environmentURL + '/add-rating', { accountId: accountData.id, postId: id, holonId: holonData.id, newRating })
-                        .then(setNewRating(''))
-                        .catch(error => { console.log(error) })
-                }
+                setTotalRatings(totalRatings + 1)
+                setTotalReactions(totalReactions + 1)
+                setTotalRatingPoints(totalRatingPoints + parseInt(newRating, 10))
+                setAccountRating(accountRating + 1)
+                axios.put(config.environmentURL + '/add-rating', { accountId: accountData.id, postId: id, holonId: holonData.id, newRating })
+                    .then(setNewRating(''))
+                    .catch(error => { console.log(error) })
             }
         }
     }
 
-    const ref = useRef()
-    function handleClickOutside(e) { if (!ref.current.contains(e.target)) { setReactionModalOpen(false) } }
-    useEffect(() => {
-        document.addEventListener("mousedown", handleClickOutside)
-        return () => document.removeEventListener("mousedown", handleClickOutside)
-    })
+    function removeRating() {
+        console.log('removeRating')
+        if (!isLoggedIn) { setAlertMessage('Log in to add rating'); setAlertModalOpen(true) }
+        else {
+            setTotalRatings(totalRatings - 1)
+            setTotalReactions(totalReactions - 1)
+            setAccountRating(0)
+            axios.put(config.environmentURL + '/remove-rating', { accountId: accountData.id, postId: id, holonId: holonData.id })
+                .then(() => { getHolonPosts() })
+                .catch(error => { console.log(error) })
+        }
+    }
 
     return (
-        <div ref={ref} className={styles.postReactionModal}>
-            <img className={styles.postReactionModalCloseButton}
-                src="/icons/close-01.svg" alt=''
-                onClick={() => setReactionModalOpen(false)}
-            />
-
-            <div className={styles.postReactionModalItem} onClick={() => addLike()}>
+        <div className={styles.postReactionModal}>
+            <div className={styles.item} onClick={() => addLike()}>
                 <img
-                    className={`${styles.postIcon} ${accountLike !== 0 && styles.selectedOrange}`}
+                    className={`${styles.postIcon} ${accountLike !== 0 && styles.selected}`}
                     src="/icons/thumbs-up-solid.svg" alt=''
                 />
                 <div>{totalLikes} Likes</div>
             </div>
-
-            <div className={styles.postReactionModalItem} onClick={() => addHeart()}>
+            <div className={styles.item} onClick={() => setRatingModalOpen(!ratingModalOpen)}>
                 <img
-                    className={`${styles.postIcon} ${accountHeart !== 0 && styles.selectedOrange}`}
-                    src="/icons/heart-solid.svg" alt=''
-                />
-                <div>{totalHearts} Hearts</div>
-            </div>
-
-            <div className={styles.postReactionModalItem} onClick={() => setRatingModalOpen(!ratingModalOpen)}>
-                <img
-                    className={`${styles.postIcon} ${accountRating !== 0 && styles.selectedOrange}`}
+                    className={`${styles.postIcon} ${accountRating !== 0 && styles.selected}`}
                     src="/icons/star-solid.svg" alt=''
                 />
                 <div>{totalRatings} Ratings</div>
             </div>
-
             {ratingModalOpen &&
                 <PostCardRatingModal
-                    totalRatingScore={totalRatingScore}
+                    isLoggedIn={isLoggedIn}
+                    totalRatings={totalRatings}
+                    totalRatingPoints={totalRatingPoints}
                     newRating={newRating}
                     newRatingError={newRatingError}
                     setNewRating={setNewRating}
                     setNewRatingError={setNewRatingError}
                     addRating={addRating}
+                    removeRating={removeRating}
+                    accountRating={accountRating}
                 />
             }
         </div>
@@ -157,3 +119,72 @@ function PostCardReactionModal(props) {
 }
 
 export default PostCardReactionModal
+
+// function addHeart() {
+//     if (!isLoggedIn) { setAlertMessage('Log in to heart post'); setAlertModalOpen(true) }
+//     else {
+//         if (accountHeart !== 0) {
+//             setTotalHearts(totalHearts - 1)
+//             setTotalReactions(totalReactions - 1)
+//             setAccountHeart(0)
+//             axios.put(config.environmentURL + '/remove-heart', { accountId: accountData.id, postId: id })
+//                 .catch(error => { console.log(error) })
+//         }
+//         else {
+//             setTotalHearts(totalHearts + 1)
+//             setTotalReactions(totalReactions + 1)
+//             setAccountHeart(accountHeart + 1)
+//             axios.put(config.environmentURL + '/add-heart', { accountId: accountData.id, postId: id, holonId: holonData.id })
+//                 .catch(error => { console.log(error) })
+//         }
+//     }
+// }
+
+    // function addRating() {
+    //     if (!isLoggedIn) { setAlertMessage('Log in to add rating'); setAlertModalOpen(true) }
+    //     else {
+    //         if (accountRating !== 0) { // If already rated by user
+    //             let n = newRating
+    //             let invalidRating = isNaN(n) || n === '' || n > 100 || n < 0
+    //             if (invalidRating) { setNewRatingError(true) }
+    //             else {
+    //                 axios.put(config.environmentURL + '/update-rating', { accountId: accountData.id, postId: id, holonId: holonData.id, newRating })
+    //                     .then(() => { setNewRating(''); getHolonPosts() })
+    //                     .catch(error => { console.log(error) })
+    //             }
+    //         }
+    //         else { // if not already rated by user
+    //             const invalidRating = isNaN(newRating) || newRating === '' || newRating > 100 || newRating < 0
+    //             if (invalidRating) { setNewRatingError(true) }
+    //             else {
+    //                 setTotalRatings(totalRatings + 1)
+    //                 setTotalReactions(totalReactions + 1)
+    //                 setTotalRatingPoints(totalRatingPoints + parseInt(newRating, 10))
+    //                 setAccountRating(accountRating + 1)
+    //                 axios.put(config.environmentURL + '/add-rating', { accountId: accountData.id, postId: id, holonId: holonData.id, newRating })
+    //                     .then(setNewRating(''))
+    //                     .catch(error => { console.log(error) })
+    //             }
+    //         }
+    //     }
+    // }
+
+    // const ref = useRef()
+    // function handleClickOutside(e) { if (!ref.current.contains(e.target)) { setReactionModalOpen(false) } }
+    // useEffect(() => {
+    //     document.addEventListener("mousedown", handleClickOutside)
+    //     return () => document.removeEventListener("mousedown", handleClickOutside)
+    // }) ref={ref}
+
+    {/* <div className={styles.item} onClick={() => addHeart()}>
+    <img
+        className={`${styles.postIcon} ${accountHeart !== 0 && styles.selected}`}
+        src="/icons/heart-solid.svg" alt=''
+    />
+    <div>{totalHearts} Hearts</div>
+</div> */}
+
+            {/* <img className={styles.closeButton}
+    src="/icons/close-01.svg" alt=''
+    onClick={() => setReactionModalOpen(false)}
+/> */}
