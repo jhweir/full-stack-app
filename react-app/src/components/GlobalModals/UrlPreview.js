@@ -8,7 +8,8 @@ function UrlPreview(props) {
         urlImage,
         urlDomain,
         urlTitle,
-        urlDescription
+        urlDescription,
+        urlFlashMessage
     } = props
 
     return (
@@ -19,7 +20,13 @@ function UrlPreview(props) {
                 </div>
             }
 
-            {(urlImage !== '' || urlDomain !== '' || urlTitle !== '' || urlDescription !== '') && !urlLoading &&
+            {urlFlashMessage !== '' &&
+                <div className={styles.container}>
+                    <div className={styles.flashMessage}>{urlFlashMessage}</div>
+                </div>
+            }
+
+            {(urlImage !== null || urlDomain !== null || urlTitle !== null || urlDescription !== null) && !urlLoading &&
                 <div className={styles.container}>
                     <img className={styles.image} src={urlImage}/>
                     <div className={styles.text}>

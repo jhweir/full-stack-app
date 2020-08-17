@@ -21,7 +21,7 @@ const PollAnswer = require('../models').PollAnswer
 
 //const postAttributes = (userId) => [
 const postAttributes = [
-    'id', 'type', 'subType', 'state', 'text', 'url', 'createdAt',
+    'id', 'type', 'subType', 'state', 'text', 'url', 'urlImage', 'urlDomain', 'urlTitle', 'urlDescription', 'createdAt',
     [sequelize.literal(
         `(SELECT COUNT(*) FROM Comments AS Comment WHERE Comment.state = 'visible' AND Comment.postId = Post.id)`
         ),'total_comments'
@@ -91,7 +91,7 @@ router.get('/holon-data', (req, res) => {
 
 router.get('/holon-posts', (req, res) => {
     const { accountId, handle, timeRange, postType, sortBy, sortOrder, depth, searchQuery, limit, offset } = req.query
-    // console.log('req.query: ', req.query)
+    console.log('req.query: ', req.query)
 
     function findStartDate() {
         let offset = undefined
@@ -107,7 +107,7 @@ router.get('/holon-posts', (req, res) => {
 
     function findType() {
         let type
-        if (postType === 'All Types') { type = ['text', 'poll'] }
+        if (postType === 'All Types') { type = ['text', 'poll', 'url'] }
         if (postType !== 'All Types') { type = postType.toLowerCase() }
         return type
     }
@@ -155,8 +155,11 @@ router.get('/holon-posts', (req, res) => {
                 state: 'visible',
                 createdAt: { [Op.between]: [startDate, Date.now()] },
                 type,
-                text: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` }
-            } 
+                [Op.or]: [
+                    { text: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } },
+                    { text: null }
+                ]
+            }
         }
         if (depth === 'Only Direct Posts To Space') {
             where =
@@ -167,8 +170,8 @@ router.get('/holon-posts', (req, res) => {
                 type,
                 text: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` }
                 // [Op.or]: [
-                //     { title: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } },
-                //     { description: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } }
+                //     { text: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } },
+                //     { text: null }
                 // ]
             }
         }
@@ -810,7 +813,7 @@ router.get('/user-posts', (req, res) => {
 
     function findType() {
         let type
-        if (postType === 'All Types') { type = ['text', 'poll'] }
+        if (postType === 'All Types') { type = ['text', 'poll', 'url'] }
         if (postType !== 'All Types') { type = postType.toLowerCase() }
         return type
     }
@@ -895,11 +898,10 @@ router.get('/user-posts', (req, res) => {
             state: 'visible',
             createdAt: { [Op.between]: [startDate, Date.now()] },
             type,
-            text: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` }
-            // [Op.or]: [
-            //     { title: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } },
-            //     { description: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } }
-            // ]
+            [Op.or]: [
+                { text: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } },
+                { text: null }
+            ]
         },
         order,
         limit: Number(limit),
@@ -1176,7 +1178,20 @@ router.post('/create-holon', (req, res) => {
 })
 
 router.post('/create-post', (req, res) => {
-    const { type, subType, state, creatorId, text, url, holonHandles, pollAnswers } = req.body.post
+    const {
+        type,
+        subType,
+        state,
+        creatorId,
+        text,
+        url,
+        urlImage,
+        urlDomain,
+        urlTitle,
+        urlDescription,
+        holonHandles,
+        pollAnswers
+    } = req.body.post
     let holonIds = []
 
     async function asyncForEach(array, callback) {
@@ -1214,7 +1229,17 @@ router.post('/create-post', (req, res) => {
 
     // Create the post and all of its assosiated content
     Post.create({
-        type, subType, state, creatorId, text, url, state: 'visible'
+        type,
+        subType,
+        state,
+        creatorId,
+        text,
+        url,
+        urlImage,
+        urlDomain,
+        urlTitle,
+        urlDescription,
+        state: 'visible'
     })
     .then(post => {
         createNewPostHolons(post)
@@ -1377,17 +1402,9 @@ router.post('/scrape-url', async (req, res) => {
     try {
         const previewData = await linkPreviewGenerator(url)
         res.send(previewData)
-      } catch(err) {
-        res.send('failed')
-      }
-    // const previewData = await linkPreviewGenerator(url)
-    // console.log('previewData: ', previewData)
-    // previewData
-    //     //.then(res.send(previewData))
-    //     .catch(err => console.log('test error: ', err))
-    //if (previewData) { console.log(previewData) }
-    //else { console.log('failed') }
-    // res.send(previewData)
+    } catch(err) {
+        res.send(err.toString())
+    }
 })
 
 module.exports = router

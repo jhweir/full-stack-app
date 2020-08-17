@@ -33,7 +33,7 @@ function HolonPagePostsFilters() {
             />
             <DropDownMenu
                 title='Post Type'
-                options={['All Types', 'Text', 'Poll']}
+                options={['All Types', 'Text', 'Poll', 'Url']}
                 selectedOption={holonPostTypeFilter}
                 setSelectedOption={setHolonPostTypeFilter}
             />

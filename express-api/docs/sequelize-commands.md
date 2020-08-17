@@ -11,6 +11,9 @@ Migrate all models to tables in the database
 Remove all migrated tables from the database
 `npx sequelize-cli db:migrate:undo:all`
 
+Create new migration skeleton for table changes
+`npx sequelize-cli migration:generate --name migration-skeleton2`
+
 Seed all demo content into the database
 `npx sequelize-cli db:seed:all`
 

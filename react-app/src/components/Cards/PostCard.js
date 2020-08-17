@@ -9,6 +9,7 @@ import { UserContext } from '../../contexts/UserContext'
 import { PostContext } from '../../contexts/PostContext'
 import styles from '../../styles/components/PostCard.module.scss'
 import PostCardReactionModal from './PostCardReactionModal'
+import PostCardUrlPreview from './../Cards/PostCardUrlPreview'
 
 function PostCard(props) {
     const { postData, index, location } = props
@@ -20,7 +21,7 @@ function PostCard(props) {
 
     // remote post state
     const { 
-        id, creator, text, url, createdAt, spaces,
+        id, creator, text, url, urlImage, urlDomain, urlTitle, urlDescription, createdAt, spaces,
         total_comments, total_reactions, total_likes, total_hearts, total_ratings, total_rating_points,
         account_like, account_heart, account_rating
     } = postData
@@ -39,6 +40,7 @@ function PostCard(props) {
     const [reactionModalOpen, setReactionModalOpen] = useState(false)
     const finishedLoading = location !== 'post-page' || !postContextLoading
     const isOwnPost = finishedLoading && accountData.name === creator.name
+    const showLinkPreview = (urlImage !== null || urlDomain !== null || urlTitle !== null || urlDescription !== null)
 
     function syncPostState() {
         setTotalComments(total_comments)
@@ -107,9 +109,15 @@ function PostCard(props) {
                         <span className={styles.subText}>{formatDate() || 'no date'}</span>
                     </div>
                     <div className={styles.content}>
-                        {url 
-                            ? <a href={url} className={styles.text}>{ text }</a>
-                            : <Link to={`/p/${id}`} className={styles.text}>{ text }</Link>
+                        {text !== null && <div className={styles.text}>{text}</div>}
+                        {showLinkPreview &&
+                            <PostCardUrlPreview
+                                url={url}
+                                urlImage={urlImage}
+                                urlDomain={urlDomain}
+                                urlTitle={urlTitle}
+                                urlDescription={urlDescription}
+                            />
                         }
                         <div className={styles.interact}>
                             <div className={styles.interactItem} onClick={() => setReactionModalOpen(true)}>

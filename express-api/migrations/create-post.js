@@ -26,7 +26,16 @@ module.exports = {
       url: {
         type: Sequelize.TEXT
       },
-      imagePath: {
+      urlImage: {
+        type: Sequelize.TEXT
+      },
+      urlDomain: {
+        type: Sequelize.TEXT
+      },
+      urlTitle: {
+        type: Sequelize.TEXT
+      },
+      urlDescription: {
         type: Sequelize.TEXT
       },
       createdAt: {

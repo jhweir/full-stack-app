@@ -20,7 +20,7 @@ function UserPagePostFilters() {
             />
             <DropDownMenu
                 title='Post Type'
-                options={['All Types', 'Text', 'Poll', 'Task']}
+                options={['All Types', 'Text', 'Poll', 'Url']}
                 selectedOption={createdPostTypeFilter}
                 setSelectedOption={setCreatedPostTypeFilter}
             />

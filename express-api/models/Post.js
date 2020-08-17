@@ -7,7 +7,10 @@ module.exports = (sequelize, DataTypes) => {
     creatorId: DataTypes.INTEGER,
     text: DataTypes.TEXT,
     url: DataTypes.TEXT,
-    imagePath: DataTypes.TEXT
+    urlImage: DataTypes.TEXT,
+    urlDomain: DataTypes.TEXT,
+    urlTitle: DataTypes.TEXT,
+    urlDescription: DataTypes.TEXT
   }, {})
   Post.associate = function(models) {
     // why not 'belongsTo' like Comment.belongsTo(models.Post, ?

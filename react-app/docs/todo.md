@@ -1,9 +1,7 @@
 # Todos
-Last updated: 10-08-2020
+Last updated: 17-08-2020
 
-+ build scraper for url posts
 + add 'no comments with those settings' placeholder on post page
-+ bug: after new log-in, going to profile page fails and user has to refresh page
 + reposition drop-downs and remove 'hearts'
 
 - Set up comment replies
@@ -85,3 +83,5 @@ Last updated: 10-08-2020
 - Change 'isPostPage' prop to 'location' prop ('holon-posts', 'post-page', 'user-created-posts')
 - Set up infinite scroll on comments
 - Set up reset filter functions for holon and user contexts
+- bug: after new log-in, going to profile page fails and user has to refresh page
+- build scraper for url posts
