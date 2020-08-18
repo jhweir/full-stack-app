@@ -72,7 +72,7 @@ function CreateHolonModal() {
                         onChange={(e) => { setDescription(e.target.value); setDescriptionError(false); setFlashMessage('') }}
                     />
                     <span className={styles.text}>You will be the default moderator. Navigate to the space while logged in to this account to access its settings.</span>
-                    <button className="wecoButton">Create Holon</button>
+                    <button className="wecoButton">Create Space</button>
                 </form>
             </div>
         </div>

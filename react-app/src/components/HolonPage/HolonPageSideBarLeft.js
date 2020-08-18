@@ -25,7 +25,7 @@ function HolonPageSideBarLeft() {
         }
     }
 
-    if (holonData) { 
+    if (holonData) {
         return (
             <div className={styles.sideBarLeft}>
                 <FlagImage

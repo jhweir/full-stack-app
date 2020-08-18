@@ -1429,33 +1429,36 @@ router.post('/update-holon-setting', (req, res) => {
         User.findOne({ where: { handle: newValue } })
             .then(user => {
                 if (user) {
-                    HolonUser
-                        .create({
-                            relationship: 'moderator',
-                            state: 'active',
-                            holonId,
-                            userId: user.id
-                        })
-                        .then(res.send('success'))
+                    HolonUser.create({
+                        relationship: 'moderator',
+                        state: 'active',
+                        holonId,
+                        userId: user.id
+                    })
+                    .then(res.send('success'))
                 }
                 else { res.send('No user with that handle') }
             })
     }
     if (setting === 'add-parent-space') {
+        // check parent space exists and grab its holonHandles
         Holon.findOne({
             where: { handle: newValue },
             include: [{ model: Holon, as: 'HolonHandles' }]
         })
         .then(holon => {
             if (holon) {
+                // if it exists, create new VHR between the moderated space and the new parent space (A is a direct parent of B)
                 VerticalHolonRelationship.create({
                     state: 'open',
                     holonAId: holon.id,
                     holonBId: holonId,
                 })
                 .then(() => {
+                    // TODO: need to add handles to all effected child spaces (all child-spaces of moderated space)
+                    // then add all of the parent spaces handles to the child space (post to A appear within B)
                     holon.HolonHandles.forEach((handle) => {
-                        HolonHandle.create({ //post to holon A appear with B
+                        HolonHandle.create({
                             state: 'open',
                             holonAId: holonId,
                             holonBId: handle.id,
@@ -1468,12 +1471,14 @@ router.post('/update-holon-setting', (req, res) => {
         })
     }
     if (setting === 'remove-parent-space') {
+        // check parent space exists
         Holon.findOne({
             where: { handle: newValue },
             include: [{ model: Holon, as: 'HolonHandles' }]
         })
         .then(holon => {
             if (holon) {
+                // if it exists, find all its own parent spaces
                 VerticalHolonRelationship.findAll({
                     where: { holonBId: holon.id }
                 })

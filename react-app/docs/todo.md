@@ -1,41 +1,38 @@
 # Todos
-Last updated: 17-08-2020
+Last updated: 18-08-2020
 
-+ Add basic mod controls
-    + name change
-    + handle change
++ Add mod controls
+    + remove parent space
+    + remove child space
     + delete space
-    + location chnage
++ show all posts vs direct posts ('post holons' / 'visible handles') ('all contained' vs. 'posted directly to space')
 
+- Protect restircted pages and routes (settings page, image uploads etc.)
 - Set up comment replies
 - Notifications
 - User to user messages
 - Add holon Id to comments when created
 - Add clickoutside approach from drop down menu to other modals
-- show all posts vs direct posts ('post holons' / 'visible handles') ('all contained' vs. 'posted directly to space')
 - getHolonPosts run from sidebar buttons but not getHolonData (best approach?)
 - Create links between posts
 - Include interests and location on register form
 - Set up social media log-in strategies
 - Multiple choice polls should spread value by number of selected answers (i.e 1 vote = 100 points, 3 votes = 3 * 33.3 points) ?
-- Set up user profiles
-    - [x] about page
-    - [x] created posts page
-    - [ ] settings page
-    - [ ] liked posts page
-    - [ ] notifications
-    - [ ] messages
+- User profiles
+    - Settings
+    - Liked posts
+    - Notifications
+    - Messages
 - set up JWT refresh token (https://www.youtube.com/watch?v=iD49_NIQ-R4&t=9s)
 - Re-consider layout/approach used for pie chart and time graph components
 - Set up 'visible holons' on post (vs. all included holons)
 - Set up verification/welcome emails
 - Add privacy setting to labels (public, anonymous etc.)
 - create expandable comments
-- Holon visualisations
+- Holon, post, and user visualisations
     - Bubble map
     - Radial tree
     - Expandable tree
-- Url scrapping
 - Location map
 
 # Bugs
@@ -71,6 +68,9 @@ Last updated: 17-08-2020
 - Take down remaining EC2-ELB services on AWS
 - Reorganise component folder structure
 - Fix context flow
+- User profiles
+    - about
+    - posts
 - work out best approach to paginate posts with filters
     - Time range (All Time, Last Year, Last Month, Last Week, Last 24 hours, Last Hour)
     - Post type (Text, Poll, ...)
@@ -86,6 +86,11 @@ Last updated: 17-08-2020
 - Set up infinite scroll on comments
 - Set up reset filter functions for holon and user contexts
 - bug: after new log-in, going to profile page fails and user has to refresh page
-- build scraper for url posts
+- build scraper for Url posts
 - reposition post-reactions and remove 'hearts'
 - add 'no comments with those settings' placeholder on post page
+- Add mod controls
+    - handle change
+    - name change
+    - add new mod
+    - add new parent space

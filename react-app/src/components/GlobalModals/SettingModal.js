@@ -7,8 +7,8 @@ import { HolonContext } from '../../contexts/HolonContext'
 import styles from '../../styles/components/SettingModal.module.scss'
 
 function SettingModal() {
-    const { settingModalType, setSettingModalOpen } = useContext(AccountContext)
-    const { holonData, getHolonData } = useContext(HolonContext)
+    const { settingModalType, setSettingModalOpen, getAccountData } = useContext(AccountContext)
+    const { holonData, getHolonData, setHolonHandle } = useContext(HolonContext)
     const [newValue, setNewValue] = useState('')
     const [error, setError] = useState(false)
     const [errorMessage, setErrorMessage] = useState('')
@@ -56,12 +56,21 @@ function SettingModal() {
         if (invalidValue) { setError(true) }
         else {
             if (settingModalType === 'change-holon-handle') {
-                const post = axios.post(config.environmentURL + '/update-holon-setting', { holonId: holonData.id, setting: settingModalType, newValue })
-                const redirect = history.push(`/s/${newValue}`)
-                new Promise.all([post]).then(redirect)
+                axios
+                    .post(config.environmentURL + '/update-holon-setting', { holonId: holonData.id, setting: settingModalType, newValue })
+                    .then(getAccountData())
+                    //.then(setTimeout(() => { getAccountData() }, 500))
+                    .then(() => {
+                        history.push(`/s/${newValue}/settings`)
+                        setHolonHandle(newValue)
+                        setSettingModalOpen(false)
+                    })
+                    //.then(getAccountData())
+                    // .then(setTimeout(() => { getHolonData() }, 500))
             }
             else {
-                axios.post(config.environmentURL + '/update-holon-setting', { holonId: holonData.id, setting: settingModalType, newValue })
+                axios
+                    .post(config.environmentURL + '/update-holon-setting', { holonId: holonData.id, setting: settingModalType, newValue })
                     .then(res => {
                         if (res.data !== 'success') { 
                             setError(true)

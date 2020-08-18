@@ -27,7 +27,10 @@ function HolonPageSpaces() {
     }, [holonContextLoading, holonSpaceSearchFilter, holonSpaceTimeRangeFilter, holonSpaceSortByFilter, holonSpaceSortOrderFilter, holonSpaceDepthFilter])
 
     useEffect(() => {
-        if (pageBottomReached && !holonContextLoading && holonData.id) { getNextHolonSpaces() }
+        if (pageBottomReached && !holonContextLoading && holonData.id) {
+            console.log('HolonPageSpaces: pageBottomReached')
+            getNextHolonSpaces()
+        }
     }, [pageBottomReached])
 
     function openCreateSpaceModal() {

@@ -8,12 +8,14 @@ export const HolonContext = createContext()
 function HolonContextProvider({ children }) {
     const { accountContextLoading, accountData, getAccountData, isLoggedIn } = useContext(AccountContext)
 
-    const [holonContextLoading, setHolonContextLoading] = useState(true)
     const [holonHandle, setHolonHandle] = useState('')
     const [holonData, setHolonData] = useState({ DirectChildHolons: [], DirectParentHolons: [], HolonHandles: [] })
     const [isFollowing, setIsFollowing] = useState(false)
     const [isModerator, setIsModerator] = useState(false)
     const [selectedHolonSubPage, setSelectedHolonSubPage] = useState('')
+
+    // TODO: split holonContextLoading into holonDataLoading, holonPostsLoading, holonSpacesLoading, holonUsersLoading
+    const [holonContextLoading, setHolonContextLoading] = useState(true)
 
     const [holonPosts, setHolonPosts] = useState([])
     const [holonPostFiltersOpen, setHolonPostFiltersOpen] = useState(false)
@@ -122,7 +124,7 @@ function HolonContextProvider({ children }) {
     }
 
     function getNextHolonSpaces() {
-        if (holonSpacePaginationHasMore) {
+        if (holonSpacePaginationOffset > 0 && holonSpacePaginationHasMore) {
             console.log(`HolonContext: getNextHolonSpaces (${holonSpacePaginationOffset} to ${holonSpacePaginationOffset + holonSpacePaginationLimit})`)
             axios.get(config.environmentURL + 
                 `/holon-spaces?accountId=${isLoggedIn ? accountData.id : null
@@ -226,17 +228,20 @@ function HolonContextProvider({ children }) {
         setHolonUserPaginationHasMore(true)
     }
 
-    useEffect(() => {
+    useEffect(() => { //TODO: move to useEffect below?
         resetHolonPostFilters()
         resetHolonSpaceFilters()
         resetHolonUserFilters()
     }, [holonHandle])
 
     useEffect(() => {
-        if (!accountContextLoading) { getHolonData() }
+        if (!accountContextLoading) {
+            console.log('HolonContext: holonHandle set')
+            getHolonData()
+        }
     }, [holonHandle, accountData.id])
 
-    useEffect(() => {
+    useEffect(() => { //TODO: work out why 'isModerator' not always updating after handle change in Settings
         if (accountData && holonData) {
             let accountIsFollowing = accountData.FollowedHolons.some(holon => holon.handle === holonData.handle)
             let accountIsModerator = accountData.ModeratedHolons.some(holon => holon.handle === holonData.handle)
