@@ -1,9 +1,9 @@
 'use strict'
 module.exports = (sequelize, DataTypes) => {
   const PostHolon = sequelize.define('PostHolon', {
-    creator: DataTypes.STRING,
+    type: DataTypes.STRING,
     relationship: DataTypes.STRING,
-    localState: DataTypes.STRING,
+    creatorId: DataTypes.INTEGER,
     postId: DataTypes.INTEGER,
     holonId: DataTypes.INTEGER
   }, {})

@@ -1,11 +1,11 @@
 # Todos
 Last updated: 18-08-2020
 
++ Add loading states for each db call in contexts
 + Add mod controls
     + remove parent space
     + remove child space
     + delete space
-+ show all posts vs direct posts ('post holons' / 'visible handles') ('all contained' vs. 'posted directly to space')
 
 - Protect restircted pages and routes (settings page, image uploads etc.)
 - Set up comment replies
@@ -17,7 +17,7 @@ Last updated: 18-08-2020
 - Create links between posts
 - Include interests and location on register form
 - Set up social media log-in strategies
-- Multiple choice polls should spread value by number of selected answers (i.e 1 vote = 100 points, 3 votes = 3 * 33.3 points) ?
+- Multiple choice polls should spread value by number of selected answers? (i.e 1 vote = 100 points, 3 votes = 3 * 33.3 points)
 - User profiles
     - Settings
     - Liked posts
@@ -94,3 +94,4 @@ Last updated: 18-08-2020
     - name change
     - add new mod
     - add new parent space
+- Seperate 'direct' and 'indirect' handles when creating posts then set up option to show all posts vs direct posts

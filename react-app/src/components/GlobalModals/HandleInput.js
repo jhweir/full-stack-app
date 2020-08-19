@@ -5,7 +5,8 @@ import config from '../../Config'
 import styles from '../../styles/components/HandleInput.module.scss'
 
 function HandleInput(props) {
-    const { 
+    const {
+        holonData,
         holonHandles, setHolonHandles,
         newHandle, setNewHandle,
         suggestedHandlesOpen, setSuggestedHandlesOpen,
@@ -18,7 +19,9 @@ function HandleInput(props) {
     function getSuggestedHandles() {
         axios.get(config.environmentURL + `/suggested-holon-handles?searchQuery=${newHandle}`)
             .then(res => {
-                let handles = res.data.filter(handle => !holonHandles.includes(handle.handle) )
+                console.log('holonData.handle: ', holonData.handle)
+                console.log('res.data: ', res.data)
+                let handles = res.data.filter(handle => !holonHandles.includes(handle.handle)) // && handle.handle !== holonData.handle
                 setSuggestedHandles(handles)
             })
     }
@@ -43,8 +46,8 @@ function HandleInput(props) {
     }, [newHandle])
 
     return (
-        <div className={styles.HandleInput}>
-            <div className={styles.text}>Tag the spaces you want the post to appear in:</div>
+        <div className={styles.handleInput}>
+            <div className={styles.text}>Add other spaces you want the post to appear in:</div>
             <div className={styles.form}>
                 <input className={`wecoInput mr-10 ${newHandleError && 'error'}`} style={{width: 200}}
                     type="text" placeholder="Add spaces..." value={newHandle}
@@ -81,7 +84,9 @@ function HandleInput(props) {
                         {holonHandles.map((holonHandle, index) => 
                             <div className={styles.handle} key={index}>
                                 <div className={styles.handleText}>{ holonHandle }</div>
-                                <div className={styles.handleCloseIcon} onClick={() => removeHolonHandle(holonHandle)}></div>
+                                {holonHandle !== holonData.handle &&
+                                    <div className={styles.handleCloseIcon} onClick={() => removeHolonHandle(holonHandle)}></div>
+                                }
                             </div>
                         )}
                     </ul>

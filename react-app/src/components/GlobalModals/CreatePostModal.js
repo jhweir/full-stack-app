@@ -32,6 +32,8 @@ function CreatePostModal() {
     const [textError, setTextError] = useState(false)
     const [newHandleError, setNewHandleError] = useState(false)
     const [newPollAnswerError, setNewPollAnswerError] = useState(false)
+
+    // TODO: rename to specifiy flash message type (in contrast to 'urlFlashMessage')
     const [flashMessage, setflashMessage] = useState(false)
 
     function isValidUrl(string) {
@@ -125,7 +127,7 @@ function CreatePostModal() {
                     onClick={() => { setCreatePostModalOpen(false); resetForm() }}
                 />
                 <div className={styles.title}>
-                    Create a new post
+                    Create a new post in '{holonData.name}'
                 </div>
                 <div className={styles.dropDownOptions}>
                     <DropDownMenu
@@ -171,7 +173,8 @@ function CreatePostModal() {
                         urlDescription={urlDescription}
                         urlFlashMessage={urlFlashMessage}
                     />
-                    <HandleInput 
+                    <HandleInput
+                        holonData={holonData}
                         holonHandles={holonHandles}
                         setHolonHandles={setHolonHandles}
                         newHandle={newHandle}

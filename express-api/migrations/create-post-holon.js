@@ -8,14 +8,14 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      creator: {
+      type: {
         type: Sequelize.STRING
       },
       relationship: {
         type: Sequelize.STRING
       },
-      localState: {
-        type: Sequelize.STRING
+      creatorId: {
+        type: Sequelize.INTEGER
       },
       postId: {
         type: Sequelize.INTEGER
