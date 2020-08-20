@@ -1163,6 +1163,12 @@ router.post('/create-post', (req, res) => {
     let directHandleIds = []
     let indirectHandleIds = []
 
+    async function asyncForEach(array, callback) {
+        for (let index = 0; index < array.length; index++) {
+            await callback(array[index], index, array)
+        }
+    }
+
     function findDirectHandleIds() {
         Holon.findAll({
             where: { handle: holonHandles },
@@ -1171,12 +1177,6 @@ router.post('/create-post', (req, res) => {
         .then(holons => {
             directHandleIds.push(...holons.map(holon => holon.id))
         })
-    }
-
-    async function asyncForEach(array, callback) {
-        for (let index = 0; index < array.length; index++) {
-            await callback(array[index], index, array)
-        }
     }
 
     async function findIndirectHandleIds(handle) {
@@ -1188,6 +1188,7 @@ router.post('/create-post', (req, res) => {
             indirectHandleIds.push(...holon.HolonHandles.map(holon => holon.id))
         })
     }
+
     async function findHandleIds() {
         findDirectHandleIds()
         await asyncForEach(holonHandles, async(handle) => {
@@ -1197,16 +1198,13 @@ router.post('/create-post', (req, res) => {
         indirectHandleIds = [...new Set(indirectHandleIds)]
         // remove ids already included in direct handle ids from indirect handle ids
         indirectHandleIds = indirectHandleIds.filter(id => !directHandleIds.includes(id))
-
-        console.log('directHandleIds: ', directHandleIds)
-        console.log('indirectHandleIds: ', indirectHandleIds)
     }
 
     function createNewPostHolons(post) {
         directHandleIds.forEach(id => {
             PostHolon.create({
                 type: 'post',
-                relationship: 'direct', // 'indirect'
+                relationship: 'direct',
                 creatorId,
                 postId: post.id,
                 holonId: id
@@ -1215,7 +1213,7 @@ router.post('/create-post', (req, res) => {
         indirectHandleIds.forEach(id => {
             PostHolon.create({
                 type: 'post',
-                relationship: 'indirect', // 'indirect'
+                relationship: 'indirect',
                 creatorId,
                 postId: post.id,
                 holonId: id
@@ -1250,99 +1248,6 @@ router.post('/create-post', (req, res) => {
     }
 
     createPost()
-
-    // findHandleIds()
-
-
-
-            // create visible handles
-        // .then(holons => {
-        //     //console.log('holons: ', holons)
-        //     PostHolon.create({
-        //         relationship: 'direct',
-        //         //localState: 'visible',
-        //         postId: post.id,
-        //         holonId: id
-        //     })
-        // })
-
-    // // create visible handles
-    // function createVisibleHandles(post) {
-    //     holonHandles.forEach(id => PostHolon.create({
-    //         relationship: 'post',
-    //         localState: 'visible',
-    //         postId: post.id,
-    //         holonId: id
-    //     }))
-    // }
-
-    // async function asyncForEach(array, callback) {
-    //     for (let index = 0; index < array.length; index++) {
-    //         await callback(array[index], index, array)
-    //     }
-    // }
-
-    // async function findContainedHolonIds(handle) {
-    //     await Holon.findOne({
-    //         where: { handle: handle },
-    //         include: [{ model: Holon, as: 'HolonHandles', attributes: ['id'], through: { attributes: [] } }]
-    //     })
-    //     .then(holon => {
-    //         holonIds.push(...holon.HolonHandles.map(holon => holon.id))
-    //     })
-    // }
-
-    // // created contained handles
-    // async function createNewPostHolons(post) {
-    //     await asyncForEach(holonHandles, async(handle) => {
-    //         await findContainedHolonIds(handle)
-    //     })
-    //     let filteredHolonIds = Array.from(new Set(holonIds))
-    //     filteredHolonIds.forEach(id => PostHolon.create({
-    //         relationship: 'post',
-    //         localState: 'visible',
-    //         postId: post.id,
-    //         holonId: id
-    //     }))
-    // }
-
-    // function createNewPollAnswers(post) {
-    //     pollAnswers.forEach(answer => PollAnswer.create({ text: answer, postId: post.id }))
-    // }
-
-    // // Create the post and all of its assosiated content
-    // Post.create({
-    //     type,
-    //     subType,
-    //     state,
-    //     creatorId,
-    //     text,
-    //     url,
-    //     urlImage,
-    //     urlDomain,
-    //     urlTitle,
-    //     urlDescription,
-    //     state: 'visible'
-    // })
-    // .then(post => {
-    //     createNewPostHolons(post)
-    //     createNewPollAnswers(post)
-    // })
-    // .then(res.send('Post successfully created'))
-
-    // old:
-    // async function createNewPostHolons(post) {
-    //     await asyncForEach(holonHandles, async(handle) => {
-    //         await findIncludedHolonIds(handle)
-    //     })
-    //     let filteredHolonIds = Array.from(new Set(holonIds))
-    //     filteredHolonIds.forEach(id => PostHolon.create({
-    //         relationship: 'post',
-    //         localState: 'visible',
-    //         postId: post.id,
-    //         holonId: id
-    //     }))
-    // }
 })
 
 router.delete('/delete-post', (req, res) => {

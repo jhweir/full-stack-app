@@ -4,7 +4,9 @@ import { HolonContext } from '../../contexts/HolonContext'
 import styles from '../../styles/components/HolonPagePosts.module.scss'
 import PostCard from '../Cards/PostCard'
 import HolonPagePostsFilters from './HolonPagePostsFilters'
+import HolonPagePostViews from './HolonPagePostViews'
 import SearchBar from '../SearchBar'
+import HolonPostMap from './HolonPostMap'
 
 function HolonPagePosts() {
     const { 
@@ -16,11 +18,13 @@ function HolonPagePosts() {
     } = useContext(AccountContext)
 
     const {
+        //holonHandle,
         holonContextLoading, holonData,
         holonPosts, getHolonPosts, getNextHolonPosts,
         setSelectedHolonSubPage, holonPostPaginationOffset,
         holonPostSearchFilter,
         holonPostFiltersOpen, setHolonPostFiltersOpen,
+        holonPostViewsOpen, setHolonPostViewsOpen, holonPostViewLayout,
         holonPostTimeRangeFilter,
         holonPostTypeFilter,
         holonPostSortByFilter,
@@ -41,6 +45,7 @@ function HolonPagePosts() {
     useEffect(() => {
         if (!holonContextLoading && holonData) { getHolonPosts() }
     },[
+        //holonHandle,
         holonContextLoading,
         holonPostSearchFilter,
         holonPostTimeRangeFilter,
@@ -62,23 +67,31 @@ function HolonPagePosts() {
                     <button className='wecoButton mr-10' onClick={() => setHolonPostFiltersOpen(!holonPostFiltersOpen)}>
                         <img className='wecoButtonIcon' src='/icons/sliders-h-solid.svg'/>
                     </button>
+                    <button className='wecoButton mr-10' onClick={() => setHolonPostViewsOpen(!holonPostViewsOpen)}>
+                        View
+                        {/* <img className='wecoButtonIcon' src='/icons/eye-solid.svg'/> */}
+                    </button>
                     <button className='wecoButton mr-10' onClick={() => openCreatePostModal()}>
                         Create Post
                     </button>
                 </div>
                 {holonPostFiltersOpen && <HolonPagePostsFilters/>}
+                {holonPostViewsOpen && <HolonPagePostViews/>}
             </div>
-            {holonPosts.length > 0 &&
+            {holonPostViewLayout === 'List' && holonPosts.length > 0 &&
                 <ul className={`${styles.posts} ${holonContextLoading && styles.hidden}`}>
                     {holonPosts.map((post, index) =>
                         <PostCard postData={post} key={index} index={index} location='holon-posts'/>
                     )}
                 </ul>
             }
-            {holonPosts.length < 1 && holonPostPaginationOffset > 0 &&
+            {holonPostViewLayout === 'List' && holonPosts.length < 1 && holonPostPaginationOffset > 0 &&
                 <div className='wecoNoContentPlaceholder'>
                     No posts yet that match those settings...
                 </div>
+            }
+            {holonPostViewLayout === 'Map' &&
+                <HolonPostMap/>
             }
         </div>
     )

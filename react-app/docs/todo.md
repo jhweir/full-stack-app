@@ -1,12 +1,13 @@
 # Todos
 Last updated: 18-08-2020
 
-+ Add loading states for each db call in contexts
++ Add loading states for each db call in contexts, updated effected functions, and test load-order bugs
 + Add mod controls
     + remove parent space
     + remove child space
     + delete space
 
+- Set up social media log-in strategies
 - Protect restircted pages and routes (settings page, image uploads etc.)
 - Set up comment replies
 - Notifications
@@ -16,7 +17,6 @@ Last updated: 18-08-2020
 - getHolonPosts run from sidebar buttons but not getHolonData (best approach?)
 - Create links between posts
 - Include interests and location on register form
-- Set up social media log-in strategies
 - Multiple choice polls should spread value by number of selected answers? (i.e 1 vote = 100 points, 3 votes = 3 * 33.3 points)
 - User profiles
     - Settings

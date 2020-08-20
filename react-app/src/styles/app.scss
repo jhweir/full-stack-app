@@ -173,6 +173,8 @@ input {
     border-radius: 5px;
     background-color: $blueGrey;
     color: white;
+    // background-color: white;
+    // color: grey;
     font-size: 14px;
     font-weight: 800;
     padding: 0px 15px;
@@ -181,6 +183,7 @@ input {
     justify-content: center;
     align-items: center;
     box-shadow: 0 1px 10px 0 rgba(10, 8, 72, 0.1);
+    //border: 1px solid rgba(10, 8, 72, 0.1);
     border: none;
     transition-property: box-shadow, background-color, filter;
     transition-duration: 0.3s, 2s, 0.5s;

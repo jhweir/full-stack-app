@@ -13,7 +13,6 @@ function PollResultsTimeGraph() {
 
     const [pollVotes, setPollVotes] = useState([])
     const [bezierCurves, setBezierCurves] = useState(false)
-    //const [isMounted, setIsMounted] = useState(false)
 
     const width = 600
     const height = 350
@@ -24,17 +23,11 @@ function PollResultsTimeGraph() {
         .then(res => { setPollVotes(res.data) })
     }
 
-    //let isMounted = false
-
     useEffect(() => {
-        //setIsMounted(true)
-        //isMounted = true
-        //if(isMounted) {
         if (postData.id && !pollVotes.length) {
             getPollVotes()
             console.log('first useEffect run on TimeGraph comp')
         }
-        //return () => isMounted = false//setIsMounted(false)
     }, [])
 
     var pollVotesGroupedByAnswer = d3.nest()
@@ -44,25 +37,19 @@ function PollResultsTimeGraph() {
     pollVotesGroupedByAnswer.forEach(answer => {
         // create array of vote values (times each value by 100 to avoid JS decimal issues)
         var valuesArray = answer.values.map(votes => Number((votes.value * 100).toFixed(0)) )
-        //console.log('valuesArray:', valuesArray)
         // create array of accumulated vote values
         var accumulatedValuesArray = []
         valuesArray.reduce((a, b, i) => { return accumulatedValuesArray[i] = a + b }, 0)
-        //console.log('accumulatedValuesArray:', accumulatedValuesArray)
         // add accumulated values to votes
         answer.values.forEach((vote, i) => vote.accumulatedValue = accumulatedValuesArray[i])
         // add start and end values to vote arrays
-        //console.log('postData.createdAt', postData.createdAt)
         answer.values.unshift({ accumulatedValue: 0, parsedCreatedAt: Date.parse(new Date(postData.createdAt)) })
         answer.values.push({ accumulatedValue: accumulatedValuesArray[accumulatedValuesArray.length - 1], parsedCreatedAt: Date.parse(new Date) })
         // add total score to answer
         answer.total_score = answer.values[answer.values.length - 1].accumulatedValue
     })
 
-    pollVotesGroupedByAnswer.sort((a, b) => b.total_score - a.total_score) 
-
-    // console.log('pollVotes', pollVotes)
-    // console.log('pollVotesGroupedByAnswer', pollVotesGroupedByAnswer)
+    pollVotesGroupedByAnswer.sort((a, b) => b.total_score - a.total_score)
 
     // X-axis (horizontal) = time
     const minX = Date.parse(postData.createdAt)

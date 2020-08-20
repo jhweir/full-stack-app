@@ -39,7 +39,7 @@ function HolonPagePostsFilters() {
             />
             <DropDownMenu
                 title='Depth'
-                options={['All Contained Posts', 'Only Direct Posts']} // include 'Only Direct Posts To Space'
+                options={['All Contained Posts', 'Only Direct Posts']}
                 selectedOption={holonPostDepthFilter}
                 setSelectedOption={setHolonPostDepthFilter}
             />

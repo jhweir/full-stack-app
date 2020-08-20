@@ -28,6 +28,8 @@ function HolonContextProvider({ children }) {
     const [holonPostPaginationLimit, setHolonPostPaginationLimit] = useState(10)
     const [holonPostPaginationOffset, setHolonPostPaginationOffset] = useState(0)
     const [holonPostPaginationHasMore, setHolonPostPaginationHasMore] = useState(true)
+    const [holonPostViewsOpen, setHolonPostViewsOpen] = useState(false)
+    const [holonPostViewLayout, setHolonPostViewLayout] = useState('List')
 
     const [holonSpaces, setHolonSpaces] = useState([])
     const [holonSpaceFiltersOpen, setHolonSpaceFiltersOpen] = useState(false)
@@ -261,9 +263,6 @@ function HolonContextProvider({ children }) {
             selectedHolonSubPage, setSelectedHolonSubPage,
 
             holonPosts, setHolonPosts,
-            holonPostPaginationLimit, setHolonPostPaginationLimit,
-            holonPostPaginationOffset, setHolonPostPaginationOffset,
-            holonPostPaginationHasMore, setHolonPostPaginationHasMore,
             holonPostFiltersOpen, setHolonPostFiltersOpen,
             holonPostSearchFilter, setHolonPostSearchFilter,
             holonPostTimeRangeFilter, setHolonPostTimeRangeFilter,
@@ -271,11 +270,13 @@ function HolonContextProvider({ children }) {
             holonPostSortByFilter, setHolonPostSortByFilter,
             holonPostSortOrderFilter, setHolonPostSortOrderFilter,
             holonPostDepthFilter, setHolonPostDepthFilter,
+            holonPostPaginationLimit, setHolonPostPaginationLimit,
+            holonPostPaginationOffset, setHolonPostPaginationOffset,
+            holonPostPaginationHasMore, setHolonPostPaginationHasMore,
+            holonPostViewsOpen, setHolonPostViewsOpen,
+            holonPostViewLayout, setHolonPostViewLayout,
 
             holonSpaces, setHolonSpaces,
-            holonSpacePaginationLimit, setHolonSpacePaginationLimit,
-            holonSpacePaginationOffset, setHolonSpacePaginationOffset,
-            holonSpacePaginationHasMore, setHolonSpacePaginationHasMore,
             holonSpaceFiltersOpen, setHolonSpaceFiltersOpen,
             holonSpaceSearchFilter, setHolonSpaceSearchFilter,
             holonSpaceTimeRangeFilter, setHolonSpaceTimeRangeFilter,
@@ -283,17 +284,20 @@ function HolonContextProvider({ children }) {
             holonSpaceSortByFilter, setHolonSpaceSortByFilter,
             holonSpaceSortOrderFilter, setHolonSpaceSortOrderFilter,
             holonSpaceDepthFilter, setHolonSpaceDepthFilter,
+            holonSpacePaginationLimit, setHolonSpacePaginationLimit,
+            holonSpacePaginationOffset, setHolonSpacePaginationOffset,
+            holonSpacePaginationHasMore, setHolonSpacePaginationHasMore,
 
             holonUsers, setHolonUsers,
-            holonUserPaginationLimit, setHolonUserPaginationLimit,
-            holonUserPaginationOffset, setHolonUserPaginationOffset,
-            holonUserPaginationHasMore, setHolonUserPaginationHasMore,
             holonUserFiltersOpen, setHolonUserFiltersOpen,
             holonUserSearchFilter, setHolonUserSearchFilter,
             holonUserTimeRangeFilter, setHolonUserTimeRangeFilter,
             holonUserTypeFilter, setHolonUserTypeFilter,
             holonUserSortByFilter, setHolonUserSortByFilter,
             holonUserSortOrderFilter, setHolonUserSortOrderFilter,
+            holonUserPaginationLimit, setHolonUserPaginationLimit,
+            holonUserPaginationOffset, setHolonUserPaginationOffset,
+            holonUserPaginationHasMore, setHolonUserPaginationHasMore,
 
             // functions
             getHolonData,
