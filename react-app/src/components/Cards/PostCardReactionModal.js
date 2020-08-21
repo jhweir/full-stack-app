@@ -8,7 +8,7 @@ import { HolonContext } from '../../contexts/HolonContext'
 
 function PostCardReactionModal(props) {
     const {
-        id,
+        postId,
         totalReactions, setTotalReactions,
         totalLikes, setTotalLikes,
         // totalHearts, setTotalHearts,
@@ -17,7 +17,7 @@ function PostCardReactionModal(props) {
         accountLike, setAccountLike,
         // accountHeart, setAccountHeart,
         accountRating, setAccountRating,
-        // setReactionModalOpen
+        //setReactionModalOpen
     } = props
 
     console.log('accountRating', accountRating)
@@ -25,29 +25,38 @@ function PostCardReactionModal(props) {
     const { isLoggedIn, accountData, setAlertMessage, setAlertModalOpen } = useContext(AccountContext)
     const { holonData, getHolonPosts } = useContext(HolonContext)
 
+    const [reactionData, setReactionData] = useState({})
+    const [likesModalOpen, setLikesModalOpen] = useState(false)
+
     const [ratingModalOpen, setRatingModalOpen] = useState(false)
     const [newRating, setNewRating] = useState('')
     const [newRatingError, setNewRatingError] = useState(false)
 
+    //let likes = reactionData && reactionData.Labels.filter(label => label.type === 'like')
 
+    function getReactionData() {
+        axios
+            .get(config.environmentURL + `/post-reaction-data?postId=${postId}`)
+            .then(res => { setReactionData(res.data) })
+    }
 
     function addLike() {
         if (!isLoggedIn) { setAlertMessage('Log in to like post'); setAlertModalOpen(true) }
         else {
-            // If post already liked by account, remove like
+            // if post already liked by account, remove like
             if (accountLike !== 0) {
                 setTotalLikes(totalLikes - 1)
                 setTotalReactions(totalReactions - 1)
                 setAccountLike(0)
-                axios.put(config.environmentURL + '/remove-like', { accountId: accountData.id, postId: id })
+                axios.put(config.environmentURL + '/remove-like', { accountId: accountData.id, postId: postId })
                     .catch(error => { console.log(error) })
             }
             else {
-                // Else, add like
+                // otherwise add like
                 setTotalLikes(totalLikes + 1)
                 setTotalReactions(totalReactions + 1)
                 setAccountLike(accountLike + 1)
-                axios.put(config.environmentURL + '/add-like', { accountId: accountData.id, postId: id, holonId: holonData.id })
+                axios.put(config.environmentURL + '/add-like', { accountId: accountData.id, postId: postId, holonId: holonData.id })
                     .catch(error => { console.log(error) })
             }
         }
@@ -64,7 +73,7 @@ function PostCardReactionModal(props) {
                 setTotalReactions(totalReactions + 1)
                 setTotalRatingPoints(totalRatingPoints + parseInt(newRating, 10))
                 setAccountRating(accountRating + 1)
-                axios.put(config.environmentURL + '/add-rating', { accountId: accountData.id, postId: id, holonId: holonData.id, newRating })
+                axios.put(config.environmentURL + '/add-rating', { accountId: accountData.id, postId: postId, holonId: holonData.id, newRating })
                     .then(setNewRating(''))
                     .catch(error => { console.log(error) })
             }
@@ -78,20 +87,40 @@ function PostCardReactionModal(props) {
             setTotalRatings(totalRatings - 1)
             setTotalReactions(totalReactions - 1)
             setAccountRating(0)
-            axios.put(config.environmentURL + '/remove-rating', { accountId: accountData.id, postId: id, holonId: holonData.id })
+            axios.put(config.environmentURL + '/remove-rating', { accountId: accountData.id, postId: postId, holonId: holonData.id })
                 .then(() => { getHolonPosts() })
                 .catch(error => { console.log(error) })
         }
     }
 
+    useEffect(() => {
+        getReactionData()
+    }, [])
+
     return (
         <div className={styles.postReactionModal}>
-            <div className={styles.item} onClick={() => addLike()}>
+            <div className={styles.item} onMouseOver={() => setLikesModalOpen(true)} onMouseOut={() => setLikesModalOpen(false)}>
+            {/* onClick={() => addLike()} */}
                 <img
                     className={`${styles.postIcon} ${accountLike !== 0 && styles.selected}`}
                     src="/icons/thumbs-up-solid.svg" alt=''
                 />
                 <div>{totalLikes} Likes</div>
+                {likesModalOpen && reactionData &&
+                    <div className={styles.modal}>
+                        {reactionData.Labels.filter(label => label.type === 'like').map((like, index) =>
+                            <div className={styles.modalItem} key={index}>
+                                {like.creator.flagImagePath
+                                    ? <img className={styles.modalItemImage} src={like.creator.flagImagePath}/>
+                                    : <div className={styles.placeholderWrapper}>
+                                        <img className={styles.placeholder} src={'/icons/user-solid.svg'} alt=''/>
+                                    </div>
+                                }
+                                <div className={styles.modalItemText}>{like.creator.name}</div>
+                            </div>
+                        )}
+                    </div>
+            }
             </div>
             <div className={styles.item} onClick={() => setRatingModalOpen(!ratingModalOpen)}>
                 <img
@@ -114,6 +143,14 @@ function PostCardReactionModal(props) {
                     accountRating={accountRating}
                 />
             }
+            <div className={styles.item} onClick={() => setRatingModalOpen(!ratingModalOpen)}>
+                <img
+                    className={`${styles.postIcon} ${styles.large} ${accountRating !== 0 && styles.selected}`}
+                    src="/icons/retweet-solid.svg" alt='' // src="/icons/sync-alt-solid.svg"
+                />
+                <div>2 Reposts</div>
+            </div>
+
         </div>
     )
 }

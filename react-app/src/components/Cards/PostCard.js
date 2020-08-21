@@ -141,16 +141,14 @@ function PostCard(props) {
                         </div>
                         {reactionModalOpen &&
                             <PostCardReactionModal
-                                id={id}
+                                postId={id}
                                 totalReactions={totalReactions} setTotalReactions={setTotalReactions}
                                 totalLikes={totalLikes} setTotalLikes={setTotalLikes}
-                                totalHearts={totalHearts} setTotalHearts={setTotalHearts}
                                 totalRatings={totalRatings} setTotalRatings={setTotalRatings}
                                 totalRatingPoints={totalRatingPoints} setTotalRatingPoints={setTotalRatingPoints}
                                 accountLike={accountLike} setAccountLike={setAccountLike}
-                                accountHeart={accountHeart} setAccountHeart={setAccountHeart}
                                 accountRating={accountRating} setAccountRating={setAccountRating}
-                                setReactionModalOpen={setReactionModalOpen}
+                                //eactionModalOpen={setReactionModalOpen}
                             />
                         }
                     </div>

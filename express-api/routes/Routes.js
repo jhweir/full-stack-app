@@ -1006,6 +1006,30 @@ router.get('/post-data', (req, res) => {
     .catch(err => console.log(err))
 })
 
+router.get('/post-reaction-data', (req, res) => {
+    const { postId } = req.query
+    Post.findOne({ 
+        where: { id: postId },
+        attributes: [],
+        include: [
+            { 
+                model: Label,
+                where: { state: 'active' },
+                attributes: ['type', 'value'],
+                include: [
+                    {
+                        model: User,
+                        as: 'creator',
+                        attributes: ['handle', 'name', 'flagImagePath'],
+                    }
+                ]
+            }
+        ]
+    })
+    .then(post => { res.json(post) })
+    .catch(err => console.log(err))
+})
+
 router.get('/post-comments', (req, res) => {
     const { accountId, postId, timeRange, postType, sortBy, sortOrder, searchQuery, limit, offset } = req.query
     // console.log('req.query: ', req.query)

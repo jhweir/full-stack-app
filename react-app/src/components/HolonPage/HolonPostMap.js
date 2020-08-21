@@ -50,7 +50,7 @@ function HolonPostMap() {
             // .duration(3000)
             // .style("opacity", 0.4)
 
-        circles.selectAll('g').remove()
+        //circles.selectAll('g').remove()
             
         simulation
             .nodes(holonPosts)

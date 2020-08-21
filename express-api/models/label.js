@@ -14,6 +14,10 @@ module.exports = (sequelize, DataTypes) => {
     Label.belongsTo(models.Post, {
       foreignKey: 'postId'
     })
+    Label.belongsTo(models.User, {
+      foreignKey: 'userId',
+      as: 'creator'
+    })
     Label.belongsTo(models.PollAnswer, {
       foreignKey: 'pollAnswerId'
     })
