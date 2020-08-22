@@ -8,7 +8,7 @@ import { HolonContext } from '../../contexts/HolonContext'
 import { UserContext } from '../../contexts/UserContext'
 import { PostContext } from '../../contexts/PostContext'
 import styles from '../../styles/components/PostCard.module.scss'
-import PostCardReactionModal from './PostCardReactionModal'
+import PostCardReactions from './PostCardReactions'
 import PostCardUrlPreview from './../Cards/PostCardUrlPreview'
 
 function PostCard(props) {
@@ -140,7 +140,7 @@ function PostCard(props) {
                             }
                         </div>
                         {reactionModalOpen &&
-                            <PostCardReactionModal
+                            <PostCardReactions
                                 postId={id}
                                 totalReactions={totalReactions} setTotalReactions={setTotalReactions}
                                 totalLikes={totalLikes} setTotalLikes={setTotalLikes}

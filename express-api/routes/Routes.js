@@ -1283,22 +1283,26 @@ router.delete('/delete-post', (req, res) => {
 
 router.put('/add-like', (req, res) => {
     const { accountId, postId, holonId } = req.body
-    Label.create({ 
-        type: 'like',
-        value: null,
-        state: 'active',
-        holonId,
-        userId: accountId,
-        postId,
-        commentId: null,
-    }).then(res.send('Post successfully liked'))
+    Label
+        .create({ 
+            type: 'like',
+            value: null,
+            state: 'active',
+            holonId,
+            userId: accountId,
+            postId,
+            commentId: null,
+        })
+        .then(res.send('success'))
 })
 
 router.put('/remove-like', (req, res) => {
     const { accountId, postId } = req.body
-    Label.update({ state: 'removed' }, {
-        where: { type: 'like', state: 'active', postId, userId: accountId }
-    })
+    Label
+        .update({ state: 'removed' }, {
+            where: { type: 'like', state: 'active', postId, userId: accountId }
+        })
+        .then(res.send('success'))
 })
 
 router.put('/add-heart', (req, res) => {

@@ -1,12 +1,12 @@
 import React, { useContext, useState, useEffect, useRef } from 'react'
 import axios from 'axios'
 import config from '../../Config'
-import styles from '../../styles/components/PostCardReactionModal.module.scss'
+import styles from '../../styles/components/PostCardReactions.module.scss'
 import PostCardRatingModal from './PostCardRatingModal'
 import { AccountContext } from '../../contexts/AccountContext'
 import { HolonContext } from '../../contexts/HolonContext'
 
-function PostCardReactionModal(props) {
+function PostCardReactions(props) {
     const {
         id,
         totalReactions, setTotalReactions,
@@ -156,4 +156,4 @@ function PostCardReactionModal(props) {
     )
 }
 
-export default PostCardReactionModal
+export default PostCardReactions

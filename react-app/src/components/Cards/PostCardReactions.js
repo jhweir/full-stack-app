@@ -1,12 +1,12 @@
 import React, { useContext, useState, useEffect, useRef } from 'react'
 import axios from 'axios'
 import config from '../../Config'
-import styles from '../../styles/components/PostCardReactionModal.module.scss'
+import styles from '../../styles/components/PostCardReactions.module.scss'
 import PostCardRatingModal from './PostCardRatingModal'
 import { AccountContext } from '../../contexts/AccountContext'
 import { HolonContext } from '../../contexts/HolonContext'
 
-function PostCardReactionModal(props) {
+function PostCardReactions(props) {
     const {
         postId,
         totalReactions, setTotalReactions,
@@ -20,13 +20,12 @@ function PostCardReactionModal(props) {
         //setReactionModalOpen
     } = props
 
-    console.log('accountRating', accountRating)
-
     const { isLoggedIn, accountData, setAlertMessage, setAlertModalOpen } = useContext(AccountContext)
     const { holonData, getHolonPosts } = useContext(HolonContext)
 
     const [reactionData, setReactionData] = useState({})
     const [likesModalOpen, setLikesModalOpen] = useState(false)
+    const [ratingsModalOpen, setRatingsModalOpen] = useState(false)
 
     const [ratingModalOpen, setRatingModalOpen] = useState(false)
     const [newRating, setNewRating] = useState('')
@@ -35,6 +34,7 @@ function PostCardReactionModal(props) {
     //let likes = reactionData && reactionData.Labels.filter(label => label.type === 'like')
 
     function getReactionData() {
+        console.log('PostCardReactions: getReactionData')
         axios
             .get(config.environmentURL + `/post-reaction-data?postId=${postId}`)
             .then(res => { setReactionData(res.data) })
@@ -49,6 +49,7 @@ function PostCardReactionModal(props) {
                 setTotalReactions(totalReactions - 1)
                 setAccountLike(0)
                 axios.put(config.environmentURL + '/remove-like', { accountId: accountData.id, postId: postId })
+                    .then(res => { if (res.data === 'success') { setTimeout(() => { getReactionData() }, 200) }})
                     .catch(error => { console.log(error) })
             }
             else {
@@ -57,6 +58,7 @@ function PostCardReactionModal(props) {
                 setTotalReactions(totalReactions + 1)
                 setAccountLike(accountLike + 1)
                 axios.put(config.environmentURL + '/add-like', { accountId: accountData.id, postId: postId, holonId: holonData.id })
+                    .then(res => { if (res.data === 'success') { setTimeout(() => { getReactionData() }, 200) }})
                     .catch(error => { console.log(error) })
             }
         }
@@ -98,15 +100,17 @@ function PostCardReactionModal(props) {
     }, [])
 
     return (
-        <div className={styles.postReactionModal}>
-            <div className={styles.item} onMouseOver={() => setLikesModalOpen(true)} onMouseOut={() => setLikesModalOpen(false)}>
-            {/* onClick={() => addLike()} */}
+        <div className={styles.postCardReactions}>
+            <div className={styles.item}
+                onMouseOver={() => setLikesModalOpen(true)}
+                onMouseOut={() => setLikesModalOpen(false)}
+                onClick={() => addLike()}>
                 <img
                     className={`${styles.postIcon} ${accountLike !== 0 && styles.selected}`}
                     src="/icons/thumbs-up-solid.svg" alt=''
                 />
                 <div>{totalLikes} Likes</div>
-                {likesModalOpen && reactionData &&
+                {likesModalOpen && reactionData && reactionData.Labels.filter(label => label.type === 'like').length > 0 &&
                     <div className={styles.modal}>
                         {reactionData.Labels.filter(label => label.type === 'like').map((like, index) =>
                             <div className={styles.modalItem} key={index}>
@@ -120,14 +124,32 @@ function PostCardReactionModal(props) {
                             </div>
                         )}
                     </div>
-            }
+                }
             </div>
-            <div className={styles.item} onClick={() => setRatingModalOpen(!ratingModalOpen)}>
+            <div className={styles.item}
+                onMouseOver={() => setRatingsModalOpen(true)}
+                onMouseOut={() => setRatingsModalOpen(false)}
+                onClick={() => setRatingModalOpen(!ratingModalOpen)}>
                 <img
                     className={`${styles.postIcon} ${accountRating !== 0 && styles.selected}`}
                     src="/icons/star-solid.svg" alt=''
                 />
                 <div>{totalRatings} Ratings</div>
+                {ratingsModalOpen && reactionData && reactionData.Labels.filter(label => label.type === 'rating').length > 0 &&
+                    <div className={styles.modal}>
+                        {reactionData.Labels.filter(label => label.type === 'rating').map((like, index) =>
+                            <div className={styles.modalItem} key={index}>
+                                {like.creator.flagImagePath
+                                    ? <img className={styles.modalItemImage} src={like.creator.flagImagePath}/>
+                                    : <div className={styles.placeholderWrapper}>
+                                        <img className={styles.placeholder} src={'/icons/user-solid.svg'} alt=''/>
+                                    </div>
+                                }
+                                <div className={styles.modalItemText}>{like.creator.name}</div>
+                            </div>
+                        )}
+                    </div>
+                }
             </div>
             {ratingModalOpen &&
                 <PostCardRatingModal
@@ -155,7 +177,7 @@ function PostCardReactionModal(props) {
     )
 }
 
-export default PostCardReactionModal
+export default PostCardReactions
 
 // function addHeart() {
 //     if (!isLoggedIn) { setAlertMessage('Log in to heart post'); setAlertModalOpen(true) }
