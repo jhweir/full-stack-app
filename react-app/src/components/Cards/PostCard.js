@@ -22,22 +22,22 @@ function PostCard(props) {
     // remote post state
     const { 
         id, creator, text, url, urlImage, urlDomain, urlTitle, urlDescription, createdAt, spaces,
-        total_comments, total_reactions, total_likes, total_hearts, total_ratings, total_rating_points,
-        account_like, account_heart, account_rating
+        total_comments, total_reactions, total_likes, total_ratings, total_rating_points, total_reposts,
+        account_like, account_rating, account_repost
     } = postData
 
     // local post state
     const [totalComments, setTotalComments] = useState(0)
     const [totalReactions, setTotalReactions] = useState(0)
     const [totalLikes, setTotalLikes] = useState(0)
-    const [totalHearts, setTotalHearts] = useState(0)
     const [totalRatings, setTotalRatings] = useState(0)
     const [totalRatingPoints, setTotalRatingPoints] = useState(0)
+    const [totalReposts, setTotalReposts] = useState(0)
     const [accountLike, setAccountLike] = useState(0)
-    const [accountHeart, setAccountHeart] = useState(0)
     const [accountRating, setAccountRating] = useState(0)
+    const [accountRepost, setAccountRepost] = useState(0)
 
-    const [reactionModalOpen, setReactionModalOpen] = useState(false)
+    const [reactionsOpen, setReactionsOpen] = useState(false)
     const finishedLoading = location !== 'post-page' || !postContextLoading
     const isOwnPost = finishedLoading && accountData.name === creator.name
     const showLinkPreview = (urlImage !== null || urlDomain !== null || urlTitle !== null || urlDescription !== null)
@@ -46,12 +46,12 @@ function PostCard(props) {
         setTotalComments(total_comments)
         setTotalReactions(total_reactions)
         setTotalLikes(total_likes)
-        setTotalHearts(total_hearts)
         setTotalRatings(total_ratings)
         setTotalRatingPoints(total_rating_points)
+        setTotalReposts(total_reposts)
         setAccountLike(account_like)
-        setAccountHeart(account_heart)
         setAccountRating(account_rating)
+        setAccountRepost(account_repost)
     }
 
     function deletePost() {
@@ -64,7 +64,7 @@ function PostCard(props) {
             .catch(error => { console.log(error) })
     }
 
-    function formatDate() {
+    function formattedDate() {
         let a = createdAt.split(/[-.T :]/)
         let formattedDate = a[3]+':'+a[4]+' on '+a[2]+'-'+a[1]+'-'+a[0]
         return formattedDate
@@ -91,8 +91,8 @@ function PostCard(props) {
                         </Link>
                         <span className={styles.subText}>to</span>
                         <div className={styles.holonNames}>
-                            {spaces.length > 0
-                                ? spaces.map((holon, index) =>
+                            {spaces.length > 0 ?
+                                spaces.map((holon, index) =>
                                     <Link to={`/s/${holon}`}
                                         onClick={ () => {setHolonHandle(holon)} }
                                         style={{marginRight: 10}}
@@ -103,13 +103,14 @@ function PostCard(props) {
                                     onClick={ () => {setHolonHandle('all')} }
                                     style={{marginRight: 10}}>
                                     all
-                                </Link>}
+                                </Link>
+                            }
                         </div>
                         <span className={styles.subText}>|</span>
-                        <span className={styles.subText}>{formatDate() || 'no date'}</span>
+                        <span className={styles.subText}>{formattedDate() || 'no date'}</span>
                     </div>
                     <div className={styles.content}>
-                        {text !== null && <div className={styles.text}>{text}</div>}
+                        {text && <div className={styles.text}>{text}</div>}
                         {showLinkPreview &&
                             <PostCardUrlPreview
                                 url={url}
@@ -120,9 +121,9 @@ function PostCard(props) {
                             />
                         }
                         <div className={styles.interact}>
-                            <div className={styles.interactItem} onClick={() => setReactionModalOpen(!reactionModalOpen)}>
+                            <div className={styles.interactItem} onClick={() => setReactionsOpen(!reactionsOpen)}>
                                 <img 
-                                    className={`${styles.icon} ${(accountLike || accountHeart || accountRating !== 0) && styles.selected}`}
+                                    className={`${styles.icon} ${(accountLike || accountRating || accountRepost > 0) && styles.selected}`}
                                     src="/icons/fire-alt-solid.svg" alt=''
                                 />
                                 <span>{totalReactions} Reactions</span>
@@ -139,16 +140,17 @@ function PostCard(props) {
                                 </div>
                             }
                         </div>
-                        {reactionModalOpen &&
+                        {reactionsOpen &&
                             <PostCardReactions
                                 postId={id}
                                 totalReactions={totalReactions} setTotalReactions={setTotalReactions}
                                 totalLikes={totalLikes} setTotalLikes={setTotalLikes}
                                 totalRatings={totalRatings} setTotalRatings={setTotalRatings}
                                 totalRatingPoints={totalRatingPoints} setTotalRatingPoints={setTotalRatingPoints}
+                                totalReposts={totalReposts} setTotalReposts={setTotalReposts}
                                 accountLike={accountLike} setAccountLike={setAccountLike}
                                 accountRating={accountRating} setAccountRating={setAccountRating}
-                                //eactionModalOpen={setReactionModalOpen}
+                                accountRepost={accountRepost} setAccountRepost={setAccountRepost}
                             />
                         }
                     </div>
@@ -159,6 +161,8 @@ function PostCard(props) {
 }
 
 export default PostCard
+
+// const [totalHearts, setTotalHearts] = useState(0)
 
 // {!pins && 
 //     <div className={`${styles.postInteractItem} ${styles.opacity50}`}>{/* onClick={ pinPost } */}

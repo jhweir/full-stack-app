@@ -2,7 +2,9 @@ import React, { useContext, useState, useEffect, useRef } from 'react'
 import axios from 'axios'
 import config from '../../Config'
 import styles from '../../styles/components/PostCardReactions.module.scss'
+import PostCardReactionItem from './PostCardReactionItem'
 import PostCardRatingModal from './PostCardRatingModal'
+import PostCardRepostModal from './PostCardRepostModal'
 import { AccountContext } from '../../contexts/AccountContext'
 import { HolonContext } from '../../contexts/HolonContext'
 
@@ -11,27 +13,27 @@ function PostCardReactions(props) {
         postId,
         totalReactions, setTotalReactions,
         totalLikes, setTotalLikes,
-        // totalHearts, setTotalHearts,
         totalRatings, setTotalRatings,
+        totalReposts, setTotalReposts,
         totalRatingPoints, setTotalRatingPoints,
         accountLike, setAccountLike,
-        // accountHeart, setAccountHeart,
         accountRating, setAccountRating,
-        //setReactionModalOpen
+        accountRepost, setAccountRepost
     } = props
 
     const { isLoggedIn, accountData, setAlertMessage, setAlertModalOpen } = useContext(AccountContext)
     const { holonData, getHolonPosts } = useContext(HolonContext)
 
-    const [reactionData, setReactionData] = useState({})
-    const [likesModalOpen, setLikesModalOpen] = useState(false)
-    const [ratingsModalOpen, setRatingsModalOpen] = useState(false)
-
+    const [reactionData, setReactionData] = useState()
+    const [likePreviewOpen, setLikePreviewOpen] = useState(false)
+    // const [likeModalOpen, setLikeModalOpen] = useState(false)
+    const [ratingPreviewOpen, setRatingPreviewOpen] = useState(false)
     const [ratingModalOpen, setRatingModalOpen] = useState(false)
+    const [repostPreviewOpen, setRepostPreviewOpen] = useState(false)
+    const [repostModalOpen, setRepostModalOpen] = useState(false)
+
     const [newRating, setNewRating] = useState('')
     const [newRatingError, setNewRatingError] = useState(false)
-
-    //let likes = reactionData && reactionData.Labels.filter(label => label.type === 'like')
 
     function getReactionData() {
         console.log('PostCardReactions: getReactionData')
@@ -101,78 +103,51 @@ function PostCardReactions(props) {
 
     return (
         <div className={styles.postCardReactions}>
-            <div className={styles.item}
-                onMouseOver={() => setLikesModalOpen(true)}
-                onMouseOut={() => setLikesModalOpen(false)}
-                onClick={() => addLike()}>
-                <img
-                    className={`${styles.postIcon} ${accountLike !== 0 && styles.selected}`}
-                    src="/icons/thumbs-up-solid.svg" alt=''
-                />
-                <div>{totalLikes} Likes</div>
-                {likesModalOpen && reactionData && reactionData.Labels.filter(label => label.type === 'like').length > 0 &&
-                    <div className={styles.modal}>
-                        {reactionData.Labels.filter(label => label.type === 'like').map((like, index) =>
-                            <div className={styles.modalItem} key={index}>
-                                {like.creator.flagImagePath
-                                    ? <img className={styles.modalItemImage} src={like.creator.flagImagePath}/>
-                                    : <div className={styles.placeholderWrapper}>
-                                        <img className={styles.placeholder} src={'/icons/user-solid.svg'} alt=''/>
-                                    </div>
-                                }
-                                <div className={styles.modalItemText}>{like.creator.name}</div>
-                            </div>
-                        )}
-                    </div>
-                }
-            </div>
-            <div className={styles.item}
-                onMouseOver={() => setRatingsModalOpen(true)}
-                onMouseOut={() => setRatingsModalOpen(false)}
-                onClick={() => setRatingModalOpen(!ratingModalOpen)}>
-                <img
-                    className={`${styles.postIcon} ${accountRating !== 0 && styles.selected}`}
-                    src="/icons/star-solid.svg" alt=''
-                />
-                <div>{totalRatings} Ratings</div>
-                {ratingsModalOpen && reactionData && reactionData.Labels.filter(label => label.type === 'rating').length > 0 &&
-                    <div className={styles.modal}>
-                        {reactionData.Labels.filter(label => label.type === 'rating').map((like, index) =>
-                            <div className={styles.modalItem} key={index}>
-                                {like.creator.flagImagePath
-                                    ? <img className={styles.modalItemImage} src={like.creator.flagImagePath}/>
-                                    : <div className={styles.placeholderWrapper}>
-                                        <img className={styles.placeholder} src={'/icons/user-solid.svg'} alt=''/>
-                                    </div>
-                                }
-                                <div className={styles.modalItemText}>{like.creator.name}</div>
-                            </div>
-                        )}
-                    </div>
-                }
-            </div>
-            {ratingModalOpen &&
-                <PostCardRatingModal
-                    isLoggedIn={isLoggedIn}
-                    totalRatings={totalRatings}
-                    totalRatingPoints={totalRatingPoints}
-                    newRating={newRating}
-                    newRatingError={newRatingError}
-                    setNewRating={setNewRating}
-                    setNewRatingError={setNewRatingError}
-                    addRating={addRating}
-                    removeRating={removeRating}
-                    accountRating={accountRating}
-                />
-            }
-            <div className={styles.item} onClick={() => setRatingModalOpen(!ratingModalOpen)}>
-                <img
-                    className={`${styles.postIcon} ${styles.large} ${accountRating !== 0 && styles.selected}`}
-                    src="/icons/retweet-solid.svg" alt='' // src="/icons/sync-alt-solid.svg"
-                />
-                <div>2 Reposts</div>
-            </div>
-
+            <PostCardReactionItem
+                reactions={reactionData && reactionData.Labels.filter(label => label.type === 'like')}
+                text='Likes'
+                previewOpen={likePreviewOpen}
+                setPreviewOpen={setLikePreviewOpen}
+                accountReaction={accountLike}
+                totalReactions={totalLikes}
+                iconPath='thumbs-up-solid.svg'
+                onClick={addLike}
+            />
+            <PostCardReactionItem
+                reactions={reactionData && reactionData.Labels.filter(label => label.type === 'rating')}
+                text='Ratings'
+                previewOpen={ratingPreviewOpen}
+                setPreviewOpen={setRatingPreviewOpen}
+                accountReaction={accountRating}
+                totalReactions={totalRatings}
+                iconPath='star-solid.svg'
+                onClick={() => setRatingModalOpen(!ratingModalOpen)}
+            />
+            {ratingModalOpen && <PostCardRatingModal
+                isLoggedIn={isLoggedIn}
+                totalRatings={totalRatings}
+                totalRatingPoints={totalRatingPoints}
+                newRating={newRating} setNewRating={setNewRating}
+                newRatingError={newRatingError} setNewRatingError={setNewRatingError}
+                addRating={addRating}
+                removeRating={removeRating}
+                accountRating={accountRating}
+            />}
+            <PostCardReactionItem
+                reactions={reactionData && reactionData.Labels.filter(label => label.type === 'repost')}
+                text='Reposts'
+                previewOpen={repostPreviewOpen}
+                setPreviewOpen={setRepostPreviewOpen}
+                accountReaction={accountRepost}
+                totalReactions={totalReposts}
+                iconPath='retweet-solid.svg'
+                onClick={() => setRepostModalOpen(!repostModalOpen)}
+            />
+            {repostModalOpen && <PostCardRepostModal
+                isLoggedIn={isLoggedIn}
+                totalRepost={totalReposts}
+                accountRepost={accountRepost}
+            />}
         </div>
     )
 }

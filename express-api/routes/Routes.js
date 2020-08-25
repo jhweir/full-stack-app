@@ -34,13 +34,13 @@ const postAttributes = [
         `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.type = "like" AND Label.state = 'active')`
         ),'total_likes'
     ],
-    // [sequelize.literal(
-    //     `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.type = "heart" AND Label.state = 'active')`
-    //     ),'total_hearts'
-    // ],
     [sequelize.literal(
         `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.type = "rating" AND Label.state = 'active')`
         ),'total_ratings'
+    ],
+    [sequelize.literal(
+        `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.type = "repost" AND Label.state = 'active')`
+        ),'total_reposts'
     ],
     [sequelize.literal(
         `(SELECT SUM(value) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.type = "rating" AND Label.state = 'active')`
