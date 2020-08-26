@@ -33,7 +33,7 @@ function CreatePostModal() {
     const [newHandleError, setNewHandleError] = useState(false)
     const [newPollAnswerError, setNewPollAnswerError] = useState(false)
 
-    // TODO: rename to specifiy flash message type (in contrast to 'urlFlashMessage')
+    // TODO: rename to specifiy flash message type (in keeping with 'urlFlashMessage')
     const [flashMessage, setflashMessage] = useState(false)
 
     function isValidUrl(string) {
@@ -173,20 +173,14 @@ function CreatePostModal() {
                         urlDescription={urlDescription}
                         urlFlashMessage={urlFlashMessage}
                     />
-                    <HandleInput
+                    <HandleInput // TODO: look into whether there is a better way to approach passing down state hooks
                         holonData={holonData}
-                        holonHandles={holonHandles}
-                        setHolonHandles={setHolonHandles}
-                        newHandle={newHandle}
-                        setNewHandle={setNewHandle}
-                        suggestedHandlesOpen={suggestedHandlesOpen}
-                        setSuggestedHandlesOpen={setSuggestedHandlesOpen}
-                        suggestedHandles={suggestedHandles}
-                        setSuggestedHandles={setSuggestedHandles}
-                        newHandleError={newHandleError}
-                        setNewHandleError={setNewHandleError}
-                        flashMessage={flashMessage}
-                        setflashMessage={setflashMessage}
+                        holonHandles={holonHandles} setHolonHandles={setHolonHandles}
+                        newHandle={newHandle} setNewHandle={setNewHandle}
+                        suggestedHandlesOpen={suggestedHandlesOpen} setSuggestedHandlesOpen={setSuggestedHandlesOpen}
+                        suggestedHandles={suggestedHandles} setSuggestedHandles={setSuggestedHandles}
+                        newHandleError={newHandleError} setNewHandleError={setNewHandleError}
+                        flashMessage={flashMessage} setflashMessage={setflashMessage}
                         setCreatePostModalOpen={setCreatePostModalOpen}
                     />
                     {postType === 'Poll' &&

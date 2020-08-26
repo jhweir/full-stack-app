@@ -2,14 +2,14 @@ import React, { useState, useContext, useEffect } from 'react'
 import { useHistory } from "react-router-dom"
 import { Link } from 'react-router-dom'
 import axios from 'axios'
-import config from '../../Config'
-import { AccountContext } from '../../contexts/AccountContext'
-import { HolonContext } from '../../contexts/HolonContext'
-import { UserContext } from '../../contexts/UserContext'
-import { PostContext } from '../../contexts/PostContext'
-import styles from '../../styles/components/PostCard.module.scss'
+import config from '../../../Config'
+import { AccountContext } from '../../../contexts/AccountContext'
+import { HolonContext } from '../../../contexts/HolonContext'
+import { UserContext } from '../../../contexts/UserContext'
+import { PostContext } from '../../../contexts/PostContext'
+import styles from '../../../styles/components/PostCard.module.scss'
 import PostCardReactions from './PostCardReactions'
-import PostCardUrlPreview from './../Cards/PostCardUrlPreview'
+import PostCardUrlPreview from './PostCardUrlPreview'
 
 function PostCard(props) {
     const { postData, index, location } = props
@@ -142,7 +142,7 @@ function PostCard(props) {
                         </div>
                         {reactionsOpen &&
                             <PostCardReactions
-                                postId={id}
+                                postId={id} postCreator={creator}
                                 totalReactions={totalReactions} setTotalReactions={setTotalReactions}
                                 totalLikes={totalLikes} setTotalLikes={setTotalLikes}
                                 totalRatings={totalRatings} setTotalRatings={setTotalRatings}

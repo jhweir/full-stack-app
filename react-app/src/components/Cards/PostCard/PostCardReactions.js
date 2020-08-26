@@ -1,16 +1,16 @@
 import React, { useContext, useState, useEffect, useRef } from 'react'
 import axios from 'axios'
-import config from '../../Config'
-import styles from '../../styles/components/PostCardReactions.module.scss'
+import config from '../../../Config'
+import styles from '../../../styles/components/PostCardReactions.module.scss'
 import PostCardReactionItem from './PostCardReactionItem'
 import PostCardRatingModal from './PostCardRatingModal'
 import PostCardRepostModal from './PostCardRepostModal'
-import { AccountContext } from '../../contexts/AccountContext'
-import { HolonContext } from '../../contexts/HolonContext'
+import { AccountContext } from '../../../contexts/AccountContext'
+import { HolonContext } from '../../../contexts/HolonContext'
 
 function PostCardReactions(props) {
     const {
-        postId,
+        postId, postCreator,
         totalReactions, setTotalReactions,
         totalLikes, setTotalLikes,
         totalRatings, setTotalRatings,
@@ -24,7 +24,7 @@ function PostCardReactions(props) {
     const { isLoggedIn, accountData, setAlertMessage, setAlertModalOpen } = useContext(AccountContext)
     const { holonData, getHolonPosts } = useContext(HolonContext)
 
-    const [reactionData, setReactionData] = useState()
+    const [reactionData, setReactionData] = useState({ Labels: [] })
     const [likePreviewOpen, setLikePreviewOpen] = useState(false)
     // const [likeModalOpen, setLikeModalOpen] = useState(false)
     const [ratingPreviewOpen, setRatingPreviewOpen] = useState(false)
@@ -104,7 +104,7 @@ function PostCardReactions(props) {
     return (
         <div className={styles.postCardReactions}>
             <PostCardReactionItem
-                reactions={reactionData && reactionData.Labels.filter(label => label.type === 'like')}
+                reactions={reactionData.Labels.filter(label => label.type === 'like')}
                 text='Likes'
                 previewOpen={likePreviewOpen}
                 setPreviewOpen={setLikePreviewOpen}
@@ -114,7 +114,7 @@ function PostCardReactions(props) {
                 onClick={addLike}
             />
             <PostCardReactionItem
-                reactions={reactionData && reactionData.Labels.filter(label => label.type === 'rating')}
+                reactions={reactionData.Labels.filter(label => label.type === 'rating')}
                 text='Ratings'
                 previewOpen={ratingPreviewOpen}
                 setPreviewOpen={setRatingPreviewOpen}
@@ -122,6 +122,19 @@ function PostCardReactions(props) {
                 totalReactions={totalRatings}
                 iconPath='star-solid.svg'
                 onClick={() => setRatingModalOpen(!ratingModalOpen)}
+            />
+            <PostCardReactionItem
+                reactions={reactionData.Labels.filter(label => label.type === 'repost')}
+                text='Reposts'
+                previewOpen={repostPreviewOpen}
+                setPreviewOpen={setRepostPreviewOpen}
+                accountReaction={accountRepost}
+                totalReactions={totalReposts}
+                iconPath='retweet-solid.svg'
+                onClick={() => { 
+                    if (isLoggedIn) { setRepostModalOpen(true) }
+                    else { setAlertMessage('Log in to repost post'); setAlertModalOpen(true) }
+                }}
             />
             {ratingModalOpen && <PostCardRatingModal
                 isLoggedIn={isLoggedIn}
@@ -133,18 +146,9 @@ function PostCardReactions(props) {
                 removeRating={removeRating}
                 accountRating={accountRating}
             />}
-            <PostCardReactionItem
-                reactions={reactionData && reactionData.Labels.filter(label => label.type === 'repost')}
-                text='Reposts'
-                previewOpen={repostPreviewOpen}
-                setPreviewOpen={setRepostPreviewOpen}
-                accountReaction={accountRepost}
-                totalReactions={totalReposts}
-                iconPath='retweet-solid.svg'
-                onClick={() => setRepostModalOpen(!repostModalOpen)}
-            />
             {repostModalOpen && <PostCardRepostModal
-                isLoggedIn={isLoggedIn}
+                setRepostModalOpen={setRepostModalOpen}
+                postCreator={postCreator}
                 totalRepost={totalReposts}
                 accountRepost={accountRepost}
             />}

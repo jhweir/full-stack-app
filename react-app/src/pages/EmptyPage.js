@@ -1,7 +1,7 @@
 import React from 'react'
 import styles from '../styles/pages/EmptyPage.module.scss'
 //import HolonPagePostsPlaceholder from '../components/HolonPagePostsPlaceholder'
-import PostCardPlaceholder from '../components/Cards/PostCardPlaceholder'
+import PostCardPlaceholder from '../components/Cards/PostCard/PostCardPlaceholder'
 import HolonCardPlaceholder from '../components/Cards/HolonCardPlaceholder'
 
 export default function EmptyPage() {

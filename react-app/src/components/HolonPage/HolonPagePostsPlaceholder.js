@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import PostCardPlaceholder from '../Cards/PostCardPlaceholder'
+import PostCardPlaceholder from '../Cards/PostCard/PostCard/PostCardPlaceholder'
 import { HolonContext } from '../../contexts/HolonContext'
 import styles from '../../styles/components/HolonPagePostsPlaceholder.module.scss'
 

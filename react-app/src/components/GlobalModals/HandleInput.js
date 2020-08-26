@@ -4,6 +4,7 @@ import axios from 'axios'
 import config from '../../Config'
 import styles from '../../styles/components/HandleInput.module.scss'
 
+// TODO: Change to 'SpaceInput' and use in PostCardRepostModal
 function HandleInput(props) {
     const {
         holonData,
@@ -71,7 +72,7 @@ function HandleInput(props) {
                 }
                 <button className="wecoButton" style={{flexShrink: 0}} onClick={addHolonHandle}>Add</button>
             </div>
-            {flashMessage && 
+            {flashMessage &&
                 <div className={styles.flashMessage}>
                     Sorry, that space doesn't exist yet. You'll need to create it first on the 
                     <Link to="/s/all/spaces" onClick={() => setCreatePostModalOpen(false)}> <b>Spaces</b></Link> page.

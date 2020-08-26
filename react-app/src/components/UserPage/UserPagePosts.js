@@ -4,7 +4,7 @@ import { UserContext } from '../../contexts/UserContext'
 import styles from '../../styles/components/UserPagePosts.module.scss'
 import SearchBar from '../SearchBar'
 import UserPagePostFilters from './UserPagePostFilters'
-import PostCard from '../Cards/PostCard'
+import PostCard from '../Cards/PostCard/PostCard'
 
 function UserPagePosts() {
     const { pageBottomReached } = useContext(AccountContext)

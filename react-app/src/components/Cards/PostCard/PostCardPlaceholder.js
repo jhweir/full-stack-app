@@ -1,5 +1,5 @@
 import React from 'react'
-import styles from '../../styles/components/PostCardPlaceholder.module.scss'
+import styles from '../../../styles/components/PostCardPlaceholder.module.scss'
 
 function PostCardPlaceholder() {
     return (
