@@ -1,6 +1,9 @@
-.handleInput {
-    max-width: 500px;
+.spaceInput {
+    width: 100%;
     margin: 0 0 20px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 }
 .text {
     margin-bottom: 10px;
@@ -14,7 +17,7 @@
     flex-wrap: wrap;
 }
 .flashMessage {
-    width: 100%;
+    text-align: left;
     margin-bottom: 10px;
 }
 .dropDown {
@@ -25,6 +28,9 @@
     background-color: white;//rgb(230, 230, 230);
     box-shadow: 0 1px 10px 0 rgba(10, 8, 72, 0.15);
     z-index: 5;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 }
 .dropDownOption {
     font-size: 14px;
@@ -34,18 +40,19 @@
     &:hover { cursor: pointer; }
     &:last-child { margin-bottom: 0; }
 }
-.addedSpaces {
+.spacesWrapper {
     display: flex;
     flex-direction: column;
+    align-items: flex-start;
 }
-.handles {
+.spaces {
     //margin-bottom: 10px;
     display: flex;
     flex-direction: row;
     align-items: center;
     flex-wrap: wrap;
 }
-.handle {
+.space {
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -55,10 +62,10 @@
     padding: 10px 10px 10px 15px;
     margin: 0 10px 10px 0;
 }
-.handleText {
+.spaceText {
     margin-right: 10px;
 }
-.handleCloseIcon {
+.spaceCloseIcon {
     background-image: url(/icons/close-01.svg);
     background-position: center;
     background-repeat: no-repeat;

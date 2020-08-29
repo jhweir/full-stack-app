@@ -180,7 +180,7 @@ router.get('/holon-posts', (req, res) => {
     Post.findAll({
         subQuery: false,
         where: { 
-            '$PostHolons.handle$': handle,
+            '$DirectPostSpaces.handle$': handle,
             state: 'visible',
             createdAt: { [Op.between]: [startDate, Date.now()] },
             type,
@@ -195,7 +195,7 @@ router.get('/holon-posts', (req, res) => {
         attributes: firstAttributes,
         include: [{ 
             model: Holon,
-            as: 'PostHolons',
+            as: 'DirectPostSpaces',
             attributes: [],
             through,
         }]
@@ -214,16 +214,6 @@ router.get('/holon-posts', (req, res) => {
                 AND Label.state = 'active'
                 )`),'account_like'
             ],
-            // [sequelize.literal(`(
-            //     SELECT COUNT(*)
-            //     FROM Labels
-            //     AS Label
-            //     WHERE Label.postId = Post.id
-            //     AND Label.userId = ${accountId}
-            //     AND Label.type = 'heart'
-            //     AND Label.state = 'active'
-            //     )`),'account_heart'
-            // ],
             [sequelize.literal(`(
                 SELECT COUNT(*)
                 FROM Labels
@@ -242,9 +232,15 @@ router.get('/holon-posts', (req, res) => {
             include: [
                 {
                     model: Holon,
-                    as: 'PostHolons',
+                    as: 'DirectPostSpaces',
                     attributes: ['handle'],
                     through: { where: { relationship: 'direct' }, attributes: [] },
+                },
+                {
+                    model: Holon,
+                    as: 'IndirectPostSpaces',
+                    attributes: ['handle'],
+                    through: { where: { relationship: 'indirect' }, attributes: [] },
                 },
                 {
                     model: User,
@@ -255,10 +251,13 @@ router.get('/holon-posts', (req, res) => {
         })
         .then(posts => {
             posts.forEach(post => {
-                // replace PostHolons object with simpler array
-                const newPostHolons = post.PostHolons.map(ph => ph.handle)
-                post.setDataValue("spaces", newPostHolons)
-                delete post.dataValues.PostHolons
+                // replace DirectPostSpaces object with simpler array
+                const newDirectPostSpaces = post.DirectPostSpaces.map(ph => ph.handle)
+                const newIndirectPostSpaces = post.IndirectPostSpaces.map(ph => ph.handle)
+                post.setDataValue("DirectSpaces", newDirectPostSpaces)
+                post.setDataValue("IndirectSpaces", newIndirectPostSpaces)
+                delete post.dataValues.DirectPostSpaces
+                delete post.dataValues.IndirectPostSpaces
             })
             return posts
         })
@@ -1084,7 +1083,7 @@ router.get('/post-comments', (req, res) => {
     .catch(err => console.log(err))
 })
 
-router.get('/suggested-holon-handles', (req, res) => {
+router.get('/suggested-space-handles', (req, res) => {
     const { searchQuery } = req.query
     Holon.findAll({
         where: { handle: { [Op.like]: `%${searchQuery}%` } },
@@ -1094,13 +1093,16 @@ router.get('/suggested-holon-handles', (req, res) => {
     .catch(err => console.log(err))
 })
 
-router.get('/validate-holon-handle', (req, res) => {
+router.get('/validate-space-handle', (req, res) => {
     const { searchQuery } = req.query
     Holon.findAll({
         where: { handle: searchQuery },
         attributes: ['handle']
     })
-    .then(handle => { res.json(handle) })
+    .then(holons => {
+        if (holons.length > 0) { res.send('success') }
+        else { res.send('fail') }
+    })
     .catch(err => console.log(err))
 })
 
@@ -1246,29 +1248,30 @@ router.post('/create-post', (req, res) => {
     }
 
     function createNewPollAnswers(post) {
-        pollAnswers.forEach(answer => PollAnswer.create({ text: answer, postId: post.id }))
+        if (pollAnswers) { pollAnswers.forEach(answer => PollAnswer.create({ text: answer, postId: post.id })) }
     }
 
     function createPost() {
-        findHandleIds()
-        Post.create({
-            type,
-            subType,
-            state,
-            creatorId,
-            text,
-            url,
-            urlImage,
-            urlDomain,
-            urlTitle,
-            urlDescription,
-            state: 'visible'
+        Promise.all([findHandleIds()]).then(() => {
+            Post.create({
+                type,
+                subType,
+                state,
+                creatorId,
+                text,
+                url,
+                urlImage,
+                urlDomain,
+                urlTitle,
+                urlDescription,
+                state: 'visible'
+            })
+            .then(post => {
+                createNewPostHolons(post)
+                createNewPollAnswers(post)
+            })
+            .then(res.send('success'))
         })
-        .then(post => {
-            createNewPostHolons(post)
-            createNewPollAnswers(post)
-        })
-        .then(res.send('success'))
     }
 
     createPost()

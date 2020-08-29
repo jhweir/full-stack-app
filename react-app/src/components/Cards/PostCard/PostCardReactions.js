@@ -11,6 +11,7 @@ import { HolonContext } from '../../../contexts/HolonContext'
 function PostCardReactions(props) {
     const {
         postId, postCreator,
+        DirectSpaces, IndirectSpaces,
         totalReactions, setTotalReactions,
         totalLikes, setTotalLikes,
         totalRatings, setTotalRatings,
@@ -104,7 +105,7 @@ function PostCardReactions(props) {
     return (
         <div className={styles.postCardReactions}>
             <PostCardReactionItem
-                reactions={reactionData.Labels.filter(label => label.type === 'like')}
+                reactions={reactionData && reactionData.Labels.filter(label => label.type === 'like')}
                 text='Likes'
                 previewOpen={likePreviewOpen}
                 setPreviewOpen={setLikePreviewOpen}
@@ -114,7 +115,7 @@ function PostCardReactions(props) {
                 onClick={addLike}
             />
             <PostCardReactionItem
-                reactions={reactionData.Labels.filter(label => label.type === 'rating')}
+                reactions={reactionData && reactionData.Labels.filter(label => label.type === 'rating')}
                 text='Ratings'
                 previewOpen={ratingPreviewOpen}
                 setPreviewOpen={setRatingPreviewOpen}
@@ -124,7 +125,7 @@ function PostCardReactions(props) {
                 onClick={() => setRatingModalOpen(!ratingModalOpen)}
             />
             <PostCardReactionItem
-                reactions={reactionData.Labels.filter(label => label.type === 'repost')}
+                reactions={reactionData && reactionData.Labels.filter(label => label.type === 'repost')}
                 text='Reposts'
                 previewOpen={repostPreviewOpen}
                 setPreviewOpen={setRepostPreviewOpen}
@@ -148,6 +149,8 @@ function PostCardReactions(props) {
             />}
             {repostModalOpen && <PostCardRepostModal
                 setRepostModalOpen={setRepostModalOpen}
+                DirectSpaces={DirectSpaces}
+                IndirectSpaces={IndirectSpaces}
                 postCreator={postCreator}
                 totalRepost={totalReposts}
                 accountRepost={accountRepost}

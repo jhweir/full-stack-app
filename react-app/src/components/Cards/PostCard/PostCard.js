@@ -21,7 +21,7 @@ function PostCard(props) {
 
     // remote post state
     const { 
-        id, creator, text, url, urlImage, urlDomain, urlTitle, urlDescription, createdAt, spaces,
+        id, creator, text, url, urlImage, urlDomain, urlTitle, urlDescription, createdAt, DirectSpaces, IndirectSpaces,
         total_comments, total_reactions, total_likes, total_ratings, total_rating_points, total_reposts,
         account_like, account_rating, account_repost
     } = postData
@@ -75,7 +75,7 @@ function PostCard(props) {
     }, [postData])
 
     if (finishedLoading) {
-        return ( 
+        return (
             <div className={styles.post}>
                 {location !== 'post-page' && <div className={styles.index}>{index + 1}</div>}
                 <div className={styles.body}>
@@ -91,8 +91,8 @@ function PostCard(props) {
                         </Link>
                         <span className={styles.subText}>to</span>
                         <div className={styles.holonNames}>
-                            {spaces.length > 0 ?
-                                spaces.map((holon, index) =>
+                            {DirectSpaces.length > 0 ?
+                                DirectSpaces.map((holon, index) =>
                                     <Link to={`/s/${holon}`}
                                         onClick={ () => {setHolonHandle(holon)} }
                                         style={{marginRight: 10}}
@@ -143,6 +143,7 @@ function PostCard(props) {
                         {reactionsOpen &&
                             <PostCardReactions
                                 postId={id} postCreator={creator}
+                                DirectSpaces={DirectSpaces} IndirectSpaces={IndirectSpaces}
                                 totalReactions={totalReactions} setTotalReactions={setTotalReactions}
                                 totalLikes={totalLikes} setTotalLikes={setTotalLikes}
                                 totalRatings={totalRatings} setTotalRatings={setTotalRatings}

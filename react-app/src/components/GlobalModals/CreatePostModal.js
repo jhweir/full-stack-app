@@ -5,7 +5,7 @@ import axios from 'axios'
 import config from '../../Config'
 import styles from '../../styles/components/CreatePostModal.module.scss'
 import UrlPreview from './UrlPreview'
-import HandleInput from './HandleInput'
+import SpaceInput from '../SpaceInput'
 import PollAnswerForm from './../PostPage/Poll/PollAnswerForm'
 import DropDownMenu from '../DropDownMenu'
 
@@ -15,7 +15,8 @@ function CreatePostModal() {
 
     const [postType, setPostType] = useState('Text')
     const [pollType, setPollType] = useState('Single Choice')
-    const [text, setText] = useState(null)
+    const [text, setText] = useState('')
+    const [textError, setTextError] = useState(false)
     const [url, setUrl] = useState(null)
     const [urlLoading, setUrlLoading] = useState(false)
     const [urlImage, setUrlImage] = useState(null)
@@ -23,18 +24,13 @@ function CreatePostModal() {
     const [urlTitle, setUrlTitle] = useState(null)
     const [urlDescription, setUrlDescription] = useState(null)
     const [urlFlashMessage, setUrlFlashMessage] = useState('')
-    const [holonHandles, setHolonHandles] = useState([])
-    const [newHandle, setNewHandle] = useState('')
-    const [suggestedHandlesOpen, setSuggestedHandlesOpen] = useState(false)
-    const [suggestedHandles, setSuggestedHandles] = useState([])
+
+    const [addedSpaces, setAddedSpaces] = useState([])
+    const [newSpaceError, setNewSpaceError] = useState(false)
+
     const [pollAnswers, setPollAnswers] = useState([])
     const [newPollAnswer, setNewPollAnswer] = useState('')
-    const [textError, setTextError] = useState(false)
-    const [newHandleError, setNewHandleError] = useState(false)
     const [newPollAnswerError, setNewPollAnswerError] = useState(false)
-
-    // TODO: rename to specifiy flash message type (in keeping with 'urlFlashMessage')
-    const [flashMessage, setflashMessage] = useState(false)
 
     function isValidUrl(string) {
         try { new URL(string) }
@@ -55,8 +51,7 @@ function CreatePostModal() {
                         setUrlImage(null)
                         setUrlTitle(null)
                         setUrlFlashMessage(res.data)
-                    }
-                    else {
+                    } else {
                         const { description, domain, img, title } = res.data
                         setUrlDescription(description)
                         setUrlDomain(domain)
@@ -86,10 +81,10 @@ function CreatePostModal() {
     function submitPost(e) {
         e.preventDefault()
         let invalidText = ((text === null || text.length < 1 || text.length > 2000) && url === null)
-        let invalidHolons = holonHandles.length < 1
+        let invalidHolons = addedSpaces.length < 1
         let invalidPollAnswers = postType === 'Poll' && pollAnswers.length < 1
         if (invalidText) { setTextError(true) }
-        if (invalidHolons) { setNewHandleError(true) }
+        if (invalidHolons) { setNewSpaceError(true) }
         if (invalidPollAnswers) { setNewPollAnswerError(true) }
         if (!invalidText && !invalidHolons && !invalidPollAnswers && !urlLoading) {
             let subType, answers
@@ -105,7 +100,7 @@ function CreatePostModal() {
                 urlDomain,
                 urlTitle,
                 urlDescription,
-                holonHandles,
+                holonHandles: addedSpaces,
                 pollAnswers: answers
             }
             axios.post(config.environmentURL + '/create-post', { post })
@@ -115,7 +110,7 @@ function CreatePostModal() {
     }
 
     useEffect(() => {
-        if (holonData && holonData.id) { setHolonHandles([holonData.handle]) }
+        if (holonData && holonData.id) { setAddedSpaces([holonData.handle]) }
     }, [holonData])
 
     return (
@@ -137,15 +132,13 @@ function CreatePostModal() {
                         setSelectedOption={setPostType}
                         style='horizontal'
                     />
-                    {postType === 'Poll' &&
-                        <DropDownMenu
-                            title='Poll Type'
-                            options={['Single Choice', 'Multiple Choice', 'Weighted Choice']}
-                            selectedOption={pollType}
-                            setSelectedOption={setPollType}
-                            style='horizontal'
-                        />
-                    }
+                    {postType === 'Poll' && <DropDownMenu
+                        title='Poll Type'
+                        options={['Single Choice', 'Multiple Choice', 'Weighted Choice']}
+                        selectedOption={pollType}
+                        setSelectedOption={setPollType}
+                        style='horizontal'
+                    />}
                 </div>
                 <form className={styles.form} onSubmit={submitPost}>
                     <textarea className={`wecoInput textArea mb-10 ${textError && 'error'}`}
@@ -153,17 +146,15 @@ function CreatePostModal() {
                         type="text" value={text}
                         onChange={(e) => { setText(e.target.value); setTextError(false) }}
                     />
-                    {postType === 'Url' &&
-                        <input className={`wecoInput mb-10`}
-                            placeholder="Url"
-                            type="url" value={url}
-                            onChange={(e) => {
-                                setUrlFlashMessage('')
-                                setUrl(e.target.value)
-                                scrapeURL(e.target.value)
-                            }}
-                        />
-                    }
+                    {postType === 'Url' && <input className={`wecoInput mb-10`}
+                        placeholder="Url"
+                        type="url" value={url}
+                        onChange={(e) => {
+                            setUrlFlashMessage('')
+                            setUrl(e.target.value)
+                            scrapeURL(e.target.value)
+                        }}
+                    />}
                     <UrlPreview
                         url={url}
                         urlLoading={urlLoading}
@@ -173,26 +164,21 @@ function CreatePostModal() {
                         urlDescription={urlDescription}
                         urlFlashMessage={urlFlashMessage}
                     />
-                    <HandleInput // TODO: look into whether there is a better way to approach passing down state hooks
-                        holonData={holonData}
-                        holonHandles={holonHandles} setHolonHandles={setHolonHandles}
-                        newHandle={newHandle} setNewHandle={setNewHandle}
-                        suggestedHandlesOpen={suggestedHandlesOpen} setSuggestedHandlesOpen={setSuggestedHandlesOpen}
-                        suggestedHandles={suggestedHandles} setSuggestedHandles={setSuggestedHandles}
-                        newHandleError={newHandleError} setNewHandleError={setNewHandleError}
-                        flashMessage={flashMessage} setflashMessage={setflashMessage}
-                        setCreatePostModalOpen={setCreatePostModalOpen}
+                    <SpaceInput
+                        text='Add other spaces you want the post to appear in:'
+                        blockedSpaces={[]}
+                        addedSpaces={addedSpaces} setAddedSpaces={setAddedSpaces}
+                        newSpaceError={newSpaceError} setNewSpaceError={setNewSpaceError}
+                        setParentModalOpen={setCreatePostModalOpen}
                     />
-                    {postType === 'Poll' &&
-                        <PollAnswerForm
-                            pollAnswers={pollAnswers}
-                            setPollAnswers={setPollAnswers}
-                            newPollAnswer={newPollAnswer}
-                            setNewPollAnswer={setNewPollAnswer}
-                            newPollAnswerError={newPollAnswerError}
-                            setNewPollAnswerError={setNewPollAnswerError}
-                        />
-                    }
+                    {postType === 'Poll' && <PollAnswerForm
+                        pollAnswers={pollAnswers}
+                        setPollAnswers={setPollAnswers}
+                        newPollAnswer={newPollAnswer}
+                        setNewPollAnswer={setNewPollAnswer}
+                        newPollAnswerError={newPollAnswerError}
+                        setNewPollAnswerError={setNewPollAnswerError}
+                    />}
                     <button className="wecoButton centered">Submit Post</button>
                 </form>
             </div>
@@ -201,40 +187,3 @@ function CreatePostModal() {
 }
 
 export default CreatePostModal
-
-// {postType.toLowerCase()}
-
-
-// {postType === 'Poll' &&
-// <div className={styles.pollTypeSelector}>
-//     <span className={styles.pollTypeSelectorText}>Choose a poll type</span>
-//     <div className={styles.pollTypeSelectorOptions}>
-//         <div className="button" onClick={() => { setPollType('single-choice') }}>Single Choice</div>
-//         <div className="button" onClick={() => { setPollType('multiple-choice') }}>Multiple Choice</div>
-//         <div className="button" onClick={() => { setPollType('weighted-choice') }}>Weighted Choice</div>
-//     </div>
-//     <span className={styles.pollTypeSelectorText}>Selected poll type: {pollType}</span>
-// </div>
-// }
-
-{/* <div className={styles.createPostModalSubTitle}>Chose a post type:</div>
-<div className={styles.createPostModalTypeSelector}>
-    <div className={styles.createPostModalTypeSelectorButton}>Text</div>
-    <div className={styles.createPostModalTypeSelectorButton}>Video</div>
-    <div className={styles.createPostModalTypeSelectorButton}>Audio</div>
-    <div className={styles.createPostModalTypeSelectorButton}>Poll</div>
-</div> */}
-
-{/* <input className="input-wrapper modal mb-20"
-    type="text" placeholder="Username..." value={ user }
-    onChange={(e) => setUser(e.target.value)}/> */}
-
-// {!type &&
-//     <>
-//         <div className={styles.createPostModalSubTitle}>Chose a post type:</div>
-//         <div className={styles.createPostModalTypeSelector}>
-//             <div className={styles.createPostModalTypeSelectorButton} onClick={() => { setPostType('text') }}>Text</div>
-//             <div className={styles.createPostModalTypeSelectorButton} onClick={() => { setPostType('poll') }}>Poll</div>
-//         </div>
-//     </>
-// }
