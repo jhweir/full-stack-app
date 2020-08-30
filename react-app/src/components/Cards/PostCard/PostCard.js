@@ -21,9 +21,10 @@ function PostCard(props) {
 
     // remote post state
     const { 
-        id, creator, text, url, urlImage, urlDomain, urlTitle, urlDescription, createdAt, DirectSpaces, IndirectSpaces,
+        id, creator, text, url, urlImage, urlDomain, urlTitle, urlDescription, createdAt,
         total_comments, total_reactions, total_likes, total_ratings, total_rating_points, total_reposts,
-        account_like, account_rating, account_repost
+        account_like, account_rating, account_repost,
+        DirectSpaces, IndirectSpaces
     } = postData
 
     // local post state
@@ -142,8 +143,7 @@ function PostCard(props) {
                         </div>
                         {reactionsOpen &&
                             <PostCardReactions
-                                postId={id} postCreator={creator}
-                                DirectSpaces={DirectSpaces} IndirectSpaces={IndirectSpaces}
+                                postData={postData}
                                 totalReactions={totalReactions} setTotalReactions={setTotalReactions}
                                 totalLikes={totalLikes} setTotalLikes={setTotalLikes}
                                 totalRatings={totalRatings} setTotalRatings={setTotalRatings}

@@ -10,8 +10,7 @@ import { HolonContext } from '../../../contexts/HolonContext'
 
 function PostCardReactions(props) {
     const {
-        postId, postCreator,
-        DirectSpaces, IndirectSpaces,
+        postData,
         totalReactions, setTotalReactions,
         totalLikes, setTotalLikes,
         totalRatings, setTotalRatings,
@@ -39,7 +38,7 @@ function PostCardReactions(props) {
     function getReactionData() {
         console.log('PostCardReactions: getReactionData')
         axios
-            .get(config.environmentURL + `/post-reaction-data?postId=${postId}`)
+            .get(config.environmentURL + `/post-reaction-data?postId=${postData.id}`)
             .then(res => { setReactionData(res.data) })
     }
 
@@ -51,7 +50,7 @@ function PostCardReactions(props) {
                 setTotalLikes(totalLikes - 1)
                 setTotalReactions(totalReactions - 1)
                 setAccountLike(0)
-                axios.put(config.environmentURL + '/remove-like', { accountId: accountData.id, postId: postId })
+                axios.put(config.environmentURL + '/remove-like', { accountId: accountData.id, postId: postData.id })
                     .then(res => { if (res.data === 'success') { setTimeout(() => { getReactionData() }, 200) }})
                     .catch(error => { console.log(error) })
             }
@@ -60,7 +59,7 @@ function PostCardReactions(props) {
                 setTotalLikes(totalLikes + 1)
                 setTotalReactions(totalReactions + 1)
                 setAccountLike(accountLike + 1)
-                axios.put(config.environmentURL + '/add-like', { accountId: accountData.id, postId: postId, holonId: holonData.id })
+                axios.put(config.environmentURL + '/add-like', { accountId: accountData.id, postId: postData.id, holonId: holonData.id })
                     .then(res => { if (res.data === 'success') { setTimeout(() => { getReactionData() }, 200) }})
                     .catch(error => { console.log(error) })
             }
@@ -78,7 +77,7 @@ function PostCardReactions(props) {
                 setTotalReactions(totalReactions + 1)
                 setTotalRatingPoints(totalRatingPoints + parseInt(newRating, 10))
                 setAccountRating(accountRating + 1)
-                axios.put(config.environmentURL + '/add-rating', { accountId: accountData.id, postId: postId, holonId: holonData.id, newRating })
+                axios.put(config.environmentURL + '/add-rating', { accountId: accountData.id, postId: postData.id, holonId: holonData.id, newRating })
                     .then(setNewRating(''))
                     .catch(error => { console.log(error) })
             }
@@ -92,7 +91,7 @@ function PostCardReactions(props) {
             setTotalRatings(totalRatings - 1)
             setTotalReactions(totalReactions - 1)
             setAccountRating(0)
-            axios.put(config.environmentURL + '/remove-rating', { accountId: accountData.id, postId: postId, holonId: holonData.id })
+            axios.put(config.environmentURL + '/remove-rating', { accountId: accountData.id, postId: postData.id, holonId: holonData.id })
                 .then(() => { getHolonPosts() })
                 .catch(error => { console.log(error) })
         }
@@ -115,16 +114,6 @@ function PostCardReactions(props) {
                 onClick={addLike}
             />
             <PostCardReactionItem
-                reactions={reactionData && reactionData.Labels.filter(label => label.type === 'rating')}
-                text='Ratings'
-                previewOpen={ratingPreviewOpen}
-                setPreviewOpen={setRatingPreviewOpen}
-                accountReaction={accountRating}
-                totalReactions={totalRatings}
-                iconPath='star-solid.svg'
-                onClick={() => setRatingModalOpen(!ratingModalOpen)}
-            />
-            <PostCardReactionItem
                 reactions={reactionData && reactionData.Labels.filter(label => label.type === 'repost')}
                 text='Reposts'
                 previewOpen={repostPreviewOpen}
@@ -137,7 +126,17 @@ function PostCardReactions(props) {
                     else { setAlertMessage('Log in to repost post'); setAlertModalOpen(true) }
                 }}
             />
-            {ratingModalOpen && <PostCardRatingModal
+            <PostCardReactionItem
+                reactions={reactionData && reactionData.Labels.filter(label => label.type === 'rating')}
+                text='Ratings'
+                previewOpen={ratingPreviewOpen}
+                setPreviewOpen={setRatingPreviewOpen}
+                accountReaction={accountRating}
+                totalReactions={totalRatings}
+                iconPath='star-solid.svg'
+                onClick={() => setRatingModalOpen(!ratingModalOpen)}
+            />
+            {ratingModalOpen && <PostCardRatingModal //TODO: update like repost modal below (use postData)?
                 isLoggedIn={isLoggedIn}
                 totalRatings={totalRatings}
                 totalRatingPoints={totalRatingPoints}
@@ -148,12 +147,12 @@ function PostCardReactions(props) {
                 accountRating={accountRating}
             />}
             {repostModalOpen && <PostCardRepostModal
+                postData={postData}
                 setRepostModalOpen={setRepostModalOpen}
-                DirectSpaces={DirectSpaces}
-                IndirectSpaces={IndirectSpaces}
-                postCreator={postCreator}
-                totalRepost={totalReposts}
-                accountRepost={accountRepost}
+                totalReactions={totalReactions} setTotalReactions={setTotalReactions}
+                totalReposts={totalReposts} setTotalReposts={setTotalReposts}
+                accountRepost={accountRepost} setAccountRepost={setAccountRepost}
+                getReactionData={getReactionData}
             />}
         </div>
     )

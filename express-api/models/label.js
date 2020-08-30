@@ -18,6 +18,10 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'userId',
       as: 'creator'
     })
+    Label.belongsTo(models.Holon, {
+      foreignKey: 'holonId',
+      as: 'space'
+    })
     Label.belongsTo(models.PollAnswer, {
       foreignKey: 'pollAnswerId'
     })

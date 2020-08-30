@@ -27,37 +27,36 @@ const postAttributes = [
         ),'total_comments'
     ],
     [sequelize.literal(
-        `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.type != "vote" AND Label.type != "heart" AND Label.state = 'active')`
+        `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.type != 'vote' AND Label.state = 'active')`
         ),'total_reactions'
     ],
+    // [sequelize.literal(
+    //     `(SELECT
+    //         (SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.type != 'vote' AND Label.state = 'active') +
+    //         (SELECT COUNT(*) FROM PostHolons AS PostHolon WHERE PostHolon.postId = Post.id AND PostHolon.type = 'repost' AND PostHolon.relationship = 'direct')
+    //     )`
+    //     ),'total_reactions'
+    // ],
     [sequelize.literal(
-        `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.type = "like" AND Label.state = 'active')`
+        `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.type = 'like' AND Label.state = 'active')`
         ),'total_likes'
     ],
     [sequelize.literal(
-        `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.type = "rating" AND Label.state = 'active')`
+        `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.type = 'rating' AND Label.state = 'active')`
         ),'total_ratings'
     ],
     [sequelize.literal(
-        `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.type = "repost" AND Label.state = 'active')`
+        `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.type = 'repost' AND Label.state = 'active')`
         ),'total_reposts'
     ],
+    // [sequelize.literal(
+    //     `(SELECT COUNT(*) FROM PostHolons AS PostHolon WHERE PostHolon.postId = Post.id AND PostHolon.type = 'repost' AND PostHolon.relationship = 'direct')`
+    //     ),'total_reposts'
+    // ],
     [sequelize.literal(
-        `(SELECT SUM(value) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.type = "rating" AND Label.state = 'active')`
+        `(SELECT SUM(value) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.type = 'rating' AND Label.state = 'active')`
         ),'total_rating_points'
-    ],
-    // [sequelize.literal(
-    //     `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.userId = 2 AND Label.type = 'like')`
-    //     ),'account_like'
-    // ],
-    // [sequelize.literal(
-    //     `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.userId = 2 AND Label.type = 'heart')`
-    //     ),'account_heart'
-    // ],
-    // [sequelize.literal(
-    //     `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.userId = 2 AND Label.type = 'rating')`
-    //     ),'account_rating'
-    // ]
+    ]
 ]
 
 router.get('/holon-data', (req, res) => {
@@ -116,7 +115,8 @@ router.get('/holon-posts', (req, res) => {
         let direction, order
         if (sortOrder === 'Ascending') { direction = 'ASC' } else { direction = 'DESC' }
         if (sortBy === 'Date') { order = [['createdAt', direction]] }
-        else { order = [[sequelize.literal(`total_${sortBy.toLowerCase()}`), direction]] }
+        if (sortBy === 'Total Reactions') { order = [[sequelize.literal(`total_reactions`), direction]] }
+        if (sortBy !== 'Total Reactions' && sortBy !== 'Date') { order = [[sequelize.literal(`total_${sortBy.toLowerCase()}`), direction]] }
         return order
     }
 
@@ -126,22 +126,33 @@ router.get('/holon-posts', (req, res) => {
             `(SELECT COUNT(*) FROM Comments AS Comment WHERE Comment.state = 'visible' AND Comment.postId = Post.id)`
             ),'total_comments'
         ])}
-        if (sortBy === 'Reactions') { firstAttributes.push([sequelize.literal(
-            `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.type != "vote" AND Label.state = 'active')`
+        if (sortBy === 'Total Reactions') { firstAttributes.push([sequelize.literal(
+            `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.type != 'vote' AND Label.state = 'active')`
             ),'total_reactions'
         ])}
+        // if (sortBy === 'Reactions') { firstAttributes.push([sequelize.literal(
+        //     `(SELECT
+        //         (SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.type != 'vote' AND Label.state = 'active') +
+        //         (SELECT COUNT(*) FROM PostHolons AS PostHolon WHERE PostHolon.postId = Post.id AND PostHolon.type = 'repost' AND PostHolon.relationship = 'direct')
+        //     )`
+        //     ),'total_reactions'
+        // ])}
         if (sortBy === 'Likes') { firstAttributes.push([sequelize.literal(
-            `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.type = "like" AND Label.state = 'active')`
+            `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.type = 'like' AND Label.state = 'active')`
             ),'total_likes'
         ])}
-        // if (sortBy === 'Hearts') { firstAttributes.push([sequelize.literal(
-        //     `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.type = "heart" AND Label.state = 'active')`
-        //     ),'total_hearts'
-        // ])}
         if (sortBy === 'Ratings') { firstAttributes.push([sequelize.literal(
-            `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.type = "rating" AND Label.state = 'active')`
+            `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.type = 'rating' AND Label.state = 'active')`
             ),'total_ratings'
         ])}
+        if (sortBy === 'Reposts') { firstAttributes.push([sequelize.literal(
+            `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.type = 'repost' AND Label.state = 'active')`
+            ),'total_reposts'
+        ])}
+        // if (sortBy === 'Reposts') { firstAttributes.push([sequelize.literal(
+        //     `(SELECT COUNT(*) FROM PostHolons AS PostHolon WHERE PostHolon.postId = Post.id AND PostHolon.type = 'repost' AND PostHolon.relationship = 'direct')`
+        //     ),'total_reposts'
+        // ])}
         return firstAttributes
     }
 
@@ -223,7 +234,27 @@ router.get('/holon-posts', (req, res) => {
                 AND Label.type = 'rating'
                 AND Label.state = 'active'
                 )`),'account_rating'
-            ]
+            ],
+            [sequelize.literal(`(
+                SELECT COUNT(*)
+                FROM Labels
+                AS Label
+                WHERE Label.postId = Post.id
+                AND Label.userId = ${accountId}
+                AND Label.type = 'repost'
+                AND Label.state = 'active'
+                )`),'account_repost'
+            ],
+            // [sequelize.literal(`(
+            //     SELECT COUNT(*)
+            //     FROM PostHolons
+            //     AS PostHolon
+            //     WHERE  PostHolon.postId = Post.id
+            //     AND PostHolon.creatorId = ${accountId}
+            //     AND PostHolon.type = 'repost'
+            //     AND PostHolon.relationship = 'direct'
+            //     )`),'account_repost'
+            // ]
         ]
         return Post.findAll({ 
             where: { id: posts.map(post => post.id) },
@@ -234,7 +265,7 @@ router.get('/holon-posts', (req, res) => {
                     model: Holon,
                     as: 'DirectPostSpaces',
                     attributes: ['handle'],
-                    through: { where: { relationship: 'direct' }, attributes: [] },
+                    through: { where: { type: 'post', relationship: 'direct' }, attributes: [] },
                 },
                 {
                     model: Holon,
@@ -251,13 +282,17 @@ router.get('/holon-posts', (req, res) => {
         })
         .then(posts => {
             posts.forEach(post => {
-                // replace DirectPostSpaces object with simpler array
+                // replace object arrays with simpler string arrays
                 const newDirectPostSpaces = post.DirectPostSpaces.map(ph => ph.handle)
-                const newIndirectPostSpaces = post.IndirectPostSpaces.map(ph => ph.handle)
                 post.setDataValue("DirectSpaces", newDirectPostSpaces)
-                post.setDataValue("IndirectSpaces", newIndirectPostSpaces)
                 delete post.dataValues.DirectPostSpaces
+
+                const newIndirectPostSpaces = post.IndirectPostSpaces.map(ph => ph.handle)
+                post.setDataValue("IndirectSpaces", newIndirectPostSpaces)
                 delete post.dataValues.IndirectPostSpaces
+
+                // // add up total reactions
+                // const totalReactions = 
             })
             return posts
         })
@@ -949,18 +984,37 @@ router.get('/user-posts', (req, res) => {
 
 router.get('/post-data', (req, res) => {
     const { accountId, postId } = req.query
-    let attributes = [...postAttributes,
-        [sequelize.literal(
-            `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.userId = ${accountId} AND Label.type = 'like' AND Label.state = 'active')`
-            ),'account_like'
+    let attributes = [
+        ...postAttributes,
+        [sequelize.literal(`(
+            SELECT COUNT(*)
+            FROM Labels
+            AS Label
+            WHERE Label.postId = Post.id
+            AND Label.userId = ${accountId}
+            AND Label.type = 'like'
+            AND Label.state = 'active'
+            )`),'account_like'
         ],
-        [sequelize.literal(
-            `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.userId = ${accountId} AND Label.type = 'heart' AND Label.state = 'active')`
-            ),'account_heart'
+        [sequelize.literal(`(
+            SELECT COUNT(*)
+            FROM Labels
+            AS Label
+            WHERE Label.postId = Post.id
+            AND Label.userId = ${accountId}
+            AND Label.type = 'rating'
+            AND Label.state = 'active'
+            )`),'account_rating'
         ],
-        [sequelize.literal(
-            `(SELECT COUNT(*) FROM Labels AS Label WHERE Label.postId = Post.id AND Label.userId = ${accountId} AND Label.type = 'rating' AND Label.state = 'active')`
-            ),'account_rating'
+        [sequelize.literal(`(
+            SELECT COUNT(*)
+            FROM PostHolons
+            AS PostHolon
+            WHERE  PostHolon.postId = Post.id
+            AND PostHolon.creatorId = ${accountId}
+            AND PostHolon.type = 'repost'
+            AND PostHolon.relationship = 'direct'
+            )`),'account_repost'
         ]
     ]
     Post.findOne({ 
@@ -972,11 +1026,17 @@ router.get('/post-data', (req, res) => {
                 as: 'creator',
                 attributes: ['handle', 'name', 'flagImagePath']
             },
-            { 
+            {
                 model: Holon,
-                as: 'PostHolons',
+                as: 'DirectPostSpaces',
                 attributes: ['handle'],
-                through: { attributes: [] }
+                through: { where: { type: 'post', relationship: 'direct' }, attributes: [] },
+            },
+            {
+                model: Holon,
+                as: 'IndirectPostSpaces',
+                attributes: ['handle'],
+                through: { where: { relationship: 'indirect' }, attributes: [] },
             },
             {
                 model: PollAnswer,
@@ -995,10 +1055,15 @@ router.get('/post-data', (req, res) => {
         ]
     })
     .then(post => {
-        // replace PostHolons array of objects with simpler 'spaces' array of strings
-        const spaces = post.PostHolons.map(ph => ph.handle)
-        post.setDataValue("spaces", spaces)
-        delete post.dataValues.PostHolons
+        // replace object arrays with simpler string arrays
+        const newDirectPostSpaces = post.DirectPostSpaces.map(ph => ph.handle)
+        post.setDataValue("DirectSpaces", newDirectPostSpaces)
+        delete post.dataValues.DirectPostSpaces
+
+        const newIndirectPostSpaces = post.IndirectPostSpaces.map(ph => ph.handle)
+        post.setDataValue("IndirectSpaces", newIndirectPostSpaces)
+        delete post.dataValues.IndirectPostSpaces
+
         return post
     })
     .then(post => { res.json(post) })
@@ -1019,10 +1084,23 @@ router.get('/post-reaction-data', (req, res) => {
                     {
                         model: User,
                         as: 'creator',
-                        attributes: ['handle', 'name', 'flagImagePath'],
+                        attributes: ['handle', 'name', 'flagImagePath']
+                    },
+                    // TODO: potentially change Label includes based on reaction type to reduce unused data
+                    // (most wouldn't need holon data)
+                    {
+                        model: Holon,
+                        as: 'space',
+                        attributes: ['handle', 'name', 'flagImagePath']
                     }
                 ]
-            }
+            },
+            // {
+            //     model: Holon,
+            //     as: 'Reposts',
+            //     attributes: ['handle'],
+            //     through: { where: { type: 'repost', relationship: 'direct' }, attributes: ['creatorId'] },
+            // },
         ]
     })
     .then(post => { res.json(post) })
@@ -1282,6 +1360,51 @@ router.delete('/delete-post', (req, res) => {
     const { postId } = req.body
     Post.update({ state: 'hidden' }, { where: { id: postId } })
     // Post.destroy({ where: { id: req.body.id }})
+})
+
+router.post('/repost-post', (req, res) => {
+    const { accountId, postId, spaces } = req.body
+
+    const createPostHolons = spaces.forEach(space => {
+        Holon.findOne({
+            where: { handle: space },
+            attributes: ['id'],
+            include: [{ model: Holon, as: 'HolonHandles', attributes: ['id'], through: { attributes: [] } }]
+        })
+        .then(holon => {
+            PostHolon.create({
+                type: 'repost',
+                relationship: 'direct',
+                creatorId: accountId,
+                postId: postId,
+                holonId: holon.id
+            })
+            Label.create({
+                type: 'repost',
+                state: 'active',
+                holonId: holon.id,
+                userId: accountId,
+                postId: postId
+            })
+            holon.HolonHandles
+                .filter(handle => handle.id != holon.id)
+                .forEach(handle => {
+                    PostHolon.create({
+                        type: 'repost',
+                        relationship: 'indirect',
+                        creatorId: accountId,
+                        postId: postId,
+                        holonId: handle.id
+                    })
+                })
+        })
+    })
+
+    Promise
+        .all([createPostHolons])
+        .then(res.send('success'))
+        .catch(err => { res.send(err) })
+
 })
 
 router.put('/add-like', (req, res) => {

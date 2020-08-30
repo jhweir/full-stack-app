@@ -1,12 +1,16 @@
 # Todos
 Last updated: 18-08-2020
 
++ Set up reposts (add current spaces to repost modal)
++ Allow users to log in with username or password
 + Add loading states for each db call in contexts, updated effected functions, and test load-order bugs
 + Add mod controls
     + remove parent space
     + remove child space
     + delete space
 
+- Change 'Labels' table to 'Reactions' (freeing up 'labels' for other uses)
+- Update 'holon' names to 'space' throughout codebase to avoid confusion
 - Set up social media log-in strategies
 - Protect restircted pages and routes (settings page, image uploads etc.)
 - Set up comment replies
@@ -77,7 +81,7 @@ Last updated: 18-08-2020
     - Sort by (Total Reactions, Total Likes, Total Hearts, Total Ratings, Total Links, ...)
 - work out how to get holon stats for sorting ()
 - Set up filters on child-holons page
-- show all spaces vs direct child spaces ('holon handles' / 'verticle holon relationships') ('all contained spaces' vs. 'only direct descendents')
+- Show all spaces vs direct child spaces ('holon handles' / 'verticle holon relationships') ('all contained spaces' vs. 'only direct descendents')
 - Add user to created holons
 - Merge title and description into one text field (character limit around 3000)?
 - Set up reverse orders for wall filters
@@ -85,13 +89,14 @@ Last updated: 18-08-2020
 - Change 'isPostPage' prop to 'location' prop ('holon-posts', 'post-page', 'user-created-posts')
 - Set up infinite scroll on comments
 - Set up reset filter functions for holon and user contexts
-- bug: after new log-in, going to profile page fails and user has to refresh page
-- build scraper for Url posts
-- reposition post-reactions and remove 'hearts'
-- add 'no comments with those settings' placeholder on post page
+- Bug: after new log-in, going to profile page fails and user has to refresh page
+- Build scraper for Url posts
+- Reposition post-reactions and remove 'hearts'
+- Add 'no comments with those settings' placeholder on post page
 - Add mod controls
     - handle change
     - name change
     - add new mod
     - add new parent space
 - Seperate 'direct' and 'indirect' handles when creating posts then set up option to show all posts vs direct posts
+- Set up reaction previews
