@@ -35,9 +35,9 @@ function PostCardRepostModal(props) {
                 .then(res => {
                     if (res.data === 'success') {
                         setRepostModalOpen(false)
-                        setTotalReactions(totalReactions + 1)
-                        setTotalReposts(totalReposts + 1)
-                        setAccountRepost(accountRepost + 1)
+                        setTotalReactions(totalReactions + addedSpaces.length)
+                        setTotalReposts(totalReposts + addedSpaces.length)
+                        setAccountRepost(accountRepost + addedSpaces.length)
                         setTimeout(() => { getReactionData() }, 200)
                     }
                     else { console.log('error: ', res) }

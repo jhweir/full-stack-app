@@ -1,6 +1,7 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   const Holon = sequelize.define('Holon', {
+    creatorId: DataTypes.INTEGER,
     handle: DataTypes.STRING,
     name: DataTypes.STRING,
     description: DataTypes.TEXT,
@@ -41,6 +42,10 @@ module.exports = (sequelize, DataTypes) => {
       through: models.HolonUser,
       as: 'HolonFollowers',
       foreignKey: 'holonId'
+    })
+    Holon.belongsTo(models.User, {
+      as: 'Creator',
+      foreignKey: 'creatorId'
     })
   }
   return Holon;

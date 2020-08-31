@@ -8,6 +8,9 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+      creatorId: {
+        type: Sequelize.INTEGER
+      },
       handle: {
         type: Sequelize.STRING,
         //unique: true

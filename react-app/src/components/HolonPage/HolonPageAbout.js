@@ -1,9 +1,12 @@
 import React, { useContext, useEffect } from 'react'
 import { HolonContext } from '../../contexts/HolonContext'
 import styles from '../../styles/components/HolonPageAbout.module.scss'
+import { useHistory } from "react-router-dom"
+import { Link } from 'react-router-dom'
 
 function HolonPageAbout() {
     const { holonData, setSelectedHolonSubPage } = useContext(HolonContext)
+    const history = useHistory()
 
     let d = new Date(holonData.createdAt)
     let dateCreated = `${d.getHours()}:${d.getMinutes()} on ${d.getDate()}-${d.getMonth()}-${d.getFullYear()}`
@@ -22,7 +25,20 @@ function HolonPageAbout() {
             <div className={styles.content}>
                 <div className={styles.name}>{holonData.name}</div>
                 <div className={styles.handle}>s/{holonData.handle}</div>
-                <div className={styles.text}>Created at {dateCreated} by [Creator]</div>
+                <div className={styles.created}>
+                    <div className={`${styles.text} mr-10`}>Created at {dateCreated} by </div>
+                    {holonData.Creator &&
+                        <Link to={ `/u/${holonData.Creator.handle}`} className={styles.creator}>
+                            {holonData.Creator.flagImagePath
+                                ? <img className={styles.creatorImage} src={holonData.Creator.flagImagePath} alt=''/>
+                                : <div className={styles.placeholderWrapper}>
+                                    <img className={styles.placeholder} src={'/icons/user-solid.svg'} alt=''/>
+                                </div>
+                            }
+                            <span className={styles.text}>{holonData.Creator && holonData.Creator.name}</span>
+                        </Link>
+                    }
+                </div>
                 <div className={styles.text}>{holonData.description}</div>
             </div>
         </div>

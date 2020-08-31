@@ -17,7 +17,7 @@ function CreateHolonModal() {
     const [descriptionError, setDescriptionError] = useState(false)
     const [flashMessage, setFlashMessage] = useState('')
 
-    function publishHolon(e) {
+    function createHolon(e) {
         e.preventDefault()
         let invalidHandle = handle.length === 0 || handle.length > 15
         let invalidName = name.length === 0 || name.length > 25
@@ -51,7 +51,7 @@ function CreateHolonModal() {
                 />
                 <span className={styles.title}>Create a new space in '{ holonData.name }'</span>
                 <span className={styles.flashMessage}>{ flashMessage }</span>
-                <form className={styles.form} onSubmit={ publishHolon }>
+                <form className={styles.form} onSubmit={createHolon}>
                     <input 
                         className={`wecoInput mb-10 ${handleError && 'error'}`}
                         placeholder="Handle (must be unique)"

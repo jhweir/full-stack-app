@@ -81,6 +81,11 @@ router.get('/holon-data', (req, res) => {
                 as: 'HolonHandles',
                 attributes: ['handle', 'name'],
                 through: { attributes: [] }
+            },
+            {
+                model: User,
+                as: 'Creator',
+                attributes: ['id', 'handle', 'name', 'flagImagePath']
             }
         ]
     })
@@ -90,7 +95,6 @@ router.get('/holon-data', (req, res) => {
 
 router.get('/holon-posts', (req, res) => {
     const { accountId, handle, timeRange, postType, sortBy, sortOrder, depth, searchQuery, limit, offset } = req.query
-    console.log('req.query: ', req.query)
 
     function findStartDate() {
         let offset = undefined
@@ -1209,42 +1213,49 @@ router.post('/create-holon', (req, res) => {
         })
 
     function createHolon() { 
-        Holon.create({ name, handle, description }).then((newHolon) => {
-            // Set up moderator relationship between creator and holon
-            HolonUser.create({
-                relationship: 'moderator',
-                state: 'active',
-                holonId: newHolon.id,
-                userId: creatorId
-            })
-            // Attach new holon to parent holon(s)
-            VerticalHolonRelationship.create({
-                state: 'open',
-                holonAId: parentHolonId,
-                holonBId: newHolon.id,
-            })
-            // Create a unique tag for the holon
-            HolonHandle.create({
-                state: 'open',
-                holonAId: newHolon.id,
-                holonBId: newHolon.id,
-            })
-            // Copy the parent holons tags to the new holon
-            //// 1. Work out parent holons tags
-            Holon.findOne({
-                where: { id: parentHolonId },
-                include: [{ model: Holon, as: 'HolonHandles' }]
-            }).then(data => {
-            //// 2. Add them to the new holon
-                data.HolonHandles.forEach((tag) => {
-                    HolonHandle.create({
-                        state: 'open',
-                        holonAId: newHolon.id,
-                        holonBId: tag.id,
-                    })
+        Holon
+            .create({ creatorId, name, handle, description })
+            .then(newHolon => {
+                // Set up moderator relationship between creator and holon
+                HolonUser.create({
+                    relationship: 'moderator',
+                    state: 'active',
+                    holonId: newHolon.id,
+                    userId: creatorId
                 })
-            }).catch(err => console.log(err))
-        }).then(res.send('success')).catch(err => console.log(err))
+                // Attach new holon to parent holon(s)
+                VerticalHolonRelationship.create({
+                    state: 'open',
+                    holonAId: parentHolonId,
+                    holonBId: newHolon.id,
+                })
+                // Create a unique tag for the holon
+                HolonHandle.create({
+                    state: 'open',
+                    holonAId: newHolon.id,
+                    holonBId: newHolon.id,
+                })
+                // Copy the parent holons tags to the new holon
+                //// 1. Work out parent holons tags
+                Holon
+                    .findOne({
+                        where: { id: parentHolonId },
+                        include: [{ model: Holon, as: 'HolonHandles' }]
+                    })
+                    .then(data => {
+                        //// 2. Add them to the new holon
+                        data.HolonHandles.forEach((tag) => {
+                            HolonHandle.create({
+                                state: 'open',
+                                holonAId: newHolon.id,
+                                holonBId: tag.id,
+                            })
+                        })
+                    })
+                    .catch(err => console.log(err))
+            })
+            .then(res.send('success'))
+            .catch(err => console.log(err))
     }
 })
 
@@ -1389,13 +1400,19 @@ router.post('/repost-post', (req, res) => {
             holon.HolonHandles
                 .filter(handle => handle.id != holon.id)
                 .forEach(handle => {
-                    PostHolon.create({
-                        type: 'repost',
-                        relationship: 'indirect',
-                        creatorId: accountId,
-                        postId: postId,
-                        holonId: handle.id
-                    })
+                    PostHolon
+                        .findOne({ where: { postId: postId, holonId: handle.id } })
+                        .then(postHolon => {
+                            if (!postHolon) {
+                                PostHolon.create({
+                                    type: 'repost',
+                                    relationship: 'indirect',
+                                    creatorId: accountId,
+                                    postId: postId,
+                                    holonId: handle.id
+                                })
+                            }
+                        })
                 })
         })
     })
@@ -1404,7 +1421,6 @@ router.post('/repost-post', (req, res) => {
         .all([createPostHolons])
         .then(res.send('success'))
         .catch(err => { res.send(err) })
-
 })
 
 router.put('/add-like', (req, res) => {
