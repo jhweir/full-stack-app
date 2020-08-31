@@ -7,7 +7,7 @@ import { HolonContext } from '../../contexts/HolonContext'
 
 function AuthModal() {
     const { getAccountData, setAuthModalOpen } = useContext(AccountContext)
-    const [email, setEmail] = useState('')
+    const [emailOrHandle, setEmailOrHandle] = useState('')
     const [password, setPassword] = useState('')
     const [newHandle, setNewHandle] = useState('')
     const [newName, setNewName] = useState('')
@@ -16,7 +16,7 @@ function AuthModal() {
     const [newPasswordTwo, setNewPasswordTwo] = useState('')
     const [logInFlashMessage, setLogInFlashMessage] = useState('')
     const [registerFlashMessage, setRegisterFlashMessage] = useState('')
-    const [emailError, setEmailError] = useState(false)
+    const [emailOrHandleError, setEmailOrHandleError] = useState(false)
     const [passwordError, setPasswordError] = useState(false)
     const [newHandleError, setNewHandleError] = useState(false)
     const [newNameError, setNewNameError] = useState(false)
@@ -26,13 +26,13 @@ function AuthModal() {
 
     function logIn(e) {
         e.preventDefault()
-        let invalidEmail = email.length === 0
+        let invalidEmailOrHandle = emailOrHandle.length === 0
         let invalidPassword = password.length === 0
-        if (invalidEmail) { setEmailError(true) }
+        if (invalidEmailOrHandle) { setEmailOrHandleError(true) }
         if (invalidPassword) { setPasswordError(true) }
-        if (!invalidEmail && !invalidPassword) {
+        if (!invalidEmailOrHandle && !invalidPassword) {
             axios
-                .post(config.environmentURL + '/log-in', { email, password })
+                .post(config.environmentURL + '/log-in', { emailOrHandle, password })
                 .then(res => {
                     if (res.data === 'user-not-found') { setLogInFlashMessage('User not found') }
                     if (res.data === 'incorrect-password') { setLogInFlashMessage('Incorrect password') }
@@ -93,10 +93,10 @@ function AuthModal() {
                     <span className={styles.authModalFlashMessage}>{ logInFlashMessage }</span>
                     <form className={styles.authModalForm} onSubmit={ logIn }>
                         <input 
-                            className={`wecoInput mb-10 ${emailError && 'error'}`}
-                            placeholder='Email'
-                            type="email" value={email}
-                            onChange={(e) => { setEmail(e.target.value); setEmailError(false) }}
+                            className={`wecoInput mb-10 ${emailOrHandleError && 'error'}`}
+                            placeholder='Email or Handle'
+                            type="text" value={emailOrHandle}
+                            onChange={(e) => { setEmailOrHandle(e.target.value); setEmailOrHandleError(false) }}
                         />
                         <input 
                             className={`wecoInput mb-10 ${passwordError && 'error'}`}

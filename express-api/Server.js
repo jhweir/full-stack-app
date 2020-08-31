@@ -8,7 +8,9 @@ const jwt = require('jsonwebtoken')
 var aws = require('aws-sdk')
 var multer = require('multer')
 var multerS3 = require('multer-s3')
+var sequelize = require('sequelize')
 
+const Op = sequelize.Op
 const express = require('express')
 const bodyParser = require('body-parser')
 const cors = require('cors')
@@ -26,9 +28,18 @@ app.listen(5000, () => console.log('Listening on port 5000'))
 app.get('/', (req, res) => res.send('INDEX'))
 
 app.post('/api/log-in', async (req, res) => {
-  const { email, password } = req.body
+  const { emailOrHandle, password } = req.body
   // Authenticate user
-  User.findOne({ where: { email: email } }).then(user => {
+  User
+    .findOne({
+      where: {
+        [Op.or]: [
+          { email: emailOrHandle },
+          { handle: emailOrHandle }
+        ]
+      }
+    })
+    .then(user => {
       //res.send(user)
       if (!user) { return res.send('user-not-found') }
       bcrypt.compare(password, user.password, function(error, success) {
@@ -42,7 +53,7 @@ app.post('/api/log-in', async (req, res) => {
           }
           else { res.send('incorrect-password') }
       })
-  })
+    })
 })
 
 function authenticateToken(req, res, next) {

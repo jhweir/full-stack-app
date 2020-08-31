@@ -3,14 +3,12 @@ Last updated: 18-08-2020
 
 + Add current spaces to repost modal
 + Add average and individual ratings to rating preview modal
-+ Allow users to log in with username or password
 + Add loading states for each db call in contexts, updated effected functions, and test load-order bugs
 + Add mod controls
     + remove parent space
     + remove child space
     + delete space
 
-- duplicate HolonHasndles being created when multiple parent branches added
 - Change 'Labels' table to 'Reactions' (freeing up 'labels' for other uses)
 - Update 'holon' names to 'space' throughout codebase to avoid confusion
 - Set up social media log-in strategies
@@ -103,4 +101,6 @@ Last updated: 18-08-2020
 - Seperate 'direct' and 'indirect' handles when creating posts then set up option to show all posts vs direct posts
 - Set up reaction previews
 - Set up reposts
+- Bug: Duplicate HolonHandles being created when multiple parent branches added
 - Add holon creator to holon data
+- Allow users to log in with username or password
