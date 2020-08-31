@@ -18,7 +18,8 @@ function PostCardReactions(props) {
         totalRatingPoints, setTotalRatingPoints,
         accountLike, setAccountLike,
         accountRating, setAccountRating,
-        accountRepost, setAccountRepost
+        accountRepost, setAccountRepost,
+        blockedSpaces, setBlockedSpaces
     } = props
 
     const { isLoggedIn, accountData, setAlertMessage, setAlertModalOpen } = useContext(AccountContext)
@@ -126,6 +127,16 @@ function PostCardReactions(props) {
                     else { setAlertMessage('Log in to repost post'); setAlertModalOpen(true) }
                 }}
             />
+            {repostModalOpen && <PostCardRepostModal
+                postData={postData}
+                reposts={reactionData && reactionData.Labels.filter(label => label.type === 'repost')}
+                setRepostModalOpen={setRepostModalOpen}
+                totalReactions={totalReactions} setTotalReactions={setTotalReactions}
+                totalReposts={totalReposts} setTotalReposts={setTotalReposts}
+                accountRepost={accountRepost} setAccountRepost={setAccountRepost}
+                getReactionData={getReactionData}
+                blockedSpaces={blockedSpaces} setBlockedSpaces={setBlockedSpaces}
+            />}
             <PostCardReactionItem
                 reactions={reactionData && reactionData.Labels.filter(label => label.type === 'rating')}
                 text='Ratings'
@@ -145,14 +156,6 @@ function PostCardReactions(props) {
                 addRating={addRating}
                 removeRating={removeRating}
                 accountRating={accountRating}
-            />}
-            {repostModalOpen && <PostCardRepostModal
-                postData={postData}
-                setRepostModalOpen={setRepostModalOpen}
-                totalReactions={totalReactions} setTotalReactions={setTotalReactions}
-                totalReposts={totalReposts} setTotalReposts={setTotalReposts}
-                accountRepost={accountRepost} setAccountRepost={setAccountRepost}
-                getReactionData={getReactionData}
             />}
         </div>
     )

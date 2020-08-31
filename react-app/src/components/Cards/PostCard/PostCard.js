@@ -38,6 +38,7 @@ function PostCard(props) {
     const [accountRating, setAccountRating] = useState(0)
     const [accountRepost, setAccountRepost] = useState(0)
 
+    const [blockedSpaces, setBlockedSpaces] = useState([...DirectSpaces, ...IndirectSpaces])
     const [reactionsOpen, setReactionsOpen] = useState(false)
     const finishedLoading = location !== 'post-page' || !postContextLoading
     const isOwnPost = finishedLoading && accountData.name === creator.name
@@ -152,6 +153,7 @@ function PostCard(props) {
                                 accountLike={accountLike} setAccountLike={setAccountLike}
                                 accountRating={accountRating} setAccountRating={setAccountRating}
                                 accountRepost={accountRepost} setAccountRepost={setAccountRepost}
+                                blockedSpaces={blockedSpaces} setBlockedSpaces={setBlockedSpaces}
                             />
                         }
                     </div>

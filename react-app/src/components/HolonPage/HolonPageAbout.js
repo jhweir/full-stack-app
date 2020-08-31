@@ -1,12 +1,10 @@
 import React, { useContext, useEffect } from 'react'
 import { HolonContext } from '../../contexts/HolonContext'
 import styles from '../../styles/components/HolonPageAbout.module.scss'
-import { useHistory } from "react-router-dom"
 import { Link } from 'react-router-dom'
 
 function HolonPageAbout() {
     const { holonData, setSelectedHolonSubPage } = useContext(HolonContext)
-    const history = useHistory()
 
     let d = new Date(holonData.createdAt)
     let dateCreated = `${d.getHours()}:${d.getMinutes()} on ${d.getDate()}-${d.getMonth()}-${d.getFullYear()}`
