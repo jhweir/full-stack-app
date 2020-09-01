@@ -62,8 +62,8 @@ function HolonContextProvider({ children }) {
     }
 
     function getHolonPosts() {
-        setHolonPostPaginationHasMore(true)
         console.log(`HolonContext: getHolonPosts (0 to ${holonPostPaginationLimit})`)
+        setHolonPostPaginationHasMore(true)
         axios.get(config.environmentURL + 
             `/holon-posts?accountId=${isLoggedIn ? accountData.id : null
             }&handle=${holonHandle
@@ -105,8 +105,8 @@ function HolonContextProvider({ children }) {
     }
 
     function getHolonSpaces() {
-        setHolonSpacePaginationHasMore(true)
         console.log(`HolonContext: getHolonSpaces (0 to ${holonSpacePaginationLimit})`)
+        setHolonSpacePaginationHasMore(true)
         axios.get(config.environmentURL + 
             `/holon-spaces?accountId=${isLoggedIn ? accountData.id : null
             }&handle=${holonHandle
@@ -151,8 +151,8 @@ function HolonContextProvider({ children }) {
     if (holonData && holonData.id === 1) { queryPath = 'all-users' } else { queryPath = 'holon-users' }
 
     function getHolonUsers() {
-        setHolonUserPaginationHasMore(true)
         console.log(`HolonContext: getHolonUsers (0 to ${holonUserPaginationLimit})`)
+        setHolonUserPaginationHasMore(true)
         axios.get(config.environmentURL + 
             `/${queryPath}?accountId=${isLoggedIn ? accountData.id : null
             }&holonId=${holonData.id

@@ -88,7 +88,13 @@ function CreatePostModal() {
         if (invalidPollAnswers) { setNewPollAnswerError(true) }
         if (!invalidText && !invalidHolons && !invalidPollAnswers && !urlLoading) {
             let subType, answers
-            if (postType === 'Poll') { subType = pollType.toLowerCase(); answers = pollAnswers } else { subType = null; answers = null }
+            if (postType === 'Poll') {
+                if (pollType === 'Single Choice') { subType = 'single-choice' }
+                if (pollType === 'Multiple Choice') { subType = 'multiple-choice' }
+                if (pollType === 'Weighted Choice') { subType = 'weighted-choice' }
+                answers = pollAnswers
+            }
+            else { subType = null; answers = null }
             let post = { 
                 type: postType.toLowerCase(),
                 subType,

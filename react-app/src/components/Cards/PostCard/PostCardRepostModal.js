@@ -3,9 +3,11 @@ import axios from 'axios'
 import config from '../../../Config'
 import styles from '../../../styles/components/PostCardRepostModal.module.scss'
 import SpaceInput from '../../SpaceInput'
+import CloseButton from '../../CloseButton'
+import ImageTitleLink from '../../ImageTitleLink'
 import { AccountContext } from '../../../contexts/AccountContext'
 import { HolonContext } from '../../../contexts/HolonContext'
-import { Link } from 'react-router-dom'
+
 
 
 function PostCardRepostModal(props) {
@@ -49,45 +51,38 @@ function PostCardRepostModal(props) {
         }
     }
 
-    // TODO: create close button component
     return (
         <div className={styles.modalWrapper}>
             <div className={styles.modal}>
-                <img 
-                    className={styles.closeButton}
-                    src='/icons/close-01.svg'
-                    onClick={() => setRepostModalOpen(false)}
-                />
+                <CloseButton onClick={() => setRepostModalOpen(false)}/>
                 <span className={styles.title}>Reposts</span>
-                {reposts.length > 0 &&
-                    <div className={styles.reposts}>
+                {reposts.length < 1
+                    ? <span className={`${styles.text} mb-20`}><i>No reposts yet...</i></span>
+                    : <div className={styles.reposts}>
                         {reposts.map((repost, index) =>
-                            <div className={styles.item} key={index}>
-                                <Link to={ `/u/${repost.creator.handle}`} className={styles.creator}>
-                                    {repost.creator.flagImagePath
-                                        ? <img className={styles.image} src={repost.creator.flagImagePath}/>
-                                        : <div className={styles.placeholderWrapper}>
-                                            <img className={styles.placeholder} src='/icons/user-solid.svg' alt=''/>
-                                        </div>
-                                    }
-                                    <div className={`${styles.text} mr-10`}>{repost.creator.name}</div>
-                                </Link>
+                            <div className={styles.repost} key={index}>
+                                <ImageTitleLink
+                                    imagePath={repost.creator.flagImagePath}
+                                    title={repost.creator.name}
+                                    link={`/u/${repost.creator.handle}`}
+                                />
                                 <div className={`${styles.text} mr-10`}>to</div>
-                                <Link to={ `/s/${repost.space.handle}`} className={styles.space} onClick={() => setHolonHandle(repost.space.handle)}>
-                                    {repost.space.flagImagePath
-                                        ? <img className={styles.image} src={repost.space.flagImagePath}/>
-                                        : <div className={styles.placeholderWrapper}>
-                                            <img className={styles.placeholder} src='/icons/users-solid.svg' alt=''/>
-                                        </div>
-                                    }
-                                    <div className={styles.text}>{repost.space.name}</div>
-                                </Link>
+                                <ImageTitleLink
+                                    imagePath={repost.space.flagImagePath}
+                                    title={repost.space.name}
+                                    link={`/s/${repost.space.handle}`}
+                                    onClick={() => setHolonHandle(repost.space.handle)}
+                                />
                             </div>
                         )}
                     </div>
                 }
-                {reposts.length < 1 && <span className={`${styles.text} mb-20`}><i>No reposts yet...</i></span>}
-                <span className={`${styles.text} mb-20`}>Repost {postData.creator.name}'s post{reposts.length > 0 && ' somewhere else'}:</span>
+                {/* {reposts.length < 1 && 
+                    <span className={`${styles.text} mb-20`}><i>No reposts yet...</i></span>
+                } */}
+                <span className={`${styles.text} mb-20`}>
+                    Repost {postData.creator.name}'s post{reposts.length > 0 && ' somewhere else'}:
+                </span>
                 <SpaceInput
                     blockedSpaces={blockedSpaces}
                     addedSpaces={addedSpaces} setAddedSpaces={setAddedSpaces}

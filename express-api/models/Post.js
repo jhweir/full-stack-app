@@ -20,12 +20,12 @@ module.exports = (sequelize, DataTypes) => {
     })
     Post.belongsToMany(models.Holon, { 
       through: models.PostHolon,
-      as: 'DirectPostSpaces',
+      as: 'DirectSpaces',
       foreignKey: 'postId'
     })
     Post.belongsToMany(models.Holon, { 
       through: models.PostHolon,
-      as: 'IndirectPostSpaces',
+      as: 'IndirectSpaces',
       foreignKey: 'postId'
     })
     Post.belongsToMany(models.Holon, { 

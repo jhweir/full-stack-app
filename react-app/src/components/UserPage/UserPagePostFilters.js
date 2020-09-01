@@ -13,6 +13,18 @@ function UserPagePostFilters() {
     return (
         <div className='wecoFilters'>
             <DropDownMenu
+                title='Sort By'
+                options={['Total Reactions', 'Likes', 'Reposts', 'Ratings', 'Comments', 'Date']}
+                selectedOption={createdPostSortByFilter}
+                setSelectedOption={setCreatedPostSortByFilter}
+            />
+            <DropDownMenu
+                title='Sort Order'
+                options={['Descending', 'Ascending']}
+                selectedOption={createdPostSortOrderFilter}
+                setSelectedOption={setCreatedPostSortOrderFilter}
+            />
+            <DropDownMenu
                 title='Time Range'
                 options={['All Time', 'Last Year', 'Last Month', 'Last Week', 'Last 24 Hours', 'Last Hour']}
                 selectedOption={createdPostTimeRangeFilter}
@@ -23,18 +35,6 @@ function UserPagePostFilters() {
                 options={['All Types', 'Text', 'Poll', 'Url']}
                 selectedOption={createdPostTypeFilter}
                 setSelectedOption={setCreatedPostTypeFilter}
-            />
-            <DropDownMenu
-                title='Sort By'
-                options={['Comments', 'Date', 'Reactions', 'Likes', 'Ratings']}
-                selectedOption={createdPostSortByFilter}
-                setSelectedOption={setCreatedPostSortByFilter}
-            />
-            <DropDownMenu
-                title='Sort Order'
-                options={['Descending', 'Ascending']}
-                selectedOption={createdPostSortOrderFilter}
-                setSelectedOption={setCreatedPostSortOrderFilter}
             />
         </div>
     )

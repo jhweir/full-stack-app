@@ -38,7 +38,7 @@ function PostCard(props) {
     const [accountRating, setAccountRating] = useState(0)
     const [accountRepost, setAccountRepost] = useState(0)
 
-    const [blockedSpaces, setBlockedSpaces] = useState([...DirectSpaces, ...IndirectSpaces])
+    const [blockedSpaces, setBlockedSpaces] = useState([])
     const [reactionsOpen, setReactionsOpen] = useState(false)
     const finishedLoading = location !== 'post-page' || !postContextLoading
     const isOwnPost = finishedLoading && accountData.name === creator.name
@@ -54,10 +54,12 @@ function PostCard(props) {
         setAccountLike(account_like)
         setAccountRating(account_rating)
         setAccountRepost(account_repost)
+        setBlockedSpaces([...DirectSpaces, ...IndirectSpaces])
     }
 
     function deletePost() {
-        axios.delete(config.environmentURL  + '/delete-post', { data: { postId: id } })
+        console.log('PostCard: deletePost')
+        axios.delete(config.environmentURL + '/delete-post', { data: { postId: id } })
             .then(setTimeout(() => { 
                 if (location === 'holon-posts') { getHolonPosts() }
                 if (location === 'user-created-posts') { getCreatedPosts() }
@@ -73,7 +75,7 @@ function PostCard(props) {
     }
 
     useEffect(() => {
-        syncPostState()
+        if (postData.id) { syncPostState() }
     }, [postData])
 
     if (finishedLoading) {
@@ -93,16 +95,16 @@ function PostCard(props) {
                         </Link>
                         <span className={styles.subText}>to</span>
                         <div className={styles.holonNames}>
-                            {DirectSpaces.length > 0 ?
-                                DirectSpaces.map((holon, index) =>
-                                    <Link to={`/s/${holon}`}
-                                        onClick={ () => {setHolonHandle(holon)} }
+                            {DirectSpaces.filter(space => space.type === 'post').length > 0
+                                ? DirectSpaces.filter(space => space.type === 'post').map((space, index) =>
+                                    <Link to={`/s/${space.handle}`}
+                                        onClick={ () => {setHolonHandle(space.handle)} }
                                         style={{marginRight: 10}}
                                         key={index}>
-                                        {holon}
+                                        {space.handle}
                                     </Link>)
                                 : <Link to={`/s/all`}
-                                    onClick={ () => {setHolonHandle('all')} }
+                                    onClick={() => {setHolonHandle('all')}}
                                     style={{marginRight: 10}}>
                                     all
                                 </Link>

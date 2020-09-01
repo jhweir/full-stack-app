@@ -28,7 +28,9 @@ function PostPagePollVote() {
                 }
             </div>
             {postData.subType === 'weighted-choice' && <div className={styles.text}>Split 100 points across the poll answers...</div>}
-            {pollAnswersSortedById.map((answer, index) => <PollAnswer key={index} answer={answer}/> )}
+            {pollAnswersSortedById.map((answer, index) =>
+                <PollAnswer key={index} answer={answer}/>
+            )}
             {postData.subType === 'weighted-choice' &&
                 <div className={`${styles.totalUsedPointsText} ${totalUsedPoints !== 100 && styles.error}`}>
                     Total used points: {totalUsedPoints}

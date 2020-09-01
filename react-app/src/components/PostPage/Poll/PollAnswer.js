@@ -9,59 +9,46 @@ function PollAnswer(props) {
         selectedPollAnswers, setSelectedPollAnswers,
         setVoteCast
     } = useContext(PostContext)
+
+    console.log('answer: ', answer)
+    console.log('selectedPollAnswers: ', selectedPollAnswers)
+
     const [answerValue, setAnswerValue] = useState('')
 
-    const matchingSelectedAnswer = selectedPollAnswers.filter(pollAnswer => pollAnswer.id === answer.id)
+    const selectedAnswer = selectedPollAnswers.filter(pollAnswer => pollAnswer.id === answer.id)
+    const alreadySelected = selectedAnswer.length
 
-    function addPollAnswer(value) {
+    function selectAnswer(value) {
         setVoteCast(false)
         if (postData.subType === 'single-choice') {
-            if (matchingSelectedAnswer.length) {
-                setSelectedPollAnswers([...selectedPollAnswers.filter(pollAnswer => { return pollAnswer.id !== answer.id })])
-            } else {
-                setSelectedPollAnswers([{id: answer.id}])
-            }
+            if (alreadySelected) { setSelectedPollAnswers([]) }
+            else { setSelectedPollAnswers([{id: answer.id}]) }
         }
         if (postData.subType === 'multiple-choice') {
-            // if poll answer already included in selectedPollAnswers..
-            if (matchingSelectedAnswer.length) {
-                // remove answer from selectedPollAnswers
-                setSelectedPollAnswers([...selectedPollAnswers.filter(pollAnswer => { return pollAnswer.id !== answer.id })])
-            } else {
-                // add answer to selectedPollAnswers
-                setSelectedPollAnswers([...selectedPollAnswers, {id: answer.id}])
-            }
+            if (alreadySelected) { setSelectedPollAnswers([...selectedPollAnswers.filter(pollAnswer => pollAnswer.id !== answer.id)]) }
+            else { setSelectedPollAnswers([...selectedPollAnswers, {id: answer.id}]) }
         }
         if (postData.subType === 'weighted-choice') {
-            // if poll answer already included in selectedPollAnswers...
-            if (matchingSelectedAnswer.length) {
-                // remove answer from selectedPollAnswers and re-add answer with new value
-                setSelectedPollAnswers([
-                    ...selectedPollAnswers.filter(pollAnswer => { return pollAnswer.id !== answer.id }),
-                    {id: answer.id, value: Number(value)}
-                ])
-            } else {
-                // add answer to selectedPollAnswers
-                setSelectedPollAnswers([...selectedPollAnswers, {id: answer.id, value: Number(value)}])
-            }
+            if (alreadySelected) { setSelectedPollAnswers([...selectedPollAnswers.filter(pollAnswer => pollAnswer.id !== answer.id), {id: answer.id, value: Number(value)}]) }
+            else { setSelectedPollAnswers([...selectedPollAnswers, {id: answer.id, value: Number(value)}]) }
         }
     }
 
     useEffect(() => {
-        if (matchingSelectedAnswer.length) { setAnswerValue(matchingSelectedAnswer.value) }
+        if (alreadySelected) { setAnswerValue(selectedAnswer.value) }
     }, [])
 
     useEffect(() => {
-        if (!selectedPollAnswers.length) { setAnswerValue('') }
+        if (selectedPollAnswers.length < 1) { setAnswerValue('') }
     }, [selectedPollAnswers])
 
     return (
-        <div className={`${styles.pollAnswer} ${matchingSelectedAnswer.length && styles.answerSelected}`}
-            onClick={() => { if (postData.subType !== 'weighted-choice') addPollAnswer() }}>
+        <div className={`${styles.pollAnswer} ${alreadySelected && styles.answerSelected}`}
+            onClick={() => { if (postData.subType !== 'weighted-choice') selectAnswer() }}>
             {postData.subType !== 'weighted-choice' &&
                 <img 
                     className={styles.pollAnswerCheckBox}
-                    src={matchingSelectedAnswer.length ? "/icons/check-circle-regular.svg" : "/icons/circle-regular.svg"}
+                    src={alreadySelected ? "/icons/check-circle-regular.svg" : "/icons/circle-regular.svg"}
                 />
             }
             {postData.subType === 'weighted-choice' &&
@@ -71,7 +58,7 @@ function PollAnswer(props) {
                     onChange={(e) => {
                         if (!e.target.value.includes("-")) {
                             setAnswerValue(e.target.value)
-                            addPollAnswer(e.target.value)
+                            selectAnswer(e.target.value)
                         }
                     }}>
                 </input>
