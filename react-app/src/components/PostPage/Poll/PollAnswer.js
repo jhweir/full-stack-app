@@ -10,13 +10,10 @@ function PollAnswer(props) {
         setVoteCast
     } = useContext(PostContext)
 
-    console.log('answer: ', answer)
-    console.log('selectedPollAnswers: ', selectedPollAnswers)
-
     const [answerValue, setAnswerValue] = useState('')
 
     const selectedAnswer = selectedPollAnswers.filter(pollAnswer => pollAnswer.id === answer.id)
-    const alreadySelected = selectedAnswer.length
+    const alreadySelected = selectedAnswer.length > 0
 
     function selectAnswer(value) {
         setVoteCast(false)

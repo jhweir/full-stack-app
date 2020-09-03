@@ -23,7 +23,7 @@ function PostCardReactions(props) {
     } = props
 
     const { isLoggedIn, accountData, setAlertMessage, setAlertModalOpen } = useContext(AccountContext)
-    const { holonData, getHolonPosts } = useContext(HolonContext)
+    const { holonData } = useContext(HolonContext)
 
     const [reactionData, setReactionData] = useState({ Labels: [] })
     const [likePreviewOpen, setLikePreviewOpen] = useState(false)
@@ -33,8 +33,8 @@ function PostCardReactions(props) {
     const [repostPreviewOpen, setRepostPreviewOpen] = useState(false)
     const [repostModalOpen, setRepostModalOpen] = useState(false)
 
-    const [newRating, setNewRating] = useState('')
-    const [newRatingError, setNewRatingError] = useState(false)
+    // const [newRating, setNewRating] = useState('')
+    // const [newRatingError, setNewRatingError] = useState(false)
 
     function getReactionData() {
         console.log('PostCardReactions: getReactionData')
@@ -67,36 +67,36 @@ function PostCardReactions(props) {
         }
     }
 
-    function addRating() {
-        console.log('addRating')
-        if (!isLoggedIn) { setAlertMessage('Log in to add rating'); setAlertModalOpen(true) }
-        else {
-            const invalidRating = isNaN(newRating) || newRating === '' || newRating > 100 || newRating < 0
-            if (invalidRating) { setNewRatingError(true) }
-            else {
-                setTotalRatings(totalRatings + 1)
-                setTotalReactions(totalReactions + 1)
-                setTotalRatingPoints(totalRatingPoints + parseInt(newRating, 10))
-                setAccountRating(accountRating + 1)
-                axios.put(config.environmentURL + '/add-rating', { accountId: accountData.id, postId: postData.id, holonId: holonData.id, newRating })
-                    .then(setNewRating(''))
-                    .catch(error => { console.log(error) })
-            }
-        }
-    }
+    // function addRating() {
+    //     console.log('addRating')
+    //     if (!isLoggedIn) { setAlertMessage('Log in to add rating'); setAlertModalOpen(true) }
+    //     else {
+    //         const invalidRating = isNaN(newRating) || newRating === '' || newRating > 100 || newRating < 0
+    //         if (invalidRating) { setNewRatingError(true) }
+    //         else {
+    //             setTotalRatings(totalRatings + 1)
+    //             setTotalReactions(totalReactions + 1)
+    //             setTotalRatingPoints(totalRatingPoints + parseInt(newRating, 10))
+    //             setAccountRating(accountRating + 1)
+    //             axios.put(config.environmentURL + '/add-rating', { accountId: accountData.id, postId: postData.id, holonId: holonData.id, newRating })
+    //                 .then(setNewRating(''))
+    //                 .catch(error => { console.log(error) })
+    //         }
+    //     }
+    // }
 
-    function removeRating() {
-        console.log('removeRating')
-        if (!isLoggedIn) { setAlertMessage('Log in to add rating'); setAlertModalOpen(true) }
-        else {
-            setTotalRatings(totalRatings - 1)
-            setTotalReactions(totalReactions - 1)
-            setAccountRating(0)
-            axios.put(config.environmentURL + '/remove-rating', { accountId: accountData.id, postId: postData.id, holonId: holonData.id })
-                .then(() => { getHolonPosts() })
-                .catch(error => { console.log(error) })
-        }
-    }
+    // function removeRating() {
+    //     console.log('removeRating')
+    //     if (!isLoggedIn) { setAlertMessage('Log in to add rating'); setAlertModalOpen(true) }
+    //     else {
+    //         setTotalRatings(totalRatings - 1)
+    //         setTotalReactions(totalReactions - 1)
+    //         setAccountRating(0)
+    //         axios.put(config.environmentURL + '/remove-rating', { accountId: accountData.id, postId: postData.id, holonId: holonData.id })
+    //             .then(() => { getHolonPosts() })
+    //             .catch(error => { console.log(error) })
+    //     }
+    // }
 
     useEffect(() => {
         getReactionData()
@@ -105,8 +105,8 @@ function PostCardReactions(props) {
     return (
         <div className={styles.postCardReactions}>
             <PostCardReactionItem
-                reactions={reactionData && reactionData.Labels.filter(label => label.type === 'like')}
                 text='Likes'
+                reactions={reactionData && reactionData.Labels.filter(label => label.type === 'like')}
                 previewOpen={likePreviewOpen}
                 setPreviewOpen={setLikePreviewOpen}
                 accountReaction={accountLike}
@@ -115,8 +115,8 @@ function PostCardReactions(props) {
                 onClick={addLike}
             />
             <PostCardReactionItem
-                reactions={reactionData && reactionData.Labels.filter(label => label.type === 'repost')}
                 text='Reposts'
+                reactions={reactionData && reactionData.Labels.filter(label => label.type === 'repost')}
                 previewOpen={repostPreviewOpen}
                 setPreviewOpen={setRepostPreviewOpen}
                 accountReaction={accountRepost}
@@ -127,36 +127,51 @@ function PostCardReactions(props) {
                     else { setAlertMessage('Log in to repost post'); setAlertModalOpen(true) }
                 }}
             />
-            {repostModalOpen && <PostCardRepostModal
-                postData={postData}
-                reposts={reactionData && reactionData.Labels.filter(label => label.type === 'repost')}
-                setRepostModalOpen={setRepostModalOpen}
-                totalReactions={totalReactions} setTotalReactions={setTotalReactions}
-                totalReposts={totalReposts} setTotalReposts={setTotalReposts}
-                accountRepost={accountRepost} setAccountRepost={setAccountRepost}
-                getReactionData={getReactionData}
-                blockedSpaces={blockedSpaces} setBlockedSpaces={setBlockedSpaces}
-            />}
             <PostCardReactionItem
-                reactions={reactionData && reactionData.Labels.filter(label => label.type === 'rating')}
                 text='Ratings'
-                previewOpen={ratingPreviewOpen}
-                setPreviewOpen={setRatingPreviewOpen}
+                reactions={reactionData && reactionData.Labels.filter(label => label.type === 'rating')}
+                previewOpen={ratingPreviewOpen} setPreviewOpen={setRatingPreviewOpen}
                 accountReaction={accountRating}
                 totalReactions={totalRatings}
+                totalReactionPoints={totalRatingPoints}
                 iconPath='star-solid.svg'
-                onClick={() => setRatingModalOpen(!ratingModalOpen)}
+                onClick={() => { 
+                    if (isLoggedIn) { setRatingModalOpen(true) }
+                    else { setAlertMessage('Log in to rate post'); setAlertModalOpen(true) }
+                }}
             />
-            {ratingModalOpen && <PostCardRatingModal //TODO: update like repost modal below (use postData)?
-                isLoggedIn={isLoggedIn}
-                totalRatings={totalRatings}
-                totalRatingPoints={totalRatingPoints}
-                newRating={newRating} setNewRating={setNewRating}
-                newRatingError={newRatingError} setNewRatingError={setNewRatingError}
-                addRating={addRating}
-                removeRating={removeRating}
-                accountRating={accountRating}
-            />}
+            {repostModalOpen &&
+                <PostCardRepostModal
+                    postData={postData}
+                    reposts={reactionData && reactionData.Labels.filter(label => label.type === 'repost')}
+                    setRepostModalOpen={setRepostModalOpen}
+                    totalReactions={totalReactions} setTotalReactions={setTotalReactions}
+                    totalReposts={totalReposts} setTotalReposts={setTotalReposts}
+                    accountRepost={accountRepost} setAccountRepost={setAccountRepost}
+                    getReactionData={getReactionData}
+                    blockedSpaces={blockedSpaces} setBlockedSpaces={setBlockedSpaces}
+                />
+            }
+            {ratingModalOpen &&
+                <PostCardRatingModal //TODO: update like repost modal (use postData)?
+                    postData={postData}
+                    ratings={reactionData && reactionData.Labels.filter(label => label.type === 'rating')}
+                    setRatingModalOpen={setRatingModalOpen}
+                    totalReactions={totalReactions} setTotalReactions={setTotalReactions}
+                    totalRatings={totalRatings} setTotalRatings={setTotalRatings}
+                    totalRatingPoints={totalRatingPoints} setTotalRatingPoints={setTotalRatingPoints}
+                    accountRating={accountRating} setAccountRating={setAccountRating}
+                    getReactionData={getReactionData}
+                    // isLoggedIn={isLoggedIn}
+                    // totalRatings={totalRatings}
+                    // totalRatingPoints={totalRatingPoints}
+                    // newRating={newRating} setNewRating={setNewRating}
+                    // newRatingError={newRatingError} setNewRatingError={setNewRatingError}
+                    // addRating={addRating}
+                    // removeRating={removeRating}
+                    // accountRating={accountRating}
+                />
+            }
         </div>
     )
 }

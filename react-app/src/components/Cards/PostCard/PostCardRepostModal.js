@@ -8,17 +8,14 @@ import ImageTitleLink from '../../ImageTitleLink'
 import { AccountContext } from '../../../contexts/AccountContext'
 import { HolonContext } from '../../../contexts/HolonContext'
 
-
-
 function PostCardRepostModal(props) {
     const {
-        postData,
-        reposts,
+        postData, reposts,
         setRepostModalOpen,
+        getReactionData,
         totalReactions, setTotalReactions,
         totalReposts, setTotalReposts,
         accountRepost, setAccountRepost,
-        getReactionData,
         blockedSpaces, setBlockedSpaces
     } = props
 
@@ -62,12 +59,14 @@ function PostCardRepostModal(props) {
                         {reposts.map((repost, index) =>
                             <div className={styles.repost} key={index}>
                                 <ImageTitleLink
+                                    type={'user'}
                                     imagePath={repost.creator.flagImagePath}
                                     title={repost.creator.name}
                                     link={`/u/${repost.creator.handle}`}
                                 />
                                 <div className={`${styles.text} mr-10`}>to</div>
                                 <ImageTitleLink
+                                    type={'space'}
                                     imagePath={repost.space.flagImagePath}
                                     title={repost.space.name}
                                     link={`/s/${repost.space.handle}`}
@@ -77,9 +76,6 @@ function PostCardRepostModal(props) {
                         )}
                     </div>
                 }
-                {/* {reposts.length < 1 && 
-                    <span className={`${styles.text} mb-20`}><i>No reposts yet...</i></span>
-                } */}
                 <span className={`${styles.text} mb-20`}>
                     Repost {postData.creator.name}'s post{reposts.length > 0 && ' somewhere else'}:
                 </span>

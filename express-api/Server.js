@@ -5,6 +5,8 @@ const bcrypt = require('bcrypt')
 const passport = require("passport")
 const jwt = require('jsonwebtoken')
 
+const FacebookStrategy = require("passport-facebook").Strategy
+
 var aws = require('aws-sdk')
 var multer = require('multer')
 var multerS3 = require('multer-s3')
@@ -18,6 +20,7 @@ const cors = require('cors')
 
 const app = express()
 app.use(cors())
+app.use(passport.initialize())
 //app.use(cors({ origin:true, credentials: true }))
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
@@ -226,6 +229,69 @@ app.post('/api/holon-cover-image-upload', authenticateToken, function(req, res) 
   })
 })
 
+// // Facebook strategry
+// passport.serializeUser(function(user, done) {
+//   done(null, user.id);
+// });
+
+// passport.deserializeUser((id, done) => {
+//   let user = User.findOne({ where: { id: id } })
+//   done(null, true)
+// })
+
+// passport.use(
+//   new FacebookStrategy(
+//     {
+//       clientID: process.env.FACEBOOK_CLIENT_ID,
+//       clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
+//       callbackURL: process.env.FACEBOOK_CALLBACK_URL,
+//       profileFields: ['id', 'name', 'email', 'picture']
+//     },
+//     function(accessToken, refreshToken, profile, done) {
+//       console.log('accessToken', accessToken)
+//       console.log('refreshToken', refreshToken)
+//       console.log('profile', profile)
+//       console.log('profile.id', profile.id)
+
+//       User
+//         .findOne({ where: { facebookId: profile.id } })
+//         .then(foundUser => {
+//           if (foundUser) { 
+//             userId = foundUser.dataValues.id
+//             console.log('foundUser: ', foundUser)
+//           }
+//           else {
+//             User
+//               .create({ 
+//                 name: profile.name.givenName,
+//                 flagImagePath: profile.photos[0].value,
+//                 facebookId: profile.id
+//               })
+//               .then(createdUser => {
+//                 console.log('createdUser: ', createdUser)
+//                 userId = createdUser.dataValues.id
+//               })
+//           }
+//       })//.then(console.log('user', user))
+//       //user = {...profile}
+//       done(null, profile)
+//     }
+//   )
+// )
+
+// app.get('/auth/facebook', passport.authenticate('facebook'))
+
+// app.get('/auth/facebook/callback',
+//   passport.authenticate('facebook', { failureRedirect: '/login' }),
+//   function(req, res) {
+//     // Successful authentication, redirect home.
+//     res.redirect('http://localhost:3000/h/all')
+//   }
+// )
+
+
+
+
 
 // const passportJWT = require('passport-jwt')
 // const JwtStrategy = passportJWT.Strategy
@@ -402,53 +468,8 @@ app.post('/api/holon-cover-image-upload', authenticateToken, function(req, res) 
 
 
 
-//Facebook strategry
-// passport.use(
-//   new FacebookStrategy(
-//     {
-//       clientID: process.env.FACEBOOK_CLIENT_ID,
-//       clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
-//       callbackURL: process.env.FACEBOOK_CALLBACK_URL,
-//       profileFields: ['name', 'email', 'picture']
-//     },
-//     function(accessToken, refreshToken, profile, done) {
-//       // console.log('accessToken', accessToken)
-//       // console.log('refreshToken', refreshToken)
-//       // console.log('profile', profile)
-//       // console.log('profile.id', profile.id)
 
-//       User.findOne({ 
-//           where: { facebookId: profile.id }
-//       }).then(foundUser => {
-//           if (foundUser) { 
-//             userId = foundUser.dataValues.id
-//           }
-//           else {
-//             User.create({ 
-//               name: profile.name.givenName,
-//               flagImagePath: profile.photos[0].value,
-//               facebookId: profile.id
-//             })
-//             .then(createdUser => {
-//               userId = createdUser.dataValues.id
-//             })
-//           }
-//       })//.then(console.log('user', user))
-//       //user = {...profile}
-//       done(null, profile)
-//     }
-//   )
-// )
-
-// app.get('/auth/facebook',
-//   passport.authenticate('facebook'))
  
-// app.get('/auth/facebook/callback',
-//   passport.authenticate('facebook', { failureRedirect: '/login' }),
-//   function(req, res) {
-//     // Successful authentication, redirect home.
-//     res.redirect('http://localhost:3000/h/all')
-//   })
 
 // const options = {
 //   secretOrKey: process.env.ACCESS_TOKEN_SECRET,

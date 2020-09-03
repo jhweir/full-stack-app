@@ -43,6 +43,7 @@ function PostCard(props) {
     const finishedLoading = location !== 'post-page' || !postContextLoading
     const isOwnPost = finishedLoading && accountData.name === creator.name
     const showLinkPreview = (urlImage !== null || urlDomain !== null || urlTitle !== null || urlDescription !== null)
+    const postSpaces = DirectSpaces && DirectSpaces.filter(space => space.type === 'post')
 
     function syncPostState() {
         setTotalComments(total_comments)
@@ -94,9 +95,9 @@ function PostCard(props) {
                             <span className={styles.subText}>{creator.name || 'Anonymous'}</span>
                         </Link>
                         <span className={styles.subText}>to</span>
-                        <div className={styles.holonNames}>
-                            {DirectSpaces.filter(space => space.type === 'post').length > 0
-                                ? DirectSpaces.filter(space => space.type === 'post').map((space, index) =>
+                        <div className={styles.postSpaces}>
+                            {postSpaces.length > 0
+                                ? postSpaces.map((space, index) =>
                                     <Link to={`/s/${space.handle}`}
                                         onClick={ () => {setHolonHandle(space.handle)} }
                                         style={{marginRight: 10}}
@@ -111,7 +112,10 @@ function PostCard(props) {
                             }
                         </div>
                         <span className={styles.subText}>|</span>
-                        <span className={styles.subText}>{formattedDate() || 'no date'}</span>
+                        <Link to={`/p/${id}`} className={styles.link}>
+                            <img className={styles.linkIcon} src={'/icons/link-solid.svg'} alt=''/>
+                            <span className={styles.subText}>{formattedDate() || 'no date'}</span>
+                        </Link>
                     </div>
                     <div className={styles.content}>
                         {text && <div className={styles.text}>{text}</div>}

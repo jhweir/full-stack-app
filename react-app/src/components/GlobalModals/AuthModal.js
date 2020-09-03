@@ -106,7 +106,7 @@ function AuthModal() {
                         />
                         <button className='wecoButton w-100'>Log in</button>
                     </form>
-                    <span className={styles.authModalText}>or log in with:</span>
+                    {/* <span className={styles.authModalText}>or log in with:</span>
                     <a className={styles.socialMediaButton} style={{ backgroundColor: '#4867aa'}} href="http://localhost:5000/auth/facebook">
                         <img className={styles.socialMediaIcon} src='/icons/facebook-f-brands.svg'/>
                         Facebook
@@ -118,7 +118,7 @@ function AuthModal() {
                     <a className={styles.socialMediaButton} style={{ backgroundColor: '#34a853'}} href=''>
                         <img className={styles.socialMediaIcon} src='/icons/google-brands.svg'/>
                         Google
-                    </a>
+                    </a> */}
                 </div>
                 <div className={styles.authModalDividerLine}/>
                 <div className={styles.authModalColumn}>

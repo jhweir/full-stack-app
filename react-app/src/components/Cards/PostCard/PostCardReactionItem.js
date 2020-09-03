@@ -1,5 +1,8 @@
 import React from 'react'
 import styles from '../../../styles/components/PostCardReactionItem.module.scss'
+import PostCardLikePreview from './PostCardLikePreview'
+import PostCardRepostPreview from './PostCardRepostPreview'
+import PostCardRatingPreview from './PostCardRatingPreview'
 
 function PostCardReactionItem(props) {
     const {
@@ -9,14 +12,12 @@ function PostCardReactionItem(props) {
         setPreviewOpen,
         accountReaction,
         totalReactions,
+        totalReactionPoints,
         iconPath,
         onClick
     } = props
 
-    // console.log('reactions: ', reactions)
-
-    // let reposts
-    // if () {}
+    const previewModalOpen = totalReactions > 0 && previewOpen
 
     return (
         <div className={styles.item}
@@ -27,36 +28,69 @@ function PostCardReactionItem(props) {
                 className={`${styles.postIcon} ${accountReaction > 0 && styles.selected}`}
                 src={`/icons/${iconPath}`} alt=''
             />
-            <div>{totalReactions} {text}</div>
-            {previewOpen && totalReactions > 0 &&
-                <div className={styles.modal}>
-                    {reactions && reactions.map((reaction, index) =>
-                        <div className={styles.modalItem} key={index}>
-                            {reaction.creator.flagImagePath
-                                ? <img className={styles.image} src={reaction.creator.flagImagePath}/>
-                                : <div className={styles.placeholderWrapper}>
-                                    <img className={styles.placeholder} src='/icons/user-solid.svg' alt=''/>
-                                </div>
-                            }
-                            <div className={`${styles.modalItemText} mr-10`}>{reaction.creator.name}</div>
-                            {text === 'Reposts' &&
-                                <>
-                                    <div className={`${styles.modalItemText} mr-10`}>to</div>
-                                    {reaction.space.flagImagePath
-                                        ? <img className={styles.image} src={reaction.space.flagImagePath}/>
-                                        : <div className={styles.placeholderWrapper}>
-                                            <img className={styles.placeholder} src='/icons/users-solid.svg' alt=''/>
-                                        </div>
-                                    }
-                                    <div className={styles.modalItemText}>{reaction.space.name}</div>
-                                </>
-                            }
-                        </div>
-                    )}
-                </div>
+            <span>{totalReactions} {text}</span>
+            {previewModalOpen && text === 'Likes' &&
+                <PostCardLikePreview reactions={reactions}/>
+            }
+            {previewModalOpen && text === 'Reposts' &&
+                <PostCardRepostPreview reactions={reactions}/>
+            }
+            {previewModalOpen && text === 'Ratings' &&
+                <PostCardRatingPreview
+                    reactions={reactions}
+                    totalReactions={totalReactions}
+                    totalReactionPoints={totalReactionPoints}
+                />
             }
         </div>
     )
 }
 
 export default PostCardReactionItem
+
+{/* {previewOpen && totalReactions > 0 &&
+    <div className={styles.modal}>
+        {text === 'Ratings' &&
+            <div className={styles.}>
+                <div className={styles.totalScoreBar}>
+                    <div className={styles.totalScorePercentage} style={{width: totalReactions ? totalRatingScore() : 0}}/>
+                    <div className={styles.totalScoreText}>{ totalRatingScore() }</div>
+                </div>
+            </div>
+        }
+        {reactions && reactions.map((reaction, index) =>
+            <div className={styles.modalItem} key={index}>
+                {reaction.creator.flagImagePath
+                    ? <img className={styles.image} src={reaction.creator.flagImagePath}/>
+                    : <div className={styles.placeholderWrapper}>
+                        <img className={styles.placeholder} src='/icons/user-solid.svg' alt=''/>
+                    </div>
+                }
+                <div className={`${styles.modalItemText} mr-10`}>{reaction.creator.name}</div>
+
+                {text === 'Reposts' &&
+                    <>
+                        <div className={`${styles.modalItemText} mr-10`}>to</div>
+                        {reaction.space.flagImagePath
+                            ? <img className={styles.image} src={reaction.space.flagImagePath}/>
+                            : <div className={styles.placeholderWrapper}>
+                                <img className={styles.placeholder} src='/icons/users-solid.svg' alt=''/>
+                            </div>
+                        }
+                        <div className={styles.modalItemText}>{reaction.space.name}</div>
+                    </>
+                }
+
+                {text === 'Ratings' &&
+                    <>
+                        <div className={styles.totalScoreBar}>
+                            <div className={styles.totalScorePercentage} style={{width: `${reaction.value}%`}}/>
+                            <div className={styles.totalScoreText}>{`${reaction.value}%`}</div>
+                        </div>
+                    </>
+                }
+
+            </div>
+        )}
+    </div>
+} */}

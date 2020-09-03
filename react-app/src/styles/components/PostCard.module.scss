@@ -87,11 +87,23 @@
     width: 50%;
     opacity: 0.2;
 }
-.holonNames {
+.postSpaces {
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
+}
+.link {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+}
+.linkIcon {
+    width: 15px;
+    height: 15px;
+    opacity: 0.3;
+    margin-right: 5px;
 }
 .subText {
     color: #888;

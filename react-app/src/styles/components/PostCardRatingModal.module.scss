@@ -1,22 +1,59 @@
-.postCardRatingModal {
-    // z-index: 0;
+.modalWrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 5;
+}
+.modal {
+    width: 500px;
+    border-radius: 5px;
+    background-color: white;
+    color: black;
+    padding: 30px 50px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+.title {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+//.text {}
+.inputWrapper {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 30px;
+}
+.ratings {
+    margin-bottom: 20px;
+}
+.rating {
+    font-size: 14px;
+    line-height: 1;
+    white-space: nowrap;
+    margin-bottom: 5px;
     display: flex;
     flex-direction: row;
     align-items: center;
-    height: 30px;
-    margin-right: 15px;
-    //margin: 5px 0;
-    // &.visible {
-    //     display: flex;
-    //     z-index: 1;
-    // }
+    justify-content: space-between;
+    flex-shrink: 0;
+    &:last-child { margin-bottom: 0 }
 }
-.totalScore {
-    width: 100px;
-    margin-right: 10px;
-}
+// .totalScore {
+//     width: 100px;
+//     margin-right: 10px;
+// }
 .totalScoreBar {
-    width: 100%;
+    width: 100px;
     height: 30px;
     background-color: #eaeaea;
     position: relative;
@@ -26,46 +63,33 @@
     background-color: #9ed5ff;
 }
 .totalScoreText {
-    position: absolute;
-    top: 3px;
-    width: 100%;
-    text-align: center;
-}
-.inputWrapper {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    flex-shrink: 0;
-    height: 30px;
-    margin-right: 10px;
-}
-.input {
-    width: 40px;
-    height: 30px;
-    outline: none;
-    border: 1px solid rgba(0,0,0,0.1);
-    margin-right: 10px;
-    padding: 0 3px;
     font-size: 16px;
-    text-align: center;
-    &.error {
-        box-shadow: 0 0 5px 5px rgba(255, 0, 0, 0.6);
-    }
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
-// .postRatingModalButton {
-//     background-color: #3a88f0;
-//     color: white;
-//     height: 40px;
-//     border-radius: 5px;
-//     padding: 0px 15px;
+// .inputWrapper {
 //     display: flex;
 //     flex-direction: row;
-//     justify-content: center;
 //     align-items: center;
-//     box-shadow: 0 1px 10px 0 rgba(10, 8, 72, 0.1);
-//     border: none;
-//     font-size: 14px;
-//     font-weight: 800;
-//     transition-property: box-shadow, background-color;
-//     transition-duration: 0.3s, 2s;
+//     flex-shrink: 0;
+//     height: 30px;
+//     margin-right: 10px;
+// }
+// .input {
+//     width: 40px;
+//     height: 30px;
+//     outline: none;
+//     border: 1px solid rgba(0,0,0,0.1);
+//     margin-right: 10px;
+//     padding: 0 3px;
+//     font-size: 16px;
+//     text-align: center;
+//     &.error {
+//         box-shadow: 0 0 5px 5px rgba(255, 0, 0, 0.6);
+//     }
 // }
