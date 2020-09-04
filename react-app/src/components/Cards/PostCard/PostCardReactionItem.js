@@ -21,8 +21,8 @@ function PostCardReactionItem(props) {
 
     return (
         <div className={styles.item}
-            onMouseOver={() => setPreviewOpen(true)}
-            onMouseOut={() => setPreviewOpen(false)}
+            onMouseEnter={() => setPreviewOpen(true)}
+            onMouseLeave={() => setPreviewOpen(false)}
             onClick={() => onClick()}>
             <img
                 className={`${styles.postIcon} ${accountReaction > 0 && styles.selected}`}

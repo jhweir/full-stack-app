@@ -188,13 +188,13 @@ input {
     transition-property: box-shadow, background-color, filter;
     transition-duration: 0.3s, 2s, 0.5s;
 
-    &.w-100 {
-        width: 100%;
-    }
+    // &.w-100 {
+    //     width: 100%;
+    // }
 
-    &.mr-10 {
-        margin-right: 10px;
-    }
+    // &.mr-10 {
+    //     margin-right: 10px;
+    // }
 
     &.centered {
         margin: 0 auto;

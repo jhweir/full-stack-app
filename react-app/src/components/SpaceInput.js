@@ -76,8 +76,8 @@ function SpaceInput(props) {
             </div>
             {flashMessage &&
                 <div className={styles.flashMessage}>
-                    Sorry, that space doesn't exist yet. You'll need to create it first on the 
-                    <Link to="/s/all/spaces" onClick={() => setParentModalOpen(false)}><b> Spaces</b></Link> page.
+                    No space with that name. Create it
+                    <Link to="/s/all/spaces" onClick={() => setParentModalOpen(false)}><b> here</b></Link>.
                 </div>
             }
             {addedSpaces.length > 0 &&

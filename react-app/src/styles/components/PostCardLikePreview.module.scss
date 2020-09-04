@@ -1,15 +1,38 @@
-.modal {
+.modalWrapper {
+    width: 400px;
     position: absolute;
     top: 40px;
-    //left: 0;
-    background-color: white;
-    box-shadow: 0 1px 10px 0 rgba(10, 8, 72, 0.15);
-    padding: 10px;
-    border-radius: 5px;
-    flex-shrink: 0;
-    flex-direction: column;
+    left: calc(50% - 200px);
     z-index: 3;
-    //overflow: visible;
+    display: flex;
+    justify-content: center;
+}
+.modal {
+    position: relative;
+    background-color: white;
+    box-shadow: 0 0 10px 0 rgba(10, 8, 72, 0.15);
+    padding: 12px;
+    border-radius: 5px;
+    flex-direction: column;
+}
+.pointerWrapper {
+    filter: drop-shadow(0 -3px 10px rgba(10, 8, 72, 0.15));
+    position: absolute;
+    top: -29px;
+    left: calc(50% - 30px);
+    height: 60px;
+    width: 60px;
+    clip-path: inset(0 0 50% 0);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.pointer {
+    width: 15px;
+    height: 15px;
+    background-color: white;
+    transform: rotate(45deg);
+    border-top-left-radius: 5px;
 }
 .modalItem {
     font-size: 14px;
