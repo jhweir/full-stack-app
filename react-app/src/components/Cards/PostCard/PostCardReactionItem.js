@@ -20,16 +20,37 @@ function PostCardReactionItem(props) {
     const previewModalOpen = totalReactions > 0 && previewOpen
 
     return (
-        <div className={styles.item}
-            onMouseEnter={() => setPreviewOpen(true)}
-            onMouseLeave={() => setPreviewOpen(false)}
-            onClick={() => onClick()}>
-            <img
-                className={`${styles.postIcon} ${accountReaction > 0 && styles.selected}`}
-                src={`/icons/${iconPath}`} alt=''
-            />
-            <span>{totalReactions} {text}</span>
-            {previewModalOpen && text === 'Likes' &&
+        <div className={styles.itemWrapper}>
+            <div className={styles.item}
+                onMouseEnter={() => setPreviewOpen(true)}
+                onMouseLeave={() => setPreviewOpen(false)}
+                onClick={onClick}>
+                <img
+                    className={`${styles.icon} ${accountReaction > 0 && styles.selected} ${text === 'Reposts' && styles.large}`}
+                    src={`/icons/${iconPath}`} alt=''
+                />
+                <span>{totalReactions} {text}</span>
+            </div>
+
+            {previewModalOpen &&
+                <>
+                    {text === 'Likes' && <PostCardLikePreview reactions={reactions}/>}
+                    {text === 'Reposts' && <PostCardRepostPreview reactions={reactions}/>}
+                    {text === 'Ratings' &&
+                        <PostCardRatingPreview
+                            reactions={reactions}
+                            totalReactions={totalReactions}
+                            totalReactionPoints={totalReactionPoints}
+                        />
+                    }
+                </>
+            }
+
+            {/* {mainModalOpen &&
+                <>
+                </>
+            } */}
+            {/* {previewModalOpen && text === 'Likes' &&
                 <PostCardLikePreview reactions={reactions}/>
             }
             {previewModalOpen && text === 'Reposts' &&
@@ -41,7 +62,7 @@ function PostCardReactionItem(props) {
                     totalReactions={totalReactions}
                     totalReactionPoints={totalReactionPoints}
                 />
-            }
+            } */}
         </div>
     )
 }

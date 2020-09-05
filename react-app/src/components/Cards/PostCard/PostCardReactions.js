@@ -112,7 +112,7 @@ function PostCardReactions(props) {
                 accountReaction={accountLike}
                 totalReactions={totalLikes}
                 iconPath='thumbs-up-solid.svg'
-                onClick={addLike}
+                onClick={() => addLike()}
             />
             <PostCardReactionItem
                 text='Reposts'
@@ -130,6 +130,7 @@ function PostCardReactions(props) {
             <PostCardReactionItem
                 text='Ratings'
                 reactions={reactionData && reactionData.Labels.filter(label => label.type === 'rating')}
+                //mainModalOpen={ratingModalOpen} setMainModalOpen={setRatingModalOpen}
                 previewOpen={ratingPreviewOpen} setPreviewOpen={setRatingPreviewOpen}
                 accountReaction={accountRating}
                 totalReactions={totalRatings}
@@ -140,6 +141,7 @@ function PostCardReactions(props) {
                     else { setAlertMessage('Log in to rate post'); setAlertModalOpen(true) }
                 }}
             />
+            {/* TODO: Move modals into PostCardReactionItems? */}
             {repostModalOpen &&
                 <PostCardRepostModal
                     postData={postData}
