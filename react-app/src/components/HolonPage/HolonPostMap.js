@@ -7,7 +7,7 @@ import { HolonContext } from '../../contexts/HolonContext'
 function HolonPostMap() {
     const { holonContextLoading, holonPosts, holonPostSortByFilter, selectedHolonSubPage, holonHandle } = useContext(HolonContext)
 
-    //console.log('holonPosts: ', holonPosts)
+    console.log('holonPosts: ', holonPosts)
 
     const width = 600
     const height = 350
@@ -27,39 +27,98 @@ function HolonPostMap() {
 
         let simulation = d3
             .forceSimulation(holonPosts)
-            .force('x', d3.forceX(width / 2).strength(0.03))
-            .force('y', d3.forceY(height / 2).strength(0.03))
+            .force('x', d3.forceX(width / 2).strength(0.08))
+            .force('y', d3.forceY(height / 2).strength(0.08))
             .force('collide', d3.forceCollide(function(d) {
-                return radiusScale(d.total_likes) + 2
+                return radiusScale(d.total_likes) + 5
             }))
 
-        let circles = d3
+        function dragstarted(d) {
+            if (!d3.event.active) {
+                simulation.alphaTarget(.03).restart()
+                d.fx = d.x
+                d.fy = d.y
+            }
+        }
+
+        function dragged(d) {
+            d.fx = d3.event.x
+            d.fy = d3.event.y
+        }
+
+        function dragended(d) {
+            if (!d3.event.active) {
+                simulation.alphaTarget(.03)
+                d.fx = null
+                d.fy = null
+            }
+        }
+
+        // create nodes
+        let nodes = d3
             .select("#post-map-svg")
-            .append('g')
-            .selectAll("dot")
+            .selectAll("node")
             .data(holonPosts)
             .enter()
+            .append('g')
+
+        // add circles to nodes
+        nodes
             .append("circle")
             .attr("r", function(d) {
                 return radiusScale(d.total_likes)
             })
-            .style("fill", "#71cde3")
-            //.exit().remove()
-            // .style("opacity", 0)
-            // .transition()
-            // .duration(3000)
-            // .style("opacity", 0.4)
+            .style("fill", function(d){
+               if (d.type === 'url') { return "#71cde3" }
+               if (d.type === 'poll') { return 'red' }
+               if (d.type === 'text') { return 'yellow' }
+            })
+            .call(d3.drag()
+                .on("start", dragstarted)
+                .on("drag", dragged)
+                .on("end", dragended))
 
-        //circles.selectAll('g').remove()
+        // add text to nodes
+        nodes
+            .append("text")
+            .text(function(d){ return d.text })
+            .call(d3.drag()
+                .on("start", dragstarted)
+                .on("drag", dragged)
+                .on("end", dragended))
+
+        // add images to nodes
+        nodes
+            .filter(function(d) { return d.urlImage !== null })
+            .append("image")
+            .attr("xlink:href", function(d) { return d.urlImage })
+            .attr("width", 80)
+            .attr("height", 80)
+            .call(d3.drag()
+                .on("start", dragstarted)
+                .on("drag", dragged)
+                .on("end", dragended))
             
         simulation
             .nodes(holonPosts)
             .on('tick', ticked)
 
         function ticked() {
-            circles
+            d3
+                .selectAll('circle')
                 .attr("cx", function(d) { return d.x })
                 .attr("cy", function(d) { return d.y })
+
+            d3
+                .selectAll('text')
+                .attr('text-anchor', 'middle')
+                .attr("x", function(d) { return d.x })
+                .attr("y", function(d) { return d.y })
+
+            d3
+                .selectAll('image')
+                .attr("x", function(d) { return d.x - 40 })
+                .attr("y", function(d) { return d.y - 40 })
         }
 
         //simulation.stop()
@@ -69,18 +128,6 @@ function HolonPostMap() {
     return (
         <div>
             <svg id={'post-map-svg'} height={height} width={width}>
-                {/* <g>
-                    {postData.createdAt && pollVotesGroupedByAnswer.map((answer, i) =>
-                        <path
-                            key={i}
-                            id={`line-${answer.key}`}
-                            d={line(answer.values)}
-                            fill={"transparent"}
-                            stroke={colorScale(i)}
-                            strokeWidth={3}
-                        />
-                    )}
-                </g> */}
             </svg>
         </div>
     )
