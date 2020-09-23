@@ -26,16 +26,24 @@ function PostCardReactionItem(props) {
                 onMouseLeave={() => setPreviewOpen(false)}
                 onClick={onClick}>
                 <img
-                    className={`${styles.icon} ${accountReaction > 0 && styles.selected} ${text === 'Reposts' && styles.large}`}
+                    className={`
+                        ${styles.icon}
+                        ${accountReaction > 0 && styles.selected}
+                        ${text === 'Reposts' && styles.large}
+                    `}
                     src={`/icons/${iconPath}`} alt=''
                 />
-                <span>{totalReactions} {text}</span>
+                <span className='greyText'>{totalReactions} {text}</span>
             </div>
 
             {previewModalOpen &&
                 <>
-                    {text === 'Likes' && <PostCardLikePreview reactions={reactions}/>}
-                    {text === 'Reposts' && <PostCardRepostPreview reactions={reactions}/>}
+                    {text === 'Likes' && 
+                        <PostCardLikePreview reactions={reactions}/>
+                    }
+                    {text === 'Reposts' && 
+                        <PostCardRepostPreview reactions={reactions}/>
+                    }
                     {text === 'Ratings' &&
                         <PostCardRatingPreview
                             reactions={reactions}

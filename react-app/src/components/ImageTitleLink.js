@@ -17,7 +17,7 @@ function ImageTitleLink(props) {
                     <img className={styles.placeholder} src={`/icons/${placeholderImagePath}`} alt=''/>
                 </div>
             }
-            <div className={`${styles.title} mr-10`}>{title}</div>
+            <div className={styles.title}>{title}</div>
         </Link>
     )
 }

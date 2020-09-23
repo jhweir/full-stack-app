@@ -237,7 +237,7 @@ router.get('/holon-posts', (req, res) => {
                     model: Holon,
                     as: 'DirectSpaces',
                     attributes: ['handle'],
-                    through: { where: {  relationship: 'direct' }, attributes: ['type'] },
+                    through: { where: { relationship: 'direct' }, attributes: ['type'] },
                 },
                 {
                     model: Holon,

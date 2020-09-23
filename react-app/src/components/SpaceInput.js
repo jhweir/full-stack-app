@@ -22,7 +22,8 @@ function SpaceInput(props) {
     const [flashMessage, setflashMessage] = useState(false)
 
     function getSuggestedSpaces() {
-        axios.get(config.environmentURL + `/suggested-space-handles?searchQuery=${newSpace}`)
+        axios
+            .get(config.environmentURL + `/suggested-space-handles?searchQuery=${newSpace}`)
             .then(res => {
                 let spaces = res.data.filter(space => !addedSpaces.includes(space.handle) && !blockedSpaces.includes(space.handle))
                 setSuggestedSpaces(spaces)
@@ -31,10 +32,19 @@ function SpaceInput(props) {
 
     function addSpace(e) {
         e.preventDefault()
-        axios.get(config.environmentURL + `/validate-space-handle?searchQuery=${newSpace}`)
+        axios
+            .get(config.environmentURL + `/validate-space-handle?searchQuery=${newSpace}`)
             .then(res => {
-                if (res.data === 'success') { setAddedSpaces([...addedSpaces, newSpace]); setSuggestedSpacesOpen(false); setNewSpace('') }
-                else { console.log('hmm'); setSuggestedSpacesOpen(false); setflashMessage(true); setNewSpaceError(true) }
+                if (res.data === 'success') { 
+                    setAddedSpaces([...addedSpaces, newSpace])
+                    setSuggestedSpacesOpen(false)
+                    setNewSpace('')
+                }
+                else { 
+                    setSuggestedSpacesOpen(false)
+                    setflashMessage(true)
+                    setNewSpaceError(true)
+                }
             })
     }
 
@@ -82,13 +92,16 @@ function SpaceInput(props) {
             }
             {addedSpaces.length > 0 &&
                 <div className={styles.spacesWrapper}>
-                    <div className={styles.text}>Added spaces: </div>
+                    {/* <div className={styles.text}>Added spaces: </div> */}
                     <ul className={styles.spaces}>
                         {addedSpaces.map((space, index) =>
                             <div className={styles.space} key={index}>
                                 <div className={styles.spaceText}>{space}</div>
                                 {space !== holonData.handle && // prevent users from removing the space they are currently in
-                                    <div className={styles.spaceCloseIcon} onClick={() => removeSpace(space)}></div>
+                                    <div
+                                        className={styles.spaceCloseIcon}
+                                        onClick={() => removeSpace(space)}
+                                    />
                                 }
                             </div>
                         )}

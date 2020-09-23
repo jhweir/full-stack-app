@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState, useEffect, useRef } from 'react'
 import axios from 'axios'
 import config from '../../../Config'
 import styles from '../../../styles/components/PostCardRepostModal.module.scss'
@@ -48,9 +48,18 @@ function PostCardRepostModal(props) {
         }
     }
 
+    const ref = useRef()
+    function handleClickOutside(e) { 
+        if (!ref.current.contains(e.target)) { setRepostModalOpen(false) } 
+    }
+    useEffect(() => {
+      document.addEventListener("mousedown", handleClickOutside)
+      return () => document.removeEventListener("mousedown", handleClickOutside)
+    })
+
     return (
         <div className={styles.modalWrapper}>
-            <div className={styles.modal}>
+            <div className={styles.modal} ref={ref}>
                 <CloseButton onClick={() => setRepostModalOpen(false)}/>
                 <span className={styles.title}>Reposts</span>
                 {reposts.length < 1
@@ -59,14 +68,14 @@ function PostCardRepostModal(props) {
                         {reposts.map((repost, index) =>
                             <div className={styles.repost} key={index}>
                                 <ImageTitleLink
-                                    type={'user'}
+                                    type='user'
                                     imagePath={repost.creator.flagImagePath}
                                     title={repost.creator.name}
                                     link={`/u/${repost.creator.handle}`}
                                 />
-                                <div className={`${styles.text} mr-10`}>to</div>
+                                <div className={`${styles.text} greyText ml-5 mr-10`}>to</div>
                                 <ImageTitleLink
-                                    type={'space'}
+                                    type='space'
                                     imagePath={repost.space.flagImagePath}
                                     title={repost.space.name}
                                     link={`/s/${repost.space.handle}`}

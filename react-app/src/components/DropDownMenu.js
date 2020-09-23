@@ -6,7 +6,9 @@ function DropDownMenu(props) {
     const [menuOpen, setMenuOpen] = useState(false)
 
     const ref = useRef()
-    function handleClickOutside(e) { if (!ref.current.contains(e.target)) { setMenuOpen(false) } }
+    function handleClickOutside(e) { 
+        if (!ref.current.contains(e.target)) { setMenuOpen(false) } 
+    }
     useEffect(() => {
       document.addEventListener("mousedown", handleClickOutside)
       return () => document.removeEventListener("mousedown", handleClickOutside)
@@ -22,10 +24,10 @@ function DropDownMenu(props) {
                 </div>
                 <div className={`${styles.options} ${menuOpen && styles.visible}`}>
                     {options.map((option, index) => 
-                        <div className={styles.option} key={index} onClick={() => { 
-                            setSelectedOption(option)
-                            setMenuOpen(false)
-                        }}>{option}</div>
+                        <div className={styles.option} key={index}
+                            onClick={() => { setSelectedOption(option); setMenuOpen(false)}}>
+                            {option}
+                        </div>
                     )}
                 </div>
             </div>

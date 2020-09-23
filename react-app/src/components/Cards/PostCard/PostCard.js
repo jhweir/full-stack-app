@@ -55,7 +55,7 @@ function PostCard(props) {
         setAccountLike(account_like)
         setAccountRating(account_rating)
         setAccountRepost(account_repost)
-        setBlockedSpaces([...DirectSpaces, ...IndirectSpaces])
+        setBlockedSpaces([...DirectSpaces.map(s => s.handle), ...IndirectSpaces.map(s => s.handle)])
     }
 
     function deletePost() {
@@ -134,17 +134,17 @@ function PostCard(props) {
                                     className={`${styles.icon} ${(accountLike || accountRating || accountRepost > 0) && styles.selected}`}
                                     src="/icons/fire-alt-solid.svg" alt=''
                                 />
-                                <span>{totalReactions} Reactions</span>
+                                <span className='greyText'>{totalReactions} Reactions</span>
                             </div>
                             <Link className={styles.interactItem}
                                 to={`/p/${id}`}>
                                 <img className={styles.icon} src="/icons/comment-solid.svg" alt=''/>
-                                <span>{ totalComments } Comments</span>
+                                <span className='greyText'>{ totalComments } Comments</span>
                             </Link>
                             {isOwnPost &&
                                 <div className={styles.interactItem} onClick={deletePost}>
                                     <img className={styles.icon} src="/icons/trash-alt-solid.svg" alt=''/>
-                                    <span>Delete</span>
+                                    <span className='greyText'>Delete</span>
                                 </div>
                             }
                         </div>

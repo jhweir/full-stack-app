@@ -12,6 +12,7 @@ function PostCardRepostPreview(props) {
                 </div>
                 {reactions && reactions.map((reaction, index) =>
                     <div className={styles.modalItem} key={index}>
+                        {/* TODO: create user/flag image component (wise size property) */}
                         {reaction.creator.flagImagePath
                             ? <img className={styles.image} src={reaction.creator.flagImagePath}/>
                             : <div className={styles.placeholderWrapper}>
@@ -19,7 +20,7 @@ function PostCardRepostPreview(props) {
                             </div>
                         }
                         <div className={`${styles.modalItemText} mr-5`}>{reaction.creator.name}</div>
-                        <div className={`${styles.modalItemText} mr-10`}>to</div>
+                        <div className={`${styles.modalItemText} greyText mr-10`}>to</div>
                         {reaction.space.flagImagePath
                             ? <img className={styles.image} src={reaction.space.flagImagePath}/>
                             : <div className={styles.placeholderWrapper}>

@@ -6,7 +6,7 @@ import AccountContextProvider from './contexts/AccountContext'
 import HolonContextProvider from './contexts/HolonContext'
 import UserContextProvider from './contexts/UserContext'
 import PostContextProvider from './contexts/PostContext'
-import Homepage from './pages/Homepage'
+import HomePage from './pages/HomePage'
 import HolonPage from './pages/HolonPage'
 import PostPage from './pages/PostPage'
 import UserPage from './pages/UserPage'
@@ -33,7 +33,7 @@ function App() {
                 <NavBar/>
                 <GlobalModals/>
                 <Switch>
-                  <Route path="/" exact component={Homepage}/>
+                  <Route path="/" exact component={HomePage}/>
                   <Route path="/s/:holonHandle" component={HolonPage}/>
                   <Route path="/p/:postId" component={PostPage}/>
                   <Route path="/u/:userHandle" component={UserPage}/>

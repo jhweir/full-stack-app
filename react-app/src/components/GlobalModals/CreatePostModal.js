@@ -13,7 +13,7 @@ function CreatePostModal() {
     const { accountData, setCreatePostModalOpen } = useContext(AccountContext)
     const { holonData, getHolonPosts } = useContext(HolonContext)
 
-    const [postType, setPostType] = useState('Text')
+    const [postType, setPostType] = useState('Url')
     const [pollType, setPollType] = useState('Single Choice')
     const [text, setText] = useState('')
     const [textError, setTextError] = useState(false)
@@ -31,6 +31,10 @@ function CreatePostModal() {
     const [pollAnswers, setPollAnswers] = useState([])
     const [newPollAnswer, setNewPollAnswer] = useState('')
     const [newPollAnswerError, setNewPollAnswerError] = useState(false)
+
+    const [numberOfPrismPlayers, setNumberOfPrismPlayers] = useState(3)
+    const [prismDuration, setPrismDuration] = useState('1 Month')
+    const [prismVisibility, setPrismVisibility] = useState('Private')
 
     function isValidUrl(string) {
         try { new URL(string) }
@@ -67,7 +71,7 @@ function CreatePostModal() {
     }
 
     function resetForm() {
-        setPostType('Text')
+        setPostType('Url')
         setPollType('Single Choice')
         setText(null)
         setUrl(null)
@@ -133,18 +137,45 @@ function CreatePostModal() {
                 <div className={styles.dropDownOptions}>
                     <DropDownMenu
                         title='Post Type'
-                        options={['Text', 'Poll', 'Url']}
+                        options={['Text', 'Url', 'Poll', 'Prism']}
                         selectedOption={postType}
                         setSelectedOption={setPostType}
                         style='horizontal'
                     />
-                    {postType === 'Poll' && <DropDownMenu
-                        title='Poll Type'
-                        options={['Single Choice', 'Multiple Choice', 'Weighted Choice']}
-                        selectedOption={pollType}
-                        setSelectedOption={setPollType}
-                        style='horizontal'
-                    />}
+                    {postType === 'Poll' &&
+                        <DropDownMenu
+                            title='Poll Type'
+                            options={['Single Choice', 'Multiple Choice', 'Weighted Choice']}
+                            selectedOption={pollType}
+                            setSelectedOption={setPollType}
+                            style='horizontal'
+                        />
+                    }
+                    {postType === 'Prism' &&
+                        <>
+                            <DropDownMenu
+                                title='Number Of Players'
+                                options={[3, 6, 12]}
+                                selectedOption={numberOfPrismPlayers}
+                                setSelectedOption={setNumberOfPrismPlayers}
+                                style='horizontal'
+                            />
+                            <DropDownMenu
+                                title='Duration'
+                                options={['1 Week', '1 Month', '1 Year']}
+                                selectedOption={prismDuration}
+                                setSelectedOption={setPrismDuration}
+                                style='horizontal'
+                            />
+                            <DropDownMenu
+                                title='Visibility'
+                                options={['Private', 'Public']}
+                                selectedOption={prismVisibility}
+                                setSelectedOption={setPrismVisibility}
+                                style='horizontal'
+                            />
+                        </>
+                    }
                 </div>
                 <form className={styles.form} onSubmit={submitPost}>
                     <textarea className={`wecoInput textArea mb-10 ${textError && 'error'}`}
@@ -171,7 +202,7 @@ function CreatePostModal() {
                         urlFlashMessage={urlFlashMessage}
                     />
                     <SpaceInput
-                        text='Add other spaces you want the post to appear in:'
+                        text='Add any other spaces you want the post to appear in:'
                         blockedSpaces={[]}
                         addedSpaces={addedSpaces} setAddedSpaces={setAddedSpaces}
                         newSpaceError={newSpaceError} setNewSpaceError={setNewSpaceError}

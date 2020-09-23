@@ -15,15 +15,6 @@
     flex-direction: row;
     align-items: center;
     z-index: 4;
-    &:hover {
-        > .icon {
-            opacity: 0.5;
-            &.selected {
-                opacity: 1;
-                filter: invert(.5) sepia(1) saturate(5) hue-rotate(190deg) brightness(80%);
-            }
-        }
-    }
 }
 .icon {
     width: 20px;
