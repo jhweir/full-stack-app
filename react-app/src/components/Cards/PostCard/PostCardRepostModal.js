@@ -1,10 +1,12 @@
 import React, { useContext, useState, useEffect, useRef } from 'react'
+import { Link } from 'react-router-dom'
 import axios from 'axios'
 import config from '../../../Config'
 import styles from '../../../styles/components/PostCardRepostModal.module.scss'
 import SpaceInput from '../../SpaceInput'
 import CloseButton from '../../CloseButton'
 import ImageTitleLink from '../../ImageTitleLink'
+import FlagImage from '../../LargeFlagImage'
 import { AccountContext } from '../../../contexts/AccountContext'
 import { HolonContext } from '../../../contexts/HolonContext'
 
@@ -67,6 +69,10 @@ function PostCardRepostModal(props) {
                     : <div className={styles.reposts}>
                         {reposts.map((repost, index) =>
                             <div className={styles.repost} key={index}>
+                                {/* <Link className={styles.container} to={`/u/${repost.creator.handle}`}>
+                                    <SmallFlagImage size={30} imagePath={repost.creator.flagImagePath}/>
+                                    <div className={styles.title}>{repost.creator.name}</div>
+                                </Link> */}
                                 <ImageTitleLink
                                     type='user'
                                     imagePath={repost.creator.flagImagePath}
@@ -94,7 +100,7 @@ function PostCardRepostModal(props) {
                     newSpaceError={newSpaceError} setNewSpaceError={setNewSpaceError}
                     setParentModalOpen={setRepostModalOpen}
                 />
-                <div className='wecoButton' onClick={repost}>Repost</div>
+                <div className={`wecoButton ${!addedSpaces.length && 'disabled'}`} onClick={repost}>Repost</div>
             </div>
         </div>
     )

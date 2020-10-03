@@ -1,4 +1,5 @@
-import React, { useContext, useState, useEffect } from 'react'
+import React, { useContext, useState, useEffect, useRef } from 'react'
+import { Link } from 'react-router-dom'
 import { HolonContext } from '../../contexts/HolonContext'
 import { AccountContext } from '../../contexts/AccountContext'
 import axios from 'axios'
@@ -123,16 +124,31 @@ function CreatePostModal() {
         if (holonData && holonData.id) { setAddedSpaces([holonData.handle]) }
     }, [holonData])
 
+    const ref = useRef()
+    function handleClickOutside(e) { 
+        if (!ref.current.contains(e.target)) { setCreatePostModalOpen(false) } 
+    }
+    useEffect(() => {
+      document.addEventListener("mousedown", handleClickOutside)
+      return () => document.removeEventListener("mousedown", handleClickOutside)
+    })
+
     return (
         <div className={styles.modalWrapper}>
-            <div className={styles.modal}>
+            <div className={styles.modal} ref={ref}>
                 <img 
                     className={styles.closeModalButton}
                     src="/icons/close-01.svg"
-                    onClick={() => { setCreatePostModalOpen(false); resetForm() }}
+                    onClick={() => {setCreatePostModalOpen(false); resetForm()}}
                 />
                 <div className={styles.title}>
-                    Create a new post in '{holonData.name}'
+                    Create a new post in 
+                    {/* '{holonData.name}' */}
+                    <Link to={`/s/${holonData.handle}`}
+                        className='ml-5 blueText'
+                        onClick={() => {setCreatePostModalOpen(false); resetForm()}}>
+                        {holonData.name}
+                    </Link>
                 </div>
                 <div className={styles.dropDownOptions}>
                     <DropDownMenu
@@ -202,7 +218,7 @@ function CreatePostModal() {
                         urlFlashMessage={urlFlashMessage}
                     />
                     <SpaceInput
-                        text='Add any other spaces you want the post to appear in:'
+                        text='Tag other spaces you want the post to appear in:'
                         blockedSpaces={[]}
                         addedSpaces={addedSpaces} setAddedSpaces={setAddedSpaces}
                         newSpaceError={newSpaceError} setNewSpaceError={setNewSpaceError}

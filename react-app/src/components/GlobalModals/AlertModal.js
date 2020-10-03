@@ -1,18 +1,25 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { AccountContext } from '../../contexts/AccountContext'
 import styles from '../../styles/components/AlertModal.module.scss'
+import CloseButton from '../CloseButton'
 
 function AlertModal() {
     const { setAlertModalOpen, alertMessage, setAuthModalOpen } = useContext(AccountContext)
+
+    const ref = useRef()
+    function handleClickOutside(e) { 
+        if (!ref.current.contains(e.target)) { setAlertModalOpen(false) } 
+    }
+    useEffect(() => {
+      document.addEventListener("mousedown", handleClickOutside)
+      return () => document.removeEventListener("mousedown", handleClickOutside)
+    })
+
     return (
         <div className={styles.alertModalWrapper}>
-            <div className={styles.alertModal}>
-                <img 
-                    className={styles.alertModalCloseButton}
-                    src="/icons/close-01.svg"
-                    onClick={() => setAlertModalOpen(false)}
-                />
+            <div className={styles.alertModal} ref={ref}>
+                <CloseButton onClick={() => setAlertModalOpen(false)}/>
                 <span className={styles.alertModalText}>{ alertMessage }</span>
                 {alertMessage.includes('Log in') &&
                     <div

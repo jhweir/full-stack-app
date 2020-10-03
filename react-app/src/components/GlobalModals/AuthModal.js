@@ -1,9 +1,10 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState, useEffect, useRef } from 'react'
 import axios from 'axios'
 import config from '../../Config'
 import styles from '../../styles/components/AuthModal.module.scss'
 import { AccountContext } from '../../contexts/AccountContext'
 import { HolonContext } from '../../contexts/HolonContext'
+import CloseButton from '../CloseButton'
 
 function AuthModal() {
     const { getAccountData, setAuthModalOpen } = useContext(AccountContext)
@@ -80,14 +81,19 @@ function AuthModal() {
         }
     }
 
+    const ref = useRef()
+    function handleClickOutside(e) { 
+        if (!ref.current.contains(e.target)) { setAuthModalOpen(false) } 
+    }
+    useEffect(() => {
+      document.addEventListener("mousedown", handleClickOutside)
+      return () => document.removeEventListener("mousedown", handleClickOutside)
+    })
+
     return (
         <div className={styles.authModalWrapper}>
-            <div className={styles.authModal}>
-                <img 
-                    className={styles.authModalCloseButton}
-                    src="/icons/close-01.svg"
-                    onClick={() => setAuthModalOpen(false)}
-                />
+            <div className={styles.authModal} ref={ref}>
+                <CloseButton onClick={() => setAuthModalOpen(false)}/>
                 <div className={styles.authModalColumn}>
                     <span className={styles.authModalTitle}>Log in</span>
                     <span className={styles.authModalFlashMessage}>{ logInFlashMessage }</span>

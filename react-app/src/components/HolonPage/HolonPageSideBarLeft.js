@@ -5,7 +5,7 @@ import { AccountContext } from '../../contexts/AccountContext'
 import { HolonContext } from '../../contexts/HolonContext'
 import styles from '../../styles/components/HolonPageSideBarLeft.module.scss'
 import HolonPageSideBarLeftPlaceholder from './HolonPageSideBarLeftPlaceholder'
-import FlagImage from '../FlagImage'
+import LargeFlagImage from '../LargeFlagImage'
 import SideBarButton from '../SideBarButton'
 
 function HolonPageSideBarLeft() {
@@ -16,9 +16,11 @@ function HolonPageSideBarLeft() {
         if (isFollowing) {
             setIsFollowing(false)
             axios.put(config.environmentURL + `/unfollowHolon`, { holonId: holonData.id, userId: accountData.id })
+                // TODO: remove setTime out and wait for response
                 .then(setTimeout(() => { getHolonUsers() }, 200))
                 .catch(error => { console.log(error) })} 
-        else { setIsFollowing(true)
+        else {
+            setIsFollowing(true)
             axios.post(config.environmentURL + `/followHolon`, { holonId: holonData.id, userId: accountData.id })
                 .then(setTimeout(() => { getHolonUsers() }, 200))
                 .catch(error => { console.log(error) })
@@ -28,10 +30,10 @@ function HolonPageSideBarLeft() {
     if (holonData) {
         return (
             <div className={styles.sideBarLeft}>
-                <FlagImage
-                    flagImagePath={holonData.flagImagePath}
-                    imageUploadType='holon-flag-image'
+                <LargeFlagImage
+                    imagePath={holonData.flagImagePath}
                     canEdit={isModerator}
+                    imageUploadType='holon-flag-image'
                 />
                 <div className={styles.name}>{ holonData.name }</div>
                 <div className={styles.navButtons}>

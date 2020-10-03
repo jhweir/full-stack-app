@@ -1,18 +1,18 @@
 import React, { useContext } from 'react'
 import { AccountContext } from '../contexts/AccountContext'
-import styles from '../styles/components/FlagImage.module.scss'
+import styles from '../styles/components/LargeFlagImage.module.scss'
 
-function FlagImage(props) {
-    const { flagImagePath, imageUploadType, canEdit } = props
+function LargeFlagImage(props) {
+    const { imagePath, canEdit, imageUploadType } = props
     const { setImageUploadType, setImageUploadModalOpen } = useContext(AccountContext)
 
     return (
         <div className={styles.flagImageWrapper}>
-            {flagImagePath === null
+            {imagePath === null
                 ? <div className={styles.placeholderWrapper}>
                     <img className={styles.placeholder} src='/icons/users-solid.svg' alt=''/>
                 </div>
-                : <img className={styles.flagImage} src={flagImagePath} alt=''/>
+                : <img className={styles.flagImage} src={imagePath} alt=''/>
             }
             {canEdit &&
                 <div 
@@ -25,4 +25,4 @@ function FlagImage(props) {
     )
 }
 
-export default FlagImage
+export default LargeFlagImage

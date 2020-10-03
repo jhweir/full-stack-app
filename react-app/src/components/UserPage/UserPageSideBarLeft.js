@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import { UserContext } from '../../contexts/UserContext'
 import styles from '../../styles/components/UserPageSideBarLeft.module.scss'
-import FlagImage from '../FlagImage'
+import LargeFlagImage from '../LargeFlagImage'
 import SideBarButton from '../SideBarButton'
 //import HolonPageSideBarLeftPlaceholder from '../components/HolonPageSideBarLeftPlaceholder'
 
@@ -10,8 +10,8 @@ function UserPageSideBarLeft() {
 
     return (
         <div className={styles.sideBarLeft}>
-            <FlagImage
-                flagImagePath={userData.flagImagePath}
+            <LargeFlagImage
+                imagePath={userData.flagImagePath}
                 imageUploadType='user-flag-image'
                 canEdit={isOwnAccount}
             />

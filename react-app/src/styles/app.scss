@@ -186,15 +186,16 @@ input {
     //border: 1px solid rgba(10, 8, 72, 0.1);
     border: none;
     transition-property: box-shadow, background-color, filter;
-    transition-duration: 0.3s, 2s, 0.5s;
+    transition-duration: 0.3s, 0.5s, 0.5s;
 
-    // &.w-100 {
-    //     width: 100%;
-    // }
-
-    // &.mr-10 {
-    //     margin-right: 10px;
-    // }
+    &.disabled {
+        background-color: #c5c5c5;
+        &:hover { 
+            outline: auto;
+            filter: brightness(100%);
+            cursor: auto;
+        }
+    }
 
     &.centered {
         margin: 0 auto;
@@ -261,3 +262,6 @@ input {
 // .darkGreyText {
 //     color: rgb(117, 117, 117);
 // }
+.blueText {
+    color: rgb(104, 161, 247);
+}

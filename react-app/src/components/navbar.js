@@ -20,25 +20,25 @@ function NavBar() {
                 <div className={styles.navBarLinks}>
                     <Link to="/"
                         className={styles.navBarLink}>
-                        <img className={styles.navBarIcon} src="/icons/home-solid.svg" alt=''/>
+                        {/* <img className={styles.navBarIcon} src="/icons/home-solid.svg" alt=''/> */}
                         <div className={styles.navBarText}>Home</div>
                     </Link> |
                     <Link to="/s/all"
                         className={styles.navBarLink}
                         onClick={() => { setHolonHandle('all') }}>
-                        <img className={styles.navBarIcon} src="/icons/edit-solid.svg" alt=''/>
+                        {/* <img className={styles.navBarIcon} src="/icons/edit-solid.svg" alt=''/> */}
                         <div className={styles.navBarText}>Posts</div>
                     </Link> | 
                     <Link to="/s/all/spaces"
                         className={styles.navBarLink}
                         onClick={() => { setHolonHandle('all') }}>
-                        <img className={styles.navBarIcon} src="/icons/overlapping-circles-thick.svg" alt=''/>
+                        {/* <img className={styles.navBarIcon} src="/icons/overlapping-circles-thick.svg" alt=''/> */}
                         <div className={styles.navBarText}>Spaces</div>
                     </Link> | 
                     <Link to="/s/all/users"
                         className={styles.navBarLink}
                         onClick={() => { setHolonHandle('all') }}>
-                        <img className={styles.navBarIcon} src="/icons/users-solid.svg" alt=''/>
+                        {/* <img className={styles.navBarIcon} src="/icons/users-solid.svg" alt=''/> */}
                         <div className={styles.navBarText}>Users</div>
                     </Link>
                 </div>

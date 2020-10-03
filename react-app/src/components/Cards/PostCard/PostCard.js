@@ -92,7 +92,7 @@ function PostCard(props) {
                                     <img className={styles.placeholder} src={'/icons/user-solid.svg'} alt=''/>
                                 </div>
                             }
-                            <span className={styles.subText}>{creator.name || 'Anonymous'}</span>
+                            <span className='mr-5'>{creator.name || 'Anonymous'}</span>
                         </Link>
                         <span className={styles.subText}>to</span>
                         <div className={styles.postSpaces}>
@@ -134,7 +134,7 @@ function PostCard(props) {
                                     className={`${styles.icon} ${(accountLike || accountRating || accountRepost > 0) && styles.selected}`}
                                     src="/icons/fire-alt-solid.svg" alt=''
                                 />
-                                <span className='greyText'>{totalReactions} Reactions</span>
+                                <span className={'greyText'}>{totalReactions} Reactions</span>
                             </div>
                             <Link className={styles.interactItem}
                                 to={`/p/${id}`}>
