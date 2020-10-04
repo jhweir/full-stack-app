@@ -15,7 +15,7 @@ function HolonPostMap() {
 
     // let rangeBottom
     // if (holonPostSortByFilter === 'Likes') { rangeBottom =  }
-
+    
     useEffect(() => {
         console.log('post map useEffect run')
         const domainMin = 0
@@ -62,17 +62,43 @@ function HolonPostMap() {
             .enter()
             .append('g')
 
+        var svg = d3.select("#post-map-svg")
+
+        var defs = svg.append("defs").attr("id", "imgdefs")
+
         // add circles to nodes
         nodes
             .append("circle")
+            .attr('id', 'circle-node')
             .attr("r", function(d) {
                 return radiusScale(d.total_likes)
             })
+            // .attr("fill", "url(#catpattern)")
             .style("fill", function(d){
-               if (d.type === 'url') { return "#71cde3" }
-               if (d.type === 'poll') { return 'red' }
-               if (d.type === 'text') { return 'yellow' }
+                if (d.urlImage !== null) {
+                    var pattern = defs.append("pattern")
+                        .attr("id", `${d.id}`)
+                        .attr("height", 1)
+                        .attr("width", 1)
+                        .attr("x", "0")
+                        .attr("y", "0")
+        
+                    pattern.append("image")
+                        .attr("x", 0)
+                        .attr("y", 0)
+                        .attr("height", radiusScale(d.total_likes) * 2)
+                        //.attr("width", radiusScale(d.total_likes) * 2)
+                        .attr("xlink:href", d.urlImage)
+
+                    return `url(#${d.id})`
+                }
+                else {
+                    if (d.type === 'url') { return '#71cde3' }
+                    if (d.type === 'poll') { return '#ff4040' }
+                    if (d.type === 'text') { return '#82ed4c' }
+                }
             })
+            //.attr("fill", "url(#catpattern)")
             .call(d3.drag()
                 .on("start", dragstarted)
                 .on("drag", dragged)
@@ -88,42 +114,49 @@ function HolonPostMap() {
                 .on("end", dragended))
 
         // add images to nodes
-        nodes
-            .filter(function(d) { return d.urlImage !== null })
-            .append("image")
-            .attr("xlink:href", function(d) { return d.urlImage })
-            .attr("width", 80)
-            .attr("height", 80)
-            .call(d3.drag()
-                .on("start", dragstarted)
-                .on("drag", dragged)
-                .on("end", dragended))
+        // nodes
+        //     .filter(function(d) { return d.urlImage !== null })
+        //     .append("image")
+        //     .attr('id', 'node-images')
+        //     .attr("xlink:href", function(d) { return d.urlImage })
+        //     //.attr("clip-path", "url(#clip-path)")
+        //     .attr("width", 80)
+        //     .attr("height", 80)
+        //     .call(d3.drag()
+        //         .on("start", dragstarted)
+        //         .on("drag", dragged)
+        //         .on("end", dragended))
             
         simulation
             .nodes(holonPosts)
             .on('tick', ticked)
 
         function ticked() {
-            d3
-                .selectAll('circle')
+            d3.selectAll('#circle-node')
                 .attr("cx", function(d) { return d.x })
                 .attr("cy", function(d) { return d.y })
 
-            d3
-                .selectAll('text')
+            d3.selectAll('text')
                 .attr('text-anchor', 'middle')
                 .attr("x", function(d) { return d.x })
                 .attr("y", function(d) { return d.y })
 
-            d3
-                .selectAll('image')
+            d3.selectAll('#node-images')
                 .attr("x", function(d) { return d.x - 40 })
                 .attr("y", function(d) { return d.y - 40 })
+
+            // d3.selectAll('#clip-path')
+            //     .attr("cx", function(d) { return d.x })
+            //     .attr("cy", function(d) { return d.y })
+            
         }
-
         //simulation.stop()
+        return function cleanup() {
+            console.log('cleanup')
+            svg.selectAll("*").remove();
+        };
 
-    },[])
+    },[holonPosts])
 
     return (
         <div>
