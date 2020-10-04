@@ -190,8 +190,8 @@ input {
 
     &.disabled {
         background-color: #c5c5c5;
-        &:hover { 
-            outline: auto;
+        &:hover {
+            border: none;
             filter: brightness(100%);
             cursor: auto;
         }

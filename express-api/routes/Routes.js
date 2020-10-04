@@ -1395,7 +1395,7 @@ router.post('/repost-post', (req, res) => {
         .catch(err => { res.send(err) })
 })
 
-router.put('/add-like', (req, res) => {
+router.post('/add-like', (req, res) => {
     const { accountId, postId, holonId } = req.body
     Label
         .create({ 
@@ -1410,7 +1410,7 @@ router.put('/add-like', (req, res) => {
         .then(res.send('success'))
 })
 
-router.put('/remove-like', (req, res) => {
+router.post('/remove-like', (req, res) => {
     const { accountId, postId } = req.body
     Label
         .update({ state: 'removed' }, {
@@ -1439,7 +1439,7 @@ router.put('/remove-heart', (req, res) => {
     })
 })
 
-router.put('/add-rating', (req, res) => {
+router.post('/add-rating', (req, res) => {
     const { accountId, postId, holonId, newRating } = req.body
     Label.create({ 
         type: 'rating',
@@ -1449,23 +1449,15 @@ router.put('/add-rating', (req, res) => {
         userId: accountId,
         postId,
         commentId: null,
-    }).then(res.send('Post successfully rated'))
+    }).then(res.send('success'))
 })
 
-router.put('/remove-rating', (req, res) => {
+router.post('/remove-rating', (req, res) => {
     const { accountId, postId, holonId } = req.body
-    Label.update({ state: 'removed' }, { where: { type: 'rating', state: 'active', postId, userId: accountId } })
-    // .then(() => {
-    //     Label.create({ 
-    //         type: 'rating',
-    //         value: newRating,
-    //         state: 'active',
-    //         holonId,
-    //         userId: accountId,
-    //         postId,
-    //         commentId: null,
-    //     })
-    .then(res.send('Post successfully rated'))
+    Label.update({ state: 'removed' }, { where: { 
+        type: 'rating', state: 'active', postId, userId: accountId 
+    } })
+    .then(res.send('success'))
 })
 
 router.post('/add-comment', (req, res) => {

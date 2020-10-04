@@ -3,8 +3,9 @@ import axios from 'axios'
 import config from '../../../Config'
 import styles from '../../../styles/components/PostCardReactions.module.scss'
 import PostCardReactionItem from './PostCardReactionItem'
-import PostCardRatingModal from './PostCardRatingModal'
+import PostCardLikeModal from './PostCardLikeModal'
 import PostCardRepostModal from './PostCardRepostModal'
+import PostCardRatingModal from './PostCardRatingModal'
 import { AccountContext } from '../../../contexts/AccountContext'
 import { HolonContext } from '../../../contexts/HolonContext'
 
@@ -27,7 +28,7 @@ function PostCardReactions(props) {
 
     const [reactionData, setReactionData] = useState({ Labels: [] })
     const [likePreviewOpen, setLikePreviewOpen] = useState(false)
-    // const [likeModalOpen, setLikeModalOpen] = useState(false)
+    const [likeModalOpen, setLikeModalOpen] = useState(false)
     const [ratingPreviewOpen, setRatingPreviewOpen] = useState(false)
     const [ratingModalOpen, setRatingModalOpen] = useState(false)
     const [repostPreviewOpen, setRepostPreviewOpen] = useState(false)
@@ -112,7 +113,11 @@ function PostCardReactions(props) {
                 accountReaction={accountLike}
                 totalReactions={totalLikes}
                 iconPath='thumbs-up-solid.svg'
-                onClick={() => addLike()}
+                //onClick={() => addLike()}
+                onClick={() => { 
+                    if (isLoggedIn) { setLikeModalOpen(true) }
+                    else { setAlertMessage('Log in to like post'); setAlertModalOpen(true) }
+                }}
             />
             <PostCardReactionItem
                 text='Reposts'
@@ -142,6 +147,18 @@ function PostCardReactions(props) {
                 }}
             />
             {/* TODO: Move modals into PostCardReactionItems? */}
+            {likeModalOpen &&
+                <PostCardLikeModal
+                    postData={postData}
+                    likes={reactionData && reactionData.Labels.filter(label => label.type === 'like')}
+                    setLikeModalOpen={setLikeModalOpen}
+                    totalReactions={totalReactions} setTotalReactions={setTotalReactions}
+                    totalLikes={totalLikes} setTotalLikes={setTotalLikes}
+                    accountLike={accountLike} setAccountLike={setAccountLike}
+                    getReactionData={getReactionData}
+                    blockedSpaces={blockedSpaces} setBlockedSpaces={setBlockedSpaces}
+                />
+            }
             {repostModalOpen &&
                 <PostCardRepostModal
                     postData={postData}

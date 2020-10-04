@@ -3,11 +3,11 @@ import { AccountContext } from '../contexts/AccountContext'
 import styles from '../styles/components/LargeFlagImage.module.scss'
 
 function LargeFlagImage(props) {
-    const { imagePath, canEdit, imageUploadType } = props
+    const { size, imagePath, canEdit, imageUploadType } = props
     const { setImageUploadType, setImageUploadModalOpen } = useContext(AccountContext)
 
     return (
-        <div className={styles.flagImageWrapper}>
+        <div className={styles.flagImageWrapper} style={{ width: size, height: size }}>
             {imagePath === null
                 ? <div className={styles.placeholderWrapper}>
                     <img className={styles.placeholder} src='/icons/users-solid.svg' alt=''/>

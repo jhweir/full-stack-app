@@ -25,7 +25,9 @@ function SpaceInput(props) {
         axios
             .get(config.environmentURL + `/suggested-space-handles?searchQuery=${newSpace}`)
             .then(res => {
-                let spaces = res.data.filter(space => !addedSpaces.includes(space.handle) && !blockedSpaces.includes(space.handle))
+                let spaces = res.data.filter(space =>
+                    !addedSpaces.includes(space.handle) && !blockedSpaces.includes(space.handle) && space.handle != holonData.handle
+                )
                 setSuggestedSpaces(spaces)
             })
     }
@@ -97,12 +99,10 @@ function SpaceInput(props) {
                         {addedSpaces.map((space, index) =>
                             <div className={styles.space} key={index}>
                                 <div className={styles.spaceText}>{space}</div>
-                                {space !== holonData.handle && // prevent users from removing the space they are currently in
-                                    <div
-                                        className={styles.spaceCloseIcon}
-                                        onClick={() => removeSpace(space)}
-                                    />
-                                }
+                                <div
+                                    className={styles.spaceCloseIcon}
+                                    onClick={() => removeSpace(space)}
+                                />
                             </div>
                         )}
                     </ul>

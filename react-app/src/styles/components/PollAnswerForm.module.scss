@@ -69,8 +69,10 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    background-color: #ddd;
+    background-color: #e1f1ff;//#ddd;
     border-radius: 5px;
+    //height: 32px;
+    //padding: 0 12px;
     padding: 10px 10px 10px 15px;
     margin: 0 10px 10px 0;
     &:hover {
@@ -81,21 +83,16 @@
     margin-right: 20px;
 }
 .pollAnswerCloseButton {
-    position: absolute;
-    right: 10px;
-    top: 13px;
     background-image: url(/icons/close-01.svg);
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
     background-color: transparent;
     border: none;
-    height: 17px;
-    width: 17px;
+    height: 12px;
+    width: 12px;
     padding: 0;
-    opacity: 0.4;
-    //margin-right: 5px;
-    flex-shrink: 0;
+    opacity: 0.3;
     &:hover {
         cursor: pointer;
     }

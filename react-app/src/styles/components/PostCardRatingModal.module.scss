@@ -47,6 +47,14 @@
     justify-content: space-between;
     flex-shrink: 0;
     &:last-child { margin-bottom: 0 }
+    &.averageScore {
+        margin-bottom: 10px;
+    }
+}
+.imageTextLink {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 }
 // .totalScore {
 //     width: 100px;
@@ -55,6 +63,7 @@
 .totalScoreBar {
     width: 100px;
     height: 30px;
+    margin-left: 10px;
     background-color: #eaeaea;
     position: relative;
 }
@@ -62,8 +71,12 @@
     height: 30px;
     background-color: #9ed5ff;
 }
+.averageScorePercentage {
+    height: 30px;
+    background-color: #b6ef87;
+}
 .totalScoreText {
-    font-size: 16px;
+    font-size: 14px;
     position: absolute;
     top: 0;
     width: 100%;
@@ -72,14 +85,14 @@
     align-items: center;
     justify-content: center;
 }
-// .inputWrapper {
-//     display: flex;
-//     flex-direction: row;
-//     align-items: center;
-//     flex-shrink: 0;
-//     height: 30px;
-//     margin-right: 10px;
-// }
+.inputWrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-shrink: 0;
+    //height: 30px;
+    margin-right: 10px;
+}
 // .input {
 //     width: 40px;
 //     height: 30px;

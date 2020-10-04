@@ -1,6 +1,4 @@
 .flagImageWrapper {
-    width: 150px;
-    height: 150px;
     border-radius: 50%;
     position: absolute;
     top: -96px;
@@ -10,20 +8,6 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    // &.border {
-    //     .flagImage {
-    //         width: calc(100% - 8px);
-    //         height: calc(100% - 8px);
-    //     }
-    //     .placeholderWrapper {
-    //         width: calc(100% - 8px);
-    //         height: calc(100% - 8px);
-    //     }
-    //     .uploadButton {
-    //         width: calc(100% - 8px);
-    //         height: calc(100% - 8px);
-    //     }
-    // }
 }
 .flagImage {
     width: calc(100% - 8px);
@@ -68,3 +52,19 @@
         color: white;
     }
 }
+// .flagImageWrapper {
+//     &.border {
+//         .flagImage {
+//             width: calc(100% - 8px);
+//             height: calc(100% - 8px);
+//         }
+//         .placeholderWrapper {
+//             width: calc(100% - 8px);
+//             height: calc(100% - 8px);
+//         }
+//         .uploadButton {
+//             width: calc(100% - 8px);
+//             height: calc(100% - 8px);
+//         }
+//     }
+// }

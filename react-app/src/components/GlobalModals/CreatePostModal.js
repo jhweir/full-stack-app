@@ -120,9 +120,9 @@ function CreatePostModal() {
         }
     }
 
-    useEffect(() => {
-        if (holonData && holonData.id) { setAddedSpaces([holonData.handle]) }
-    }, [holonData])
+    // useEffect(() => {
+    //     if (holonData && holonData.id) { setAddedSpaces([holonData.handle]) }
+    // }, [holonData])
 
     const ref = useRef()
     function handleClickOutside(e) { 

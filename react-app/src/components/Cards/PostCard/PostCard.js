@@ -34,6 +34,7 @@ function PostCard(props) {
     const [totalRatings, setTotalRatings] = useState(0)
     const [totalRatingPoints, setTotalRatingPoints] = useState(0)
     const [totalReposts, setTotalReposts] = useState(0)
+    // TODO: change account state below to true/false booleans
     const [accountLike, setAccountLike] = useState(0)
     const [accountRating, setAccountRating] = useState(0)
     const [accountRepost, setAccountRepost] = useState(0)
