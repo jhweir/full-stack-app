@@ -1,15 +1,15 @@
 import React, { useContext } from 'react'
 import { AccountContext } from '../contexts/AccountContext'
-import AlertModal from './GlobalModals/AlertModal'
-import AuthModal from './GlobalModals/AuthModal'
-import UserControlsModal from './GlobalModals/UserControlsModal'
-import ImageUploadModal from './GlobalModals/ImageUploadModal'
-import CreatePostModal from './GlobalModals/CreatePostModal'
-import CreateHolonModal from './GlobalModals/CreateHolonModal'
-import CreateCommentModal from './GlobalModals/CreateCommentModal'
-import SettingModal from './GlobalModals/SettingModal'
+import AlertModal from './Modals/AlertModal'
+import AuthModal from './Modals/AuthModal'
+import UserControlsModal from './Modals/UserControlsModal'
+import ImageUploadModal from './Modals/ImageUploadModal'
+import CreatePostModal from './Modals/CreatePostModal'
+import CreateHolonModal from './Modals/CreateHolonModal'
+import CreateCommentModal from './Modals/CreateCommentModal'
+import SettingModal from './Modals/SettingModal'
 
-function GlobalModals() {
+function Modals() {
     const {
         alertModalOpen,
         authModalOpen,
@@ -35,4 +35,4 @@ function GlobalModals() {
     )
 }
 
-export default GlobalModals
+export default Modals

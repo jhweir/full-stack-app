@@ -12,7 +12,7 @@ import PostPage from './pages/PostPage'
 import UserPage from './pages/UserPage'
 import EmptyPage from './pages/EmptyPage'
 import NavBar from './components/NavBar'
-import GlobalModals from './components/GlobalModals'
+import Modals from './components/Modals'
 
 function App() {
   const [pageBottomReached, setPageBottomReached] = useState(false)
@@ -31,7 +31,7 @@ function App() {
             <UserContextProvider>
               <PostContextProvider>
                 <NavBar/>
-                <GlobalModals/>
+                <Modals/>
                 <Switch>
                   <Route path="/" exact component={HomePage}/>
                   <Route path="/s/:holonHandle" component={HolonPage}/>

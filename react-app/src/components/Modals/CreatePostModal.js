@@ -7,7 +7,7 @@ import config from '../../Config'
 import styles from '../../styles/components/CreatePostModal.module.scss'
 import UrlPreview from './UrlPreview'
 import SpaceInput from '../SpaceInput'
-import PollAnswerForm from './../PostPage/Poll/PollAnswerForm'
+import PollAnswerForm from '../PostPage/Poll/PollAnswerForm'
 import DropDownMenu from '../DropDownMenu'
 
 function CreatePostModal() {
@@ -83,8 +83,7 @@ function CreatePostModal() {
         setPollAnswers([])
     }
 
-    function submitPost(e) {
-        e.preventDefault()
+    function submitPost() {
         let invalidText = ((text === null || text.length < 1 || text.length > 2000) && url === null)
         let invalidHolons = addedSpaces.length < 1
         let invalidPollAnswers = postType === 'Poll' && pollAnswers.length < 1
@@ -193,7 +192,7 @@ function CreatePostModal() {
                         </>
                     }
                 </div>
-                <form className={styles.form} onSubmit={submitPost}>
+                <form className={styles.form}>
                     <textarea className={`wecoInput textArea mb-10 ${textError && 'error'}`}
                         placeholder="Text (max 20,000 characters)"
                         type="text" value={text}
@@ -232,7 +231,11 @@ function CreatePostModal() {
                         newPollAnswerError={newPollAnswerError}
                         setNewPollAnswerError={setNewPollAnswerError}
                     />}
-                    <button className="wecoButton centered">Submit Post</button>
+                    <div
+                        className={`wecoButton centered ${postType === 'Prism' && 'disabled'}`}
+                        onClick={() => { if (postType !== 'Prism') submitPost() }}>
+                        Submit Post
+                    </div>
                 </form>
             </div>
         </div>
