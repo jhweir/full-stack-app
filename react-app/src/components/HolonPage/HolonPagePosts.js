@@ -24,7 +24,8 @@ function HolonPagePosts() {
         setSelectedHolonSubPage, holonPostPaginationOffset,
         holonPostSearchFilter,
         holonPostFiltersOpen, setHolonPostFiltersOpen,
-        holonPostViewsOpen, setHolonPostViewsOpen, holonPostViewLayout,
+        // holonPostViewsOpen, setHolonPostViewsOpen,
+        holonPostViewLayout, setHolonPostViewLayout,
         holonPostTimeRangeFilter,
         holonPostTypeFilter,
         holonPostSortByFilter,
@@ -67,7 +68,12 @@ function HolonPagePosts() {
                     <button className='wecoButton mr-10' onClick={() => setHolonPostFiltersOpen(!holonPostFiltersOpen)}>
                         <img className='wecoButtonIcon' src='/icons/sliders-h-solid.svg'/>
                     </button>
-                    <button className='wecoButton mr-10' onClick={() => setHolonPostViewsOpen(!holonPostViewsOpen)}>
+                    <button
+                        className='wecoButton mr-10'
+                        onClick={() => {
+                            if (holonPostViewLayout === 'List') setHolonPostViewLayout('Map')
+                            else setHolonPostViewLayout('List')
+                        }}>
                         View
                         {/* <img className='wecoButtonIcon' src='/icons/eye-solid.svg'/> */}
                     </button>
@@ -76,7 +82,7 @@ function HolonPagePosts() {
                     </button>
                 </div>
                 {holonPostFiltersOpen && <HolonPagePostsFilters/>}
-                {holonPostViewsOpen && <HolonPagePostViews/>}
+                {/* {holonPostViewsOpen && <HolonPagePostViews/>} */}
             </div>
             {holonPostViewLayout === 'List' && holonPosts.length > 0 &&
                 <ul className={`${styles.posts} ${holonContextLoading && styles.hidden}`}>

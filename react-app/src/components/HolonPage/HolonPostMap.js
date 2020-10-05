@@ -5,12 +5,12 @@ import * as d3 from 'd3'
 import { HolonContext } from '../../contexts/HolonContext'
 
 function HolonPostMap() {
-    const { holonContextLoading, holonPosts, holonPostSortByFilter, selectedHolonSubPage, holonHandle } = useContext(HolonContext)
+    const { holonContextLoading, holonPosts, holonPostSortByFilter, holonPostSortOrderFilter, selectedHolonSubPage, holonHandle } = useContext(HolonContext)
 
     console.log('holonPosts: ', holonPosts)
 
-    const width = 600
-    const height = 350
+    const width = 700
+    const height = 700
     const margin = { top: 50, right: 50, bottom: 50, left: 50 }
 
     // let rangeBottom
@@ -18,8 +18,21 @@ function HolonPostMap() {
     
     useEffect(() => {
         console.log('post map useEffect run')
-        const domainMin = 0
-        const domainMax = d3.max(holonPosts.map(post => post.total_likes))
+        let dMin = 0
+        let dMax
+        if (holonPostSortByFilter === 'Total Reactions') dMax = d3.max(holonPosts.map(post => post.total_reactions))
+        if (holonPostSortByFilter === 'Likes') dMax = d3.max(holonPosts.map(post => post.total_likes))
+        if (holonPostSortByFilter === 'Reposts') dMax = d3.max(holonPosts.map(post => post.total_reposts))
+        if (holonPostSortByFilter === 'Ratings') dMax = d3.max(holonPosts.map(post => post.total_ratings))
+        if (holonPostSortByFilter === 'Comments') dMax = d3.max(holonPosts.map(post => post.total_comments))
+        if (holonPostSortByFilter === 'Date') {
+            dMin = d3.min(holonPosts.map(post => Date.parse(post.createdAt)))
+            dMax = d3.max(holonPosts.map(post => Date.parse(post.createdAt)))
+        }
+
+        let domainMin, domainMax
+        if (holonPostSortOrderFilter === 'Descending') { domainMin = dMin; domainMax = dMax }
+        if (holonPostSortOrderFilter === 'Ascending') { domainMin = dMax; domainMax = dMin }
 
         let radiusScale = d3.scaleLinear()
             .domain([domainMin, domainMax]) // data values range
@@ -27,10 +40,19 @@ function HolonPostMap() {
 
         let simulation = d3
             .forceSimulation(holonPosts)
-            .force('x', d3.forceX(width / 2).strength(0.08))
-            .force('y', d3.forceY(height / 2).strength(0.08))
+            .force('x', d3.forceX(width / 2).strength(0.02))
+            .force('y', d3.forceY(height / 2).strength(0.02))
+            .force('center', d3.forceCenter(width / 2, height / 2))
             .force('collide', d3.forceCollide(function(d) {
-                return radiusScale(d.total_likes) + 5
+                let radius
+                if (holonPostSortByFilter === 'Total Reactions') radius = d.total_reactions
+                if (holonPostSortByFilter === 'Likes') radius = d.total_likes
+                if (holonPostSortByFilter === 'Reposts') radius = d.total_reposts
+                if (holonPostSortByFilter === 'Ratings') radius = d.total_ratings
+                if (holonPostSortByFilter === 'Comments') radius = d.total_comments
+                if (holonPostSortByFilter === 'Date') radius = Date.parse(d.createdAt)
+                return radiusScale(radius) + 10
+                //return radiusScale(d.total_likes) + 5
             }))
 
         function dragstarted(d) {
@@ -54,15 +76,22 @@ function HolonPostMap() {
             }
         }
 
+        d3.select("#container")
+            .append("svg")
+            .attr("width", width) //+ margin.left + margin.right)
+            .attr("height", height) // + margin.top + margin.bottom)
+            // .call(d3.zoom().on("zoom", () => nodes.attr("transform", d3.event.transform)))
+
+        var svg = d3.select("svg")
+
         // create nodes
-        let nodes = d3
-            .select("#post-map-svg")
-            .selectAll("node")
+        let nodes = svg.selectAll("node")
             .data(holonPosts)
             .enter()
             .append('g')
+            //.call(d3.zoom().on("zoom", () => nodes.attr("transform", d3.event.transform)))
 
-        var svg = d3.select("#post-map-svg")
+        
 
         var defs = svg.append("defs").attr("id", "imgdefs")
 
@@ -71,7 +100,15 @@ function HolonPostMap() {
             .append("circle")
             .attr('id', 'circle-node')
             .attr("r", function(d) {
-                return radiusScale(d.total_likes)
+                let radius
+                if (holonPostSortByFilter === 'Total Reactions') radius = d.total_reactions
+                if (holonPostSortByFilter === 'Likes') radius = d.total_likes
+                if (holonPostSortByFilter === 'Reposts') radius = d.total_reposts
+                if (holonPostSortByFilter === 'Ratings') radius = d.total_ratings
+                if (holonPostSortByFilter === 'Comments') radius = d.total_comments
+                if (holonPostSortByFilter === 'Date') radius = Date.parse(d.createdAt)
+                return radiusScale(radius)
+                //return radiusScale(d.total_likes)
             })
             // .attr("fill", "url(#catpattern)")
             .style("fill", function(d){
@@ -86,7 +123,16 @@ function HolonPostMap() {
                     pattern.append("image")
                         .attr("x", 0)
                         .attr("y", 0)
-                        .attr("height", radiusScale(d.total_likes) * 2)
+                        .attr("height", function() {
+                            let radius
+                            if (holonPostSortByFilter === 'Total Reactions') radius = d.total_reactions
+                            if (holonPostSortByFilter === 'Likes') radius = d.total_likes
+                            if (holonPostSortByFilter === 'Reposts') radius = d.total_reposts
+                            if (holonPostSortByFilter === 'Ratings') radius = d.total_ratings
+                            if (holonPostSortByFilter === 'Comments') radius = d.total_comments
+                            if (holonPostSortByFilter === 'Date') radius = Date.parse(d.createdAt)
+                            return radiusScale(radius) * 2
+                        })
                         //.attr("width", radiusScale(d.total_likes) * 2)
                         .attr("xlink:href", d.urlImage)
 
@@ -126,6 +172,8 @@ function HolonPostMap() {
         //         .on("start", dragstarted)
         //         .on("drag", dragged)
         //         .on("end", dragended))
+
+        svg.call(d3.zoom().on("zoom", () => nodes.attr("transform", d3.event.transform)))
             
         simulation
             .nodes(holonPosts)
@@ -159,9 +207,9 @@ function HolonPostMap() {
     },[holonPosts])
 
     return (
-        <div>
-            <svg id={'post-map-svg'} height={height} width={width}>
-            </svg>
+        <div id='container' style={{ height: height, width:width, overflow: 'hidden' }}> 
+            {/* <svg id={'post-map-svg'} height={height} width={width}>
+            </svg> */}
         </div>
     )
 }

@@ -28,7 +28,7 @@ function HolonContextProvider({ children }) {
     const [holonPostPaginationLimit, setHolonPostPaginationLimit] = useState(10)
     const [holonPostPaginationOffset, setHolonPostPaginationOffset] = useState(0)
     const [holonPostPaginationHasMore, setHolonPostPaginationHasMore] = useState(true)
-    const [holonPostViewsOpen, setHolonPostViewsOpen] = useState(false)
+    // const [holonPostViewsOpen, setHolonPostViewsOpen] = useState(false)
     const [holonPostViewLayout, setHolonPostViewLayout] = useState('List')
 
     const [holonSpaces, setHolonSpaces] = useState([])
@@ -273,7 +273,7 @@ function HolonContextProvider({ children }) {
             holonPostPaginationLimit, setHolonPostPaginationLimit,
             holonPostPaginationOffset, setHolonPostPaginationOffset,
             holonPostPaginationHasMore, setHolonPostPaginationHasMore,
-            holonPostViewsOpen, setHolonPostViewsOpen,
+            //holonPostViewsOpen, setHolonPostViewsOpen,
             holonPostViewLayout, setHolonPostViewLayout,
 
             holonSpaces, setHolonSpaces,
