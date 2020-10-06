@@ -85,6 +85,8 @@ router.get('/holon-data', (req, res) => {
 router.get('/holon-posts', (req, res) => {
     const { accountId, handle, timeRange, postType, sortBy, sortOrder, depth, searchQuery, limit, offset } = req.query
 
+    console.log('req.query: ', req.query)
+
     function findStartDate() {
         let offset = undefined
         if (timeRange === 'Last Year') { offset = (24*60*60*1000) * 365 }

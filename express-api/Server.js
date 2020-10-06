@@ -19,7 +19,11 @@ const cors = require('cors')
 //const { default: Users } = require("../react-app/src/components/Users")
 
 const app = express()
-app.use(cors())
+// app.use(cors())
+//process.env.ACCESS_TOKEN_SECRET
+app.use(cors({
+  origin: `${process.env.APP_ENV === 'prod' ? process.env.PROD_APP_URL : process.env.DEV_APP_URL}`
+}))
 app.use(passport.initialize())
 //app.use(cors({ origin:true, credentials: true }))
 app.use(bodyParser.urlencoded({ extended: true }))
@@ -125,7 +129,7 @@ var s3 = new aws.S3({})
 var userFlagImageUpload = multer({
   storage: multerS3({
     s3: s3,
-    bucket: `weco-${process.env.NODE_ENV}-user-flag-images`,
+    bucket: `weco-${process.env.DB_ENV}-user-flag-images`,
     acl: 'public-read',
     metadata: function (req, file, cb) {
       cb(null, {fieldName: 'testing...'});
@@ -139,7 +143,7 @@ var userFlagImageUpload = multer({
 var userCoverImageUpload = multer({
   storage: multerS3({
     s3: s3,
-    bucket: `weco-${process.env.NODE_ENV}-user-cover-images`,
+    bucket: `weco-${process.env.DB_ENV}-user-cover-images`,
     acl: 'public-read',
     metadata: function (req, file, cb) {
       cb(null, {fieldName: 'testing...'});
@@ -153,7 +157,7 @@ var userCoverImageUpload = multer({
 var holonFlagImageUpload = multer({
   storage: multerS3({
     s3: s3,
-    bucket: `weco-${process.env.NODE_ENV}-space-flag-images`,
+    bucket: `weco-${process.env.DB_ENV}-space-flag-images`,
     acl: 'public-read',
     metadata: function (req, file, cb) {
       cb(null, {fieldName: 'testing...'});
@@ -167,7 +171,7 @@ var holonFlagImageUpload = multer({
 var holonCoverImageUpload = multer({
   storage: multerS3({
     s3: s3,
-    bucket: `weco-${process.env.NODE_ENV}-space-cover-images`,
+    bucket: `weco-${process.env.DB_ENV}-space-cover-images`,
     acl: 'public-read',
     metadata: function (req, file, cb) {
       cb(null, {fieldName: 'testing...'});

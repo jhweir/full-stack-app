@@ -18,8 +18,7 @@ function HolonPostMap() {
     
     useEffect(() => {
         console.log('post map useEffect run')
-        let dMin = 0
-        let dMax
+        let dMin = 0, dMax
         if (holonPostSortByFilter === 'Total Reactions') dMax = d3.max(holonPosts.map(post => post.total_reactions))
         if (holonPostSortByFilter === 'Likes') dMax = d3.max(holonPosts.map(post => post.total_likes))
         if (holonPostSortByFilter === 'Reposts') dMax = d3.max(holonPosts.map(post => post.total_reposts))
@@ -145,19 +144,21 @@ function HolonPostMap() {
                 }
             })
             //.attr("fill", "url(#catpattern)")
+            .style("stroke", d => (d.account_like || d.account_repost || d.account_rating > 0) ? '#83b0ff' : "transparent")
+            .style("stroke-width", 4)
             .call(d3.drag()
                 .on("start", dragstarted)
                 .on("drag", dragged)
                 .on("end", dragended))
 
         // add text to nodes
-        nodes
-            .append("text")
-            .text(function(d){ return d.text })
-            .call(d3.drag()
-                .on("start", dragstarted)
-                .on("drag", dragged)
-                .on("end", dragended))
+        // nodes
+        //     .append("text")
+        //     .text(function(d){ return d.text })
+        //     .call(d3.drag()
+        //         .on("start", dragstarted)
+        //         .on("drag", dragged)
+        //         .on("end", dragended))
 
         // add images to nodes
         // nodes
