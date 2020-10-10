@@ -141,6 +141,7 @@ function HolonPostMap() {
                     if (d.type === 'url') { return '#71cde3' }
                     if (d.type === 'poll') { return '#ff4040' }
                     if (d.type === 'text') { return '#82ed4c' }
+                    if (d.type === 'prism') { return '#9c5cf7' }
                 }
             })
             //.attr("fill", "url(#catpattern)")
@@ -152,13 +153,13 @@ function HolonPostMap() {
                 .on("end", dragended))
 
         // add text to nodes
-        // nodes
-        //     .append("text")
-        //     .text(function(d){ return d.text })
-        //     .call(d3.drag()
-        //         .on("start", dragstarted)
-        //         .on("drag", dragged)
-        //         .on("end", dragended))
+        nodes
+            .append("text")
+            .text(function(d){ return d.text })
+            .call(d3.drag()
+                .on("start", dragstarted)
+                .on("drag", dragged)
+                .on("end", dragended))
 
         // add images to nodes
         // nodes

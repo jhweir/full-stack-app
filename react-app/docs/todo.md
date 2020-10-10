@@ -2,6 +2,7 @@
 Last updated: 18-08-2020
 
 + Start building Prism posts
++ Bug: Sort by Date (Descending) not loading all posts
 
 + Add current spaces to repost modal
 + Add average and individual ratings to rating preview modal

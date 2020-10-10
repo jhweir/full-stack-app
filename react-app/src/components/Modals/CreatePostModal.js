@@ -15,27 +15,28 @@ function CreatePostModal() {
     const { holonData, getHolonPosts } = useContext(HolonContext)
 
     const [postType, setPostType] = useState('Url')
-    const [pollType, setPollType] = useState('Single Choice')
+    const [subType, setSubType] = useState('')
     const [text, setText] = useState('')
-    const [textError, setTextError] = useState(false)
-    const [url, setUrl] = useState(null)
+    const [url, setUrl] = useState('')
     const [urlLoading, setUrlLoading] = useState(false)
     const [urlImage, setUrlImage] = useState(null)
     const [urlDomain, setUrlDomain] = useState(null)
     const [urlTitle, setUrlTitle] = useState(null)
     const [urlDescription, setUrlDescription] = useState(null)
     const [urlFlashMessage, setUrlFlashMessage] = useState('')
-
     const [addedSpaces, setAddedSpaces] = useState([])
-    const [newSpaceError, setNewSpaceError] = useState(false)
 
     const [pollAnswers, setPollAnswers] = useState([])
     const [newPollAnswer, setNewPollAnswer] = useState('')
-    const [newPollAnswerError, setNewPollAnswerError] = useState(false)
 
     const [numberOfPrismPlayers, setNumberOfPrismPlayers] = useState(3)
     const [prismDuration, setPrismDuration] = useState('1 Month')
-    const [prismVisibility, setPrismVisibility] = useState('Private')
+    const [prismPrivacy, setPrismPrivacy] = useState('Private')
+
+    const [textError, setTextError] = useState(false)
+    const [urlError, setUrlError] = useState(false)
+    const [newSpaceError, setNewSpaceError] = useState(false)
+    const [newPollAnswerError, setNewPollAnswerError] = useState(false)
 
     function isValidUrl(string) {
         try { new URL(string) }
@@ -73,7 +74,7 @@ function CreatePostModal() {
 
     function resetForm() {
         setPostType('Url')
-        setPollType('Single Choice')
+        setSubType('')
         setText(null)
         setUrl(null)
         setUrlImage(null)
@@ -83,22 +84,14 @@ function CreatePostModal() {
         setPollAnswers([])
     }
 
-    function submitPost() {
-        let invalidText = ((text === null || text.length < 1 || text.length > 2000) && url === null)
-        let invalidHolons = addedSpaces.length < 1
-        let invalidPollAnswers = postType === 'Poll' && pollAnswers.length < 1
+    function createPost() {
+        let invalidText = (!text.length || text.length > 2000) && !url.length
+        let invalidUrl = postType === 'Url' && !url.length
+        let invalidPollAnswers = postType === 'Poll' && pollAnswers.length < 2
         if (invalidText) { setTextError(true) }
-        if (invalidHolons) { setNewSpaceError(true) }
+        if (invalidUrl) { setUrlError(true) }
         if (invalidPollAnswers) { setNewPollAnswerError(true) }
-        if (!invalidText && !invalidHolons && !invalidPollAnswers && !urlLoading) {
-            let subType, answers
-            if (postType === 'Poll') {
-                if (pollType === 'Single Choice') { subType = 'single-choice' }
-                if (pollType === 'Multiple Choice') { subType = 'multiple-choice' }
-                if (pollType === 'Weighted Choice') { subType = 'weighted-choice' }
-                answers = pollAnswers
-            }
-            else { subType = null; answers = null }
+        if (!invalidText && !invalidUrl && !invalidPollAnswers && !urlLoading) {
             let post = { 
                 type: postType.toLowerCase(),
                 subType,
@@ -110,8 +103,11 @@ function CreatePostModal() {
                 urlDomain,
                 urlTitle,
                 urlDescription,
-                holonHandles: addedSpaces,
-                pollAnswers: answers
+                holonHandles: addedSpaces.length ? [...addedSpaces, holonData.handle] : [holonData.handle],
+                pollAnswers: postType === 'Poll' ? pollAnswers : null,
+                numberOfPrismPlayers: postType === 'Prism' ? numberOfPrismPlayers : null,
+                prismDuration: postType === 'Prism' ? prismDuration : null,
+                prismPrivacy: postType === 'Prism' ? prismPrivacy : null,
             }
             axios.post(config.environmentURL + '/create-post', { post })
                 .then(() => { setCreatePostModalOpen(false); resetForm() })
@@ -119,9 +115,9 @@ function CreatePostModal() {
         }
     }
 
-    // useEffect(() => {
-    //     if (holonData && holonData.id) { setAddedSpaces([holonData.handle]) }
-    // }, [holonData])
+    useEffect(() => {
+        if (postType === 'Poll') { setSubType('Single Choice') }
+    }, [postType])
 
     const ref = useRef()
     function handleClickOutside(e) { 
@@ -141,8 +137,7 @@ function CreatePostModal() {
                     onClick={() => {setCreatePostModalOpen(false); resetForm()}}
                 />
                 <div className={styles.title}>
-                    Create a new post in 
-                    {/* '{holonData.name}' */}
+                    Create a new {postType !== 'Url' && postType !== 'Text' ? postType.toLowerCase() : 'post'} in 
                     <Link to={`/s/${holonData.handle}`}
                         className='ml-5 blueText'
                         onClick={() => {setCreatePostModalOpen(false); resetForm()}}>
@@ -161,8 +156,8 @@ function CreatePostModal() {
                         <DropDownMenu
                             title='Poll Type'
                             options={['Single Choice', 'Multiple Choice', 'Weighted Choice']}
-                            selectedOption={pollType}
-                            setSelectedOption={setPollType}
+                            selectedOption={subType}
+                            setSelectedOption={setSubType}
                             style='horizontal'
                         />
                     }
@@ -185,8 +180,8 @@ function CreatePostModal() {
                             <DropDownMenu
                                 title='Visibility'
                                 options={['Private', 'Public']}
-                                selectedOption={prismVisibility}
-                                setSelectedOption={setPrismVisibility}
+                                selectedOption={prismPrivacy}
+                                setSelectedOption={setPrismPrivacy}
                                 style='horizontal'
                             />
                         </>
@@ -198,15 +193,18 @@ function CreatePostModal() {
                         type="text" value={text}
                         onChange={(e) => { setText(e.target.value); setTextError(false) }}
                     />
-                    {postType === 'Url' && <input className={`wecoInput mb-10`}
-                        placeholder="Url"
-                        type="url" value={url}
-                        onChange={(e) => {
-                            setUrlFlashMessage('')
-                            setUrl(e.target.value)
-                            scrapeURL(e.target.value)
-                        }}
-                    />}
+                    {postType === 'Url' &&
+                        <input className={`wecoInput mb-10 ${urlError && 'error'}`}
+                            placeholder="Url"
+                            type="url" value={url}
+                            onChange={(e) => {
+                                setUrlError(false)
+                                setUrlFlashMessage('')
+                                setUrl(e.target.value)
+                                scrapeURL(e.target.value)
+                            }}
+                        />
+                    }
                     <UrlPreview
                         url={url}
                         urlLoading={urlLoading}
@@ -232,8 +230,8 @@ function CreatePostModal() {
                         setNewPollAnswerError={setNewPollAnswerError}
                     />}
                     <div
-                        className={`wecoButton centered ${postType === 'Prism' && 'disabled'}`}
-                        onClick={() => { if (postType !== 'Prism') submitPost() }}>
+                        className={`wecoButton centered`} // ${postType === 'Prism' && 'disabled'}
+                        onClick={createPost}>
                         Submit Post
                     </div>
                 </form>

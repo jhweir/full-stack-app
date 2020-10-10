@@ -19,11 +19,12 @@ const cors = require('cors')
 //const { default: Users } = require("../react-app/src/components/Users")
 
 const app = express()
-// app.use(cors())
-//process.env.ACCESS_TOKEN_SECRET
+//app.use(cors())
+
 app.use(cors({
   origin: `${process.env.APP_ENV === 'prod' ? process.env.PROD_APP_URL : process.env.DEV_APP_URL}`
 }))
+app.options('*', cors())
 app.use(passport.initialize())
 //app.use(cors({ origin:true, credentials: true }))
 app.use(bodyParser.urlencoded({ extended: true }))
@@ -182,6 +183,7 @@ var holonCoverImageUpload = multer({
   })
 })
 
+// app.options('/api/user-flag-image-upload', cors())
 app.post('/api/user-flag-image-upload', authenticateToken, function(req, res) {
   console.log('user-flag-image-upload')
   userFlagImageUpload.single('image')(req, res, function(err) {
@@ -194,6 +196,7 @@ app.post('/api/user-flag-image-upload', authenticateToken, function(req, res) {
   })
 })
 
+// app.options('/api/user-cover-image-upload', cors())
 app.post('/api/user-cover-image-upload', authenticateToken, function(req, res) {
   console.log('user-cover-image-upload')
   userCoverImageUpload.single('image')(req, res, function(err) {
@@ -207,6 +210,7 @@ app.post('/api/user-cover-image-upload', authenticateToken, function(req, res) {
   })
 })
 
+// app.options('/api/holon-flag-image-upload', cors())
 app.post('/api/holon-flag-image-upload', authenticateToken, function(req, res) {
   console.log('holon-flag-image-upload')
   holonFlagImageUpload.single('image')(req, res, function(err) {
@@ -220,6 +224,7 @@ app.post('/api/holon-flag-image-upload', authenticateToken, function(req, res) {
   })
 })
 
+// app.options('/api/holon-cover-image-upload', cors())
 app.post('/api/holon-cover-image-upload', authenticateToken, function(req, res) {
   console.log('holon-cover-image-upload')
   holonCoverImageUpload.single('image')(req, res, function(err) {

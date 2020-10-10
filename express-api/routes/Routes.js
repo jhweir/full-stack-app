@@ -17,6 +17,8 @@ const Post = require('../models').Post
 const Comment = require('../models').Comment
 const Label = require('../models').Label
 const PollAnswer = require('../models').PollAnswer
+const Prism = require('../models').Prism
+const PrismUser = require('../models').PrismUser
 // const Notifications = require('../models').Notification
 
 //const postAttributes = (userId) => [
@@ -101,7 +103,7 @@ router.get('/holon-posts', (req, res) => {
 
     function findType() {
         let type
-        if (postType === 'All Types') { type = ['text', 'poll', 'url'] }
+        if (postType === 'All Types') { type = ['text', 'poll', 'url', 'prism'] }
         if (postType !== 'All Types') { type = postType.toLowerCase() }
         return type
     }
@@ -1246,7 +1248,10 @@ router.post('/create-post', (req, res) => {
         urlTitle,
         urlDescription,
         holonHandles,
-        pollAnswers
+        pollAnswers,
+        numberOfPrismPlayers,
+        prismDuration,
+        prismPrivacy
     } = req.body.post
 
     let directHandleIds = []
@@ -1311,14 +1316,34 @@ router.post('/create-post', (req, res) => {
     }
 
     function createNewPollAnswers(post) {
-        if (pollAnswers) { pollAnswers.forEach(answer => PollAnswer.create({ text: answer, postId: post.id })) }
+        pollAnswers.forEach(answer => PollAnswer.create({ text: answer, postId: post.id }))
     }
+
+    function createPrism(post) {
+        Prism.create({
+            postId: post.id,
+            numberOfPlayers: numberOfPrismPlayers,
+            duration: prismDuration,
+            privacy: prismPrivacy
+        })
+        .then(prism => {
+            PrismUser.create({
+                prismId: prism.id,
+                userId: creatorId
+            })
+        })
+    }
+
+    let renamedSubType
+    if (subType === 'Single Choice') { renamedSubType = 'single-choice' }
+    if (subType === 'Multiple Choice') { renamedSubType = 'multiple-choice' }
+    if (subType === 'Weighted Choice') { renamedSubType = 'weighted-choice' }
 
     function createPost() {
         Promise.all([findHandleIds()]).then(() => {
             Post.create({
                 type,
-                subType,
+                subType: renamedSubType,
                 state,
                 creatorId,
                 text,
@@ -1331,7 +1356,8 @@ router.post('/create-post', (req, res) => {
             })
             .then(post => {
                 createNewPostHolons(post)
-                createNewPollAnswers(post)
+                if (type === 'poll') createNewPollAnswers(post)
+                if (type === 'prism') createPrism(post)
             })
             .then(res.send('success'))
         })
@@ -1524,6 +1550,7 @@ router.post('/register', async (req, res) => {
         })
 })
 
+// TODO: remove camel casing
 router.post('/followHolon', (req, res) => {
     const { holonId, userId } = req.body
     HolonUser.create({ relationship: 'follower', state: 'active', holonId, userId })
@@ -1628,6 +1655,22 @@ router.post('/update-holon-setting', (req, res) => {
         })
     }
 
+})
+
+router.get('/prism-data', (req, res) => {
+    const { postId } = req.query
+    Prism.findOne({ 
+        where: { postId: postId },
+        include: [
+            { 
+                model: User,
+                attributes: ['handle', 'name', 'flagImagePath'],
+                through: { attributes: [] }
+            }
+        ]
+    })
+    .then(prism => { res.json(prism) })
+    .catch(err => console.log(err))
 })
 
 module.exports = router

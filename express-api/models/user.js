@@ -30,6 +30,11 @@ module.exports = (sequelize, DataTypes) => {
       as: 'ModeratedHolons',
       foreignKey: 'userId'
     })
+    User.belongsToMany(models.Prism, { 
+      through: models.PrismUser,
+      //as: 'ModeratedHolons',
+      foreignKey: 'userId'
+    })
   };
   return User;
 };

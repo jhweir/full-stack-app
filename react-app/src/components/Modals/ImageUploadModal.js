@@ -24,12 +24,18 @@ function ImageUploadModal() {
         axios
             .create({
                 baseURL: config.environmentURL,
-                headers: { Authorization: `Bearer ${accessToken}` }
+                headers: { 
+                    Authorization: `Bearer ${accessToken}`,
+                    'Access-Control-Allow-Origin': '*'
+                }
             })
             .post(
                 config.environmentURL + 
                 `/${imageUploadType}-upload${holonQuery}`, 
-                formData,{ headers: { 'Content-Type': 'multipart/form-data' } })
+                formData,{ headers: { 
+                    'Content-Type': 'multipart/form-data',
+                    //'Access-Control-Allow-Origin': '*'
+                } })
             .then(res => { 
                 if (res.data === 'success') { 
                     setImageUploadModalOpen(false)

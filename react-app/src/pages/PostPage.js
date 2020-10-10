@@ -9,13 +9,14 @@ import PageSectionSelector from '../components/PageSectionSelector'
 import PostPageComments from '../components/PostPage/PostPageComments'
 import PostPagePollVote from '../components/PostPage/PostPagePollVote'
 import PostPagePollResults from '../components/PostPage/PostPagePollResults'
+import Prism from '../components/Prism'
 
 function PostPage({ match, location }) {
     const { url } = match
     const { postId } = match.params
     const { pathname } = location
     const { accountContextLoading } = useContext(AccountContext)
-    const { setPostId, postData } = useContext(PostContext)
+    const { postContextLoading, postData, setPostId } = useContext(PostContext)
 
     useEffect(() => {
         if (!accountContextLoading) { setPostId(postId) }
@@ -28,19 +29,23 @@ function PostPage({ match, location }) {
     //     if (pathname.includes('results')) { setPageSectionSelected('results') }
     // }, [accountContextLoading])
 
-    return (
-        <div className={styles.postPage}>
-            <PostCard postData={postData} location='post-page'/>
-            {postData.type === 'poll' && <PageSectionSelector url={url} pathname={pathname}/>}
-            <Switch>
-                <Redirect from={`${url}`} to={`${url}/comments`} exact/>
-                <Route path={`${url}/comments`} render={() => <PostPageComments/>} exact/>
-                <Route path={`${url}/vote`} render={() => <PostPagePollVote/>} exact />
-                <Route path={`${url}/results`} component={() => <PostPagePollResults/>} exact />
-                <Route component={ EmptyPage }/>
-            </Switch> 
-        </div>
-    )
+    if (postData.type !== 'prism') {
+        return (
+            <div className={styles.postPage}>
+                <PostCard postData={postData} location='post-page'/>
+                {postData.type === 'poll' && <PageSectionSelector url={url} pathname={pathname}/>}
+                <Switch>
+                    {/* {!postContextLoading && postData.type !== 'prism' && */}
+                        <Redirect from={`${url}`} to={`${url}/comments`} exact/>
+                    {/* } */}
+                    <Route path={`${url}/comments`} render={() => <PostPageComments/>} exact/>
+                    <Route path={`${url}/vote`} render={() => <PostPagePollVote/>} exact />
+                    <Route path={`${url}/results`} component={() => <PostPagePollResults/>} exact />
+                    <Route component={ EmptyPage }/>
+                </Switch> 
+            </div>
+        )
+    } else { return (<Prism/>) }
 }
 
 export default PostPage
