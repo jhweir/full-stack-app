@@ -77,11 +77,12 @@ function HolonPostMap() {
 
         d3.select("#container")
             .append("svg")
+            .attr('id', 'container-svg')
             .attr("width", width) //+ margin.left + margin.right)
             .attr("height", height) // + margin.top + margin.bottom)
             // .call(d3.zoom().on("zoom", () => nodes.attr("transform", d3.event.transform)))
 
-        var svg = d3.select("svg")
+        var svg = d3.select("#container-svg")
 
         // create nodes
         let nodes = svg.selectAll("node")
@@ -155,6 +156,7 @@ function HolonPostMap() {
         // add text to nodes
         nodes
             .append("text")
+            .attr('class', 'post-text')
             .text(function(d){ return d.text })
             .call(d3.drag()
                 .on("start", dragstarted)
@@ -186,7 +188,7 @@ function HolonPostMap() {
                 .attr("cx", function(d) { return d.x })
                 .attr("cy", function(d) { return d.y })
 
-            d3.selectAll('text')
+            d3.selectAll('.post-text')
                 .attr('text-anchor', 'middle')
                 .attr("x", function(d) { return d.x })
                 .attr("y", function(d) { return d.y })
@@ -202,9 +204,8 @@ function HolonPostMap() {
         }
         //simulation.stop()
         return function cleanup() {
-            console.log('cleanup')
-            svg.selectAll("*").remove();
-        };
+            d3.select('#container').selectAll("*").remove()
+        }
 
     },[holonPosts])
 

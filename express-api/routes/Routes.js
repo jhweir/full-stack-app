@@ -1673,6 +1673,49 @@ router.get('/prism-data', (req, res) => {
     .catch(err => console.log(err))
 })
 
+router.get('/space-map-data', (req, res) => {
+    const { spaceId } = req.query
+
+    Holon.findOne({ 
+        where: { id: spaceId },
+        attributes: ['id', 'name', 'flagImagePath'],
+        include: [
+            { 
+                model: Holon,
+                as: 'DirectChildHolons',
+                attributes: ['id', 'name', 'flagImagePath'],
+                through: { attributes: [] },
+                include: [
+                    { 
+                        model: Holon,
+                        as: 'DirectChildHolons',
+                        attributes: ['id', 'name', 'flagImagePath'],
+                        through: { attributes: [] },
+                        include: [
+                            { 
+                                model: Holon,
+                                as: 'DirectChildHolons',
+                                attributes: ['id', 'name', 'flagImagePath'],
+                                through: { attributes: [] },
+                                include: [
+                                    { 
+                                        model: Holon,
+                                        as: 'DirectChildHolons',
+                                        attributes: ['id', 'name', 'flagImagePath'],
+                                        through: { attributes: [] }
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    })
+    .then(holons => { res.json(holons) })
+    .catch(err => console.log(err))
+})
+
 module.exports = router
 
 

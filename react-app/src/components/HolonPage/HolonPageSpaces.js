@@ -6,6 +6,7 @@ import HolonCard from '../Cards/HolonCard'
 import SearchBar from '../SearchBar'
 import HolonPageSpacesFilters from './HolonPageSpacesFilters'
 import HolonPageSpacesPlaceholder from './HolonPageSpacesPlaceholder'
+import HolonSpaceMap from './HolonSpaceMap'
 
 function HolonPageSpaces() {
     const { setCreateHolonModalOpen, pageBottomReached, isLoggedIn, setAlertModalOpen, setAlertMessage } = useContext(AccountContext)
@@ -14,7 +15,7 @@ function HolonPageSpaces() {
         holonSpaces, getHolonSpaces, getNextHolonSpaces,
         holonSpaceFiltersOpen, setHolonSpaceFiltersOpen,
         holonSpaceSearchFilter, holonSpaceTimeRangeFilter, holonSpaceSortByFilter, holonSpaceSortOrderFilter, holonSpaceDepthFilter,
-        setSelectedHolonSubPage, holonSpacePaginationOffset,
+        setSelectedHolonSubPage, holonSpacePaginationOffset, holonSpaceView, setHolonSpaceView,
         setHolonSpaceSearchFilter
     } = useContext(HolonContext)
 
@@ -46,6 +47,15 @@ function HolonPageSpaces() {
                     <button className='wecoButton mr-10' onClick={() => setHolonSpaceFiltersOpen(!holonSpaceFiltersOpen)}>
                         <img className='wecoButtonIcon' src='/icons/sliders-h-solid.svg'/>
                     </button>
+                    <button
+                        className='wecoButton mr-10'
+                        onClick={() => {
+                            if (holonSpaceView === 'List') setHolonSpaceView('Map')
+                            else setHolonSpaceView('List')
+                        }}>
+                        View
+                        {/* <img className='wecoButtonIcon' src='/icons/eye-solid.svg'/> */}
+                    </button>
                     <button className="wecoButton" onClick={() => openCreateSpaceModal() }>
                         Create Space
                     </button>
@@ -53,7 +63,7 @@ function HolonPageSpaces() {
                 {holonSpaceFiltersOpen && <HolonPageSpacesFilters/>}
             </div>
             {/* <HolonPageSpacesPlaceholder/> */}
-            {holonSpaces.length > 0 &&
+            {holonSpaceView === 'List' && holonSpaces.length > 0 &&
                 <ul className={`${styles.childHolons} ${(holonContextLoading && styles.hidden)}`}>
                     {holonSpaces.map((holon, index) =>
                         <HolonCard
@@ -64,10 +74,13 @@ function HolonPageSpaces() {
                     )} 
                 </ul>
             }
-            {holonSpacePaginationOffset > 0 && holonSpaces.length < 1 &&
+            {holonSpaceView === 'List' && holonSpacePaginationOffset > 0 && holonSpaces.length < 1 &&
                 <div className='wecoNoContentPlaceholder'>
                     No spaces yet that match those settings...
                 </div>
+            }
+            {holonSpaceView === 'Map' &&
+                <HolonSpaceMap/>
             }
         </div>
     )

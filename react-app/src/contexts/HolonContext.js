@@ -21,7 +21,7 @@ function HolonContextProvider({ children }) {
     const [holonPostFiltersOpen, setHolonPostFiltersOpen] = useState(false)
     const [holonPostTimeRangeFilter, setHolonPostTimeRangeFilter] = useState('All Time')
     const [holonPostTypeFilter, setHolonPostTypeFilter] = useState('All Types')
-    const [holonPostSortByFilter, setHolonPostSortByFilter] = useState('Likes')
+    const [holonPostSortByFilter, setHolonPostSortByFilter] = useState('Date')
     const [holonPostSortOrderFilter, setHolonPostSortOrderFilter] = useState('Descending')
     const [holonPostDepthFilter, setHolonPostDepthFilter] = useState('All Contained Posts')
     const [holonPostSearchFilter, setHolonPostSearchFilter] = useState('')
@@ -42,6 +42,7 @@ function HolonContextProvider({ children }) {
     const [holonSpacePaginationLimit, setHolonSpacePaginationLimit] = useState(10)
     const [holonSpacePaginationOffset, setHolonSpacePaginationOffset] = useState(0)
     const [holonSpacePaginationHasMore, setHolonSpacePaginationHasMore] = useState(true)
+    const [holonSpaceView, setHolonSpaceView] = useState('List')
 
     const [holonUsers, setHolonUsers] = useState([])
     const [holonUserFiltersOpen, setHolonUserFiltersOpen] = useState(false)
@@ -196,7 +197,7 @@ function HolonContextProvider({ children }) {
         setHolonPostFiltersOpen(false)
         setHolonPostTimeRangeFilter('All Time')
         setHolonPostTypeFilter('All Types')
-        setHolonPostSortByFilter('Likes')
+        setHolonPostSortByFilter('Date')
         setHolonPostSortOrderFilter('Descending')
         setHolonPostDepthFilter('All Contained Posts')
         setHolonPostSearchFilter('')
@@ -287,6 +288,7 @@ function HolonContextProvider({ children }) {
             holonSpacePaginationLimit, setHolonSpacePaginationLimit,
             holonSpacePaginationOffset, setHolonSpacePaginationOffset,
             holonSpacePaginationHasMore, setHolonSpacePaginationHasMore,
+            holonSpaceView, setHolonSpaceView,
 
             holonUsers, setHolonUsers,
             holonUserFiltersOpen, setHolonUserFiltersOpen,
