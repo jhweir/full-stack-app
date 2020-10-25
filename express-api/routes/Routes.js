@@ -1678,30 +1678,30 @@ router.get('/space-map-data', (req, res) => {
 
     Holon.findOne({ 
         where: { id: spaceId },
-        attributes: ['id', 'name', 'flagImagePath'],
+        attributes: ['id', 'handle', 'name', 'flagImagePath'],
         include: [
             { 
                 model: Holon,
                 as: 'DirectChildHolons',
-                attributes: ['id', 'name', 'flagImagePath'],
+                attributes: ['id', 'handle', 'name', 'flagImagePath'],
                 through: { attributes: [] },
                 include: [
                     { 
                         model: Holon,
                         as: 'DirectChildHolons',
-                        attributes: ['id', 'name', 'flagImagePath'],
+                        attributes: ['id', 'handle', 'name', 'flagImagePath'],
                         through: { attributes: [] },
                         include: [
                             { 
                                 model: Holon,
                                 as: 'DirectChildHolons',
-                                attributes: ['id', 'name', 'flagImagePath'],
+                                attributes: ['id', 'handle', 'name', 'flagImagePath'],
                                 through: { attributes: [] },
                                 include: [
                                     { 
                                         model: Holon,
                                         as: 'DirectChildHolons',
-                                        attributes: ['id', 'name', 'flagImagePath'],
+                                        attributes: ['id', 'handle', 'name', 'flagImagePath'],
                                         through: { attributes: [] }
                                     }
                                 ]
