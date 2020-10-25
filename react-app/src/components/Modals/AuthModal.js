@@ -48,7 +48,7 @@ function AuthModal() {
 
     function register(e) {
         e.preventDefault()
-        let invalidNewHandle = newHandle.length === 0 || newHandle.length > 10 || newHandle.includes(' ')
+        let invalidNewHandle = newHandle.length === 0 || newHandle.length > 30 || newHandle.includes(' ')
         let invalidNewName = newName.length === 0 || newName.length > 30
         let invalidNewEmail = newEmail.length === 0 || newEmail.length > 500
         let invalidNewPassword = newPassword.length === 0

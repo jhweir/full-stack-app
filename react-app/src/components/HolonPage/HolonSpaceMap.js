@@ -66,7 +66,7 @@ function HolonSpaceMap() {
     useEffect(() => {
         if (spaceMapData) {
             console.log('spaceMapData: ', spaceMapData)
-            let treeWidth = 500
+            let treeWidth = 700
             let treeHeight = 300
             let xOffset = width / 2 - (treeWidth / 2)
             let yOffset = 100
@@ -74,7 +74,7 @@ function HolonSpaceMap() {
             // create svg and main group
             d3.select('#holonSpaceMap')
                 .append('svg')
-                .attr('id', '#spaceMapSVG')
+                .attr('id', 'spaceMapSVG')
                 .attr('width', width) //+ margin.left + margin.right)
                 .attr('height', height)
                 .append('g')
@@ -93,7 +93,7 @@ function HolonSpaceMap() {
                 .attr('id', 'node-group')
                 .attr('transform', 'translate(' + xOffset + ',' + yOffset + ')')
 
-            let tree = d3.tree().size([treeWidth, treeHeight])//.separation((a, b) => { return a.parent == b.parent ? 2 : 2 })
+            let tree = d3.tree().size([treeWidth, treeHeight])//.separation((a, b) => { return a.parent == b.parent ? 2.5 : 2 })
             let root = d3.hierarchy(spaceMapData, (d) => { return d.DirectChildHolons })
             tree(root).links()
 

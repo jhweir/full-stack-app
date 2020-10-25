@@ -5,7 +5,7 @@ import styles from '../../styles/components/HolonPageSideBarRight.module.scss'
 import HolonPageSideBarRightPlaceholder from './HolonPageSideBarRightPlaceholder'
 
 function HolonPageSideBarRight() {
-    const { holonData, setHolonHandle, updateHolonContext, holonContextLoading } = useContext(HolonContext)
+    const { holonData, setHolonHandle, updateHolonContext, holonContextLoading, selectedHolonSubPage } = useContext(HolonContext)
 
     return (
         <div className={styles.sideBarRight}>
@@ -18,7 +18,7 @@ function HolonPageSideBarRight() {
                             <ul className={styles.sideBarRightHolons}>
                                 {holonData.DirectParentHolons.map((holon, index) => 
                                     <Link className={styles.sideBarRightHolon}
-                                        to={ `/s/${holon.handle}` }
+                                        to={ `/s/${holon.handle}/${selectedHolonSubPage}` }
                                         key={index}
                                         onClick={ () => { setHolonHandle(holon.handle) } }>
                                         {holon.flagImagePath === null
@@ -39,7 +39,7 @@ function HolonPageSideBarRight() {
                             <ul className={styles.sideBarRightHolons}>
                                 {holonData.DirectChildHolons.map((holon, index) => 
                                     <Link className={styles.sideBarRightHolon}
-                                        to={ `/s/${holon.handle}` }
+                                        to={ `/s/${holon.handle}/${selectedHolonSubPage}` }
                                         key={index}
                                         onClick={ () => { setHolonHandle(holon.handle) } }>
                                         {holon.flagImagePath === null
