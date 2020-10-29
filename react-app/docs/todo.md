@@ -1,11 +1,13 @@
 # Todos
 Last updated: 18-08-2020
 
-+ Start building Prism posts
 + Bug: Sort by Date (Descending) not loading all posts
 
++ Create Link preview and modal
++ Create Link type labels in db
+
+
 + Add current spaces to repost modal
-+ Add average and individual ratings to rating preview modal
 + Add loading states for each db call in contexts, updated effected functions, and test load-order bugs
 + Add mod controls
     + remove parent space
@@ -107,3 +109,5 @@ Last updated: 18-08-2020
 - Bug: Duplicate HolonHandles being created when multiple parent branches added
 - Add holon creator to holon data
 - Allow users to log in with username or password
+- Start building Prism posts
+- Add average and individual ratings to rating preview modal

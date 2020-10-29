@@ -6,6 +6,7 @@ import PostCardReactionItem from './PostCardReactionItem'
 import PostCardLikeModal from './PostCardLikeModal'
 import PostCardRepostModal from './PostCardRepostModal'
 import PostCardRatingModal from './PostCardRatingModal'
+import PostCardLinkModal from './PostCardLinkModal'
 import { AccountContext } from '../../../contexts/AccountContext'
 import { HolonContext } from '../../../contexts/HolonContext'
 
@@ -14,12 +15,14 @@ function PostCardReactions(props) {
         postData,
         totalReactions, setTotalReactions,
         totalLikes, setTotalLikes,
-        totalRatings, setTotalRatings,
         totalReposts, setTotalReposts,
+        totalRatings, setTotalRatings,
         totalRatingPoints, setTotalRatingPoints,
+        totalLinks, setTotalLinks,
         accountLike, setAccountLike,
-        accountRating, setAccountRating,
         accountRepost, setAccountRepost,
+        accountRating, setAccountRating,
+        accountLink, setAccountLink,
         blockedSpaces, setBlockedSpaces
     } = props
 
@@ -29,13 +32,12 @@ function PostCardReactions(props) {
     const [reactionData, setReactionData] = useState({ Labels: [] })
     const [likePreviewOpen, setLikePreviewOpen] = useState(false)
     const [likeModalOpen, setLikeModalOpen] = useState(false)
-    const [ratingPreviewOpen, setRatingPreviewOpen] = useState(false)
-    const [ratingModalOpen, setRatingModalOpen] = useState(false)
     const [repostPreviewOpen, setRepostPreviewOpen] = useState(false)
     const [repostModalOpen, setRepostModalOpen] = useState(false)
-
-    // const [newRating, setNewRating] = useState('')
-    // const [newRatingError, setNewRatingError] = useState(false)
+    const [ratingPreviewOpen, setRatingPreviewOpen] = useState(false)
+    const [ratingModalOpen, setRatingModalOpen] = useState(false)
+    const [linkPreviewOpen, setLinkPreviewOpen] = useState(false)
+    const [linkModalOpen, setLinkModalOpen] = useState(false)
 
     function getReactionData() {
         console.log('PostCardReactions: getReactionData')
@@ -43,61 +45,6 @@ function PostCardReactions(props) {
             .get(config.environmentURL + `/post-reaction-data?postId=${postData.id}`)
             .then(res => { setReactionData(res.data) })
     }
-
-    function addLike() {
-        if (!isLoggedIn) { setAlertMessage('Log in to like post'); setAlertModalOpen(true) }
-        else {
-            // if post already liked by account, remove like
-            if (accountLike !== 0) {
-                setTotalLikes(totalLikes - 1)
-                setTotalReactions(totalReactions - 1)
-                setAccountLike(0)
-                axios.put(config.environmentURL + '/remove-like', { accountId: accountData.id, postId: postData.id })
-                    .then(res => { if (res.data === 'success') { setTimeout(() => { getReactionData() }, 200) }})
-                    .catch(error => { console.log(error) })
-            }
-            else {
-                // otherwise add like
-                setTotalLikes(totalLikes + 1)
-                setTotalReactions(totalReactions + 1)
-                setAccountLike(accountLike + 1)
-                axios.put(config.environmentURL + '/add-like', { accountId: accountData.id, postId: postData.id, holonId: holonData.id })
-                    .then(res => { if (res.data === 'success') { setTimeout(() => { getReactionData() }, 200) }})
-                    .catch(error => { console.log(error) })
-            }
-        }
-    }
-
-    // function addRating() {
-    //     console.log('addRating')
-    //     if (!isLoggedIn) { setAlertMessage('Log in to add rating'); setAlertModalOpen(true) }
-    //     else {
-    //         const invalidRating = isNaN(newRating) || newRating === '' || newRating > 100 || newRating < 0
-    //         if (invalidRating) { setNewRatingError(true) }
-    //         else {
-    //             setTotalRatings(totalRatings + 1)
-    //             setTotalReactions(totalReactions + 1)
-    //             setTotalRatingPoints(totalRatingPoints + parseInt(newRating, 10))
-    //             setAccountRating(accountRating + 1)
-    //             axios.put(config.environmentURL + '/add-rating', { accountId: accountData.id, postId: postData.id, holonId: holonData.id, newRating })
-    //                 .then(setNewRating(''))
-    //                 .catch(error => { console.log(error) })
-    //         }
-    //     }
-    // }
-
-    // function removeRating() {
-    //     console.log('removeRating')
-    //     if (!isLoggedIn) { setAlertMessage('Log in to add rating'); setAlertModalOpen(true) }
-    //     else {
-    //         setTotalRatings(totalRatings - 1)
-    //         setTotalReactions(totalReactions - 1)
-    //         setAccountRating(0)
-    //         axios.put(config.environmentURL + '/remove-rating', { accountId: accountData.id, postId: postData.id, holonId: holonData.id })
-    //             .then(() => { getHolonPosts() })
-    //             .catch(error => { console.log(error) })
-    //     }
-    // }
 
     useEffect(() => {
         getReactionData()
@@ -113,7 +60,6 @@ function PostCardReactions(props) {
                 accountReaction={accountLike}
                 totalReactions={totalLikes}
                 iconPath='thumbs-up-solid.svg'
-                //onClick={() => addLike()}
                 onClick={() => { 
                     if (isLoggedIn) { setLikeModalOpen(true) }
                     else { setAlertMessage('Log in to like post'); setAlertModalOpen(true) }
@@ -144,6 +90,18 @@ function PostCardReactions(props) {
                 onClick={() => { 
                     if (isLoggedIn) { setRatingModalOpen(true) }
                     else { setAlertMessage('Log in to rate post'); setAlertModalOpen(true) }
+                }}
+            />
+            <PostCardReactionItem
+                text='Links'
+                reactions={reactionData && reactionData.Labels.filter(label => label.type === 'link')}
+                previewOpen={linkPreviewOpen} setPreviewOpen={setLinkPreviewOpen}
+                accountLink={accountLink}
+                totalReactions={totalLinks}
+                iconPath='link-solid.svg'
+                onClick={() => { 
+                    if (isLoggedIn) { setLinkModalOpen(true) }
+                    else { setAlertMessage('Log in to link post'); setAlertModalOpen(true) }
                 }}
             />
             {/* TODO: Move modals into PostCardReactionItems? */}
@@ -181,14 +139,17 @@ function PostCardReactions(props) {
                     totalRatingPoints={totalRatingPoints} setTotalRatingPoints={setTotalRatingPoints}
                     accountRating={accountRating} setAccountRating={setAccountRating}
                     getReactionData={getReactionData}
-                    // isLoggedIn={isLoggedIn}
-                    // totalRatings={totalRatings}
-                    // totalRatingPoints={totalRatingPoints}
-                    // newRating={newRating} setNewRating={setNewRating}
-                    // newRatingError={newRatingError} setNewRatingError={setNewRatingError}
-                    // addRating={addRating}
-                    // removeRating={removeRating}
-                    // accountRating={accountRating}
+                />
+            }
+            {linkModalOpen &&
+                <PostCardLinkModal
+                    postData={postData}
+                    links={reactionData && reactionData.Labels.filter(label => label.type === 'link')}
+                    setLinkModalOpen={setLinkModalOpen}
+                    getReactionData={getReactionData}
+                    totalReactions={totalReactions} setTotalReactions={setTotalReactions}
+                    totalLinks={totalLinks} setTotalLinks={setTotalLinks}
+                    accountLink={accountLink} setAccountLink={setAccountLink}
                 />
             }
         </div>

@@ -147,7 +147,7 @@ function HolonSpaceMap() {
 
             let tree = d3.tree()
                 //.size([width, treeHeight])
-                .nodeSize([40, 200])
+                .nodeSize([50, 200])
                 .separation((a, b) => { return a.parent == b.parent ? 2 : 2 })
             
             tree(root).links()

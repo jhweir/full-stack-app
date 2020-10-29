@@ -3,6 +3,7 @@ import styles from '../../../styles/components/PostCardReactionItem.module.scss'
 import PostCardLikePreview from './PostCardLikePreview'
 import PostCardRepostPreview from './PostCardRepostPreview'
 import PostCardRatingPreview from './PostCardRatingPreview'
+import PostCardLinkPreview from './PostCardLinkPreview'
 
 function PostCardReactionItem(props) {
     const {
@@ -49,6 +50,11 @@ function PostCardReactionItem(props) {
                             reactions={reactions}
                             totalReactions={totalReactions}
                             totalReactionPoints={totalReactionPoints}
+                        />
+                    }
+                    {text === 'Links' &&
+                        <PostCardLinkPreview
+                            reactions={reactions}
                         />
                     }
                 </>
