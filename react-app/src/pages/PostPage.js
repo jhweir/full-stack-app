@@ -10,6 +10,7 @@ import PostPageComments from '../components/PostPage/PostPageComments'
 import PostPagePollVote from '../components/PostPage/PostPagePollVote'
 import PostPagePollResults from '../components/PostPage/PostPagePollResults'
 import Prism from '../components/Prism'
+import PlotGraph from '../components/PlotGraph'
 
 function PostPage({ match, location }) {
     const { url } = match
@@ -29,7 +30,9 @@ function PostPage({ match, location }) {
     //     if (pathname.includes('results')) { setPageSectionSelected('results') }
     // }, [accountContextLoading])
 
-    if (postData.type !== 'prism') {
+    if (postData.type === 'prism') { return (<Prism/>) }
+    else if (postData.type === 'plot-graph') { return (<PlotGraph/>) }
+    else {
         return (
             <div className={styles.postPage}>
                 <PostCard postData={postData} location='post-page'/>
@@ -45,7 +48,7 @@ function PostPage({ match, location }) {
                 </Switch> 
             </div>
         )
-    } else { return (<Prism/>) }
+    }
 }
 
 export default PostPage

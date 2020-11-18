@@ -1,0 +1,17 @@
+.plotGraph {
+    width: 100%;
+    height: 100%;
+    margin-top: 70px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.postCardContainer {
+    width: 680px;
+}
+.infoBar {
+    margin: 20px 0;
+    span {
+        margin-right: 20px;
+    }
+}

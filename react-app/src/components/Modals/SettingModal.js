@@ -58,23 +58,22 @@ function SettingModal() {
             if (settingModalType === 'change-holon-handle') {
                 axios
                     .post(config.environmentURL + '/update-holon-setting', { holonId: holonData.id, setting: settingModalType, newValue })
-                    .then(getAccountData())
-                    //.then(setTimeout(() => { getAccountData() }, 500))
-                    .then(() => {
-                        history.push(`/s/${newValue}/settings`)
-                        setHolonHandle(newValue)
-                        setSettingModalOpen(false)
+                    .then((res) => {
+                        if (res.data === 'success') {
+                            history.push(`/s/${newValue}/settings`)
+                            setTimeout(() => { setHolonHandle(newValue); getAccountData() }, 500)
+                            setSettingModalOpen(false)
+                        }
                     })
-                    //.then(getAccountData())
-                    // .then(setTimeout(() => { getHolonData() }, 500))
             }
             else {
                 axios
                     .post(config.environmentURL + '/update-holon-setting', { holonId: holonData.id, setting: settingModalType, newValue })
                     .then(res => {
-                        if (res.data !== 'success') { 
-                            setError(true)
-                            setErrorMessage(res.data)
+                        if (res.data !== 'success') {
+                            console.log('res.data: ', res.data)
+                            //setError(true)
+                            //setErrorMessage(res.data)
                         }
                         else { setSettingModalOpen(false); setTimeout(() => { getHolonData() }, 500)  }
                     })

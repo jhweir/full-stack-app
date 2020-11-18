@@ -4,7 +4,7 @@ import { HolonContext } from '../../contexts/HolonContext'
 import styles from '../../styles/components/HolonPageSettings.module.scss'
 
 function HolonPageSettings() {
-    const { setSettingModalType, setSettingModalOpen } = useContext(AccountContext)
+    const { setSettingModalType, setSettingModalOpen, getAccountData } = useContext(AccountContext)
     const { holonData, setSelectedHolonSubPage } = useContext(HolonContext)
 
     useEffect(() => {
@@ -18,15 +18,15 @@ function HolonPageSettings() {
                 <div className={styles.section}>
                     {/* <div className={styles.title}>About</div> */}
                     <div className={styles.field}>
-                        <div className={styles.text}><b>Handle:</b> {holonData.handle}</div>
+                        <div className={styles.text}><b>Handle:</b> {holonData && holonData.handle}</div>
                         <div className={styles.linkText} onClick={() => { setSettingModalType('change-holon-handle'); setSettingModalOpen(true) }}>Change</div>
                     </div>
                     <div className={styles.field}>
-                        <div className={styles.text}><b>Name:</b> {holonData.name}</div>
+                        <div className={styles.text}><b>Name:</b> {holonData && holonData.name}</div>
                         <div className={styles.linkText} onClick={() => { setSettingModalType('change-holon-name'); setSettingModalOpen(true) }}>Change</div>
                     </div>
                     <div className={styles.field}>
-                        <div className={styles.text}><b>Description:</b> {holonData.description}</div>
+                        <div className={styles.text}><b>Description:</b> {holonData && holonData.description}</div>
                         <div className={styles.linkText} onClick={() => { setSettingModalType('change-holon-description'); setSettingModalOpen(true) }}>Change</div>
                     </div>
                     <div className={styles.field}>
@@ -38,6 +38,9 @@ function HolonPageSettings() {
                     <div className={styles.field}>
                         <div className={styles.linkText} onClick={() => { setSettingModalType('remove-parent-space'); setSettingModalOpen(true) }}>Remove parent space</div>
                     </div>
+                    {/* <div className={styles.field}>
+                        <div className={styles.linkText} onClick={() => { getAccountData() }}>getAccountData</div>
+                    </div> */}
                 </div>
             </div>
         </div>

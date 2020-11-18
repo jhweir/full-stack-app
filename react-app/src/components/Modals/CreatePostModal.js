@@ -33,6 +33,16 @@ function CreatePostModal() {
     const [prismDuration, setPrismDuration] = useState('1 Month')
     const [prismPrivacy, setPrismPrivacy] = useState('Private')
 
+    const [numberOfPlotGraphAxes, setNumberOfPlotGraphAxes] = useState(0)
+    const [axis1Left, setAxis1Left] = useState('')
+    const [axis1Right, setAxis1Right] = useState('')
+    const [axis2Top, setAxis2Top] = useState('')
+    const [axis2Bottom, setAxis2Bottom] = useState('')
+    const [axis1LeftError, setAxis1LeftError] = useState(false)
+    const [axis1RightError, setAxis1RightError] = useState(false)
+    const [axis2TopError, setAxis2TopError] = useState(false)
+    const [axis2BottomError, setAxis2BottomError] = useState(false)
+
     const [textError, setTextError] = useState(false)
     const [urlError, setUrlError] = useState(false)
     const [newSpaceError, setNewSpaceError] = useState(false)
@@ -93,7 +103,7 @@ function CreatePostModal() {
         if (invalidPollAnswers) { setNewPollAnswerError(true) }
         if (!invalidText && !invalidUrl && !invalidPollAnswers && !urlLoading) {
             let post = { 
-                type: postType.toLowerCase(),
+                type: postType === 'Plot Graph' ? 'plot-graph' : postType.toLowerCase(), // create function to remove spaces as well as move to lower cases
                 subType,
                 state: 'visible',
                 creatorId: accountData.id,
@@ -104,10 +114,15 @@ function CreatePostModal() {
                 urlTitle,
                 urlDescription,
                 holonHandles: addedSpaces.length ? [...addedSpaces, holonData.handle] : [holonData.handle],
-                pollAnswers: postType === 'Poll' ? pollAnswers : null,
-                numberOfPrismPlayers: postType === 'Prism' ? numberOfPrismPlayers : null,
-                prismDuration: postType === 'Prism' ? prismDuration : null,
-                prismPrivacy: postType === 'Prism' ? prismPrivacy : null,
+                pollAnswers, //: postType === 'Poll' ? pollAnswers : null,
+                numberOfPrismPlayers, //: postType === 'Prism' ? numberOfPrismPlayers : null,
+                prismDuration, //: postType === 'Prism' ? prismDuration : null,
+                prismPrivacy, //: postType === 'Prism' ? prismPrivacy : null,
+                numberOfPlotGraphAxes,
+                axis1Left,
+                axis1Right,
+                axis2Top,
+                axis2Bottom
             }
             axios.post(config.environmentURL + '/create-post', { post })
                 .then(() => { setCreatePostModalOpen(false); resetForm() })
@@ -147,7 +162,7 @@ function CreatePostModal() {
                 <div className={styles.dropDownOptions}>
                     <DropDownMenu
                         title='Post Type'
-                        options={['Text', 'Url', 'Poll', 'Prism']}
+                        options={['Text', 'Url', 'Poll', 'Prism', 'Plot Graph']}
                         selectedOption={postType}
                         setSelectedOption={setPostType}
                         style='horizontal'
@@ -186,6 +201,51 @@ function CreatePostModal() {
                             />
                         </>
                     }
+                    {postType === 'Plot Graph' &&
+                        <DropDownMenu
+                            title='Number Of Axes'
+                            options={[0, 1, 2]}
+                            selectedOption={numberOfPlotGraphAxes}
+                            setSelectedOption={setNumberOfPlotGraphAxes}
+                            style='horizontal'
+                        />
+                    }
+                    {numberOfPlotGraphAxes > 1 &&
+                        <div className={styles.yAxesValues}>
+                            <textarea className={`wecoInput textArea mb-10 ${axis2TopError && 'error'}`}
+                                style={{height: 40, width: 250}}
+                                placeholder="Axis 2: top value..."
+                                type="text" value={axis2Top}
+                                onChange={(e) => { setAxis2Top(e.target.value); setAxis2TopError(false) }}
+                            />
+                        </div>
+                    }
+                    {numberOfPlotGraphAxes > 0 &&
+                        <div className={styles.xAxesValues}>
+                            <textarea className={`wecoInput textArea mb-10 ${axis1LeftError && 'error'}`}
+                                style={{height: 40, width: 250}}
+                                placeholder="Axis 1: left value..."
+                                type="text" value={axis1Left}
+                                onChange={(e) => { setAxis1Left(e.target.value); setAxis1LeftError(false) }}
+                            />
+                            <textarea className={`wecoInput textArea mb-10 ${axis1RightError && 'error'}`}
+                                style={{height: 40, width: 250}}
+                                placeholder="Axis 1: right value..."
+                                type="text" value={axis1Right}
+                                onChange={(e) => { setAxis1Right(e.target.value); setAxis1RightError(false) }}
+                            />
+                        </div>
+                    }
+                    {numberOfPlotGraphAxes > 1 &&
+                        <div className={styles.yAxesValues}>
+                            <textarea className={`wecoInput textArea mb-10 ${axis2BottomError && 'error'}`}
+                                style={{height: 40, width: 250}}
+                                placeholder="Axis 2: bottom value..."
+                                type="text" value={axis2Bottom}
+                                onChange={(e) => { setAxis2Bottom(e.target.value); setAxis2BottomError(false) }}
+                            />
+                        </div>
+                    }
                 </div>
                 <form className={styles.form}>
                     <textarea className={`wecoInput textArea mb-10 ${textError && 'error'}`}
@@ -215,6 +275,7 @@ function CreatePostModal() {
                         urlFlashMessage={urlFlashMessage}
                     />
                     <SpaceInput
+                        style="align-items: center"
                         text='Tag other spaces you want the post to appear in:'
                         blockedSpaces={[]}
                         addedSpaces={addedSpaces} setAddedSpaces={setAddedSpaces}

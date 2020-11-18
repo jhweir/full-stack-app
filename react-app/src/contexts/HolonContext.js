@@ -251,7 +251,7 @@ function HolonContextProvider({ children }) {
             if (accountIsFollowing) { setIsFollowing(true) } else { setIsFollowing(false) }
             if (accountIsModerator) { setIsModerator(true) } else { setIsModerator(false) }
         }
-    }, [holonData])
+    }, [holonData, accountData])
 
     return (
         <HolonContext.Provider value={{

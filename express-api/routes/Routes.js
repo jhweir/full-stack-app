@@ -19,6 +19,7 @@ const Label = require('../models').Label
 const PollAnswer = require('../models').PollAnswer
 const Prism = require('../models').Prism
 const PrismUser = require('../models').PrismUser
+const PlotGraph = require('../models').PlotGraph
 // const Notifications = require('../models').Notification
 
 //const postAttributes = (userId) => [
@@ -103,7 +104,7 @@ router.get('/holon-posts', (req, res) => {
 
     function findType() {
         let type
-        if (postType === 'All Types') { type = ['text', 'poll', 'url', 'prism'] }
+        if (postType === 'All Types') { type = ['text', 'poll', 'url', 'prism', 'plot-graph'] }
         if (postType !== 'All Types') { type = postType.toLowerCase() }
         return type
     }
@@ -1251,7 +1252,12 @@ router.post('/create-post', (req, res) => {
         pollAnswers,
         numberOfPrismPlayers,
         prismDuration,
-        prismPrivacy
+        prismPrivacy,
+        numberOfPlotGraphAxes,
+        axis1Left,
+        axis1Right,
+        axis2Top,
+        axis2Bottom
     } = req.body.post
 
     let directHandleIds = []
@@ -1334,6 +1340,17 @@ router.post('/create-post', (req, res) => {
         })
     }
 
+    function createPlotGraph(post) {
+        PlotGraph.create({
+            postId: post.id,
+            numberOfPlotGraphAxes,
+            axis1Left,
+            axis1Right,
+            axis2Top,
+            axis2Bottom
+        })
+    }
+
     let renamedSubType
     if (subType === 'Single Choice') { renamedSubType = 'single-choice' }
     if (subType === 'Multiple Choice') { renamedSubType = 'multiple-choice' }
@@ -1358,6 +1375,7 @@ router.post('/create-post', (req, res) => {
                 createNewPostHolons(post)
                 if (type === 'poll') createNewPollAnswers(post)
                 if (type === 'prism') createPrism(post)
+                if (type === 'plot-graph') createPlotGraph(post)
             })
             .then(res.send('success'))
         })
@@ -1572,7 +1590,7 @@ router.post('/scrape-url', async (req, res) => {
     }
 })
 
-router.post('/update-holon-setting', (req, res) => {
+router.post('/update-holon-setting', async (req, res) => {
     let { holonId, setting, newValue } = req.body
     console.log('req.body', req.body)
     if (setting === 'change-holon-handle') {
@@ -1606,34 +1624,103 @@ router.post('/update-holon-setting', (req, res) => {
             })
     }
     if (setting === 'add-parent-space') {
-        // check parent space exists and grab its holonHandles
-        Holon.findOne({
+        // find handles of parent space
+        // find all spaces containing child spaces handles (effectedSpaces)
+        // compare handles of parent space against handles of each spaces containing child spaces handles
+        // add handles that don't match
+
+        let parent = await Holon.findOne({
             where: { handle: newValue },
+            include: [{
+                model: Holon,
+                as: 'HolonHandles',
+                attributes: ['handle', 'id'],
+                through: { attributes: [] }
+            }]
+        })
+
+        let child = await Holon.findOne({
+            where: { id: holonId }
+        })
+
+        let effectedSpaces = await Holon.findAll({
+            where: { '$HolonHandles.handle$': child.dataValues.handle },
             include: [{ model: Holon, as: 'HolonHandles' }]
         })
-        .then(holon => {
-            if (holon) {
-                // if it exists, create new VHR between the moderated space and the new parent space (A is a direct parent of B)
-                VerticalHolonRelationship.create({
-                    state: 'open',
-                    holonAId: holon.id,
-                    holonBId: holonId,
-                })
-                .then(() => {
-                    // TODO: need to add handles to all effected child spaces (all child-spaces of moderated space)
-                    // then add all of the parent spaces handles to the child space (post to A appear within B)
-                    holon.HolonHandles.forEach((handle) => {
-                        HolonHandle.create({
-                            state: 'open',
-                            holonAId: holonId,
-                            holonBId: handle.id,
-                        })
-                    })
-                })
-                .then(res.send('success'))
-            }
-            else { res.send('No space with that handle') }
+
+        let effectedSpacesWithHolonHandles = await Holon.findAll({
+            where: { id: effectedSpaces.map(s => s.id) },
+            include: [{
+                model: Holon,
+                as: 'HolonHandles',
+                attributes: ['handle', 'id'],
+                through: { attributes: [] }
+            }]
         })
+
+        // A is a direct parent of B
+        VerticalHolonRelationship.create({
+            state: 'open',
+            holonAId: parent.id,
+            holonBId: child.id,
+        })
+
+        effectedSpacesWithHolonHandles.forEach(space => {
+            parent.HolonHandles.forEach(ph => {
+                let match = space.HolonHandles.some(sh => sh.handle === ph.handle)
+                if (!match) {
+                    // posts to A appear within B
+                    HolonHandle.create({
+                        state: 'open',
+                        holonAId: space.id,
+                        holonBId: ph.id,
+                    })
+                }
+            })
+        })
+
+
+        // check parent space exists and grab its holonHandles
+        // Holon.findOne({
+        //     where: { handle: newValue },
+        //     include: [{ model: Holon, as: 'HolonHandles' }]
+        // })
+        // .then(holon => {
+        //     if (holon) {
+                // if the parent space exists, create new VHR between the moderated space and the new parent space (A is a direct parent of B)
+                // VerticalHolonRelationship.create({
+                //     state: 'open',
+                //     holonAId: holon.id,
+                //     holonBId: holonId,
+                // })
+                // .then(() => {
+                    // TODO: need to add handles to all effected child spaces (all child-spaces of moderated space)
+
+                    // find handles of parent space
+                    // find all spaces containing child spaces handles
+                    // compare handles of parent space against handles of each spaces containing child spaces handles
+                    // add handles that don't match
+
+                    // Holon.findAll({
+                    //     where: { '$HolonHandles.handle$': handle },
+                    //     include: [{ model: Holon, as: 'HolonHandles' }]
+                    // }).then(holons => {
+                    //     console.log('holons: ', holons)
+                    // })
+
+                    // add all of the parent spaces handles to the child space (post to A appear within B)
+                //     holon.HolonHandles.forEach((handle) => {
+                //         HolonHandle.create({
+                //             state: 'open',
+                //             holonAId: holonId,
+                //             holonBId: handle.id,
+                //         })
+                //     })
+                // })
+                // .then(res.send('success'))
+        //     }
+        //     else { res.send('No space with that handle') }
+        // })
     }
     if (setting === 'remove-parent-space') {
         // check parent space exists
@@ -1713,6 +1800,22 @@ router.get('/space-map-data', (req, res) => {
         ]
     })
     .then(holons => { res.json(holons) })
+    .catch(err => console.log(err))
+})
+
+router.get('/plot-graph-data', (req, res) => {
+    const { postId } = req.query
+    PlotGraph.findOne({ 
+        where: { postId: postId },
+        // include: [
+        //     { 
+        //         model: User,
+        //         attributes: ['handle', 'name', 'flagImagePath'],
+        //         through: { attributes: [] }
+        //     }
+        // ]
+    })
+    .then(plotGraph => { res.json(plotGraph) })
     .catch(err => console.log(err))
 })
 

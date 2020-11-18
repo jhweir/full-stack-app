@@ -25,6 +25,7 @@ function AccountContextProvider({ children, pageBottomReached }) {
 
     function getAccountData() {
         console.log('AccountContext: getAccountData')
+        setAccountContextLoading(true)
         let accessToken = cookies.get('accessToken')
         if (accessToken === undefined) { setAccountContextLoading(false) }
         if (accessToken !== undefined) {
@@ -36,7 +37,10 @@ function AccountContextProvider({ children, pageBottomReached }) {
             })
             .get(`/account-data`)
             .then(res => {
-                if (res.data !== 'Invalid token') { setAccountData(res.data); setIsLoggedIn(true); console.log('AccountContext: logged in succesfully') }
+                if (res.data !== 'Invalid token') {
+                    setAccountData(res.data)
+                    setIsLoggedIn(true)
+                    console.log('AccountContext: logged in succesfully') }
                 setAccountContextLoading(false)
             })
         }

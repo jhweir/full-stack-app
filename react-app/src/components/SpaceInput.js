@@ -11,7 +11,8 @@ function SpaceInput(props) {
         blockedSpaces,
         addedSpaces, setAddedSpaces,
         newSpaceError, setNewSpaceError,
-        setParentModalOpen
+        setParentModalOpen,
+        centered
     } = props
 
     const { holonData } = useContext(HolonContext)
@@ -61,7 +62,7 @@ function SpaceInput(props) {
     }, [newSpace])
 
     return (
-        <div className={styles.spaceInput}>
+        <div className={`${styles.spaceInput} ${centered && styles.centered}`}>
             {text && <div className={styles.text}>{text}</div>}
             <div className={styles.form}>
                 <input className={`wecoInput mr-10 ${newSpaceError && 'error'}`} style={{width: 200}}

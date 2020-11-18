@@ -91,6 +91,7 @@ function PostCardRepostModal(props) {
                     addedSpaces={addedSpaces} setAddedSpaces={setAddedSpaces}
                     newSpaceError={newSpaceError} setNewSpaceError={setNewSpaceError}
                     setParentModalOpen={setRepostModalOpen}
+                    centered={true}
                 />
                 <div
                     className={`wecoButton ${!addedSpaces.length && 'disabled'}`}

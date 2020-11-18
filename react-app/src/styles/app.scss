@@ -152,7 +152,7 @@ input {
     transition-property: box-shadow, background-color;
     transition-duration: 0.3s, 1s;
     &.textArea {
-        height: 100px;
+        height: 60px;
         padding: 10px 15px;
     }
     &.error {

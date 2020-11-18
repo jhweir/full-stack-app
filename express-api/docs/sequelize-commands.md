@@ -75,6 +75,9 @@ Posts to holon A appear within holon B
 ### PrismUser
 `npx sequelize-cli model:generate --name PrismUser --attributes relationship:string,state:string,prismId:integer,userId:integer`
 
+### PlotGraph
+`npx sequelize-cli model:generate --name PlotGraph --attributes numberOfPlotGraphAxes:integer,axis1Left:string,axis1Right:string,axis2Top:string,axis2Bottom:string`
+
 ## Generate Seeders
 `npx sequelize-cli seed:generate --name demo-holons`
 `npx sequelize-cli seed:generate --name demo-holon-tags`
