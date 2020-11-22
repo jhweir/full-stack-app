@@ -2,8 +2,6 @@ import React, { useState, useEffect, useContext } from 'react'
 import styles from '../styles/components/PrismMap.module.scss'
 import * as d3 from 'd3'
 import * as d3Hexbin from "d3-hexbin";
-import { Delaunay } from "d3-delaunay";
-import { schemeSet3 } from 'd3';
 
 function PrismMap(props) {
     const { postData, prismData } = props
