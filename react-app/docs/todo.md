@@ -1,20 +1,18 @@
 # Todos
-Last updated: 18-08-2020
+Last updated: 22-11-2020
 
-+ Bug: Sort by Date (Descending) not loading all posts
++ Create link preview and modal
++ Create link table
++ Display links on postmap
++ Allow users to vote on links
 
-+ Create Link preview and modal
-+ Create Link type labels in db
-
-
-+ Add current spaces to repost modal
-+ Add loading states for each db call in contexts, updated effected functions, and test load-order bugs
-+ Add mod controls
-    + remove parent space
-    + remove child space
-    + delete space
-
-- Change 'Reactions' table to 'Reactions' (freeing up 'labels' for other uses)
+- Bug: Sort by Date (Descending) not loading all posts
+- Add current spaces to repost modal
+- Add loading states for each db call in contexts, updated effected functions, and test load-order bugs
+- Add mod controls
+    - remove parent space
+    - remove child space
+    - delete space
 - Update 'holon' names to 'space' throughout codebase to avoid confusion
 - Set up social media log-in strategies
 - Protect restircted pages and routes (settings page, image uploads etc.)
@@ -34,7 +32,6 @@ Last updated: 18-08-2020
     - Messages
 - set up JWT refresh token (https://www.youtube.com/watch?v=iD49_NIQ-R4&t=9s)
 - Re-consider layout/approach used for pie chart and time graph components
-- Set up 'visible holons' on post (vs. all included holons)
 - Set up verification/welcome emails
 - Add privacy setting to labels (public, anonymous etc.)
 - create expandable comments
@@ -46,7 +43,7 @@ Last updated: 18-08-2020
 
 # Bugs
 - Following/not-following link on holon sidebar not always updating correctly when moving between spaces after a change but before a refresh
-- On weighted choice poll vote section: put in answers then move away to results section and come back. numbers have reset to 0 but values are reatined messing up calculations.
+- On weighted choice poll vote section: put in answers then move away to results section and come back. numbers have reset to 0 but values are retained messing up calculations.
 
 # Complete
 - Prevent PostHolon duplicates when creating posts
@@ -111,3 +108,6 @@ Last updated: 18-08-2020
 - Allow users to log in with username or password
 - Start building Prism posts
 - Add average and individual ratings to rating preview modal
+- Create Link type labels in db
+- Change 'Labels' table to 'Reactions' (freeing up 'labels' for other uses)
+- Set up 'visible holons' on post (vs. all included holons)

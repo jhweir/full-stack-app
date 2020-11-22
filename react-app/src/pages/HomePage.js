@@ -1,37 +1,89 @@
-import React from 'react';
+import React from 'react'
+import styles from '../styles/pages/HomePage.module.scss'
 
 function Homepage() {
 
     return (
-        <>
-            <div className="homepage">
-                <div className="homepage-title">Homepage</div>
-                <div>All icons created by FontAwesome https://fontawesome.com/license</div>
+        <div className={styles.homePage}>
+            <div className={styles.mainContent}>
+                <img className={styles.logo} src='/images/logo-002-blurred.png'/>
+                <span className={styles.title}>
+                    weco<span className={`${styles.title} ${styles.grey}`}>.io</span>
+                </span>
+                <span className={styles.subTitle}>evolving social media tools, governance, and ownership</span>
+                <div className={`${styles.wrapper} mt-70 mb-50`}>
+                    <span className={styles.mediumText}>Under construction...</span>
+                    <img className={styles.icon} src='/icons/tools-solid.svg'/>
+                </div>
+                <div className={`${styles.list} mt-70`}>
+                    <span className={`${styles.largeText} mb-10`}>Current working features</span>
+                    <span><b>User accounts</b></span>
+                    <ul className={styles.ul}>
+                        <li><input type="checkbox" checked={true} readOnly/>Log in / out with encrypted password</li>
+                        <li><input type="checkbox" checked={true} readOnly/>Profile page</li>
+                        <ul>
+                            <li><input type="checkbox" checked={true} readOnly/>Access to followed and moderated spaces</li>
+                            <li><input type="checkbox" checked={true} readOnly/>Search and filter created posts</li>
+                        </ul>
+                    </ul>
+                    <span className={`mt-20`}><b>Spaces</b> (a.k.a groups, communities)</span>
+                    <ul className={styles.ul}>
+                        <li><input type="checkbox" checked={true} readOnly/>Create spaces within spaces to any depth</li>
+                        <li><input type="checkbox" checked={true} readOnly/>Edit space name, url handle, and bio</li>
+                        <li><input type="checkbox" checked={true} readOnly/>Upload space flag and cover images</li>
+                        <li><input type="checkbox" checked={true} readOnly/>Add new moderators</li>
+                        <li><input type="checkbox" checked={true} readOnly/>Search and filter child spaces</li>
+                        <li><input type="checkbox" checked={true} readOnly/>Navigate up and down spaces</li>
+                        <li><input type="checkbox" checked={true} readOnly/>Connect to new parent spaces</li>
+                        <li><input type="checkbox" checked={true} readOnly/>Toggle view of spaces between scrollable list or tree diagram</li>
+                    </ul>
+                    <span className='mt-20'><b>Posts</b></span>
+                    <ul className={styles.ul}>
+                        <li><input type="checkbox" checked={true} readOnly/>Create posts and tag them with the spaces you want them to appear within</li>
+                        <li><input type="checkbox" checked={true} readOnly/>Choose from different post types</li>
+                        <ul>
+                            <li><input type="checkbox" checked={true} readOnly/>Text</li>
+                            <li><input type="checkbox" checked={true} readOnly/>Url: includes image and metadata from url</li>
+                            <li><input type="checkbox" checked={true} readOnly/>Poll: single choice, multiple choice, or weighted choice</li>
+                        </ul>
+                        <li><input type="checkbox" checked={true} readOnly/>Comment on posts</li>
+                        <li><input type="checkbox" checked={true} readOnly/>React to posts</li>
+                        <ul>
+                            <li><input type="checkbox" checked={true} readOnly/>Like posts</li>
+                            <li><input type="checkbox" checked={true} readOnly/>Repost posts</li>
+                            <li><input type="checkbox" checked={true} readOnly/>Rate posts</li>
+                        </ul>
+                        <li><input type="checkbox" checked={true} readOnly/>Vote and view results on poll posts</li>
+                        <li><input type="checkbox" checked={true} readOnly/>Toggle view of posts between scrollable list or post map</li>
+                    </ul>
+                    <span className={`${styles.largeText} mt-50`}>Future features:</span>
+                    <ul className={styles.ul}>
+                        <li><input type="checkbox" checked={false} readOnly/>Link items to other items (posts, comments, spaces, users)</li>
+                        <li><input type="checkbox" checked={false} readOnly/>Up/down vote links between items</li>
+                        <li><input type="checkbox" checked={false} readOnly/>Links visualised on post map</li>
+                        <li><input type="checkbox" checked={false} readOnly/>Account notifications</li>
+                        <li><input type="checkbox" checked={false} readOnly/>User to user messaging</li>
+                        <li><input type="checkbox" checked={false} readOnly/>Personalised stream (pulling in content from follwed spaces) on user profile</li>
+                        <li><input type="checkbox" checked={false} readOnly/>Post types</li>
+                        <ul>
+                            <li><input type="checkbox" checked={false} readOnly/>Plot graphs</li>
+                            <li><input type="checkbox" checked={false} readOnly/>Decision trees</li>
+                            <li><input type="checkbox" checked={false} readOnly/>Knowledge maps</li>
+                        </ul>
+                        <li><input type="checkbox" checked={false} readOnly/>Flag posts</li>
+                        <li><input type="checkbox" checked={false} readOnly/>Personalised flag filters</li>
+                        <li><input type="checkbox" checked={false} readOnly/>Log in through Facebook, Twitter, Google</li>
+                        <li><input type="checkbox" checked={false} readOnly/>Zoomable circle packing view for spaces</li>
+                        <li><input type="checkbox" checked={false} readOnly/>Responsive UI for small screens</li>
+                        <li><input type="checkbox" checked={false} readOnly/>Nested comment replies</li>
+                        <li><input type="checkbox" checked={false} readOnly/>Comment permalinks</li>
+                    </ul>
+                </div>
             </div>
-
-            <style jsx="true">{`
-                .homepage {
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    padding: 20px;
-                    margin-top: 70px;
-                    color: black;
-                    transition-property: color;
-                    transition-duration: 2s;
-                }
-                .homepage-title {
-                    font-size: 30px;
-                }
-                ul {
-                    list-style-type: none;
-                    margin-left: 40px;
-                }
-                li {
-                    list-style-type: none;
-                }
-            `}</style>
-        </>
+            <div className={styles.credits}>
+                All icons created by FontAwesome https://fontawesome.com/license
+            </div>
+        </div>
     )
 }
 
@@ -40,59 +92,59 @@ export default Homepage
 
 {/* <span className="page-title">Component tree and features</span>
 <ul style={{ padding:0 }}>
-    <li><input type="checkbox" checked="checked" readOnly></input> App</li>
-    <ul>
-        <li><input type="checkbox" checked="checked" readOnly></input> NavBar</li>
-        <ul>
-            <li><input type="checkbox" checked="checked" readOnly></input> Page routing</li>
-            <li><input type="checkbox" checked="checked" readOnly></input> Dark mode</li>
+    <li className={styles.li}><input type="checkbox" checked={true} readOnly/> App</li>
+    <ul className={styles.ul}>
+        <li className={styles.li}><input type="checkbox" checked={true} readOnly/> NavBar</li>
+        <ul className={styles.ul}>
+            <li className={styles.li}><input type="checkbox" checked={true} readOnly/> Page routing</li>
+            <li className={styles.li}><input type="checkbox" checked={true} readOnly/> Dark mode</li>
         </ul>
-        <li><input type="checkbox" checked="checked" readOnly></input> Homepage</li>
-        <ul>
-            <li><input type="checkbox" checked="checked" readOnly></input> Component tree and features</li>
+        <li className={styles.li}><input type="checkbox" checked={true} readOnly/> Homepage</li>
+        <ul className={styles.ul}>
+            <li className={styles.li}><input type="checkbox" checked={true} readOnly/> Component tree and features</li>
         </ul>
-        <li><input type="checkbox" checked="checked" readOnly></input> HolonPagePosts</li>
-        <ul>
-            <li><input type="checkbox" checked="checked" readOnly></input> HolonPagePostsHeader</li>
-            <ul>
-                <li><input type="checkbox" checked="checked" readOnly></input> CreatePostModal</li>
-                <ul>
-                    <li><input type="checkbox" checked="checked" readOnly></input> Add username</li>
-                    <li><input type="checkbox" checked="checked" readOnly></input> Add title</li>
-                    <li><input type="checkbox" checked="checked" readOnly></input> Add description</li>
-                    <li><input type="checkbox" checked="" readOnly></input> Add tags</li>
+        <li className={styles.li}><input type="checkbox" checked={true} readOnly/> HolonPagePosts</li>
+        <ul className={styles.ul}>
+            <li className={styles.li}><input type="checkbox" checked={true} readOnly/> HolonPagePostsHeader</li>
+            <ul className={styles.ul}>
+                <li className={styles.li}><input type="checkbox" checked={true} readOnly/> CreatePostModal</li>
+                <ul className={styles.ul}>
+                    <li className={styles.li}><input type="checkbox" checked={true} readOnly/> Add username</li>
+                    <li className={styles.li}><input type="checkbox" checked={true} readOnly/> Add title</li>
+                    <li className={styles.li}><input type="checkbox" checked={true} readOnly/> Add description</li>
+                    <li className={styles.li}><input type="checkbox" checked="" readOnly/> Add tags</li>
                 </ul>
-                <li><input type="checkbox" checked="checked" readOnly></input> SearchBar</li>
-                <ul>
-                    <li><input type="checkbox" checked="checked" readOnly></input> Search by text</li>
+                <li className={styles.li}><input type="checkbox" checked={true} readOnly/> SearchBar</li>
+                <ul className={styles.ul}>
+                    <li className={styles.li}><input type="checkbox" checked={true} readOnly/> Search by text</li>
                 </ul>
-                <li><input type="checkbox" checked="checked" readOnly></input> HolonPagePostsFilters</li>
-                <ul>
-                    <li><input type="checkbox" checked="checked" readOnly></input> Sort by ID</li>
-                    <li><input type="checkbox" checked="checked" readOnly></input> Sort by Likes</li>
-                    <li><input type="checkbox" checked="checked" readOnly></input> Sort by Date</li>
-                    <li><input type="checkbox" checked="checked" readOnly></input> Sort by Comments</li>
+                <li className={styles.li}><input type="checkbox" checked={true} readOnly/> HolonPagePostsFilters</li>
+                <ul className={styles.ul}>
+                    <li className={styles.li}><input type="checkbox" checked={true} readOnly/> Sort by ID</li>
+                    <li className={styles.li}><input type="checkbox" checked={true} readOnly/> Sort by Likes</li>
+                    <li className={styles.li}><input type="checkbox" checked={true} readOnly/> Sort by Date</li>
+                    <li className={styles.li}><input type="checkbox" checked={true} readOnly/> Sort by Comments</li>
                 </ul>
             </ul>
-            <li><input type="checkbox" checked="checked" readOnly></input> Posts</li>
-            <ul>
-                <li><input type="checkbox" checked="checked" readOnly></input> Like posts</li>
-                <li><input type="checkbox" checked="checked" readOnly></input> Delete posts</li>
-                <li><input type="checkbox" checked="checked" readOnly></input> Display number of comments</li>
-                <li><input type="checkbox" checked="checked" readOnly></input> Include time stap with date</li>
-                <li><input type="checkbox" checked="checked" readOnly></input> Link to unique post page</li>
-                <li><input type="checkbox" checked="checked" readOnly></input> Pin posts</li>
-                <li><input type="checkbox" checked="" readOnly></input> Add tags to posts</li>
+            <li className={styles.li}><input type="checkbox" checked={true} readOnly/> Posts</li>
+            <ul className={styles.ul}>
+                <li className={styles.li}><input type="checkbox" checked={true} readOnly/> Like posts</li>
+                <li className={styles.li}><input type="checkbox" checked={true} readOnly/> Delete posts</li>
+                <li className={styles.li}><input type="checkbox" checked={true} readOnly/> Display number of comments</li>
+                <li className={styles.li}><input type="checkbox" checked={true} readOnly/> Include time stap with date</li>
+                <li className={styles.li}><input type="checkbox" checked={true} readOnly/> Link to unique post page</li>
+                <li className={styles.li}><input type="checkbox" checked={true} readOnly/> Pin posts</li>
+                <li className={styles.li}><input type="checkbox" checked="" readOnly/> Add tags to posts</li>
             </ul>
         </ul>
-        <li><input type="checkbox" checked="checked" readOnly></input> Post pages</li>
-        <ul>
-            <li><input type="checkbox" checked="checked" readOnly></input> Display post</li>
-            <li><input type="checkbox" checked="checked" readOnly></input> Create comments</li>
-            <li><input type="checkbox" checked="checked" readOnly></input> List comments</li>
+        <li className={styles.li}><input type="checkbox" checked={true} readOnly/> Post pages</li>
+        <ul className={styles.ul}>
+            <li className={styles.li}><input type="checkbox" checked={true} readOnly/> Display post</li>
+            <li className={styles.li}><input type="checkbox" checked={true} readOnly/> Create comments</li>
+            <li className={styles.li}><input type="checkbox" checked={true} readOnly/> List comments</li>
         </ul>
-        <li><input type="checkbox" checked="" readOnly></input> Holons</li>
-        <li><input type="checkbox" checked="" readOnly></input> HolonPageUsers</li>
-        <li><input type="checkbox" checked="" readOnly></input> Auth page</li>
+        <li className={styles.li}><input type="checkbox" checked="" readOnly/> Holons</li>
+        <li className={styles.li}><input type="checkbox" checked="" readOnly/> HolonPageUsers</li>
+        <li className={styles.li}><input type="checkbox" checked="" readOnly/> Auth page</li>
     </ul>
 </ul> */}

@@ -37,7 +37,7 @@ function PostCardLinkModal(props) {
     function addLink() {
         let validTargetUrl = targetUrl.length > 0
         let validLinkDescription = linkType !== 'Text' || linkDescription.length > 0
-        if (validTargetUrl && validLinkDescription) {
+        if (1 === 0 && validTargetUrl && validLinkDescription) {
             console.log('PostCardLinkModal: addLink')
             axios.post(config.environmentURL + '/add-link', { 
                 creatorId: accountData.id,
