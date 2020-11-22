@@ -29,7 +29,7 @@ function PostCardReactions(props) {
     const { isLoggedIn, accountData, setAlertMessage, setAlertModalOpen } = useContext(AccountContext)
     const { holonData } = useContext(HolonContext)
 
-    const [reactionData, setReactionData] = useState({ Labels: [] })
+    const [reactionData, setReactionData] = useState({ Reactions: [] })
     const [likePreviewOpen, setLikePreviewOpen] = useState(false)
     const [likeModalOpen, setLikeModalOpen] = useState(false)
     const [repostPreviewOpen, setRepostPreviewOpen] = useState(false)
@@ -43,7 +43,7 @@ function PostCardReactions(props) {
         console.log('PostCardReactions: getReactionData')
         axios
             .get(config.environmentURL + `/post-reaction-data?postId=${postData.id}`)
-            .then(res => { setReactionData(res.data) })
+            .then(res => res.data !== null && setReactionData(res.data))
     }
 
     useEffect(() => {
@@ -54,7 +54,7 @@ function PostCardReactions(props) {
         <div className={styles.postCardReactions}>
             <PostCardReactionItem
                 text='Likes'
-                reactions={reactionData && reactionData.Labels.filter(label => label.type === 'like')}
+                reactions={reactionData && reactionData.Reactions.filter(label => label.type === 'like')}
                 previewOpen={likePreviewOpen}
                 setPreviewOpen={setLikePreviewOpen}
                 accountReaction={accountLike}
@@ -67,7 +67,7 @@ function PostCardReactions(props) {
             />
             <PostCardReactionItem
                 text='Reposts'
-                reactions={reactionData && reactionData.Labels.filter(label => label.type === 'repost')}
+                reactions={reactionData && reactionData.Reactions.filter(label => label.type === 'repost')}
                 previewOpen={repostPreviewOpen}
                 setPreviewOpen={setRepostPreviewOpen}
                 accountReaction={accountRepost}
@@ -80,7 +80,7 @@ function PostCardReactions(props) {
             />
             <PostCardReactionItem
                 text='Ratings'
-                reactions={reactionData && reactionData.Labels.filter(label => label.type === 'rating')}
+                reactions={reactionData && reactionData.Reactions.filter(label => label.type === 'rating')}
                 //mainModalOpen={ratingModalOpen} setMainModalOpen={setRatingModalOpen}
                 previewOpen={ratingPreviewOpen} setPreviewOpen={setRatingPreviewOpen}
                 accountReaction={accountRating}
@@ -94,7 +94,7 @@ function PostCardReactions(props) {
             />
             <PostCardReactionItem
                 text='Links'
-                reactions={reactionData && reactionData.Labels.filter(label => label.type === 'link')}
+                reactions={reactionData && reactionData.Reactions.filter(label => label.type === 'link')}
                 previewOpen={linkPreviewOpen} setPreviewOpen={setLinkPreviewOpen}
                 accountLink={accountLink}
                 totalReactions={totalLinks}
@@ -108,7 +108,7 @@ function PostCardReactions(props) {
             {likeModalOpen &&
                 <PostCardLikeModal
                     postData={postData}
-                    likes={reactionData && reactionData.Labels.filter(label => label.type === 'like')}
+                    likes={reactionData && reactionData.Reactions.filter(label => label.type === 'like')}
                     setLikeModalOpen={setLikeModalOpen}
                     totalReactions={totalReactions} setTotalReactions={setTotalReactions}
                     totalLikes={totalLikes} setTotalLikes={setTotalLikes}
@@ -120,7 +120,7 @@ function PostCardReactions(props) {
             {repostModalOpen &&
                 <PostCardRepostModal
                     postData={postData}
-                    reposts={reactionData && reactionData.Labels.filter(label => label.type === 'repost')}
+                    reposts={reactionData && reactionData.Reactions.filter(label => label.type === 'repost')}
                     setRepostModalOpen={setRepostModalOpen}
                     totalReactions={totalReactions} setTotalReactions={setTotalReactions}
                     totalReposts={totalReposts} setTotalReposts={setTotalReposts}
@@ -132,7 +132,7 @@ function PostCardReactions(props) {
             {ratingModalOpen &&
                 <PostCardRatingModal //TODO: update like repost modal (use postData)?
                     postData={postData}
-                    ratings={reactionData && reactionData.Labels.filter(label => label.type === 'rating')}
+                    ratings={reactionData && reactionData.Reactions.filter(label => label.type === 'rating')}
                     setRatingModalOpen={setRatingModalOpen}
                     totalReactions={totalReactions} setTotalReactions={setTotalReactions}
                     totalRatings={totalRatings} setTotalRatings={setTotalRatings}
@@ -144,7 +144,7 @@ function PostCardReactions(props) {
             {linkModalOpen &&
                 <PostCardLinkModal
                     postData={postData}
-                    links={reactionData && reactionData.Labels.filter(label => label.type === 'link')}
+                    links={reactionData && reactionData.Reactions.filter(label => label.type === 'link')}
                     setLinkModalOpen={setLinkModalOpen}
                     getReactionData={getReactionData}
                     totalReactions={totalReactions} setTotalReactions={setTotalReactions}

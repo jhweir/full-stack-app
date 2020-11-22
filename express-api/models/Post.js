@@ -33,8 +33,8 @@ module.exports = (sequelize, DataTypes) => {
       as: 'Reposts',
       foreignKey: 'postId'
     })
-    Post.hasMany(models.Label)
-    // Post.hasMany(models.Label, {
+    Post.hasMany(models.Reaction)
+    // Post.hasMany(models.Reaction, {
     //   as: 'PollVotes'
     // })
     Post.hasMany(models.Comment, {

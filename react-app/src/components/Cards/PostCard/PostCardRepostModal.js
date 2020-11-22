@@ -63,21 +63,21 @@ function PostCardRepostModal(props) {
             <div className={styles.modal} ref={ref}>
                 <CloseButton onClick={() => setRepostModalOpen(false)}/>
                 <span className={styles.title}>Reposts</span>
-                {reposts === null
+                {!reposts.length
                     ? <span className={`${styles.text} mb-20`}><i>No reposts yet...</i></span>
                     : <div className={styles.reposts}>
                         {reposts.map((repost, index) =>
                             <div className={styles.repost} key={index}>
                                 <Link className={styles.imageTextLink} to={`/u/${repost.creator.handle}`}>
-                                    <SmallFlagImage size={30} imagePath={repost.creator.flagImagePath}/>
-                                    <span className={`${styles.text} ml-5`}>{repost.creator.name}</span>
+                                    <SmallFlagImage type='user' size={30} imagePath={repost.creator.flagImagePath}/>
+                                    <span className={styles.linkText}>{repost.creator.name}</span>
                                 </Link>
-                                <div className={`${styles.text} greyText ml-5 mr-10`}>
+                                <div className={`${styles.text} greyText mr-10`}>
                                     to
                                 </div>
                                 <Link className={styles.imageTextLink} to={`/s/${repost.space.handle}`} onClick={() => setHolonHandle(repost.space.handle)}>
-                                    <SmallFlagImage size={30} imagePath={repost.space.flagImagePath}/>
-                                    <span className={`${styles.text} ml-5`}>{repost.space.name}</span>
+                                    <SmallFlagImage type='space' size={30} imagePath={repost.space.flagImagePath}/>
+                                    <span className={styles.linkText}>{repost.space.name}</span>
                                 </Link>
                             </div>
                         )}

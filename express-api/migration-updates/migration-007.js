@@ -1,10 +1,8 @@
-'use strict';
-
 module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.sequelize.transaction(t => {
       return Promise.all([
-        queryInterface.addColumn('PlotGraphs', 'postId', {
+        queryInterface.addColumn('Reactions', 'linkId', {
             type: Sequelize.DataTypes.INTEGER
           }, { transaction: t })
       ]);
@@ -14,7 +12,7 @@ module.exports = {
   down: (queryInterface, Sequelize) => {
     return queryInterface.sequelize.transaction(t => {
       return Promise.all([
-        queryInterface.removeColumn('PlotGraphs', 'postId', { transaction: t }),
+        queryInterface.removeColumn('Reactions', 'linkId', { transaction: t }),
       ]);
     });
   }

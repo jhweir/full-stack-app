@@ -1,5 +1,6 @@
 import React from 'react'
 import styles from '../../../styles/components/PostCardLikePreview.module.scss'
+import SmallFlagImage from '../../SmallFlagImage'
 
 function PostCardLikePreview(props) {
     const { reactions } = props
@@ -12,13 +13,8 @@ function PostCardLikePreview(props) {
                 </div>
                 {reactions && reactions.map((reaction, index) =>
                     <div className={styles.modalItem} key={index}>
-                        {reaction.creator.flagImagePath
-                            ? <img className={styles.image} src={reaction.creator.flagImagePath}/>
-                            : <div className={styles.placeholderWrapper}>
-                                <img className={styles.placeholder} src='/icons/user-solid.svg' alt=''/>
-                            </div>
-                        }
-                        <div className={`${styles.modalItemText} mr-10`}>{reaction.creator.name}</div>
+                        <SmallFlagImage type='user' size={25} imagePath={reaction.creator.flagImagePath}/>
+                        <span className={styles.text}>{reaction.creator.name}</span>
                     </div>
                 )}
             </div>

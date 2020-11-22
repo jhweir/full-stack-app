@@ -20,6 +20,8 @@ function PostCardLikeModal(props) {
 
     const { accountData } = useContext(AccountContext)
 
+    console.log('likes: ', likes)
+
     function addLike() {
         console.log('add like')
         axios.post(config.environmentURL + '/add-like', { 
@@ -65,20 +67,18 @@ function PostCardLikeModal(props) {
       return () => document.removeEventListener("mousedown", handleClickOutside)
     })
 
-    console.log('likes: ', likes)
-
     return (
         <div className={styles.modalWrapper}>
             <div className={styles.modal} ref={ref}>
                 <CloseButton onClick={() => setLikeModalOpen(false)}/>
                 <span className={styles.title}>Likes</span>
-                {likes === null
+                {!likes.length
                     ? <span className={`${styles.text} mb-20`}><i>No likes yet...</i></span>
                     : <div className={styles.likes}>
                         {likes.map((like, index) =>
                             <div className={styles.like} key={index}>
                                 <Link className={styles.imageTextLink} to={`/u/${like.creator.handle}`}>
-                                    <SmallFlagImage size={30} imagePath={like.creator.flagImagePath}/>
+                                    <SmallFlagImage type='user' size={30} imagePath={like.creator.flagImagePath}/>
                                     <span className={`${styles.text} ml-5`}>{like.creator.name}</span>
                                 </Link>
                             </div>

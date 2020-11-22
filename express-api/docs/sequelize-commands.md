@@ -54,8 +54,8 @@ Posts to holon A appear within holon B
 ### Comment
 `npx sequelize-cli model:generate --name Comment --attributes creator:integer,parentCommentId:integer,postId:integer,text:string`
 
-### Label
-`npx sequelize-cli model:generate --name Label --attributes type:string,value:string,holonId:integer,userId:integer,postId:integer,commentId:integer`
+### Reaction
+`npx sequelize-cli model:generate --name Reaction --attributes type:string,value:string,holonId:integer,userId:integer,postId:integer,commentId:integer`
 
 ### Notification
 `npx sequelize-cli model:generate --name Notification --attributes type:string,text:string,holonId:integer,userId:integer,postId:integer,commentId:integer`
@@ -78,6 +78,11 @@ Posts to holon A appear within holon B
 ### PlotGraph
 `npx sequelize-cli model:generate --name PlotGraph --attributes numberOfPlotGraphAxes:integer,axis1Left:string,axis1Right:string,axis2Top:string,axis2Bottom:string`
 
+### Link
+type: post-post, post-space, post-user, space-post, space-space, space-user, user-post, user-space, user-user)
+relationship: turn, text
+`npx sequelize-cli model:generate --name Link --attributes creatorId:integer,type:string,relationship:string,description:text,itemAId:integer,itemBId:integer`
+
 ## Generate Seeders
 `npx sequelize-cli seed:generate --name demo-holons`
 `npx sequelize-cli seed:generate --name demo-holon-tags`
@@ -86,3 +91,11 @@ Posts to holon A appear within holon B
 `npx sequelize-cli seed:generate --name demo-post-holons`
 `npx sequelize-cli seed:generate --name demo-labels`
 `npx sequelize-cli seed:generate --name demo-users`
+
+## Migration commands
+queryInterface.renameColumn('Person', 'signature', 'sig') // renameColumn(tableName, attrNameBefore, attrNameAfter, options)
+queryInterface.renameTable('Person', 'User')
+queryInterface.removeColumn('Links', 'localState', { transaction: t }),
+queryInterface.addColumn('Reactions', 'linkId', {
+    type: Sequelize.DataTypes.INTEGER
+}, { transaction: t })

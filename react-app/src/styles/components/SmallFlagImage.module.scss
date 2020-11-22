@@ -25,4 +25,7 @@
 .placeholder {
     width: 60%;
     opacity: 0.2;
+    &.user {
+        width: 50%;
+    }
 }

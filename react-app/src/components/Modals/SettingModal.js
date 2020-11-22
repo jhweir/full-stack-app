@@ -7,7 +7,7 @@ import { HolonContext } from '../../contexts/HolonContext'
 import styles from '../../styles/components/SettingModal.module.scss'
 
 function SettingModal() {
-    const { settingModalType, setSettingModalOpen, getAccountData } = useContext(AccountContext)
+    const { settingModalType, setSettingModalOpen, getAccountData, setAccountContextLoading } = useContext(AccountContext)
     const { holonData, getHolonData, setHolonHandle } = useContext(HolonContext)
     const [newValue, setNewValue] = useState('')
     const [error, setError] = useState(false)
@@ -61,7 +61,7 @@ function SettingModal() {
                     .then((res) => {
                         if (res.data === 'success') {
                             history.push(`/s/${newValue}/settings`)
-                            setTimeout(() => { setHolonHandle(newValue); getAccountData() }, 500)
+                            setTimeout(() => { setHolonHandle(newValue); setAccountContextLoading(false); getAccountData() }, 500)
                             setSettingModalOpen(false)
                         }
                     })

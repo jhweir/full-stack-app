@@ -1,5 +1,6 @@
 import React from 'react'
 import styles from '../../../styles/components/PostCardRatingPreview.module.scss'
+import SmallFlagImage from '../../SmallFlagImage'
 
 function PostCardRatingPreview(props) {
     const { reactions, totalReactions, totalReactionPoints } = props
@@ -27,13 +28,8 @@ function PostCardRatingPreview(props) {
                     {reactions && reactions.map((reaction, index) =>
                         <div className={styles.item} key={index}>
                             <div className={styles.user}>
-                                {reaction.creator.flagImagePath
-                                    ? <img className={styles.image} src={reaction.creator.flagImagePath}/>
-                                    : <div className={styles.placeholderWrapper}>
-                                        <img className={styles.placeholder} src='/icons/user-solid.svg' alt=''/>
-                                    </div>
-                                }
-                                <div className={`${styles.text} mr-10`}>{reaction.creator.name}</div>
+                                <SmallFlagImage type='user' size={25} imagePath={reaction.creator.flagImagePath}/>
+                                <span className={styles.text}>{reaction.creator.name}</span>
                             </div>
                             <div className={styles.totalScoreBar}>
                                 <div className={styles.totalScorePercentage} style={{width: `${reaction.value}%`}}/>

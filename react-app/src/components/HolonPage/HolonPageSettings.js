@@ -30,10 +30,10 @@ function HolonPageSettings() {
                         <div className={styles.linkText} onClick={() => { setSettingModalType('change-holon-description'); setSettingModalOpen(true) }}>Change</div>
                     </div>
                     <div className={styles.field}>
-                        <div className={styles.linkText} onClick={() => { setSettingModalType('add-new-moderator'); setSettingModalOpen(true) }}>Add new moderator</div>
+                        <div className={styles.linkText} onClick={() => { setSettingModalType('add-new-moderator'); setSettingModalOpen(true) }}>Add moderator</div>
                     </div>
                     <div className={styles.field}>
-                        <div className={styles.linkText} onClick={() => { setSettingModalType('add-parent-space'); setSettingModalOpen(true) }}>Add new parent space</div>
+                        <div className={styles.linkText} onClick={() => { setSettingModalType('add-parent-space'); setSettingModalOpen(true) }}>Add parent space</div>
                     </div>
                     <div className={styles.field}>
                         <div className={styles.linkText} onClick={() => { setSettingModalType('remove-parent-space'); setSettingModalOpen(true) }}>Remove parent space</div>

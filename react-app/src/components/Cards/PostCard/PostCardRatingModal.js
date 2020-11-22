@@ -88,7 +88,7 @@ function PostCardRatingModal(props) {
             <div className={styles.modal} ref={ref}>
                 <CloseButton onClick={() => setRatingModalOpen(false)}/>
                 <span className={styles.title}>Ratings</span>
-                {ratings === null
+                {!ratings.length
                     ? <span className={`${styles.text} mb-20`}><i>No ratings yet...</i></span>
                     : <div className={styles.ratings}>
                         <div className={`${styles.rating} ${styles.averageScore}`}>
@@ -101,7 +101,7 @@ function PostCardRatingModal(props) {
                         {ratings.map((rating, index) =>
                             <div className={styles.rating} key={index}>
                                 <Link className={styles.imageTextLink} to={`/u/${rating.creator.handle}`}>
-                                    <SmallFlagImage size={30} imagePath={rating.creator.flagImagePath}/>
+                                    <SmallFlagImage type='user' size={30} imagePath={rating.creator.flagImagePath}/>
                                     <span className={`${styles.text} ml-5`}>{rating.creator.name}</span>
                                 </Link>
                                 <div className={styles.totalScoreBar}>

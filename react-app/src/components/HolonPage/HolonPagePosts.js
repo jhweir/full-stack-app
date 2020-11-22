@@ -9,7 +9,7 @@ import SearchBar from '../SearchBar'
 import HolonPostMap from './HolonPostMap'
 
 function HolonPagePosts() {
-    const { 
+    const {
         setCreatePostModalOpen,
         pageBottomReached,
         isLoggedIn,

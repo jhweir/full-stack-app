@@ -14,7 +14,7 @@ Last updated: 18-08-2020
     + remove child space
     + delete space
 
-- Change 'Labels' table to 'Reactions' (freeing up 'labels' for other uses)
+- Change 'Reactions' table to 'Reactions' (freeing up 'labels' for other uses)
 - Update 'holon' names to 'space' throughout codebase to avoid confusion
 - Set up social media log-in strategies
 - Protect restircted pages and routes (settings page, image uploads etc.)

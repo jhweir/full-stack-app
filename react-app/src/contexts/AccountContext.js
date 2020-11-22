@@ -25,11 +25,9 @@ function AccountContextProvider({ children, pageBottomReached }) {
 
     function getAccountData() {
         console.log('AccountContext: getAccountData')
-        setAccountContextLoading(true)
         let accessToken = cookies.get('accessToken')
         if (accessToken === undefined) { setAccountContextLoading(false) }
         if (accessToken !== undefined) {
-            //setAccountContextLoading(true)
             // create new axios instance with JWT in authorization header
             axios.create({
                 baseURL: config.environmentURL,
@@ -59,7 +57,7 @@ function AccountContextProvider({ children, pageBottomReached }) {
 
     return (
         <AccountContext.Provider value={{
-            accountContextLoading,
+            accountContextLoading, setAccountContextLoading,
             pageBottomReached,
             isLoggedIn, logOut,
             accountData, getAccountData, setAccountData,

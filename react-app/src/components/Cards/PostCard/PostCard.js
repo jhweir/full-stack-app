@@ -197,7 +197,7 @@ export default PostCard
 // }
 
 
-// {!props.isPostPage && /* Link removed from PostPage to prevent loading issue with Labels */
+// {!props.isPostPage && /* Link removed from PostPage to prevent loading issue with Reactions */
 //     <Link className={styles.postInteractItem} 
 //         to={ `/p/${id}` }>
 //         <img className={styles.postIcon} src="/icons/comment-solid.svg"/>
@@ -214,12 +214,12 @@ export default PostCard
 
 // useEffect(() => {
 //     // console.log('Use effect run in post component')
-//     setTotalReactions(Labels.length)
-//     function findNumberofLabels(labelType) { return Labels.filter((label) => label.type === labelType).length }
+//     setTotalReactions(Reactions.length)
+//     function findNumberofLabels(labelType) { return Reactions.filter((label) => label.type === labelType).length }
 //     setTotalLikes(findNumberofLabels('like'))
 //     setTotalHearts(findNumberofLabels('heart'))
 //     setTotalRatings(findNumberofLabels('rating'))
-//     setTotalRatingPoints(Labels
+//     setTotalRatingPoints(Reactions
 //         .filter((label) => label.type === 'rating') // find all the posts totalRatings
 //         .map((rating) => parseInt(rating.value, 10)) // convert rating values to numbers (stored as strings in DB)
 //         .reduce((a, b) => a + b, 0)) // add up all rating values

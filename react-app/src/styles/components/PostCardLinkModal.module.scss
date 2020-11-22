@@ -11,11 +11,11 @@
     z-index: 5;
 }
 .modal {
-    width: 500px;
+    min-width: 500px;
     border-radius: 5px;
     background-color: white;
     color: black;
-    padding: 30px 50px;
+    padding: 30px;
     position: relative;
     display: flex;
     flex-direction: column;
@@ -45,6 +45,11 @@
     &:last-child { margin-bottom: 0 }
 }
 .imageTextLink {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.settingsText {
     display: flex;
     flex-direction: row;
     align-items: center;

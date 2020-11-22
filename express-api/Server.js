@@ -155,8 +155,6 @@ var userCoverImageUpload = multer({
   })
 })
 
-console.log(`weco-${process.env.NODE_ENV}-space-flag-images`)
-
 var holonFlagImageUpload = multer({
   storage: multerS3({
     s3: s3,

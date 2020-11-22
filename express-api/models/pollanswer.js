@@ -7,7 +7,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {})
   PollAnswer.associate = function(models) {
     PollAnswer.belongsTo(models.Post, { foreignKey: 'postId' })
-    PollAnswer.hasMany(models.Label, { as: 'Votes'})
+    PollAnswer.hasMany(models.Reaction, { as: 'Votes'})
   }
   return PollAnswer
 }
