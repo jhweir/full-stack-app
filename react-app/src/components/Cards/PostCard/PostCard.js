@@ -19,12 +19,14 @@ function PostCard(props) {
     const { postContextLoading } = useContext(PostContext)
     const history = useHistory()
 
+    console.log('postData: ', postData);
+
     // remote post state
     const { 
         id, creator, text, url, urlImage, urlDomain, urlTitle, urlDescription, createdAt,
-        total_comments, total_reactions, total_likes, total_ratings, total_rating_points, total_reposts,
-        account_like, account_rating, account_repost,
-        DirectSpaces, IndirectSpaces
+        total_comments, total_reactions, total_likes, total_ratings, total_rating_points, total_reposts, total_links,
+        account_like, account_rating, account_repost, account_link,
+        DirectSpaces, IndirectSpaces, Links
     } = postData
 
     // local post state
@@ -34,10 +36,12 @@ function PostCard(props) {
     const [totalRatings, setTotalRatings] = useState(0)
     const [totalRatingPoints, setTotalRatingPoints] = useState(0)
     const [totalReposts, setTotalReposts] = useState(0)
+    const [totalLinks, setTotalLinks] = useState(0)
     // TODO: change account state below to true/false booleans
     const [accountLike, setAccountLike] = useState(0)
     const [accountRating, setAccountRating] = useState(0)
     const [accountRepost, setAccountRepost] = useState(0)
+    const [accountLink, setAccountLink] = useState(0)
 
     const [blockedSpaces, setBlockedSpaces] = useState([])
     const [reactionsOpen, setReactionsOpen] = useState(false)
@@ -53,9 +57,11 @@ function PostCard(props) {
         setTotalRatings(total_ratings)
         setTotalRatingPoints(total_rating_points)
         setTotalReposts(total_reposts)
+        setTotalLinks(total_links)
         setAccountLike(account_like)
         setAccountRating(account_rating)
         setAccountRepost(account_repost)
+        setAccountLink(account_link)
         setBlockedSpaces([...DirectSpaces.map(s => s.handle), ...IndirectSpaces.map(s => s.handle)])
     }
 
@@ -157,9 +163,11 @@ function PostCard(props) {
                                 totalRatings={totalRatings} setTotalRatings={setTotalRatings}
                                 totalRatingPoints={totalRatingPoints} setTotalRatingPoints={setTotalRatingPoints}
                                 totalReposts={totalReposts} setTotalReposts={setTotalReposts}
+                                totalLinks={totalLinks} setTotalLinks={setTotalLinks}
                                 accountLike={accountLike} setAccountLike={setAccountLike}
                                 accountRating={accountRating} setAccountRating={setAccountRating}
                                 accountRepost={accountRepost} setAccountRepost={setAccountRepost}
+                                accountLink={accountLink} setAccountLink={setAccountLink}
                                 blockedSpaces={blockedSpaces} setBlockedSpaces={setBlockedSpaces}
                             />
                         }

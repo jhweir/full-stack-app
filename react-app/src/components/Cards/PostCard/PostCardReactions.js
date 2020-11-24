@@ -96,7 +96,7 @@ function PostCardReactions(props) {
                 text='Links'
                 reactions={reactionData && reactionData.Reactions.filter(label => label.type === 'link')}
                 previewOpen={linkPreviewOpen} setPreviewOpen={setLinkPreviewOpen}
-                accountLink={accountLink}
+                accountReaction={accountLink}
                 totalReactions={totalLinks}
                 iconPath='link-solid.svg'
                 onClick={() => { 
@@ -144,7 +144,7 @@ function PostCardReactions(props) {
             {linkModalOpen &&
                 <PostCardLinkModal
                     postData={postData}
-                    links={reactionData && reactionData.Reactions.filter(label => label.type === 'link')}
+                    //linkReactions={reactionData && reactionData.Reactions.filter(label => label.type === 'link')}
                     setLinkModalOpen={setLinkModalOpen}
                     getReactionData={getReactionData}
                     totalReactions={totalReactions} setTotalReactions={setTotalReactions}

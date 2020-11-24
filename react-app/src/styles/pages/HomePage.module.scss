@@ -11,6 +11,11 @@
     // transition-property: color;
     // transition-duration: 2s;
 }
+.logo {
+    width: 150px;
+    height: 150px;
+    margin-top: 150px;
+}
 .mainContent {
     display: flex;
     flex-direction: column;
@@ -46,11 +51,6 @@
 .mediumText {
     font-size: 20px;
     //color: rgb(103, 107, 109)
-}
-.logo {
-    width: 150px;
-    height: 150px;
-    margin-top: 50px;
 }
 .list {
     display: flex;

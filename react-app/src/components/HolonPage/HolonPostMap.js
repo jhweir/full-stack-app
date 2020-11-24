@@ -39,20 +39,36 @@ function HolonPostMap() {
 
         let simulation = d3
             .forceSimulation(holonPosts)
-            .force('x', d3.forceX(width / 2).strength(0.02))
-            .force('y', d3.forceY(height / 2).strength(0.02))
-            .force('center', d3.forceCenter(width / 2, height / 2))
-            .force('collide', d3.forceCollide(function(d) {
-                let radius
-                if (holonPostSortByFilter === 'Total Reactions') radius = d.total_reactions
-                if (holonPostSortByFilter === 'Likes') radius = d.total_likes
-                if (holonPostSortByFilter === 'Reposts') radius = d.total_reposts
-                if (holonPostSortByFilter === 'Ratings') radius = d.total_ratings
-                if (holonPostSortByFilter === 'Comments') radius = d.total_comments
-                if (holonPostSortByFilter === 'Date') radius = Date.parse(d.createdAt)
-                return radiusScale(radius) + 10
-                //return radiusScale(d.total_likes) + 5
+            .force('charge', d3.forceManyBody().strength(function (d) {
+                let charge = -80 - (d.total_likes * d.total_likes * 100) //-30 - d.total_likes * 30
+                console.log('charge: ', charge)
+                return charge
             }))
+            .force('center', d3.forceCenter(width / 2, height / 2))
+            .force('x', d3.forceX(width / 2).strength(0.07))
+            .force('y', d3.forceY(height / 2).strength(0.07))
+            // .force('collide', d3.forceCollide(function(d) {
+            //     let radius
+            //     if (holonPostSortByFilter === 'Total Reactions') radius = d.total_reactions
+            //     if (holonPostSortByFilter === 'Likes') radius = d.total_likes
+            //     if (holonPostSortByFilter === 'Reposts') radius = d.total_reposts
+            //     if (holonPostSortByFilter === 'Ratings') radius = d.total_ratings
+            //     if (holonPostSortByFilter === 'Comments') radius = d.total_comments
+            //     if (holonPostSortByFilter === 'Date') radius = Date.parse(d.createdAt)
+            //     return radiusScale(radius)
+            //     //return radiusScale(d.total_likes) + 5
+            // }))
+
+        // let force = d3.layout.force()
+        //     .size([width, height])
+        //     .nodes(holonPosts)
+        //     // .links(dataLinks);
+
+        // force.gravity(0)
+
+        // force.charge(function(d) {
+        //     return d.total_likes;
+        //  });
 
         function dragstarted(d) {
             if (!d3.event.active) {
@@ -182,6 +198,7 @@ function HolonPostMap() {
         simulation
             .nodes(holonPosts)
             .on('tick', ticked)
+            //.force('charge', (d) => { return 50 })
 
         function ticked() {
             d3.selectAll('#circle-node')

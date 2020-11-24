@@ -39,17 +39,21 @@ const postAttributes = [
         ),'total_likes'
     ],
     [sequelize.literal(
-        `(SELECT COUNT(*) FROM Reactions AS Reaction WHERE Reaction.postId = Post.id AND Reaction.type = 'rating' AND Reaction.state = 'active')`
-        ),'total_ratings'
-    ],
-    [sequelize.literal(
         `(SELECT COUNT(*) FROM Reactions AS Reaction WHERE Reaction.postId = Post.id AND Reaction.type = 'repost' AND Reaction.state = 'active')`
         ),'total_reposts'
     ],
     [sequelize.literal(
+        `(SELECT COUNT(*) FROM Reactions AS Reaction WHERE Reaction.postId = Post.id AND Reaction.type = 'rating' AND Reaction.state = 'active')`
+        ),'total_ratings'
+    ],
+    [sequelize.literal(
         `(SELECT SUM(value) FROM Reactions AS Reaction WHERE Reaction.postId = Post.id AND Reaction.type = 'rating' AND Reaction.state = 'active')`
         ),'total_rating_points'
-    ]
+    ],
+    [sequelize.literal(
+        `(SELECT COUNT(*) FROM Links AS Link WHERE Link.itemAId = Post.id AND Link.type = 'post-post')` //AND Link.state = 'active'
+        ),'total_links'
+    ],
 ]
 
 router.get('/holon-data', (req, res) => {
@@ -255,6 +259,31 @@ router.get('/holon-posts', (req, res) => {
                     model: User,
                     as: 'creator',
                     attributes: ['id', 'handle', 'name', 'flagImagePath'],
+                },
+                {
+                    model: Post,
+                    as: 'PostsLinkedTo',
+                    //attributes: postAttributes,
+                    //attributes: ['id', 'handle', 'name', 'flagImagePath'],
+                    include: [
+                        {
+                            model: Holon,
+                            as: 'DirectSpaces',
+                            attributes: ['handle'],
+                            through: { where: { relationship: 'direct' }, attributes: ['type'] },
+                        },
+                        {
+                            model: Holon,
+                            as: 'IndirectSpaces',
+                            attributes: ['handle'],
+                            through: { where: { relationship: 'indirect' }, attributes: ['type'] },
+                        },
+                        {
+                            model: User,
+                            as: 'creator',
+                            attributes: ['id', 'handle', 'name', 'flagImagePath'],
+                        }
+                    ]
                 }
             ]
         })
@@ -1812,6 +1841,7 @@ router.post('/add-link', (req, res) => {
     let { creatorId, type, relationship, description, itemAId, itemBId } = req.body
     Link
         .create({ creatorId, type, relationship, description, itemAId, itemBId })
+        .then(res.send('success'))
         .catch(err => console.log(err))
 })
 

@@ -33,9 +33,22 @@ module.exports = (sequelize, DataTypes) => {
       as: 'Reposts',
       foreignKey: 'postId'
     })
+
+    Post.belongsToMany(models.Post, { 
+      through: models.Link,
+      as: 'PostsLinkedFrom',
+      foreignKey: 'itemBId'
+    })
+
+    Post.belongsToMany(models.Post, { 
+      through: models.Link,
+      as: 'PostsLinkedTo',
+      foreignKey: 'itemAId'
+    })
+
     Post.hasMany(models.Reaction)
-    // Post.hasMany(models.Reaction, {
-    //   as: 'PollVotes'
+    // Post.hasMany(models.Link, {
+    //   foreignKey: 'itemAId'
     // })
     Post.hasMany(models.Comment, {
       foreignKey: 'postId'

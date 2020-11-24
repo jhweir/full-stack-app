@@ -9,7 +9,19 @@ module.exports = (sequelize, DataTypes) => {
     itemBId: DataTypes.INTEGER
   }, {});
   Link.associate = function(models) {
-    // associations can be defined here
+    // Link.belongsTo(models.Post, {
+    //   //as: 'postComment',
+    //   foreignKey: 'itemAId',
+    //   //sourceKey: 'postId'
+    // })
+    // Link.belongsTo(models.User, {
+    //   //foreignKey: 'creatorId',
+    //   //as: 'commentCreator'
+    // })
+    // Link.belongsTo(models.Holon, {
+    //   //foreignKey: 'creatorId',
+    //   //as: 'commentCreator'
+    // })
   };
   return Link;
 };

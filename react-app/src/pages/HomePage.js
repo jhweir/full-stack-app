@@ -11,6 +11,7 @@ function Homepage() {
                     weco<span className={`${styles.title} ${styles.grey}`}>.io</span>
                 </span>
                 <span className={styles.subTitle}>evolving social media tools, governance, and ownership</span>
+                {/* <span className={styles.subTitle}>under cooperative ownership</span> */}
                 <div className={`${styles.wrapper} mt-70 mb-50`}>
                     <span className={styles.mediumText}>Under construction...</span>
                     <img className={styles.icon} src='/icons/tools-solid.svg'/>

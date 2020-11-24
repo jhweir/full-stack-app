@@ -6,12 +6,13 @@ import styles from '../../../styles/components/PostCardLinkModal.module.scss'
 import CloseButton from '../../CloseButton'
 import SmallFlagImage from '../../SmallFlagImage'
 import DropDownMenu from '../../DropDownMenu'
+import PostCard from '../../Cards/PostCard/PostCard'
 import { AccountContext } from '../../../contexts/AccountContext'
 
 function PostCardLinkModal(props) {
     const {
         postData,
-        links,
+        //links,
         setLinkModalOpen,
         getReactionData,
         totalReactions, setTotalReactions,
@@ -37,7 +38,7 @@ function PostCardLinkModal(props) {
     function addLink() {
         let validTargetUrl = targetUrl.length > 0
         let validLinkDescription = linkType !== 'Text' || linkDescription.length > 0
-        if (1 === 0 && validTargetUrl && validLinkDescription) {
+        if (validTargetUrl && validLinkDescription) {
             console.log('PostCardLinkModal: addLink')
             axios.post(config.environmentURL + '/add-link', { 
                 creatorId: accountData.id,
@@ -87,23 +88,22 @@ function PostCardLinkModal(props) {
       return () => document.removeEventListener("mousedown", handleClickOutside)
     })
 
-    console.log('links: ', links)
-
     return (
         <div className={styles.modalWrapper}>
             <div className={styles.modal} ref={ref}>
                 <CloseButton onClick={() => setLinkModalOpen(false)}/>
                 <span className={styles.title}>Links</span>
-                {!links.length ?
+                {!postData.PostsLinkedTo.length ?
                     <span className={`${styles.text} mb-20`}><i>No links yet...</i></span> :
                     <div className={styles.links}>
-                        {links.map((link, index) =>
-                            <div className={styles.link} key={index}>
-                                <Link className={styles.imageTextLink} to={`/u/${link.creator.handle}`}>
-                                    <SmallFlagImage type='user' size={30} imagePath={link.creator.flagImagePath}/>
-                                    <span className={`${styles.text} ml-5`}>{link.creator.name}</span>
-                                </Link>
-                            </div>
+                        {postData.PostsLinkedTo.map((post, index) =>
+                            <PostCard postData={post} key={index} index={index} location='holon-posts'/>
+                            // <div className={styles.link} key={index}>
+                            //     <Link className={styles.imageTextLink} to={`/u/${'link.creator.handle'}`}>
+                            //         <SmallFlagImage type='user' size={30} imagePath={'link.creator.flagImagePath'}/>
+                            //         <span className={`${styles.text} ml-5`}>{'link.creator.name'}</span>
+                            //     </Link>
+                            // </div>
                         )}
                     </div>
                 }
