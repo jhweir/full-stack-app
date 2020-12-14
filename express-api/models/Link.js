@@ -9,6 +9,18 @@ module.exports = (sequelize, DataTypes) => {
     itemBId: DataTypes.INTEGER
   }, {});
   Link.associate = function(models) {
+    Link.belongsTo(models.User, {
+      foreignKey: 'creatorId',
+      as: 'creator'
+    })
+    Link.belongsTo(models.Post, {
+      foreignKey: 'itemAId',
+      as: 'postA'
+    })
+    Link.belongsTo(models.Post, {
+      foreignKey: 'itemBId',
+      as: 'postB'
+    })
     // Link.belongsTo(models.Post, {
     //   //as: 'postComment',
     //   foreignKey: 'itemAId',

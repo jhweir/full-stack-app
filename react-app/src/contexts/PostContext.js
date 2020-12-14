@@ -27,9 +27,10 @@ function PostContextProvider({ children }) {
     const [postCommentPaginationOffset, setPostCommentPaginationOffset] = useState(0)
     const [postCommentPaginationHasMore, setPostCommentPaginationHasMore] = useState(true)
 
+    const totalUsedPoints = selectedPollAnswers.map((answer) => { return answer.value }).reduce((a, b) => a + b, 0)
     const validVote = selectedPollAnswers.length !== 0 && (postData.subType !== 'weighted-choice' || totalUsedPoints == 100)
     const colorScale = d3.scaleSequential().domain([0, postData.PollAnswers.length]).interpolator(d3.interpolateViridis)
-    const totalUsedPoints = selectedPollAnswers.map((answer) => { return answer.value }).reduce((a, b) => a + b, 0)
+    
     const pollAnswersSortedById = postData.PollAnswers.map((a)=>a).sort((a, b) => a.id - b.id)
     let pollAnswersSortedByScore = postData.PollAnswers.map((a)=>a).sort((a, b) => b.total_votes - a.total_votes) 
     let totalPollVotes = postData.PollAnswers.map((answer) => { return answer.total_votes }).reduce((a, b) => a + b, 0)

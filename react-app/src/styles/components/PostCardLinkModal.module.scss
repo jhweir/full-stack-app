@@ -27,13 +27,19 @@
     font-size: 24px;
     margin-bottom: 20px;
 }
+.subTitle {
+    font-size: 16px;
+    margin-bottom: 10px;
+}
 .text {
 
 }
-.likes {
+.links {
     margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
 }
-.like {
+.link {
     font-size: 14px;
     line-height: 1;
     white-space: nowrap;
@@ -48,6 +54,9 @@
     display: flex;
     flex-direction: row;
     align-items: center;
+}
+.linkText {
+    margin: 0 8px;
 }
 .settingsText {
     display: flex;

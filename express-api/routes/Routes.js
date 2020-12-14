@@ -30,8 +30,10 @@ const postAttributes = [
         `(SELECT COUNT(*) FROM Comments AS Comment WHERE Comment.state = 'visible' AND Comment.postId = Post.id)`
         ),'total_comments'
     ],
+    // add links to reactions
     [sequelize.literal(
-        `(SELECT COUNT(*) FROM Reactions AS Reaction WHERE Reaction.postId = Post.id AND Reaction.type != 'vote' AND Reaction.state = 'active')`
+        `(SELECT COUNT(*) FROM Reactions AS Reaction WHERE Reaction.postId = Post.id AND Reaction.type != 'vote' AND Reaction.state = 'active')
+        + (SELECT COUNT(*) FROM Links AS Link WHERE Link.itemAId = Post.id OR Link.itemBId = Post.id AND Link.type = 'post-post')`
         ),'total_reactions'
     ],
     [sequelize.literal(
@@ -51,7 +53,7 @@ const postAttributes = [
         ),'total_rating_points'
     ],
     [sequelize.literal(
-        `(SELECT COUNT(*) FROM Links AS Link WHERE Link.itemAId = Post.id AND Link.type = 'post-post')` //AND Link.state = 'active'
+        `(SELECT COUNT(*) FROM Links AS Link WHERE Link.itemAId = Post.id OR Link.itemBId = Post.id AND Link.type = 'post-post')` //AND Link.state = 'active'
         ),'total_links'
     ],
 ]
@@ -236,6 +238,14 @@ router.get('/holon-posts', (req, res) => {
                 AND Reaction.type = 'repost'
                 AND Reaction.state = 'active'
                 )`),'account_repost'
+            ],
+            [sequelize.literal(`(
+                SELECT COUNT(*)
+                FROM Links
+                AS Link
+                WHERE Link.itemAId = Post.id
+                AND Link.creatorId = ${accountId}
+                )`),'account_link'
             ]
         ]
         return Post.findAll({ 
@@ -289,6 +299,9 @@ router.get('/holon-posts', (req, res) => {
         })
         .then(posts => {
             posts.forEach(post => {
+                // // add links to total_reactions
+                // post.dataValues.total_reactions = post.dataValues.total_reactions + post.dataValues.total_links
+                // save type and remove redundant PostHolon objects
                 post.DirectSpaces.forEach(space => {
                     space.setDataValue('type', space.dataValues.PostHolon.type)
                     delete space.dataValues.PostHolon
@@ -1845,7 +1858,210 @@ router.post('/add-link', (req, res) => {
         .catch(err => console.log(err))
 })
 
+router.get('/post-link-data', async (req, res) => {
+    const { postId } = req.query
+    let outgoingLinks = await Link.findAll({
+        where: { itemAId: postId },
+        attributes: [],
+        include: [
+            { 
+                model: User,
+                as: 'creator',
+                attributes: ['handle', 'name', 'flagImagePath'],
+            },
+            { 
+                model: Post,
+                as: 'postB',
+                //attributes: ['handle', 'name', 'flagImagePath'],
+                include: [
+                    { 
+                        model: User,
+                        as: 'creator',
+                        attributes: ['handle', 'name', 'flagImagePath'],
+                    }
+                ]
+            },
+        ]
+    })
+
+    let incomingLinks = await Link.findAll({
+        where: { itemBId: postId },
+        attributes: [],
+        include: [
+            { 
+                model: User,
+                as: 'creator',
+                attributes: ['handle', 'name', 'flagImagePath'],
+            },
+            { 
+                model: Post,
+                as: 'postA',
+                //attributes: ['handle', 'name', 'flagImagePath'],
+                include: [
+                    { 
+                        model: User,
+                        as: 'creator',
+                        attributes: ['handle', 'name', 'flagImagePath'],
+                    }
+                ]
+            },
+        ]
+    })
+
+    let links = {
+        outgoingLinks,
+        incomingLinks
+    }
+    // .then(links => {
+    //     res.json(links)
+    // })
+    res.json(links)
+})
+
 module.exports = router
+
+    // Post.findOne({ 
+    //     where: { id: postId },
+    //     //attributes: [],
+    //     include: [
+    //         { 
+    //             model: User,
+    //             as: 'creator',
+    //             attributes: ['handle', 'name', 'flagImagePath'],
+    //         },
+    //         {
+    //             model: Post,
+    //             as: 'PostsLinkedTo',
+    //             through: {
+    //                 model: Link,
+    //                 attributes: ['creatorId'],
+    //                 // include: [
+    //                 //     {
+    //                 //         model: User,
+    //                 //         as: 'linkCreator',
+    //                 //         attributes: ['id', 'handle', 'name', 'flagImagePath'],
+    //                 //     }
+    //                 // ]
+    //             },
+    //             //attributes: postAttributes,
+    //             //attributes: ['id', 'handle', 'name', 'flagImagePath'],
+    //             include: [
+    //                 {
+    //                     model: Holon,
+    //                     as: 'DirectSpaces',
+    //                     attributes: ['handle'],
+    //                     through: { where: { relationship: 'direct' }, attributes: ['type'] },
+    //                 },
+    //                 {
+    //                     model: Holon,
+    //                     as: 'IndirectSpaces',
+    //                     attributes: ['handle'],
+    //                     through: { where: { relationship: 'indirect' }, attributes: ['type'] },
+    //                 },
+    //                 {
+    //                     model: User,
+    //                     as: 'creator',
+    //                     attributes: ['id', 'handle', 'name', 'flagImagePath'],
+    //                 }
+    //             ]
+    //         }
+    //     ]
+    // })
+    // .then(postLinkData => {
+    //     async function asyncForEach(array, callback) {
+    //         for (let index = 0; index < array.length; index++) {
+    //             await callback(array[index], index, array)
+    //         }
+    //     }
+    //     async function findUser(userId) {
+    //         return User.findOne({ 
+    //             where: { id: userId },
+    //             attributes: ['id', 'handle', 'name', 'flagImagePath'],
+    //         })
+    //     }
+
+    //     let postsLinkedTo = JSON.parse(JSON.stringify(postLinkData)).PostsLinkedTo
+    //     asyncForEach(postsLinkedTo, async(post) => {
+    //         User.findOne({ 
+    //             where: { id: post.Link.creatorId },
+    //             attributes: ['id', 'handle', 'name', 'flagImagePath'],
+    //         }).then(user => {
+    //             //console.log('user: ', user)
+    //             post.linkCreator = user.dataValues.handle
+    //         })
+    //     // // postsLinkedTo.forEach(post => {
+    //     //     let user = await findUser(post.Link.creatorId)
+    //     //     // console.log('user: ', user)
+    //     //     post.linkCreator = user.dataValues.id
+    //     })
+
+
+
+    //     return postsLinkedTo
+    //     // find post link creator and add to data
+    //     // // postLinkData.setDataValue('linkCreator', 'test')
+    //     // async function asyncForEach(array, callback) {
+    //     //     for (let index = 0; index < array.length; index++) {
+    //     //         await callback(array[index], index, array)
+    //     //     }
+    //     // }
+
+
+
+    //     // // postLinkData.PostsLinkedTo.forEach(async post => {
+    //     // //     // let user = await findUser(post.dataValues.Link.dataValues.creatorId)
+    //     // //     // console.log('user: ', user)
+    //     // //     post.setDataValue('linkCreator1', 'test1')
+    //     // //     post.setDataValue('linkCreator2', 'test2')
+    //     // // })
+        
+    //     // asyncForEach(postLinkData.PostsLinkedTo, async(post) => {
+    //     //     let user = await findUser(post.dataValues.Link.dataValues.creatorId)
+    //     //     //post.test = 'test'
+    //     //     post.setDataValue('linkCreator2', 'test2')
+    //     //     //console.log('user.id: ', user.id)
+    //     // })
+
+    //     // postLinkData.PostsLinkedTo.asyncForEach(post => {
+    //     //     console.log('post.dataValues.Link.dataValues.creatorId: ', post.dataValues.Link.dataValues.creatorId)
+    //     //     console.log('user: ', findUser(post.dataValues.Link.dataValues.creatorId))
+    //     //     //post.setDataValue('linkCreator2', 'test')
+    //     //     // post.setDataValue('linkCreator', 'test')
+    //     //     //console.log('post.dataValues.Link.dataValues.creatorId: ', post.dataValues.Link.dataValues.creatorId)
+    //     //     // let user = await User.findOne({ 
+    //     //     //     where: { id: post.dataValues.Link.dataValues.creatorId },
+    //     //     //     attributes: ['id', 'handle', 'name', 'flagImagePath'],
+    //     //     // })
+    //     //     // if (user) {
+    //     //     //     post.setDataValue('linkCreator2', 'test2')
+    //     //     // }
+    //     //     // // .then(responce => {
+    //     //     //     user = responce.dataValues
+    //     //     //     //post.setDataValue('linkCreator2', 'test2')
+    //     //     // })
+
+    //     //     //Promise.all(userData).then(() => post.setDataValue('linkCreator', 'test'))
+    //     //     // .then(user => {
+    //     //     //     u = user
+    //     //     //     // console.log(user)
+    //     //     //     // post.setDataValue('linkCreator', user)
+    //     //     // //     //console.log('post.dataValues.Link.dataValues.creator: ', post.dataValues.Link.dataValues.creator)
+    //     //     // //     //post.setDataValue('linkCreator', 'test')
+    //     //     // //     //post.test = 'test'
+    //     //     // //     //console.log('user: ', user)
+    //     //     // //     //post.dataValues.Link.dataValues.creator = user
+    //     //     // })
+    //     //     // console.log('user.dataValues: ', user.dataValues)
+    //     //     // // post.setDataValue('linkCreator1', user.dataValues)
+    //     //     // //post.setDataValue('linkCreatorId', user.dataValues.id)
+    //     //     // post.setDataValue('linkCreator2', 'test2')
+    //     // })
+    //     //return postLinkData.PostsLinkedTo
+    // })
+    // .then(postLinkData => { res.json(postLinkData) })
+    // .catch(err => console.log(err))
+
+
 
 
 // [sequelize.literal(

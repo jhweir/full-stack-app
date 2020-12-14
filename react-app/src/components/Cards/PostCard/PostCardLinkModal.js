@@ -8,6 +8,9 @@ import SmallFlagImage from '../../SmallFlagImage'
 import DropDownMenu from '../../DropDownMenu'
 import PostCard from '../../Cards/PostCard/PostCard'
 import { AccountContext } from '../../../contexts/AccountContext'
+import { HolonContext } from '../../../contexts/HolonContext'
+import { PostContext } from '../../../contexts/PostContext'
+// import { useHistory } from "react-router-dom"
 
 function PostCardLinkModal(props) {
     const {
@@ -21,6 +24,11 @@ function PostCardLinkModal(props) {
     } = props
 
     const { accountData } = useContext(AccountContext)
+    const { setHolonHandle } = useContext(HolonContext)
+    const { setPostId } = useContext(PostContext)
+    // const history = useHistory()
+
+    const [links, setLinks] = useState({ outgoingLinks: [], incomingLinks: [] })
 
     const [linkTo, setLinkTo] = useState('Post')
     const [linkType, setLinkType] = useState('Text')
@@ -34,6 +42,11 @@ function PostCardLinkModal(props) {
     if (linkTo === 'Comment') { prefix = 'c/'; placeholder = 'id'; inputWidth = 40 }
     if (linkTo === 'Space') { prefix = 's/'; placeholder = 'handle'; inputWidth = 70 }
     if (linkTo === 'User') { prefix = 'u/'; placeholder = 'handle'; inputWidth = 70 }
+
+    function getPostLinkData() {
+        axios.get(config.environmentURL + `/post-link-data?postId=${postData.id}`)
+            .then(res => setLinks(res.data))
+    }
 
     function addLink() {
         let validTargetUrl = targetUrl.length > 0
@@ -79,10 +92,16 @@ function PostCardLinkModal(props) {
         })
     }
 
+    useEffect(() => {
+        getPostLinkData()
+    },[postData.id])
+
+    useEffect(() => {
+        console.log('links: ', links)
+    },[links])
+
     const ref = useRef()
-    function handleClickOutside(e) { 
-        if (!ref.current.contains(e.target)) { setLinkModalOpen(false) } 
-    }
+    function handleClickOutside(e) { if (!ref.current.contains(e.target)) { setLinkModalOpen(false) } }
     useEffect(() => {
       document.addEventListener("mousedown", handleClickOutside)
       return () => document.removeEventListener("mousedown", handleClickOutside)
@@ -93,21 +112,56 @@ function PostCardLinkModal(props) {
             <div className={styles.modal} ref={ref}>
                 <CloseButton onClick={() => setLinkModalOpen(false)}/>
                 <span className={styles.title}>Links</span>
-                {!postData.PostsLinkedTo.length ?
-                    <span className={`${styles.text} mb-20`}><i>No links yet...</i></span> :
+                {!links.outgoingLinks.length && !links.incomingLinks.length &&
+                    <span className={`${styles.text} mb-20`}><i>No links yet...</i></span>
+                }
+                {links.outgoingLinks.length > 0 &&
                     <div className={styles.links}>
-                        {postData.PostsLinkedTo.map((post, index) =>
-                            <PostCard postData={post} key={index} index={index} location='holon-posts'/>
-                            // <div className={styles.link} key={index}>
-                            //     <Link className={styles.imageTextLink} to={`/u/${'link.creator.handle'}`}>
-                            //         <SmallFlagImage type='user' size={30} imagePath={'link.creator.flagImagePath'}/>
-                            //         <span className={`${styles.text} ml-5`}>{'link.creator.name'}</span>
-                            //     </Link>
-                            // </div>
+                        <span className={styles.subTitle}>Outgoing:</span>
+                        {links.outgoingLinks.map((link, index) =>
+                            <div className={styles.link} key={index}>
+                                <Link className={styles.imageTextLink} to={`/u/${link.creator.handle}`}>
+                                    <SmallFlagImage type='user' size={30} imagePath={link.creator.flagImagePath}/>
+                                    <span className={styles.linkText}>{link.creator.name}</span>
+                                </Link>
+                                <div className={`${styles.text} greyText mr-10`}>
+                                    linked to
+                                </div>
+                                <Link className={styles.imageTextLink} to={`/u/${link.postB.creator.handle}`}>
+                                    <SmallFlagImage type='user' size={30} imagePath={link.postB.creator.flagImagePath}/>
+                                    <span className={styles.linkText}>{link.postB.creator.name}'s</span>
+                                </Link>
+                                <Link className={styles.imageTextLink} to={`/p/${link.postB.id}`} onClick={() => setPostId(link.postB.id) } >
+                                    <span className={`blueText`}>post</span>
+                                </Link>
+                            </div>
                         )}
                     </div>
                 }
-                <div className={styles.settingsText}>
+                {links.incomingLinks.length > 0 &&
+                    <div className={styles.links}>
+                        <span className={styles.subTitle}>Incoming:</span>
+                        {links.incomingLinks.map((link, index) =>
+                            <div className={styles.link} key={index}>
+                                <Link className={styles.imageTextLink} to={`/u/${link.creator.handle}`}>
+                                    <SmallFlagImage type='user' size={30} imagePath={link.creator.flagImagePath}/>
+                                    <span className={styles.linkText}>{link.creator.name}</span>
+                                </Link>
+                                <div className={`${styles.text} greyText mr-10`}>
+                                    linked from
+                                </div>
+                                <Link className={styles.imageTextLink} to={`/u/${link.postA.creator.handle}`}>
+                                    <SmallFlagImage type='user' size={30} imagePath={link.postA.creator.flagImagePath}/>
+                                    <span className={styles.linkText}>{link.postA.creator.name}'s</span>
+                                </Link>
+                                <Link className={styles.imageTextLink} to={`/p/${link.postA.id}`} onClick={() => setPostId(link.postA.id)}>
+                                    <span className={`blueText`}>post</span>
+                                </Link>
+                            </div>
+                        )}
+                    </div>
+                }
+                <div className={`${styles.settingsText} mt-10`}>
                     <span className={styles.text} style={{marginBottom: 10}}>Link this post to another</span>
                     <DropDownMenu
                         title=''
@@ -124,9 +178,6 @@ function PostCardLinkModal(props) {
                         onChange={(e) => { setTargetUrl(e.target.value); setTargetUrlError(false) }}
                     />
                 </div>
-                {/* <div className={styles.settingsText}>
-      
-                </div> */}
                 <div className={styles.settingsText}>
                     <span className={styles.text} style={{marginBottom: 10}}>Link type</span>
                     <DropDownMenu

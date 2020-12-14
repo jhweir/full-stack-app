@@ -20,6 +20,10 @@ module.exports = (sequelize, DataTypes) => {
       //as: 'createdComments'
     })
     User.hasMany(models.Reaction)
+    User.hasMany(models.Link, {
+      foreignKey: 'creatorId',
+      //as: 'createdComments'
+    })
     User.belongsToMany(models.Holon, { 
       through: models.HolonUser,
       as: 'FollowedHolons',

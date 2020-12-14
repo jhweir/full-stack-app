@@ -10,17 +10,16 @@ function Homepage() {
                 <span className={styles.title}>
                     weco<span className={`${styles.title} ${styles.grey}`}>.io</span>
                 </span>
-                <span className={styles.subTitle}>evolving social media tools, governance, and ownership</span>
-                {/* <span className={styles.subTitle}>under cooperative ownership</span> */}
+                <span className={styles.subTitle}>evolving social media tools and governance</span>
                 <div className={`${styles.wrapper} mt-70 mb-50`}>
                     <span className={styles.mediumText}>Under construction...</span>
                     <img className={styles.icon} src='/icons/tools-solid.svg'/>
                 </div>
-                <div className={`${styles.list} mt-70`}>
+                <div className={styles.list}>
                     <span className={`${styles.largeText} mb-10`}>Current working features</span>
                     <span><b>User accounts</b></span>
                     <ul className={styles.ul}>
-                        <li><input type="checkbox" checked={true} readOnly/>Log in / out with encrypted password</li>
+                        <li><input type="checkbox" checked={true} readOnly/>Log in / out with JWT authentication and encrypted password</li>
                         <li><input type="checkbox" checked={true} readOnly/>Profile page</li>
                         <ul>
                             <li><input type="checkbox" checked={true} readOnly/>Access to followed and moderated spaces</li>
@@ -57,7 +56,7 @@ function Homepage() {
                         <li><input type="checkbox" checked={true} readOnly/>Vote and view results on poll posts</li>
                         <li><input type="checkbox" checked={true} readOnly/>Toggle view of posts between scrollable list or post map</li>
                     </ul>
-                    <span className={`${styles.largeText} mt-50`}>Future features:</span>
+                    <span className={`${styles.largeText} mt-50`}>Future features</span>
                     <ul className={styles.ul}>
                         <li><input type="checkbox" checked={false} readOnly/>Link items to other items (posts, comments, spaces, users)</li>
                         <li><input type="checkbox" checked={false} readOnly/>Up/down vote links between items</li>
