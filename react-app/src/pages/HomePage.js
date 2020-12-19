@@ -10,25 +10,26 @@ function Homepage() {
                 <span className={styles.title}>
                     weco<span className={`${styles.title} ${styles.grey}`}>.io</span>
                 </span>
+                {/* <span className={styles.subTitle}>holonic social media coop</span> */}
                 <span className={styles.subTitle}>evolving social media tools and governance</span>
                 <div className={`${styles.wrapper} mt-70 mb-50`}>
                     <span className={styles.mediumText}>Under construction...</span>
                     <img className={styles.icon} src='/icons/tools-solid.svg'/>
                 </div>
                 <div className={styles.list}>
-                    <span className={`${styles.largeText} mb-10`}>Current working features</span>
-                    <span><b>User accounts</b></span>
+                    <span className={`${styles.largeText} mb-10`}>Working features</span>
+                    <span>User accounts</span>
                     <ul className={styles.ul}>
                         <li><input type="checkbox" checked={true} readOnly/>Log in / out with JWT authentication and encrypted password</li>
                         <li><input type="checkbox" checked={true} readOnly/>Profile page</li>
-                        <ul>
+                        {/* <ul> */}
                             <li><input type="checkbox" checked={true} readOnly/>Access to followed and moderated spaces</li>
                             <li><input type="checkbox" checked={true} readOnly/>Search and filter created posts</li>
-                        </ul>
+                        {/* </ul> */}
                     </ul>
-                    <span className={`mt-20`}><b>Spaces</b> (a.k.a groups, communities)</span>
+                    <span className={`mt-20`}>Spaces</span>
                     <ul className={styles.ul}>
-                        <li><input type="checkbox" checked={true} readOnly/>Create spaces within spaces to any depth</li>
+                        <li><input type="checkbox" checked={true} readOnly/>Create spaces within spaces with spaces to any depth</li>
                         <li><input type="checkbox" checked={true} readOnly/>Edit space name, url handle, and bio</li>
                         <li><input type="checkbox" checked={true} readOnly/>Upload space flag and cover images</li>
                         <li><input type="checkbox" checked={true} readOnly/>Add new moderators</li>
@@ -37,7 +38,7 @@ function Homepage() {
                         <li><input type="checkbox" checked={true} readOnly/>Connect to new parent spaces</li>
                         <li><input type="checkbox" checked={true} readOnly/>Toggle view of spaces between scrollable list or tree diagram</li>
                     </ul>
-                    <span className='mt-20'><b>Posts</b></span>
+                    <span className='mt-20'>Posts</span>
                     <ul className={styles.ul}>
                         <li><input type="checkbox" checked={true} readOnly/>Create posts and tag them with the spaces you want them to appear within</li>
                         <li><input type="checkbox" checked={true} readOnly/>Choose from different post types</li>
@@ -45,6 +46,7 @@ function Homepage() {
                             <li><input type="checkbox" checked={true} readOnly/>Text</li>
                             <li><input type="checkbox" checked={true} readOnly/>Url: includes image and metadata from url</li>
                             <li><input type="checkbox" checked={true} readOnly/>Poll: single choice, multiple choice, or weighted choice</li>
+                            <li><input type="checkbox" checked={true} readOnly/>Glass bead: allows turn based linking of posts</li>
                         </ul>
                         <li><input type="checkbox" checked={true} readOnly/>Comment on posts</li>
                         <li><input type="checkbox" checked={true} readOnly/>React to posts</li>
@@ -52,18 +54,18 @@ function Homepage() {
                             <li><input type="checkbox" checked={true} readOnly/>Like posts</li>
                             <li><input type="checkbox" checked={true} readOnly/>Repost posts</li>
                             <li><input type="checkbox" checked={true} readOnly/>Rate posts</li>
+                            <li><input type="checkbox" checked={true} readOnly/>Link posts to other posts</li>
                         </ul>
                         <li><input type="checkbox" checked={true} readOnly/>Vote and view results on poll posts</li>
-                        <li><input type="checkbox" checked={true} readOnly/>Toggle view of posts between scrollable list or post map</li>
+                        <li><input type="checkbox" checked={true} readOnly/>Toggle view of posts between scrollable list and post map</li>
+                        <li><input type="checkbox" checked={true} readOnly/>Posts and links visualised on post map</li>
                     </ul>
                     <span className={`${styles.largeText} mt-50`}>Future features</span>
                     <ul className={styles.ul}>
-                        <li><input type="checkbox" checked={false} readOnly/>Link items to other items (posts, comments, spaces, users)</li>
-                        <li><input type="checkbox" checked={false} readOnly/>Up/down vote links between items</li>
-                        <li><input type="checkbox" checked={false} readOnly/>Links visualised on post map</li>
+                        <li><input type="checkbox" checked={false} readOnly/>Up/down vote links between posts</li>
                         <li><input type="checkbox" checked={false} readOnly/>Account notifications</li>
                         <li><input type="checkbox" checked={false} readOnly/>User to user messaging</li>
-                        <li><input type="checkbox" checked={false} readOnly/>Personalised stream (pulling in content from follwed spaces) on user profile</li>
+                        <li><input type="checkbox" checked={false} readOnly/>Personalised stream (pulling in content from followed spaces) on user profile</li>
                         <li><input type="checkbox" checked={false} readOnly/>Post types</li>
                         <ul>
                             <li><input type="checkbox" checked={false} readOnly/>Plot graphs</li>

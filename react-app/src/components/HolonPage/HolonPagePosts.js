@@ -98,7 +98,7 @@ function HolonPagePosts() {
                             Create Post
                         </button>
                     </div>
-                    <Toggle leftText='List' rightText='Map' onClickFunction={toggleView}/>
+                    <Toggle leftText='List' rightText='Map' onClickFunction={toggleView} positionLeft={holonPostViewLayout === 'List' ? true : false}/>
                 </div>
                 {holonPostFiltersOpen && <HolonPagePostsFilters/>}
                 {/* {holonPostViewsOpen && <HolonPagePostViews/>} */}

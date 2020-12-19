@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import styles from '../styles/components/Toggle.module.scss'
 
 function Toggle(props) {
-    const { leftText, rightText, onClickFunction } = props
+    const { leftText, rightText, onClickFunction, positionLeft } = props
 
     const [toggleLeft, setToggleLeft] = useState(true)
 
@@ -22,6 +22,10 @@ function Toggle(props) {
             setToggleLeft(!toggleLeft)
         }
     }
+
+    useEffect(() => {
+        if (!positionLeft) setToggleLeft(false)
+    }, [])
 
     return (
         <div className={styles.toggleWrapper}>
