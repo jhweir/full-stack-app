@@ -1,0 +1,31 @@
+.holonPostMap {
+
+}
+.controls {
+    display: flex;
+    flex-direction: column;
+    //height: 40px;
+    margin-top: 5px;
+}
+.item {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    margin-bottom: 10px;
+}
+.rangeText {
+    margin-right: 10px;
+}
+.rangeInput {
+    margin-right: 10px;
+}
+.rangeValue {
+    
+}
+// .textLink {
+//     color: rgb(0, 204, 255);
+//     text-decoration: underline;
+
+    
+// }

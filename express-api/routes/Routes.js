@@ -30,10 +30,9 @@ const postAttributes = [
         `(SELECT COUNT(*) FROM Comments AS Comment WHERE Comment.state = 'visible' AND Comment.postId = Post.id)`
         ),'total_comments'
     ],
-    // add links to reactions
     [sequelize.literal(
         `(SELECT COUNT(*) FROM Reactions AS Reaction WHERE Reaction.postId = Post.id AND Reaction.type != 'vote' AND Reaction.state = 'active')
-        + (SELECT COUNT(*) FROM Links AS Link WHERE Link.itemAId = Post.id OR Link.itemBId = Post.id AND Link.type = 'post-post')`
+        + (SELECT COUNT(*) FROM Links AS Link WHERE Link.state = 'visible' AND Link.itemAId = Post.id OR Link.itemBId = Post.id AND Link.type = 'post-post')`
         ),'total_reactions'
     ],
     [sequelize.literal(
@@ -53,7 +52,7 @@ const postAttributes = [
         ),'total_rating_points'
     ],
     [sequelize.literal(
-        `(SELECT COUNT(*) FROM Links AS Link WHERE Link.itemAId = Post.id OR Link.itemBId = Post.id AND Link.type = 'post-post')` //AND Link.state = 'active'
+        `(SELECT COUNT(*) FROM Links AS Link WHERE Link.state = 'visible' AND Link.itemAId = Post.id OR Link.itemBId = Post.id AND Link.type = 'post-post')` //AND Link.state = 'active'
         ),'total_links'
     ],
 ]
@@ -111,8 +110,11 @@ router.get('/holon-posts', (req, res) => {
 
     function findType() {
         let type
-        if (postType === 'All Types') { type = ['text', 'poll', 'url', 'prism', 'plot-graph'] }
-        if (postType !== 'All Types') { type = postType.toLowerCase() }
+        if (postType === 'All Types') {
+            type = ['text', 'poll', 'url', 'glass-bead', 'prism', 'plot-graph']
+        } else { 
+            type = postType.replace(/\s+/g, '-').toLowerCase()
+        }
         return type
     }
 
@@ -177,6 +179,31 @@ router.get('/holon-posts', (req, res) => {
     let order = findOrder()
     let firstAttributes = findFirstAttributes()
     let through = findThrough()
+
+    // Find totalMatchingPosts
+    let totalMatchingPosts
+    Post.findAll({
+        subQuery: false,
+        where: { 
+            '$DirectSpaces.handle$': handle,
+            state: 'visible',
+            createdAt: { [Op.between]: [startDate, Date.now()] },
+            type,
+            [Op.or]: [
+                { text: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } },
+                { text: null }
+            ]
+        },
+        order,
+        attributes: firstAttributes,
+        include: [{ 
+            model: Holon,
+            as: 'DirectSpaces',
+            attributes: [],
+            through,
+        }]
+    })
+    .then(posts => totalMatchingPosts = posts.length)
 
     // Double query required to to prevent results and pagination being effected by top level where clause.
     // Intial query used to find correct posts with calculated stats and pagination applied.
@@ -243,7 +270,8 @@ router.get('/holon-posts', (req, res) => {
                 SELECT COUNT(*)
                 FROM Links
                 AS Link
-                WHERE Link.itemAId = Post.id
+                WHERE Link.state = 'visible'
+                AND Link.itemAId = Post.id
                 AND Link.creatorId = ${accountId}
                 )`),'account_link'
             ]
@@ -271,36 +299,21 @@ router.get('/holon-posts', (req, res) => {
                     attributes: ['id', 'handle', 'name', 'flagImagePath'],
                 },
                 {
-                    model: Post,
-                    as: 'PostsLinkedTo',
-                    //attributes: postAttributes,
+                    model: Link,
+                    as: 'OutgoingLinks',
+                    //where: { state: 'visible' }
                     //attributes: ['id', 'handle', 'name', 'flagImagePath'],
-                    include: [
-                        {
-                            model: Holon,
-                            as: 'DirectSpaces',
-                            attributes: ['handle'],
-                            through: { where: { relationship: 'direct' }, attributes: ['type'] },
-                        },
-                        {
-                            model: Holon,
-                            as: 'IndirectSpaces',
-                            attributes: ['handle'],
-                            through: { where: { relationship: 'indirect' }, attributes: ['type'] },
-                        },
-                        {
-                            model: User,
-                            as: 'creator',
-                            attributes: ['id', 'handle', 'name', 'flagImagePath'],
-                        }
-                    ]
+                },
+                {
+                    model: Link,
+                    as: 'IncomingLinks',
+                    //where: { state: 'visible' }
+                    //attributes: ['id', 'handle', 'name', 'flagImagePath'],
                 }
             ]
         })
         .then(posts => {
             posts.forEach(post => {
-                // // add links to total_reactions
-                // post.dataValues.total_reactions = post.dataValues.total_reactions + post.dataValues.total_links
                 // save type and remove redundant PostHolon objects
                 post.DirectSpaces.forEach(space => {
                     space.setDataValue('type', space.dataValues.PostHolon.type)
@@ -311,7 +324,11 @@ router.get('/holon-posts', (req, res) => {
                     delete space.dataValues.PostHolon
                 })
             })
-            return posts
+            let holonPosts = {
+                totalMatchingPosts,
+                posts
+            }
+            return holonPosts
         })
     })
     .then(data => { res.json(data) })
@@ -1040,6 +1057,14 @@ router.get('/post-data', (req, res) => {
             AND PostHolon.type = 'repost'
             AND PostHolon.relationship = 'direct'
             )`),'account_repost'
+        ],
+        [sequelize.literal(`(
+            SELECT COUNT(*)
+            FROM Links
+            AS Link
+            WHERE Link.itemAId = Post.id
+            AND Link.creatorId = ${accountId}
+            )`),'account_link'
         ]
     ]
     Post.findOne({ 
@@ -1300,8 +1325,11 @@ router.post('/create-post', (req, res) => {
         axis1Left,
         axis1Right,
         axis2Top,
-        axis2Bottom
+        axis2Bottom,
+        createPostFromTurnData
     } = req.body.post
+
+    //console.log('createPostFromTurnData: ', createPostFromTurnData)
 
     let directHandleIds = []
     let indirectHandleIds = []
@@ -1394,6 +1422,17 @@ router.post('/create-post', (req, res) => {
         })
     }
 
+    function createTurnLink(post) {
+        Link.create({
+            state: 'visible',
+            creatorId: creatorId,
+            type: 'post-post',
+            relationship: 'turn',
+            itemAId: createPostFromTurnData.postId,
+            itemBId: post.id
+        })
+    }
+
     let renamedSubType
     if (subType === 'Single Choice') { renamedSubType = 'single-choice' }
     if (subType === 'Multiple Choice') { renamedSubType = 'multiple-choice' }
@@ -1419,6 +1458,7 @@ router.post('/create-post', (req, res) => {
                 if (type === 'poll') createNewPollAnswers(post)
                 if (type === 'prism') createPrism(post)
                 if (type === 'plot-graph') createPlotGraph(post)
+                if (type === 'glass-bead' && createPostFromTurnData.postId) createTurnLink(post)
             })
             .then(res.send('success'))
         })
@@ -1853,7 +1893,14 @@ router.get('/plot-graph-data', (req, res) => {
 router.post('/add-link', (req, res) => {
     let { creatorId, type, relationship, description, itemAId, itemBId } = req.body
     Link
-        .create({ creatorId, type, relationship, description, itemAId, itemBId })
+        .create({ state: 'visible', creatorId, type, relationship, description, itemAId, itemBId })
+        .then(res.send('success'))
+        .catch(err => console.log(err))
+})
+
+router.post('/remove-link', (req, res) => {
+    let { linkId } = req.body
+    Link.update({ state: 'hidden' }, { where: { id: linkId } })
         .then(res.send('success'))
         .catch(err => console.log(err))
 })
@@ -1861,13 +1908,13 @@ router.post('/add-link', (req, res) => {
 router.get('/post-link-data', async (req, res) => {
     const { postId } = req.query
     let outgoingLinks = await Link.findAll({
-        where: { itemAId: postId },
-        attributes: [],
+        where: { state: 'visible', itemAId: postId },
+        attributes: ['id'],
         include: [
             { 
                 model: User,
                 as: 'creator',
-                attributes: ['handle', 'name', 'flagImagePath'],
+                attributes: ['id', 'handle', 'name', 'flagImagePath'],
             },
             { 
                 model: Post,
@@ -1885,13 +1932,13 @@ router.get('/post-link-data', async (req, res) => {
     })
 
     let incomingLinks = await Link.findAll({
-        where: { itemBId: postId },
-        attributes: [],
+        where: { state: 'visible', itemBId: postId },
+        attributes: ['id'],
         include: [
             { 
                 model: User,
                 as: 'creator',
-                attributes: ['handle', 'name', 'flagImagePath'],
+                attributes: ['id', 'handle', 'name', 'flagImagePath'],
             },
             { 
                 model: Post,

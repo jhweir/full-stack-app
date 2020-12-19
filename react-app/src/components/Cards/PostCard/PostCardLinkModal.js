@@ -50,7 +50,7 @@ function PostCardLinkModal(props) {
 
     function addLink() {
         let validTargetUrl = targetUrl.length > 0
-        let validLinkDescription = linkType !== 'Text' || linkDescription.length > 0
+        let validLinkDescription = linkDescription.length > 0
         if (validTargetUrl && validLinkDescription) {
             console.log('PostCardLinkModal: addLink')
             axios.post(config.environmentURL + '/add-link', { 
@@ -74,11 +74,11 @@ function PostCardLinkModal(props) {
         }
     }
 
-    function removeLink() {
+    function removeLink(linkId) {
         console.log('PostCardLinkModal: removeLink')
         axios.post(config.environmentURL + '/remove-link', { 
-            accountId: accountData.id, 
-            postId: postData.id
+            //accountId: accountData.id,
+            linkId
         })
         .then(res => {
             if (res.data === 'success') {
@@ -115,29 +115,6 @@ function PostCardLinkModal(props) {
                 {!links.outgoingLinks.length && !links.incomingLinks.length &&
                     <span className={`${styles.text} mb-20`}><i>No links yet...</i></span>
                 }
-                {links.outgoingLinks.length > 0 &&
-                    <div className={styles.links}>
-                        <span className={styles.subTitle}>Outgoing:</span>
-                        {links.outgoingLinks.map((link, index) =>
-                            <div className={styles.link} key={index}>
-                                <Link className={styles.imageTextLink} to={`/u/${link.creator.handle}`}>
-                                    <SmallFlagImage type='user' size={30} imagePath={link.creator.flagImagePath}/>
-                                    <span className={styles.linkText}>{link.creator.name}</span>
-                                </Link>
-                                <div className={`${styles.text} greyText mr-10`}>
-                                    linked to
-                                </div>
-                                <Link className={styles.imageTextLink} to={`/u/${link.postB.creator.handle}`}>
-                                    <SmallFlagImage type='user' size={30} imagePath={link.postB.creator.flagImagePath}/>
-                                    <span className={styles.linkText}>{link.postB.creator.name}'s</span>
-                                </Link>
-                                <Link className={styles.imageTextLink} to={`/p/${link.postB.id}`} onClick={() => setPostId(link.postB.id) } >
-                                    <span className={`blueText`}>post</span>
-                                </Link>
-                            </div>
-                        )}
-                    </div>
-                }
                 {links.incomingLinks.length > 0 &&
                     <div className={styles.links}>
                         <span className={styles.subTitle}>Incoming:</span>
@@ -145,18 +122,53 @@ function PostCardLinkModal(props) {
                             <div className={styles.link} key={index}>
                                 <Link className={styles.imageTextLink} to={`/u/${link.creator.handle}`}>
                                     <SmallFlagImage type='user' size={30} imagePath={link.creator.flagImagePath}/>
-                                    <span className={styles.linkText}>{link.creator.name}</span>
+                                    <span className={styles.linkText}>{accountData.id === link.creator.id ? 'You' : link.creator.name}</span>
                                 </Link>
                                 <div className={`${styles.text} greyText mr-10`}>
                                     linked from
                                 </div>
                                 <Link className={styles.imageTextLink} to={`/u/${link.postA.creator.handle}`}>
                                     <SmallFlagImage type='user' size={30} imagePath={link.postA.creator.flagImagePath}/>
-                                    <span className={styles.linkText}>{link.postA.creator.name}'s</span>
+                                    <span className={styles.linkText}>{accountData.id === link.postA.creatorId ? 'Your' : link.postA.creator.name + "'s"}</span>
                                 </Link>
                                 <Link className={styles.imageTextLink} to={`/p/${link.postA.id}`} onClick={() => setPostId(link.postA.id)}>
                                     <span className={`blueText`}>post</span>
                                 </Link>
+                                {accountData.id === link.creator.id &&
+                                    <div className={styles.deleteLink} onClick={() => removeLink(link.id)}>
+                                        <img className={styles.icon} src="/icons/trash-alt-solid.svg" alt=''/>
+                                        <span className='greyText'>Delete</span>
+                                    </div>
+                                }
+                            </div>
+                        )}
+                    </div>
+                }
+                {links.outgoingLinks.length > 0 &&
+                    <div className={styles.links}>
+                        <span className={styles.subTitle}>Outgoing:</span>
+                        {links.outgoingLinks.map((link, index) =>
+                            <div className={styles.link} key={index}>
+                                <Link className={styles.imageTextLink} to={`/u/${link.creator.handle}`}>
+                                    <SmallFlagImage type='user' size={30} imagePath={link.creator.flagImagePath}/>
+                                    <span className={styles.linkText}>{accountData.id === link.creator.id ? 'You' : link.creator.name}</span>
+                                </Link>
+                                <div className={`${styles.text} greyText mr-10`}>
+                                    linked to
+                                </div>
+                                <Link className={styles.imageTextLink} to={`/u/${link.postB.creator.handle}`}>
+                                    <SmallFlagImage type='user' size={30} imagePath={link.postB.creator.flagImagePath}/>
+                                    <span className={styles.linkText}>{accountData.id === link.postB.creatorId ? 'Your' : link.postB.creator.name + "'s"}</span>
+                                </Link>
+                                <Link className={styles.imageTextLink} to={`/p/${link.postB.id}`} onClick={() => setPostId(link.postB.id) } >
+                                    <span className={`blueText`}>post</span>
+                                </Link>
+                                {accountData.id === link.creator.id &&
+                                    <div className={styles.deleteLink} onClick={() => removeLink(link.id)}>
+                                        <img className={styles.icon} src="/icons/trash-alt-solid.svg" alt=''/>
+                                        <span className='greyText'>Delete</span>
+                                    </div>
+                                }
                             </div>
                         )}
                     </div>
@@ -165,7 +177,7 @@ function PostCardLinkModal(props) {
                     <span className={styles.text} style={{marginBottom: 10}}>Link this post to another</span>
                     <DropDownMenu
                         title=''
-                        options={['Post', 'Comment', 'User', 'Space']}
+                        options={['Post']} //'Comment', 'User', 'Space'
                         selectedOption={linkTo}
                         setSelectedOption={setLinkTo}
                         style='horizontal'
@@ -178,7 +190,7 @@ function PostCardLinkModal(props) {
                         onChange={(e) => { setTargetUrl(e.target.value); setTargetUrlError(false) }}
                     />
                 </div>
-                <div className={styles.settingsText}>
+                {/* <div className={styles.settingsText}>
                     <span className={styles.text} style={{marginBottom: 10}}>Link type</span>
                     <DropDownMenu
                         title=''
@@ -187,18 +199,18 @@ function PostCardLinkModal(props) {
                         setSelectedOption={setLinkType}
                         style='horizontal'
                     />
-                </div>
-                {linkType === 'Text' &&
+                </div> */}
+                {/* {linkType === 'Text' && */}
                     <textarea className={`wecoInput textArea mb-10 ${linkDescriptionError && 'error'}`}
                         style={{height: 40, width: 350}}
                         placeholder="Describe the relationship..."
                         type="text" value={linkDescription}
                         onChange={(e) => { setLinkDescription(e.target.value); setLinkDescriptionError(false) }}
                     />
-                }
+                {/* } */}
 
                 <div
-                    className={`wecoButton mt-20 ${(!targetUrl.length || (linkType === 'Text' && !linkDescription.length)) && 'disabled'}`}
+                    className={`wecoButton mt-20 ${(!targetUrl.length || !linkDescription.length) && 'disabled'}`}
                     onClick={addLink}>
                     Add Link
                 </div>

@@ -63,3 +63,31 @@
     flex-direction: row;
     align-items: center;
 }
+.icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+    opacity: 0.3;
+    // &:hover {
+    //     opacity: 0.5;
+    // }
+    &.selected {
+        opacity: 0.8;
+        filter: invert(.5) sepia(1) saturate(5) hue-rotate(190deg);
+        // Light purple: filter: invert(.5) sepia(1) saturate(5) hue-rotate(190deg);
+        // Blue: filter: invert(.5) sepia(1) saturate(5) hue-rotate(160deg);
+        // Blue/green: filter: invert(.5) sepia(1) saturate(5) hue-rotate(120deg);
+        // Nice orange/red: filter: invert(.5) sepia(1) saturate(5) hue-rotate(-30deg);
+        // Orange: filter: invert(.5) sepia(1) saturate(5) hue-rotate(-20deg);
+    }
+}
+.deleteLink {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-shrink: 0;
+    margin-left: 10px;
+    &:hover {
+        cursor: pointer;
+    }
+}

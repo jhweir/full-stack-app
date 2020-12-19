@@ -264,4 +264,7 @@ input {
 // }
 .blueText {
     color: rgb(104, 161, 247);
+    &:hover {
+        cursor: pointer;
+    }
 }

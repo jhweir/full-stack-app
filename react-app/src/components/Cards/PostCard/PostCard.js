@@ -8,22 +8,23 @@ import { HolonContext } from '../../../contexts/HolonContext'
 import { UserContext } from '../../../contexts/UserContext'
 import { PostContext } from '../../../contexts/PostContext'
 import styles from '../../../styles/components/PostCard.module.scss'
+import colors from '../../../styles/Colors.module.scss'
 import PostCardReactions from './PostCardReactions'
 import PostCardUrlPreview from './PostCardUrlPreview'
 
 function PostCard(props) {
     const { postData, index, location } = props
-    const { accountData } = useContext(AccountContext)
+    const { isLoggedIn, accountData, setAlertMessage, setAlertModalOpen, setCreatePostModalOpen, setCreatePostFromTurn, setCreatePostFromTurnData } = useContext(AccountContext)
     const { setHolonHandle, getHolonPosts } = useContext(HolonContext)
     const { getCreatedPosts } = useContext(UserContext)
     const { postContextLoading } = useContext(PostContext)
     const history = useHistory()
 
-    //console.log('postData: ', postData);
+    console.log('postData: ', postData);
 
     // remote post state
     const { 
-        id, creator, text, url, urlImage, urlDomain, urlTitle, urlDescription, createdAt,
+        id, creator, type, text, url, urlImage, urlDomain, urlTitle, urlDescription, createdAt,
         total_comments, total_reactions, total_likes, total_ratings, total_rating_points, total_reposts, total_links,
         account_like, account_rating, account_repost, account_link,
         DirectSpaces, IndirectSpaces, Links
@@ -42,13 +43,22 @@ function PostCard(props) {
     const [accountRating, setAccountRating] = useState(0)
     const [accountRepost, setAccountRepost] = useState(0)
     const [accountLink, setAccountLink] = useState(0)
+    let accountTurn // set up account turn
 
     const [blockedSpaces, setBlockedSpaces] = useState([])
     const [reactionsOpen, setReactionsOpen] = useState(false)
     const finishedLoading = location !== 'post-page' || !postContextLoading
-    const isOwnPost = finishedLoading && accountData.name === creator.name
+    const isOwnPost = finishedLoading && accountData.id === creator.id
     const showLinkPreview = (urlImage !== null || urlDomain !== null || urlTitle !== null || urlDescription !== null)
     const postSpaces = DirectSpaces && DirectSpaces.filter(space => space.type === 'post')
+
+    let backgroundColor
+    if (type === 'text') backgroundColor = colors.green
+    if (type === 'url') backgroundColor = colors.yellow
+    if (type === 'poll') backgroundColor = colors.red
+    if (type === 'glass-bead') backgroundColor = colors.blue
+    if (type === 'plot-graph') backgroundColor = colors.orange
+    if (type === 'prism') backgroundColor = colors.purple
 
     function syncPostState() {
         setTotalComments(total_comments)
@@ -80,6 +90,22 @@ function PostCard(props) {
         let a = createdAt.split(/[-.T :]/)
         let formattedDate = a[3]+':'+a[4]+' on '+a[2]+'-'+a[1]+'-'+a[0]
         return formattedDate
+    }
+
+    function createPostFromTurn() {
+        if (isLoggedIn) {
+            let data = {
+                creatorName: creator.name,
+                creatorHandle: creator.handle,
+                creatorFlagImagePath: creator.flagImagePath,
+                postId: id
+            }
+            setCreatePostFromTurn(true)
+            setCreatePostFromTurnData(data)
+            setCreatePostModalOpen(true)
+        } else {
+            setAlertMessage('Log in to add a turn'); setAlertModalOpen(true)
+        }
     }
 
     useEffect(() => {
@@ -123,6 +149,8 @@ function PostCard(props) {
                             <img className={styles.linkIcon} src={'/icons/link-solid.svg'} alt=''/>
                             <span className={styles.subText}>{formattedDate() || 'no date'}</span>
                         </Link>
+                        {/* <span className={styles.subText}>|</span> */}
+                        <div className={styles.postTypeFlag} style={{ backgroundColor }} title={type}/>
                     </div>
                     <div className={styles.content}>
                         {text && <div className={styles.text}>{text}</div>}
@@ -138,7 +166,7 @@ function PostCard(props) {
                         <div className={styles.interact}>
                             <div className={styles.interactItem} onClick={() => setReactionsOpen(!reactionsOpen)}>
                                 <img 
-                                    className={`${styles.icon} ${(accountLike || accountRating || accountRepost > 0) && styles.selected}`}
+                                    className={`${styles.icon} ${(accountLike || accountRating || accountRepost || accountLink > 0) && styles.selected}`}
                                     src="/icons/fire-alt-solid.svg" alt=''
                                 />
                                 <span className={'greyText'}>{totalReactions} Reactions</span>
@@ -148,6 +176,15 @@ function PostCard(props) {
                                 <img className={styles.icon} src="/icons/comment-solid.svg" alt=''/>
                                 <span className='greyText'>{ totalComments } Comments</span>
                             </Link>
+                            {type === 'glass-bead' &&
+                                <div className={styles.interactItem} onClick={() => createPostFromTurn() }>
+                                    <img 
+                                        className={`${styles.icon} ${(accountTurn > 0) && styles.selected}`}
+                                        src="/icons/arrow-alt-circle-right-solid.svg" alt=''
+                                    />
+                                    <span className={'greyText'}>Add turn</span>
+                                </div>
+                            }
                             {isOwnPost &&
                                 <div className={styles.interactItem} onClick={deletePost}>
                                     <img className={styles.icon} src="/icons/trash-alt-solid.svg" alt=''/>

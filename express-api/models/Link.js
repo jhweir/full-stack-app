@@ -1,6 +1,7 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   const Link = sequelize.define('Link', {
+    state: DataTypes.STRING,
     creatorId: DataTypes.INTEGER,
     type: DataTypes.STRING,
     relationship: DataTypes.STRING,

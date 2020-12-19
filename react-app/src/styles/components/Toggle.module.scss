@@ -1,0 +1,42 @@
+.toggleWrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+}
+.toggle {
+    width: 45px;
+    height: 26px;
+    border-radius: 13px;
+    padding: 3px;
+    background-color: #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    &.toggleLeft {
+        justify-content: flex-start;
+    }
+    &:hover {
+        cursor: pointer;
+    }
+}
+.toggleButton {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: #fff;//rgb(65, 65, 65);
+}
+.leftText {
+    font-size: 16px;
+    margin-right: 10px;
+    &:hover {
+        cursor: pointer;
+    }
+}
+.rightText {
+    font-size: 16px;
+    margin-left: 10px;
+    &:hover {
+        cursor: pointer;
+    }
+}

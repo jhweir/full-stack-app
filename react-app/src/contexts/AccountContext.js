@@ -21,6 +21,9 @@ function AccountContextProvider({ children, pageBottomReached }) {
     const [imageUploadModalOpen, setImageUploadModalOpen] = useState(false)
     const [imageUploadType, setImageUploadType] = useState('')
 
+    const [createPostFromTurn, setCreatePostFromTurn] = useState(false)
+    const [createPostFromTurnData, setCreatePostFromTurnData] = useState({})
+
     let cookies = new Cookies()
 
     function getAccountData() {
@@ -71,7 +74,9 @@ function AccountContextProvider({ children, pageBottomReached }) {
             createPostModalOpen, setCreatePostModalOpen,
             createCommentModalOpen, setCreateCommentModalOpen,
             settingModalOpen, setSettingModalOpen,
-            settingModalType, setSettingModalType
+            settingModalType, setSettingModalType,
+            createPostFromTurn, setCreatePostFromTurn,
+            createPostFromTurnData, setCreatePostFromTurnData
         }}>
             {children}
         </AccountContext.Provider>

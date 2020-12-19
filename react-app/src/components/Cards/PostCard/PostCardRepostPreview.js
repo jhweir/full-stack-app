@@ -16,7 +16,7 @@ function PostCardRepostPreview(props) {
                         <SmallFlagImage type='user' size={25} imagePath={reaction.creator.flagImagePath}/>
                         <span className={styles.text}>{reaction.creator.name}</span>
                         <div className={`${styles.modalItemText} greyText mr-10`}>to</div>
-                        <SmallFlagImage type='users' size={25} imagePath={reaction.space.flagImagePath}/>
+                        <SmallFlagImage type='space' size={25} imagePath={reaction.space.flagImagePath}/>
                         <span className={styles.text}>{reaction.space.name}</span>
                     </div>
                 )}

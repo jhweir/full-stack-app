@@ -17,7 +17,8 @@ function HolonContextProvider({ children }) {
     // TODO: split holonContextLoading into holonDataLoading, holonPostsLoading, holonSpacesLoading, holonUsersLoading
     const [holonContextLoading, setHolonContextLoading] = useState(true)
 
-    const [holonPosts, setHolonPosts] = useState([])
+    const [holonPosts, setHolonPosts] = useState({ posts: [] })
+    const [totalMatchingPosts, setTotalMatchingPosts] = useState(0)
     const [holonPostFiltersOpen, setHolonPostFiltersOpen] = useState(false)
     const [holonPostTimeRangeFilter, setHolonPostTimeRangeFilter] = useState('All Time')
     const [holonPostTypeFilter, setHolonPostTypeFilter] = useState('All Types')
@@ -77,8 +78,9 @@ function HolonContextProvider({ children }) {
             }&limit=${holonPostPaginationLimit
             }&offset=0`)
             .then(res => {
-                if (res.data.length < holonPostPaginationLimit) { setHolonPostPaginationHasMore(false) }
-                setHolonPosts(res.data)
+                if (res.data.posts.length < holonPostPaginationLimit) { setHolonPostPaginationHasMore(false) }
+                setHolonPosts(res.data.posts)
+                setTotalMatchingPosts(res.data.totalMatchingPosts)
                 setHolonPostPaginationOffset(holonPostPaginationLimit)
             })
     }
@@ -98,11 +100,34 @@ function HolonContextProvider({ children }) {
                 }&limit=${holonPostPaginationLimit
                 }&offset=${holonPostPaginationOffset}`)
                 .then(res => { 
-                    if (res.data.length < holonPostPaginationLimit) { setHolonPostPaginationHasMore(false) }
-                    setHolonPosts([...holonPosts, ...res.data])
+                    if (res.data.posts.length < holonPostPaginationLimit) { setHolonPostPaginationHasMore(false) }
+                    setHolonPosts([...holonPosts, ...res.data.posts])
                     setHolonPostPaginationOffset(holonPostPaginationOffset + holonPostPaginationLimit)
                 })
         }
+    }
+
+    function getAllHolonPosts() {
+        console.log(`HolonContext: getAllHolonPosts`)
+        //setHolonPostPaginationHasMore(true)
+        axios.get(config.environmentURL + 
+            `/holon-posts?accountId=${isLoggedIn ? accountData.id : null
+            }&handle=${holonHandle
+            }&timeRange=${holonPostTimeRangeFilter
+            }&postType=${holonPostTypeFilter
+            }&sortBy=${holonPostSortByFilter
+            }&sortOrder=${holonPostSortOrderFilter
+            }&depth=${holonPostDepthFilter
+            }&searchQuery=${holonPostSearchFilter
+            }&limit=${totalMatchingPosts
+            }&offset=0`)
+            .then(res => {
+                console.log('res: ', res)
+                setHolonPostPaginationHasMore(false)
+                setHolonPosts(res.data.posts)
+                setTotalMatchingPosts(res.data.totalMatchingPosts)
+                setHolonPostPaginationOffset(res.data.posts.length)
+            })
     }
 
     function getHolonSpaces() {
@@ -264,6 +289,7 @@ function HolonContextProvider({ children }) {
             selectedHolonSubPage, setSelectedHolonSubPage,
 
             holonPosts, setHolonPosts,
+            totalMatchingPosts, setTotalMatchingPosts,
             holonPostFiltersOpen, setHolonPostFiltersOpen,
             holonPostSearchFilter, setHolonPostSearchFilter,
             holonPostTimeRangeFilter, setHolonPostTimeRangeFilter,
@@ -303,7 +329,7 @@ function HolonContextProvider({ children }) {
 
             // functions
             getHolonData,
-            getHolonPosts, getNextHolonPosts,
+            getHolonPosts, getNextHolonPosts, getAllHolonPosts,
             getHolonSpaces, getNextHolonSpaces,
             getHolonUsers, getNextHolonUsers,
             // resetHolonPostFilters,

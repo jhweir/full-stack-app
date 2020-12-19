@@ -34,19 +34,20 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'postId'
     })
 
-    Post.belongsToMany(models.Post, { 
-      through: models.Link,
-      as: 'PostsLinkedFrom',
-      foreignKey: 'itemBId'
-    })
+    // Post.belongsToMany(models.Post, { 
+    //   through: models.Link,
+    //   as: 'PostsLinkedFrom',
+    //   foreignKey: 'itemBId'
+    // })
 
-    Post.belongsToMany(models.Post, { 
-      through: models.Link,
-      as: 'PostsLinkedTo',
-      foreignKey: 'itemAId'
-    })
+    // Post.belongsToMany(models.Post, { 
+    //   through: models.Link,
+    //   as: 'PostsLinkedTo',
+    //   foreignKey: 'itemAId'
+    // })
 
     Post.hasMany(models.Reaction)
+
     Post.hasMany(models.Link, {
       as: 'OutgoingLinks',
       foreignKey: 'itemAId'
@@ -55,9 +56,11 @@ module.exports = (sequelize, DataTypes) => {
       as: 'IncomingLinks',
       foreignKey: 'itemBId'
     })
+
     Post.hasMany(models.Comment, {
       foreignKey: 'postId'
     })
+    
     Post.hasMany(models.PollAnswer)
   }
   return Post

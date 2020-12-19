@@ -10,7 +10,7 @@ function SmallFlagImage(props) {
 
     return (
         <div className={styles.flagImageWrapper} style={{ width: size, height: size }}>
-            {imagePath === null
+            {imagePath == null
                 ? <div className={styles.placeholderWrapper}>
                     <img className={`${styles.placeholder} ${type === 'user' && styles.user}`} src={`/icons/${placeholderPath}`} alt=''/>
                 </div>

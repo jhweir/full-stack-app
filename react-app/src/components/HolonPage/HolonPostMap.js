@@ -1,25 +1,37 @@
-import React, { useContext, useState, useEffect } from 'react'
+import React, { useContext, useState, useEffect, useRef } from 'react'
 import axios from 'axios'
 import config from '../../Config'
 import * as d3 from 'd3'
 import { HolonContext } from '../../contexts/HolonContext'
+import styles from '../../styles/components/HolonPostMap.module.scss'
+import colors from '../../styles/Colors.module.scss'
 
 function HolonPostMap() {
-    const { holonData, holonContextLoading, holonPosts, holonPostSortByFilter, holonPostSortOrderFilter, selectedHolonSubPage, holonHandle } = useContext(HolonContext)
-    const [postMapData, setPostMapData] = useState()
+    const {
+        holonPosts,
+        totalMatchingPosts,
+        getAllHolonPosts,
+        holonPostSortByFilter,
+        holonPostSortOrderFilter
+    } = useContext(HolonContext)
+    const [rangeValue, setRangeValue] = useState(50)
 
-    console.log('holonPosts: ', holonPosts)
+    //console.log('holonPosts: ', holonPosts)
+
+    const range = useRef()
 
     const width = 700
     const height = 700
 
-    // function getPostMapData() {
-    //     axios
-    //         .get(config.environmentURL + `/post-map-data?spaceId=${holonData.id}`)
-    //         .then(res => setPostMapData(res.data))
-    // }
+    function updateRangeInput() {
+        // console.log('update range')
+        // console.log('range.value: ', range.current.value)
+        setRangeValue(range.current.value)
+    }
     
     useEffect(() => {
+        // let rangeValue2 = rangeValue
+        let rangeValue2 = rangeValue;
         console.log('HolonPostMap: first useEffect')
         let dMin = 0, dMax
         if (holonPostSortByFilter === 'Total Reactions') dMax = d3.max(holonPosts.map(post => post.total_reactions))
@@ -40,36 +52,32 @@ function HolonPostMap() {
             .domain([domainMin, domainMax]) // data values range
             .range([20, 60]) // radius range
 
-        // var links = [
-        //     {source: 0, target: 1},
-        //     {source: 0, target: 2},
-        //     {source: 0, target: 3},
-        //     {source: 1, target: 6},
-        //     {source: 3, target: 4},
-        //     {source: 3, target: 7},
-        //     {source: 4, target: 5},
-        //     {source: 4, target: 7}
-        // ]
-
-        // gather links
-        let links = []
-        holonPosts.forEach((post, index) => {
-            post.PostsLinkedTo.forEach(plt => {
-                let pltIndex
+        // create link arrays
+        let textLinkData = []
+        let turnLinkData = []
+        holonPosts.forEach((post, postIndex) => {
+            let filteredLinks = post.OutgoingLinks.filter(link => link.state === 'visible')
+            filteredLinks.forEach(link => {
+                let targetIndex = null
+                // search posts using id to find target index
                 holonPosts.forEach((p, i) => {
-                    if (p.id === plt.id) pltIndex = i
-                })
-                if (pltIndex) {
-                    let link = {
-                        source: index,
-                        target: pltIndex
+                    if (p.id === link.itemBId) {
+                        console.log('i: ', i)
+                        targetIndex = i
                     }
-                    links.push(link)
+                })
+                if (targetIndex !== null) {
+                    let linkData = {
+                        source: postIndex,
+                        target: targetIndex
+                    }
+                    if (link.relationship === 'text') textLinkData.push(linkData)
+                    if (link.relationship === 'turn') turnLinkData.push(linkData)
                 }
             })
         })
-
-        console.log('links', links)
+        console.log('textLinkData', textLinkData)
+        console.log('turnLinkData', turnLinkData)
 
         let simulation = d3
             .forceSimulation(holonPosts)
@@ -83,13 +91,14 @@ function HolonPostMap() {
                 if (holonPostSortByFilter === 'Ratings') charge = d.total_ratings
                 if (holonPostSortByFilter === 'Comments') charge = d.total_comments
                 if (holonPostSortByFilter === 'Date') { charge = - Date.parse(d.createdAt) / 10000000000; return charge }
-                let newCharge = -100 - (charge * 300)
+                let newCharge = -100 - (charge * 400)
                 return newCharge
             }))
-            .force('center', d3.forceCenter(width / 2, height / 2))
-            .force('x', d3.forceX(width / 2).strength(0.07))
-            .force('y', d3.forceY(height / 2).strength(0.07))
-            .force('link', d3.forceLink().links(links).strength(0.05))
+            .force('center', d3.forceCenter(width/2, height/2))
+            .force('x', d3.forceX(width/2).strength(rangeValue2/1000)) //0.05
+            .force('y', d3.forceY(height/2).strength(rangeValue2/1000))
+            .force('textLinks', d3.forceLink().links(textLinkData).strength(0.05))
+            .force('turnLinks', d3.forceLink().links(turnLinkData).strength(0.09))
             // .force('x', d3.forceX(width / 2).strength(0.2))
             // .force('y', d3.forceY(height / 2).strength(0.2))
             .force('collide', d3.forceCollide(function(d) {
@@ -125,14 +134,39 @@ function HolonPostMap() {
             }
         }
 
-        d3.select("#container")
+        d3.select("#canvas")
             .append("svg")
-            .attr('id', 'container-svg')
+            .attr('id', 'canvas-svg')
             .attr("width", width) //+ margin.left + margin.right)
             .attr("height", height) // + margin.top + margin.bottom)
             // .call(d3.zoom().on("zoom", () => nodes.attr("transform", d3.event.transform)))
 
-        var svg = d3.select("#container-svg")
+        var svg = d3.select("#canvas-svg")
+
+        const arrowPoints = 'M 0 0 6 3 0 6 1.5 3'
+
+            // text links
+            svg.append("svg:defs").append("svg:marker")
+                .attr("id", 'blue-arrow')
+                .attr("refX", 5)
+                .attr("refY", 3)
+                .attr("markerWidth", 40)
+                .attr("markerHeight", 40)
+                .attr('orient', 'auto-start-reverse')
+                .append("path")
+                .attr("d", arrowPoints)
+                .style("fill", colors.blue)
+            let textLinks = svg.append("g").attr("class", "textLinks")
+                .selectAll("#textLink")
+                .data(textLinkData)
+                .enter()
+                .append("line")
+                .attr("id", "textLink")
+                .attr("stroke", 'black')//colors.blue)
+                .attr("stroke-width", "3px")
+                .attr('opacity', 0.3)
+                //.attr('stroke-dasharray', 3)
+                //.attr("marker-end", "url(#blue-arrow)")
 
         // create nodes
         let nodes = svg.selectAll("node")
@@ -141,27 +175,28 @@ function HolonPostMap() {
             .append('g')
             //.call(d3.zoom().on("zoom", () => nodes.attr("transform", d3.event.transform)))
 
-        const arrowPoints = 'M 0 0 12 6 0 12 3 6'
-
+        // turn links
         svg.append("svg:defs").append("svg:marker")
-            .attr("id", 'arrow')
-            .attr("refX", 6)
-            .attr("refY", 6)
+            .attr("id", 'green-arrow')
+            .attr("refX", 5)
+            .attr("refY", 3)
             .attr("markerWidth", 40)
             .attr("markerHeight", 40)
             .attr('orient', 'auto-start-reverse')
             .append("path")
             .attr("d", arrowPoints)
-            .style("fill", "#ddd")
-        
-        let edges = svg.append("g").attr("class", "links")
-            .selectAll("line")
-            .data(links)
+            .style("fill", 'black')//colors.darkGreen)
+        let turnLinks = svg.append("g").attr("class", "turnLinks")
+            .selectAll("#turnLink")
+            .data(turnLinkData)
             .enter()
             .append("line")
-            .attr("stroke", "#aaa")
-            .attr("stroke-width", "2px")
-            .attr("marker-end", "url(#arrow)")
+            .attr("id", "turnLink")
+            .attr("stroke", 'black')//colors.darkGreen)
+            .attr("stroke-width", "3px")
+            .attr('stroke-dasharray', 3)
+            .attr('opacity', 0.3)
+            .attr("marker-end", "url(#green-arrow)")
 
         var defs = svg.append("defs").attr("id", "imgdefs")
 
@@ -209,15 +244,18 @@ function HolonPostMap() {
                     return `url(#${d.id})`
                 }
                 else {
-                    if (d.type === 'url') { return '#71cde3' }
-                    if (d.type === 'poll') { return '#ff4040' }
-                    if (d.type === 'text') { return '#82ed4c' }
-                    if (d.type === 'prism') { return '#9c5cf7' }
+                    if (d.type === 'url') { return colors.yellow }
+                    if (d.type === 'poll') { return colors.red }
+                    if (d.type === 'text') { return colors.green }
+                    if (d.type === 'prism') { return colors.purple }
+                    if (d.type === 'glass-bead') { return colors.blue }
+                    if (d.type === 'plot-graph') { return colors.orange }
                 }
             })
             //.attr("fill", "url(#catpattern)")
-            .style("stroke", d => (d.account_like || d.account_repost || d.account_rating > 0) ? '#83b0ff' : "transparent")
-            .style("stroke-width", 4)
+            .style("stroke", d => (d.account_like || d.account_repost || d.account_rating || d.account_link > 0) ? '#83b0ff' : 'rgb(140 140 140)')//"transparent")
+            .style("stroke-width", 2)
+            .attr('opacity', 0.9)
             .call(d3.drag()
                 .on("start", dragstarted)
                 .on("drag", dragged)
@@ -226,16 +264,32 @@ function HolonPostMap() {
         // add text to nodes
         nodes
             .append("text")
+            // .append('foreignObject')
+            // .style('width', '200px')
+            // .style('height', '30px')
             .attr('class', 'post-text')
-            .text(function(d){ return d.text })
+            // .append("xhtml:div")
+            // .style('height', '30px')
+            // .style("font", "14px 'Helvetica Neue'")
+            // .html("<h1>An HTML Foreign Object in SVG</h1>")
+            //.attr("text-overflow", 'clip')
+            //.attr('width', 200)
+            //.attr('dy', '1.2em')
+            .text(function(d){ 
+                let text = d.text.substring(0, 50)
+                if (text.length === 50) text = text.concat('...')
+                return text
+            })
             .call(d3.drag()
                 .on("start", dragstarted)
                 .on("drag", dragged)
                 .on("end", dragended))
 
+
         svg.call(d3.zoom().on("zoom", () => {
             nodes.attr("transform", d3.event.transform)
-            edges.attr("transform", d3.event.transform)
+            turnLinks.attr("transform", d3.event.transform)
+            textLinks.attr("transform", d3.event.transform)
         }))
             
         simulation
@@ -256,7 +310,8 @@ function HolonPostMap() {
                 .attr("x", function(d) { return d.x - 40 })
                 .attr("y", function(d) { return d.y - 40 })
 
-            edges.call(updateLink)
+            turnLinks.call(updateLink)
+            textLinks.call(updateLink)
         }
 
         function fixna(x) {
@@ -270,15 +325,45 @@ function HolonPostMap() {
                 .attr("x2", function(d) { return fixna(d.target.x); })
                 .attr("y2", function(d) { return fixna(d.target.y); });
         }
+    
+        d3.select("#range").on("input", function() {
+            //update(+this.value);
+            
+            // rangeValue2 = range.current.value
+            console.log('range changed: ', range.current.value)
+            // simulation.force('x', d3.forceX(width/2).strength(rangeValue/1000)) //0.05
+            // .force('y', d3.forceY(height/2).strength(rangeValue/1000))
+
+            let forceX = simulation.force("x")
+            let forceY = simulation.force("y")
+            forceX.strength(range.current.value/1000)
+            forceY.strength(range.current.value/1000)
+            //simulation.restart()
+        });
 
         return function cleanup() {
-            d3.select('#container').selectAll("*").remove()
+            d3.select('#canvas').selectAll("*").remove()
         }
 
     },[holonPosts])
 
     return (
-        <div id='container' style={{ height: height, width:width, overflow: 'hidden' }} />
+        <div className={styles.holonPostMap}>
+            <div className={styles.controls}>
+                <div className={styles.item}>
+                    Showing {holonPosts.length} of {totalMatchingPosts} posts
+                    <span className={`blueText ml-10`} onClick={getAllHolonPosts}>
+                        load all
+                    </span>
+                </div>
+                <div className={styles.item}>
+                    <span className={styles.rangeText}>Gravity:</span>
+                    <input ref={range} id='range' className={styles.rangeInput} type="range" value={rangeValue} min="-200" max="200" onChange={updateRangeInput}/>
+                    <span className={styles.rangeValue}>{ rangeValue }</span>
+                </div>
+            </div>
+            <div id='canvas' style={{ height, width, overflow: 'hidden' }}/>
+        </div>
     )
 }
 

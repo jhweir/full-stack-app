@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { HolonContext } from '../../contexts/HolonContext'
 import { AccountContext } from '../../contexts/AccountContext'
+import { PostContext } from '../../contexts/PostContext'
 import axios from 'axios'
 import config from '../../Config'
 import styles from '../../styles/components/CreatePostModal.module.scss'
@@ -9,10 +10,19 @@ import UrlPreview from './UrlPreview'
 import SpaceInput from '../SpaceInput'
 import PollAnswerForm from '../PostPage/Poll/PollAnswerForm'
 import DropDownMenu from '../DropDownMenu'
+import SmallFlagImage from '../SmallFlagImage'
 
 function CreatePostModal() {
-    const { accountData, setCreatePostModalOpen } = useContext(AccountContext)
+    const {
+        accountData,
+        setCreatePostModalOpen,
+        createPostFromTurn,
+        setCreatePostFromTurn,
+        createPostFromTurnData,
+        setCreatePostFromTurnData
+    } = useContext(AccountContext)
     const { holonData, getHolonPosts } = useContext(HolonContext)
+    const { setPostId } = useContext(PostContext)
 
     const [postType, setPostType] = useState('Url')
     const [subType, setSubType] = useState('')
@@ -92,6 +102,8 @@ function CreatePostModal() {
         setUrlTitle(null)
         setUrlDescription(null)
         setPollAnswers([])
+        setCreatePostFromTurn(false)
+        setCreatePostFromTurnData(null)
     }
 
     function createPost() {
@@ -103,7 +115,7 @@ function CreatePostModal() {
         if (invalidPollAnswers) { setNewPollAnswerError(true) }
         if (!invalidText && !invalidUrl && !invalidPollAnswers && !urlLoading) {
             let post = { 
-                type: postType === 'Plot Graph' ? 'plot-graph' : postType.toLowerCase(), // create function to remove spaces as well as move to lower cases
+                type: postType.replace(/\s+/g, '-').toLowerCase(),
                 subType,
                 state: 'visible',
                 creatorId: accountData.id,
@@ -114,29 +126,39 @@ function CreatePostModal() {
                 urlTitle,
                 urlDescription,
                 holonHandles: addedSpaces.length ? [...addedSpaces, holonData.handle] : [holonData.handle],
-                pollAnswers, //: postType === 'Poll' ? pollAnswers : null,
-                numberOfPrismPlayers, //: postType === 'Prism' ? numberOfPrismPlayers : null,
-                prismDuration, //: postType === 'Prism' ? prismDuration : null,
-                prismPrivacy, //: postType === 'Prism' ? prismPrivacy : null,
+                pollAnswers,
+                numberOfPrismPlayers,
+                prismDuration,
+                prismPrivacy,
                 numberOfPlotGraphAxes,
                 axis1Left,
                 axis1Right,
                 axis2Top,
-                axis2Bottom
+                axis2Bottom,
+                createPostFromTurnData
             }
             axios.post(config.environmentURL + '/create-post', { post })
-                .then(() => { setCreatePostModalOpen(false); resetForm() })
+                .then(() => {setCreatePostModalOpen(false); resetForm() })
                 .then(setTimeout(() => { getHolonPosts() }, 200))
         }
     }
 
     useEffect(() => {
-        if (postType === 'Poll') { setSubType('Single Choice') }
+        if (createPostFromTurn) setPostType('Glass Bead')
+    }, [])
+
+    useEffect(() => {
+        if (postType === 'Poll') {
+            setSubType('Single Choice')
+        } else {
+            setSubType('')
+        }
+        setNumberOfPlotGraphAxes(0)
     }, [postType])
 
     const ref = useRef()
     function handleClickOutside(e) { 
-        if (!ref.current.contains(e.target)) { setCreatePostModalOpen(false) } 
+        if (!ref.current.contains(e.target)) { setCreatePostModalOpen(false); resetForm() } 
     }
     useEffect(() => {
       document.addEventListener("mousedown", handleClickOutside)
@@ -159,10 +181,26 @@ function CreatePostModal() {
                         {holonData.name}
                     </Link>
                 </div>
+                {createPostFromTurn &&
+                    <div className={styles.turnLink}>
+                        <span class='mr-10'>Linked from</span>
+                        <Link className={styles.imageTextLink} to={`/u/${createPostFromTurnData.creatorHandle}`} onClick={() => {setCreatePostModalOpen(false); resetForm()}}>
+                            <SmallFlagImage type='user' size={30} imagePath={createPostFromTurnData.creatorFlagImagePath}/>
+                            <span className={styles.linkText}>{createPostFromTurnData.creatorName}'s</span>
+                        </Link>
+                        <Link className={styles.imageTextLink} to={`/p/${createPostFromTurnData.postId}`} onClick={() => {
+                                setCreatePostModalOpen(false)
+                                resetForm()
+                                setPostId(createPostFromTurnData.postId)
+                            }}>
+                            <span className={`blueText`}>post</span>
+                        </Link>
+                    </div>
+                }
                 <div className={styles.dropDownOptions}>
                     <DropDownMenu
                         title='Post Type'
-                        options={['Text', 'Url', 'Poll', 'Prism', 'Plot Graph']}
+                        options={['Text', 'Url', 'Poll', 'Glass Bead', 'Plot Graph', 'Prism']}
                         selectedOption={postType}
                         setSelectedOption={setPostType}
                         style='horizontal'
@@ -253,7 +291,7 @@ function CreatePostModal() {
                         type="text" value={text}
                         onChange={(e) => { setText(e.target.value); setTextError(false) }}
                     />
-                    {postType === 'Url' &&
+                    {(postType === 'Url' || postType === 'Glass Bead') &&
                         <input className={`wecoInput mb-10 ${urlError && 'error'}`}
                             placeholder="Url"
                             type="url" value={url}

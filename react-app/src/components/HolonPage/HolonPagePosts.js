@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { AccountContext } from '../../contexts/AccountContext'
 import { HolonContext } from '../../contexts/HolonContext'
 import styles from '../../styles/components/HolonPagePosts.module.scss'
@@ -6,6 +6,7 @@ import PostCard from '../Cards/PostCard/PostCard'
 import HolonPagePostsFilters from './HolonPagePostsFilters'
 import HolonPagePostViews from './HolonPagePostViews'
 import SearchBar from '../SearchBar'
+import Toggle from '../Toggle'
 import HolonPostMap from './HolonPostMap'
 
 function HolonPagePosts() {
@@ -34,9 +35,21 @@ function HolonPagePosts() {
         setHolonPostSearchFilter
     } = useContext(HolonContext)
 
+    //console.log('holonPosts: ', holonPosts)
+
+    const [renderKey, setRenderKey] = useState(0)
+
     function openCreatePostModal() {
         if (isLoggedIn) { setCreatePostModalOpen(true) }
         else { setAlertModalOpen(true); setAlertMessage('Log in to create a post') }
+    }
+
+    function toggleView() {
+        if (holonPostViewLayout === 'List') { 
+            setHolonPostViewLayout('Map')
+        } else {
+            setHolonPostViewLayout('List')
+        }
     }
 
     useEffect(() => {
@@ -44,7 +57,10 @@ function HolonPagePosts() {
     }, [])
 
     useEffect(() => {
-        if (!holonContextLoading && holonData) { getHolonPosts() }
+        if (!holonContextLoading && holonData) {
+            getHolonPosts()
+            setRenderKey(renderKey + 1)
+        }
     },[
         //holonHandle,
         holonContextLoading,
@@ -63,29 +79,32 @@ function HolonPagePosts() {
     return (
         <div className={styles.wall}>
             <div className='wecoPageHeader'>
-                <div className='wecoPageHeaderRow'>
-                    <SearchBar setSearchFilter={setHolonPostSearchFilter} placeholder='Search posts...'/>
-                    <button className='wecoButton mr-10' onClick={() => setHolonPostFiltersOpen(!holonPostFiltersOpen)}>
-                        <img className='wecoButtonIcon' src='/icons/sliders-h-solid.svg'/>
-                    </button>
-                    <button
-                        className='wecoButton mr-10'
-                        onClick={() => {
-                            if (holonPostViewLayout === 'List') setHolonPostViewLayout('Map')
-                            else setHolonPostViewLayout('List')
-                        }}>
-                        View
-                        {/* <img className='wecoButtonIcon' src='/icons/eye-solid.svg'/> */}
-                    </button>
-                    <button className='wecoButton mr-10' onClick={() => openCreatePostModal()}>
-                        Create Post
-                    </button>
+                <div className={styles.headerRow}>
+                    <div className={styles.headerRowSection}>
+                        <SearchBar setSearchFilter={setHolonPostSearchFilter} placeholder='Search posts...'/>
+                        <button className='wecoButton mr-10' onClick={() => setHolonPostFiltersOpen(!holonPostFiltersOpen)}>
+                            <img className='wecoButtonIcon' src='/icons/sliders-h-solid.svg'/>
+                        </button>
+                        {/* <button
+                            className='wecoButton mr-10'
+                            onClick={() => {
+                                if (holonPostViewLayout === 'List') setHolonPostViewLayout('Map')
+                                else setHolonPostViewLayout('List')
+                            }}>
+                            View
+                            <img className='wecoButtonIcon' src='/icons/eye-solid.svg'/>
+                        </button> */}
+                        <button className='wecoButton mr-10' onClick={() => openCreatePostModal()}>
+                            Create Post
+                        </button>
+                    </div>
+                    <Toggle leftText='List' rightText='Map' onClickFunction={toggleView}/>
                 </div>
                 {holonPostFiltersOpen && <HolonPagePostsFilters/>}
                 {/* {holonPostViewsOpen && <HolonPagePostViews/>} */}
             </div>
             {holonPostViewLayout === 'List' && holonPosts.length > 0 &&
-                <ul className={`${styles.posts} ${holonContextLoading && styles.hidden}`}>
+                <ul className={`${styles.posts} ${holonContextLoading && styles.hidden}`} key={renderKey}>
                     {holonPosts.map((post, index) =>
                         <PostCard postData={post} key={index} index={index} location='holon-posts'/>
                     )}
