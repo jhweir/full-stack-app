@@ -3,9 +3,15 @@
 }
 .controls {
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
     //height: 40px;
     margin-top: 5px;
+    height: 60px;//0px;
+    //z-index: 10;
+}
+.controlsLeft {
+    display: flex;
+    flex-direction: column;
 }
 .item {
     display: flex;
@@ -13,6 +19,7 @@
     justify-content: flex-start;
     align-items: center;
     margin-bottom: 10px;
+    z-index: 3;
 }
 .rangeText {
     margin-right: 10px;
@@ -21,11 +28,57 @@
     margin-right: 10px;
 }
 .rangeValue {
-    
+    display: flex;
+    flex-direction: column;
 }
-// .textLink {
-//     color: rgb(0, 204, 255);
-//     text-decoration: underline;
-
-    
-// }
+.key {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    z-index: 3;
+    margin-top: 5px;
+    margin-right: 5px;
+}
+.keyButton {
+    width: 20px;
+    height: 20px;
+    filter: invert(70%);
+    &:hover {
+        cursor: pointer;
+    }
+}
+.keyItems {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    //z-index: 10;
+    margin-top: 10px;
+    //margin-right: 5px;
+}
+.postMapKeyItem {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 3px;
+}
+.colorBox {
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    margin-left: 5px;
+}
+.textLink {
+    margin-left: 5px;
+    width: 40px;
+    border: 2px solid black;
+    opacity: 0.3;
+}
+.turnLink {
+    margin-left: 5px;
+    width: 40px;
+    border: 2px dashed black;
+    opacity: 0.3;
+}
+.selectedPostWrapper {
+    height: 400px;
+}

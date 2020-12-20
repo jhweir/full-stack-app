@@ -5,6 +5,7 @@ import * as d3 from 'd3'
 import { HolonContext } from '../../contexts/HolonContext'
 import styles from '../../styles/components/HolonPostMap.module.scss'
 import colors from '../../styles/Colors.module.scss'
+import PostCard from '../Cards/PostCard/PostCard'
 
 function HolonPostMap() {
     const {
@@ -14,14 +15,19 @@ function HolonPostMap() {
         holonPostSortByFilter,
         holonPostSortOrderFilter
     } = useContext(HolonContext)
+
+    const [selectedPost, setSelectedPost] = useState({ creator: {}, DirectSpaces: [] })
     const [rangeValue, setRangeValue] = useState(50)
+    const [showKey, setShowKey] = useState(false)
 
     //console.log('holonPosts: ', holonPosts)
+    // let selectedPost = holonPosts.find(post => post.id = selectedPostId)
+    // console.log('selectedPost: ', selectedPost)
 
     const range = useRef()
 
     const width = 700
-    const height = 700
+    const height = 500
 
     function updateRangeInput() {
         // console.log('setRangeValue: ', range.current.value)
@@ -29,6 +35,7 @@ function HolonPostMap() {
     }
     
     useEffect(() => {
+        setSelectedPost(holonPosts[0])
         // let rangeValue2 = rangeValue
         let rangeValue2 = rangeValue;
         console.log('HolonPostMap: first useEffect')
@@ -144,28 +151,28 @@ function HolonPostMap() {
 
         const arrowPoints = 'M 0 0 6 3 0 6 1.5 3'
 
-            // text links
-            svg.append("svg:defs").append("svg:marker")
-                .attr("id", 'blue-arrow')
-                .attr("refX", 5)
-                .attr("refY", 3)
-                .attr("markerWidth", 40)
-                .attr("markerHeight", 40)
-                .attr('orient', 'auto-start-reverse')
-                .append("path")
-                .attr("d", arrowPoints)
-                .style("fill", colors.blue)
-            let textLinks = svg.append("g").attr("class", "textLinks")
-                .selectAll("#textLink")
-                .data(textLinkData)
-                .enter()
-                .append("line")
-                .attr("id", "textLink")
-                .attr("stroke", 'black')//colors.blue)
-                .attr("stroke-width", "3px")
-                .attr('opacity', 0.3)
-                //.attr('stroke-dasharray', 3)
-                //.attr("marker-end", "url(#blue-arrow)")
+        // create text links
+        svg.append("svg:defs").append("svg:marker")
+            .attr("id", 'blue-arrow')
+            .attr("refX", 5)
+            .attr("refY", 3)
+            .attr("markerWidth", 40)
+            .attr("markerHeight", 40)
+            .attr('orient', 'auto-start-reverse')
+            .append("path")
+            .attr("d", arrowPoints)
+            .style("fill", colors.blue)
+        let textLinks = svg.append("g").attr("class", "textLinks")
+            .selectAll("#textLink")
+            .data(textLinkData)
+            .enter()
+            .append("line")
+            .attr("id", "textLink")
+            .attr("stroke", 'black')//colors.blue)
+            .attr("stroke-width", "3px")
+            .attr('opacity', 0.3)
+            //.attr('stroke-dasharray', 3)
+            //.attr("marker-end", "url(#blue-arrow)")
 
         // create nodes
         let nodes = svg.selectAll("node")
@@ -174,7 +181,7 @@ function HolonPostMap() {
             .append('g')
             //.call(d3.zoom().on("zoom", () => nodes.attr("transform", d3.event.transform)))
 
-        // turn links
+        // create turn links
         svg.append("svg:defs").append("svg:marker")
             .attr("id", 'green-arrow')
             .attr("refX", 5)
@@ -202,7 +209,8 @@ function HolonPostMap() {
         // add circles to nodes
         nodes
             .append("circle")
-            .attr('id', 'circle-node')
+            .attr('class', 'post-map-node')
+            .attr('id', d => `post-map-node-${d.id}`)
             .attr("r", function(d) {
                 let radius
                 if (holonPostSortByFilter === 'Reactions') radius = d.total_reactions
@@ -212,9 +220,7 @@ function HolonPostMap() {
                 if (holonPostSortByFilter === 'Comments') radius = d.total_comments
                 if (holonPostSortByFilter === 'Date') radius = Date.parse(d.createdAt)
                 return radiusScale(radius)
-                //return radiusScale(d.total_likes)
             })
-            // .attr("fill", "url(#catpattern)")
             .style("fill", function(d){
                 if (d.urlImage !== null) {
                     var pattern = defs.append("pattern")
@@ -237,7 +243,6 @@ function HolonPostMap() {
                             if (holonPostSortByFilter === 'Date') radius = Date.parse(d.createdAt)
                             return radiusScale(radius) * 2
                         })
-                        //.attr("width", radiusScale(d.total_likes) * 2)
                         .attr("xlink:href", d.urlImage)
 
                     return `url(#${d.id})`
@@ -251,10 +256,20 @@ function HolonPostMap() {
                     if (d.type === 'plot-graph') { return colors.orange }
                 }
             })
-            //.attr("fill", "url(#catpattern)")
             .style("stroke", d => (d.account_like || d.account_repost || d.account_rating || d.account_link > 0) ? '#83b0ff' : 'rgb(140 140 140)')//"transparent")
-            .style("stroke-width", 2)
+            .style("stroke-width", (d, i) => i === 0 ? 6 : 2 )
             .attr('opacity', 0.9)
+            .on('click', e => {
+                setSelectedPost(holonPosts.find(post => post.id === e.id))
+                d3.selectAll('.post-map-node')
+                    .transition()
+                    .duration(200)
+                    .style("stroke-width", 2)
+                d3.select(d3.event.target)
+                    .transition()
+                    .duration(200)
+                    .style("stroke-width", 6)
+            })
             .call(d3.drag()
                 .on("start", dragstarted)
                 .on("drag", dragged)
@@ -263,21 +278,22 @@ function HolonPostMap() {
         // add text to nodes
         nodes
             .append("text")
-            // .append('foreignObject')
-            // .style('width', '200px')
-            // .style('height', '30px')
-            .attr('class', 'post-text')
-            // .append("xhtml:div")
-            // .style('height', '30px')
-            // .style("font", "14px 'Helvetica Neue'")
-            // .html("<h1>An HTML Foreign Object in SVG</h1>")
-            //.attr("text-overflow", 'clip')
-            //.attr('width', 200)
-            //.attr('dy', '1.2em')
+            .attr('class', 'post-map-node-text')
             .text(function(d){ 
-                let text = d.text.substring(0, 50)
+                let text = d.text.substring(0, 30)
                 if (text.length === 50) text = text.concat('...')
                 return text
+            })
+            .on('click', e => {
+                setSelectedPost(holonPosts.find(post => post.id === e.id))
+                d3.selectAll('.post-map-node')
+                    .transition()
+                    .duration(200)
+                    .style("stroke-width", 2)
+                d3.select(`#post-map-node-${e.id}`)
+                    .transition()
+                    .duration(200)
+                    .style("stroke-width", 6)
             })
             .call(d3.drag()
                 .on("start", dragstarted)
@@ -296,11 +312,11 @@ function HolonPostMap() {
             .on('tick', update)
 
         function update() {
-            d3.selectAll('#circle-node')
+            d3.selectAll('.post-map-node')
                 .attr("cx", function(d) { return d.x })
                 .attr("cy", function(d) { return d.y })
 
-            d3.selectAll('.post-text')
+            d3.selectAll('.post-map-node-text')
                 .attr('text-anchor', 'middle')
                 .attr("x", function(d) { return d.x })
                 .attr("y", function(d) { return d.y })
@@ -350,19 +366,81 @@ function HolonPostMap() {
     return (
         <div className={styles.holonPostMap}>
             <div className={styles.controls}>
-                <div className={styles.item}>
-                    Showing {holonPosts.length} of {totalMatchingPosts} posts
-                    <span className={`blueText ml-10`} onClick={getAllHolonPosts}>
-                        load all
-                    </span>
+                <div className={styles.controlsLeft}>
+                    <div className={styles.item}>
+                        Showing {holonPosts.length} of {totalMatchingPosts} posts
+                        <span className={`blueText ml-10`} onClick={getAllHolonPosts}>
+                            load all
+                        </span>
+                    </div>
+                    <div className={styles.item}>
+                        <span className={styles.rangeText}>Gravity:</span>
+                        <input ref={range} id='range' className={styles.rangeInput} type="range" value={rangeValue} min="-200" max="200" onChange={updateRangeInput}/>
+                        <span className={styles.rangeValue}>{ rangeValue }</span>
+                    </div>
                 </div>
-                <div className={styles.item}>
-                    <span className={styles.rangeText}>Gravity:</span>
-                    <input ref={range} id='range' className={styles.rangeInput} type="range" value={rangeValue} min="-200" max="200" onChange={updateRangeInput}/>
-                    <span className={styles.rangeValue}>{ rangeValue }</span>
+                <div className={styles.key}>
+                    <img className={styles.keyButton} src='/icons/key-solid.svg' onClick={() => setShowKey(!showKey)}/>
+                    {showKey &&
+                        <div className={styles.keyItems}>
+                            <div className={styles.postMapKeyItem}>
+                                <span className={styles.text}>Text</span>
+                                <div className={styles.colorBox} style={{ backgroundColor: colors.green }}/>
+                                {/* <span className={styles.text}>Text</span> */}
+                            </div>
+                            <div className={styles.postMapKeyItem}>
+                                <span className={styles.text}>Url</span>
+                                <div className={styles.colorBox} style={{ backgroundColor: colors.yellow }}/>
+                                {/* <span className={styles.text}>Url</span> */}
+                            </div>
+                            <div className={styles.postMapKeyItem}>
+                                <span className={styles.text}>Poll</span>
+                                <div className={styles.colorBox} style={{ backgroundColor: colors.red }}/>
+                                {/* <span className={styles.text}>Poll</span> */}
+                            </div>
+                            <div className={styles.postMapKeyItem}>
+                                <span className={styles.text}>Glass Bead</span>
+                                <div className={styles.colorBox} style={{ backgroundColor: colors.blue }}/>
+                                {/* <span className={styles.text}>Glass Bead</span> */}
+                            </div>
+                            <div className={styles.postMapKeyItem}>
+                                <span className={styles.text}>Prism</span>
+                                <div className={styles.colorBox} style={{ backgroundColor: colors.purple }}/>
+                                {/* <span className={styles.text}>Prism</span> */}
+                            </div>
+                            <div className={styles.postMapKeyItem}>
+                                <span className={styles.text}>Plot Graph</span>
+                                <div className={styles.colorBox} style={{ backgroundColor: colors.orange }}/>
+                                {/* <span className={styles.text}>Plot Graph</span> */}
+                            </div>
+                            <div className={styles.postMapKeyItem}>
+                                <span className={styles.text}>No Account Reaction</span>
+                                <div className={styles.colorBox} style={{ border: '2px solid rgb(140 140 140)' }}/>
+                                {/* <span className={styles.text}>No Reaction</span> */}
+                            </div>
+                            <div className={styles.postMapKeyItem}>
+                                <span className={styles.text}>Account Reaction</span>
+                                <div className={styles.colorBox} style={{ border: '2px solid #83b0ff' }}/>
+                                {/* <span className={styles.text}>Reaction</span> */}
+                            </div>
+                            <div className={styles.postMapKeyItem}>
+                                <span className={styles.text}>Text Link</span>
+                                <div className={styles.textLink}/>
+                                {/* <span className={styles.text}>Reaction</span> */}
+                            </div>
+                            <div className={styles.postMapKeyItem}>
+                                <span className={styles.text}>Turn Link</span>
+                                <div className={styles.turnLink}/>
+                                {/* <span className={styles.text}>Reaction</span> */}
+                            </div>
+                        </div>
+                    }
                 </div>
             </div>
-            <div id='canvas' style={{ height, width, overflow: 'hidden' }}/>
+            <div id='canvas' style={{ height, width }}/>
+            <div className={styles.selectedPostWrapper}>
+                <PostCard postData={selectedPost} location='holon-post-map'/>
+            </div>
         </div>
     )
 }

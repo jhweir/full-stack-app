@@ -14,7 +14,7 @@ function HolonPageSpacesFilters() {
         <div className='wecoFilters'>
             <DropDownMenu
                 title='Sort By'
-                options={['Followers', 'Posts', 'Comments', 'Date', 'Reactions', 'Likes', 'Hearts', 'Ratings', 'Links']}
+                options={['Followers', 'Posts', 'Comments', 'Date', 'Reactions', 'Likes', 'Ratings']}
                 selectedOption={holonSpaceSortByFilter}
                 setSelectedOption={setHolonSpaceSortByFilter}
             />

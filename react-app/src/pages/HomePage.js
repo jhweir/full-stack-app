@@ -22,7 +22,7 @@ function Homepage() {
                     <span>User accounts</span>
                     <ul className={styles.ul}>
                         <li><input type="checkbox" checked={true} readOnly/>Log in / out with JWT authentication and encrypted password</li>
-                        <li><input type="checkbox" checked={true} readOnly/>Profile page</li>
+                        {/* <li><input type="checkbox" checked={true} readOnly/>Profile page</li> */}
                         <li><input type="checkbox" checked={true} readOnly/>Access to followed and moderated spaces</li>
                         <li><input type="checkbox" checked={true} readOnly/>Search and filter created posts</li>
                     </ul>

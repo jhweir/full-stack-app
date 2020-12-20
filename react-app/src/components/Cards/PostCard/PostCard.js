@@ -61,6 +61,7 @@ function PostCard(props) {
     if (type === 'prism') backgroundColor = colors.purple
 
     function syncPostState() {
+        setReactionsOpen(false)
         setTotalComments(total_comments)
         setTotalReactions(total_reactions)
         setTotalLikes(total_likes)
@@ -87,9 +88,11 @@ function PostCard(props) {
     }
 
     function formattedDate() {
-        let a = createdAt.split(/[-.T :]/)
-        let formattedDate = a[3]+':'+a[4]+' on '+a[2]+'-'+a[1]+'-'+a[0]
-        return formattedDate
+        if (createdAt) {
+            let a = createdAt.split(/[-.T :]/)
+            let formattedDate = a[3]+':'+a[4]+' on '+a[2]+'-'+a[1]+'-'+a[0]
+            return formattedDate
+        }
     }
 
     function createPostFromTurn() {
@@ -110,12 +113,12 @@ function PostCard(props) {
 
     useEffect(() => {
         if (postData.id) { syncPostState() }
-    }, [postData])
+    }, [postData.id])
 
     if (finishedLoading) {
         return (
             <div className={styles.post}>
-                {location !== 'post-page' && <div className={styles.index}>{index + 1}</div>}
+                {location !== 'post-page' && location !== 'holon-post-map' && <div className={styles.index}>{index + 1}</div>}
                 <div className={styles.body}>
                     <div className={styles.tags}>
                         <Link to={ `/u/${creator.handle}`} className={styles.creator}>
