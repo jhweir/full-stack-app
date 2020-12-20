@@ -24,8 +24,7 @@ function HolonPostMap() {
     const height = 700
 
     function updateRangeInput() {
-        // console.log('update range')
-        // console.log('range.value: ', range.current.value)
+        // console.log('setRangeValue: ', range.current.value)
         setRangeValue(range.current.value)
     }
     
@@ -34,7 +33,7 @@ function HolonPostMap() {
         let rangeValue2 = rangeValue;
         console.log('HolonPostMap: first useEffect')
         let dMin = 0, dMax
-        if (holonPostSortByFilter === 'Total Reactions') dMax = d3.max(holonPosts.map(post => post.total_reactions))
+        if (holonPostSortByFilter === 'Reactions') dMax = d3.max(holonPosts.map(post => post.total_reactions))
         if (holonPostSortByFilter === 'Likes') dMax = d3.max(holonPosts.map(post => post.total_likes))
         if (holonPostSortByFilter === 'Reposts') dMax = d3.max(holonPosts.map(post => post.total_reposts))
         if (holonPostSortByFilter === 'Ratings') dMax = d3.max(holonPosts.map(post => post.total_ratings))
@@ -85,13 +84,13 @@ function HolonPostMap() {
                 //let charge = -80 - (d.total_likes * d.total_likes * 100)
                 // let charge = -200 - (d.total_likes * d.total_likes * 300)
                 let charge
-                if (holonPostSortByFilter === 'Total Reactions') { charge = d.total_reactions; return -100 - (charge * 100) }
+                if (holonPostSortByFilter === 'Reactions') { charge = d.total_reactions; return -100 - (charge * 100) }
                 if (holonPostSortByFilter === 'Likes') charge = d.total_likes
                 if (holonPostSortByFilter === 'Reposts') charge = d.total_reposts
                 if (holonPostSortByFilter === 'Ratings') charge = d.total_ratings
                 if (holonPostSortByFilter === 'Comments') charge = d.total_comments
                 if (holonPostSortByFilter === 'Date') { charge = - Date.parse(d.createdAt) / 10000000000; return charge }
-                let newCharge = -100 - (charge * 400)
+                let newCharge = -100 - (charge * 100)//-100 - (charge * 400)
                 return newCharge
             }))
             .force('center', d3.forceCenter(width/2, height/2))
@@ -103,7 +102,7 @@ function HolonPostMap() {
             // .force('y', d3.forceY(height / 2).strength(0.2))
             .force('collide', d3.forceCollide(function(d) {
                 let radius
-                if (holonPostSortByFilter === 'Total Reactions') radius = d.total_reactions
+                if (holonPostSortByFilter === 'Reactions') radius = d.total_reactions
                 if (holonPostSortByFilter === 'Likes') radius = d.total_likes
                 if (holonPostSortByFilter === 'Reposts') radius = d.total_reposts
                 if (holonPostSortByFilter === 'Ratings') radius = d.total_ratings
@@ -206,7 +205,7 @@ function HolonPostMap() {
             .attr('id', 'circle-node')
             .attr("r", function(d) {
                 let radius
-                if (holonPostSortByFilter === 'Total Reactions') radius = d.total_reactions
+                if (holonPostSortByFilter === 'Reactions') radius = d.total_reactions
                 if (holonPostSortByFilter === 'Likes') radius = d.total_likes
                 if (holonPostSortByFilter === 'Reposts') radius = d.total_reposts
                 if (holonPostSortByFilter === 'Ratings') radius = d.total_ratings
@@ -230,7 +229,7 @@ function HolonPostMap() {
                         .attr("y", 0)
                         .attr("height", function() {
                             let radius
-                            if (holonPostSortByFilter === 'Total Reactions') radius = d.total_reactions
+                            if (holonPostSortByFilter === 'Reactions') radius = d.total_reactions
                             if (holonPostSortByFilter === 'Likes') radius = d.total_likes
                             if (holonPostSortByFilter === 'Reposts') radius = d.total_reposts
                             if (holonPostSortByFilter === 'Ratings') radius = d.total_ratings
@@ -339,6 +338,7 @@ function HolonPostMap() {
             forceX.strength(range.current.value/1000)
             forceY.strength(range.current.value/1000)
             //simulation.restart()
+            simulation.alphaTarget(.03).restart()
         });
 
         return function cleanup() {

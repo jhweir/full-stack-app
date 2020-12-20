@@ -122,8 +122,8 @@ router.get('/holon-posts', (req, res) => {
         let direction, order
         if (sortOrder === 'Ascending') { direction = 'ASC' } else { direction = 'DESC' }
         if (sortBy === 'Date') { order = [['createdAt', direction]] }
-        if (sortBy === 'Total Reactions') { order = [[sequelize.literal(`total_reactions`), direction]] }
-        if (sortBy !== 'Total Reactions' && sortBy !== 'Date') { order = [[sequelize.literal(`total_${sortBy.toLowerCase()}`), direction]] }
+        if (sortBy === 'Reactions') { order = [[sequelize.literal(`total_reactions`), direction]] }
+        if (sortBy !== 'Reactions' && sortBy !== 'Date') { order = [[sequelize.literal(`total_${sortBy.toLowerCase()}`), direction]] }
         return order
     }
 
@@ -133,7 +133,7 @@ router.get('/holon-posts', (req, res) => {
             `(SELECT COUNT(*) FROM Comments AS Comment WHERE Comment.state = 'visible' AND Comment.postId = Post.id)`
             ),'total_comments'
         ])}
-        if (sortBy === 'Total Reactions') { firstAttributes.push([sequelize.literal(
+        if (sortBy === 'Reactions') { firstAttributes.push([sequelize.literal(
             `(SELECT COUNT(*) FROM Reactions AS Reaction WHERE Reaction.postId = Post.id AND Reaction.type != 'vote' AND Reaction.state = 'active')`
             ),'total_reactions'
         ])}
@@ -878,7 +878,7 @@ router.get('/user-posts', (req, res) => {
 
     function findType() {
         let type
-        if (postType === 'All Types') { type = ['text', 'poll', 'url'] }
+        if (postType === 'All Types') { type = ['text', 'poll', 'url', 'glass-bead', 'prism', 'plot-graph'] }
         if (postType !== 'All Types') { type = postType.toLowerCase() }
         return type
     }
@@ -887,8 +887,8 @@ router.get('/user-posts', (req, res) => {
         let direction, order
         if (sortOrder === 'Ascending') { direction = 'ASC' } else { direction = 'DESC' }
         if (sortBy === 'Date') { order = [['createdAt', direction]] }
-        if (sortBy === 'Total Reactions') { order = [[sequelize.literal(`total_reactions`), direction]] }
-        if (sortBy !== 'Total Reactions' && sortBy !== 'Date') { order = [[sequelize.literal(`total_${sortBy.toLowerCase()}`), direction]] }
+        if (sortBy === 'Reactions') { order = [[sequelize.literal(`total_reactions`), direction]] }
+        if (sortBy !== 'Reactions' && sortBy !== 'Date') { order = [[sequelize.literal(`total_${sortBy.toLowerCase()}`), direction]] }
         return order
     }
 
@@ -898,7 +898,7 @@ router.get('/user-posts', (req, res) => {
             `(SELECT COUNT(*) FROM Comments AS Comment WHERE Comment.state = 'visible' AND Comment.postId = Post.id)`
             ),'total_comments'
         ])}
-        if (sortBy === 'Total Reactions') { firstAttributes.push([sequelize.literal(
+        if (sortBy === 'Reactions') { firstAttributes.push([sequelize.literal(
             `(SELECT COUNT(*) FROM Reactions AS Reaction WHERE Reaction.postId = Post.id AND Reaction.type != 'vote' AND Reaction.state = 'active')`
             ),'total_reactions'
         ])}

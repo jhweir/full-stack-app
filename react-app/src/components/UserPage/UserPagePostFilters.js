@@ -14,7 +14,7 @@ function UserPagePostFilters() {
         <div className='wecoFilters'>
             <DropDownMenu
                 title='Sort By'
-                options={['Total Reactions', 'Likes', 'Reposts', 'Ratings', 'Comments', 'Date']}
+                options={['Reactions', 'Likes', 'Reposts', 'Ratings', 'Comments', 'Date']}
                 selectedOption={createdPostSortByFilter}
                 setSelectedOption={setCreatedPostSortByFilter}
             />
@@ -32,7 +32,7 @@ function UserPagePostFilters() {
             />
             <DropDownMenu
                 title='Post Type'
-                options={['All Types', 'Text', 'Poll', 'Url']}
+                options={['All Types', 'Text', 'Url', 'Poll', 'Glass Bead', 'Plot Graph', 'Prism']}
                 selectedOption={createdPostTypeFilter}
                 setSelectedOption={setCreatedPostTypeFilter}
             />

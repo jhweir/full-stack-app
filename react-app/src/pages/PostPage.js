@@ -43,7 +43,7 @@ function PostPage({ match, location }) {
                     {/* } */}
                     <Route path={`${url}/comments`} render={() => <PostPageComments/>} exact/>
                     <Route path={`${url}/vote`} render={() => <PostPagePollVote/>} exact />
-                    <Route path={`${url}/results`} component={() => <PostPagePollResults/>} exact />
+                    <Route path={`${url}/results`} render={() => <PostPagePollResults/>} exact />
                     <Route component={ EmptyPage }/>
                 </Switch> 
             </div>

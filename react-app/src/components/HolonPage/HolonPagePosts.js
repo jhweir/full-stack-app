@@ -73,7 +73,7 @@ function HolonPagePosts() {
     ])
 
     useEffect(() => {
-        if (pageBottomReached && !holonContextLoading && holonData) { getNextHolonPosts() }
+        if (holonPostViewLayout === 'List' && pageBottomReached && !holonContextLoading && holonData.id) { getNextHolonPosts() }
     }, [pageBottomReached])
 
     return (

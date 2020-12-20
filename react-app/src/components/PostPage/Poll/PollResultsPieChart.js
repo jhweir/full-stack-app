@@ -14,147 +14,151 @@ function PollResultsPieChart() {
     // height = 450,
     // radius = 150
     useEffect(() => {
-        // console.log('pollAnswers: ', pollAnswers)
-        // console.log('pollAnswersSortedByScore: ', pollAnswersSortedByScore)
-        // const { post, pollAnswersSortedByScore, totalPollVotes, colorScale } = props
-        let width = 450,
-        height = 450,
-        radius = 150
+        if (postData.id) {
+            // console.log('pollAnswers: ', pollAnswers)
+            // console.log('pollAnswersSortedByScore: ', pollAnswersSortedByScore)
+            // const { post, pollAnswersSortedByScore, totalPollVotes, colorScale } = props
+            let width = 450,
+            height = 450,
+            radius = 150
 
-        let arc = d3.arc()
-            .outerRadius(radius - 20)
-            .innerRadius(80)
+            let arc = d3.arc()
+                .outerRadius(radius - 20)
+                .innerRadius(80)
 
-        let pie = d3.pie()
-            //.sort(null)
-            .value(function(d) {
-                if (postData.subType === 'weighted-choice') { return d.total_score }
-                else { return d.total_votes }
-            })
+            let pie = d3.pie()
+                //.sort(null)
+                .value(function(d) {
+                    if (postData.subType === 'weighted-choice') { return d.total_score }
+                    else { return d.total_votes }
+                })
 
-        let angleInterpolation = d3.interpolate(pie.startAngle()(), pie.endAngle()())
+            let angleInterpolation = d3.interpolate(pie.startAngle()(), pie.endAngle()())
 
-        let svg = d3.select('.chart')
-            .append("svg")
-            .attr("width", width)
-            .attr("height", height)
-            .append("g")
-            .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")")
+            let svg = d3.select('#chart')
+                .append("svg")
+                .attr('id', 'main-svg')
+                .attr("width", width)
+                .attr("height", height)
+                .append("g")
+                .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")")
 
-        let g = svg.selectAll()
-            .data(pie(pollAnswersSortedByScore))
-            .enter()
-            .append("g")
+            let g = svg.selectAll()
+                .data(pie(pollAnswersSortedByScore))
+                .enter()
+                .append("g")
 
-        g.append("path")
-            .attr("d", arc)
-            .style("fill", function(d, i) {
-                return colorScale(i)
-            })
-            .style("stroke", "#f7f7f9")
-            .style("stroke-width", 2)
-            .style("opacity", 0)
-            .attr("transform","translate(0, 0) scale(0)")
-            .transition()
-            .duration(1000)
-            .attr("transform","translate(0, 0) scale(1)")
-            .style("opacity", 1)
-            .attrTween("d", d => {
-                let originalEnd = d.endAngle;
-                return t => {
-                    let currentAngle = angleInterpolation(t)
-                    if (currentAngle < d.startAngle) { return "" } else
-                    d.endAngle = Math.min(currentAngle, originalEnd)
-                    return arc(d)
-                }
-            })
+            g.append("path")
+                .attr("d", arc)
+                .style("fill", function(d, i) {
+                    return colorScale(i)
+                })
+                .style("stroke", "#f7f7f9")
+                .style("stroke-width", 2)
+                .style("opacity", 0)
+                .attr("transform","translate(0, 0) scale(0)")
+                .transition()
+                .duration(1000)
+                .attr("transform","translate(0, 0) scale(1)")
+                .style("opacity", 1)
+                .attrTween("d", d => {
+                    let originalEnd = d.endAngle;
+                    return t => {
+                        let currentAngle = angleInterpolation(t)
+                        if (currentAngle < d.startAngle) { return "" } else
+                        d.endAngle = Math.min(currentAngle, originalEnd)
+                        return arc(d)
+                    }
+                })
 
-        g.append("text")
-            .attr("transform", function(d) {
-                let _d = arc.centroid(d)
-                _d[0] = _d[0] * 1.7 //1.9 - 30
-                _d[1] = _d[1] * 1.7 - 15
-                return "translate(" + _d + ")"
-            })
-            .attr("dy", ".50em")
-            .style("font-weight", 800)
-            .style("text-anchor", "middle")
-            .style("opacity", 0)
-            .transition()
-            .duration(2000)
-            .style("opacity", 1)
-            .text(function(d) {
-                if (postData.subType === 'weighted-choice') {
-                    if (((d.data.total_score / totalPollVotes) * 100) < 4) { return '' }
-                    return `${d.data.total_score} ↑` //↑⇧⇑⇪⬆
-                } else {
-                    if (((d.data.total_votes / totalPollVotes) * 100).toFixed(1) < 4) { return '' }
-                    return `${d.data.total_votes} ↑` //↑⇧⇑⇪⬆
-                }
-            })
+            g.append("text")
+                .attr("transform", function(d) {
+                    let _d = arc.centroid(d)
+                    _d[0] = _d[0] * 1.7 //1.9 - 30
+                    _d[1] = _d[1] * 1.7 - 15
+                    return "translate(" + _d + ")"
+                })
+                .attr("dy", ".50em")
+                .style("font-weight", 800)
+                .style("text-anchor", "middle")
+                .style("opacity", 0)
+                .transition()
+                .duration(2000)
+                .style("opacity", 1)
+                .text(function(d) {
+                    if (postData.subType === 'weighted-choice') {
+                        if (((d.data.total_score / totalPollVotes) * 100) < 4) { return '' }
+                        return `${d.data.total_score} ↑` //↑⇧⇑⇪⬆
+                    } else {
+                        if (((d.data.total_votes / totalPollVotes) * 100).toFixed(1) < 4) { return '' }
+                        return `${d.data.total_votes} ↑` //↑⇧⇑⇪⬆
+                    }
+                })
 
-        g.append("text")
-            .attr("class", "percentage")
-            .attr("transform", function(d) {
-                let _d = arc.centroid(d)
-                _d[0] = _d[0] * 1.7 //1.9 + 20 // width
-                _d[1] = _d[1] * 1.7 + 10 // height
-                return "translate(" + _d + ")"
-            })
-            .attr("dy", ".50em")
-            .style("text-anchor", "middle")
-            .style("opacity", 0)
-            .transition()
-            .duration(2000)
-            .style("opacity", 1)
-            .text(function(d) {
-                if (((d.data.total_score / totalPollVotes) * 100).toFixed(2) < 4) { return '' }
-                return `${((d.data.total_score / totalPollVotes) * 100).toFixed(1)}%`
-            })
+            g.append("text")
+                .attr("class", "percentage")
+                .attr("transform", function(d) {
+                    let _d = arc.centroid(d)
+                    _d[0] = _d[0] * 1.7 //1.9 + 20 // width
+                    _d[1] = _d[1] * 1.7 + 10 // height
+                    return "translate(" + _d + ")"
+                })
+                .attr("dy", ".50em")
+                .style("text-anchor", "middle")
+                .style("opacity", 0)
+                .transition()
+                .duration(2000)
+                .style("opacity", 1)
+                .text(function(d) {
+                    if (((d.data.total_score / totalPollVotes) * 100).toFixed(2) < 4) { return '' }
+                    return `${((d.data.total_score / totalPollVotes) * 100).toFixed(1)}%`
+                })
 
-        g.append("text")
-            .attr("transform", function(d) {
-                let _d = arc.centroid(d)
-                _d[0] += 0
-                _d[1] += 0
-                return "translate(" + _d + ")"
-            })
-            .attr("dy", ".50em")
-            .style("text-anchor", "middle")
-            .style("fill", "white")
-            .style("opacity", 0)
-            .transition()
-            .duration(2000)
-            .style("opacity", 1)
-            .text(function(d,i) {
-                if (((d.data.total_votes / totalPollVotes) * 100).toFixed(2) < 4) { return '' }
-                return `${i + 1}`
-            })
-     
-        d3.select('svg').append("text")
-            .attr("text-anchor", "middle")
-            .attr('font-size', '3em')
-            .attr('x', width / 2)
-            .attr('y', height / 2 + 10)
-            .text(totalPollVotes.toFixed(0))
-            .style("opacity", 0)
-            .transition()
-            .duration(2000)
-            .style("opacity", 1)
+            g.append("text")
+                .attr("transform", function(d) {
+                    let _d = arc.centroid(d)
+                    _d[0] += 0
+                    _d[1] += 0
+                    return "translate(" + _d + ")"
+                })
+                .attr("dy", ".50em")
+                .style("text-anchor", "middle")
+                .style("fill", "white")
+                .style("opacity", 0)
+                .transition()
+                .duration(2000)
+                .style("opacity", 1)
+                .text(function(d,i) {
+                    if (((d.data.total_votes / totalPollVotes) * 100).toFixed(2) < 4) { return '' }
+                    return `${i + 1}`
+                })
+        
+            d3.select('#main-svg').append("text")
+                .attr("text-anchor", "middle")
+                .attr('font-size', '3em')
+                .attr('x', width / 2)
+                .attr('y', height / 2 + 10)
+                .text(totalPollVotes.toFixed(0))
+                .style("opacity", 0)
+                .transition()
+                .duration(2000)
+                .style("opacity", 1)
 
-        d3.select('svg').append("text")
-            .attr("text-anchor", "middle")
-            .attr('font-size', '1em')
-            .attr('x', width / 2)
-            .attr('y', height / 2 + 35)
-            .text('votes')
-            .style("opacity", 0)
-            .transition()
-            .duration(2000)
-            .style("opacity", 1)
-    }, [postData])
+            d3.select('#main-svg').append("text")
+                .attr("text-anchor", "middle")
+                .attr('font-size', '1em')
+                .attr('x', width / 2)
+                .attr('y', height / 2 + 35)
+                .text('votes')
+                .style("opacity", 0)
+                .transition()
+                .duration(2000)
+                .style("opacity", 1)
+        }
+    }, [postData.id])
+
     return (
-        <div className="chart" style={{width: 450}}></div>
+        <div id="chart" style={{width: 450}}></div>
     )
 }
 

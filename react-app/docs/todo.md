@@ -80,7 +80,7 @@ Last updated: 22-11-2020
 - work out best approach to paginate posts with filters
     - Time range (All Time, Last Year, Last Month, Last Week, Last 24 hours, Last Hour)
     - Post type (Text, Poll, ...)
-    - Sort by (Total Reactions, Total Likes, Total Hearts, Total Ratings, Total Links, ...)
+    - Sort by (Reactions, Total Likes, Total Hearts, Total Ratings, Total Links, ...)
 - work out how to get holon stats for sorting ()
 - Set up filters on child-holons page
 - Show all spaces vs direct child spaces ('holon handles' / 'verticle holon relationships') ('all contained spaces' vs. 'only direct descendents')

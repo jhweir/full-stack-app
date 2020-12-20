@@ -20,7 +20,7 @@ function PostCard(props) {
     const { postContextLoading } = useContext(PostContext)
     const history = useHistory()
 
-    console.log('postData: ', postData);
+    // console.log('postData: ', postData);
 
     // remote post state
     const { 

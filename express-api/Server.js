@@ -54,7 +54,7 @@ app.post('/api/log-in', async (req, res) => {
           if (error) { res.send('incorrect-password') }
           if (success) { 
               const payload = { id: user.id }
-              const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '30m' })
+              const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1d' })
               // const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' })
               // res.cookie('cookie_name', accessToken, { httpOnly: true })
               res.send(accessToken)

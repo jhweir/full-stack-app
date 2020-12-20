@@ -18,17 +18,14 @@ function PollResultsTimeGraph() {
     const height = 350
     const margin = { top: 50, right: 50, bottom: 50, left: 50 }
 
-    function getPollVotes() {
-        axios.get(config.environmentURL + `/poll-votes?postId=${postId}`)
-        .then(res => { setPollVotes(res.data) })
-    }
-
     useEffect(() => {
-        if (postData.id && !pollVotes.length) {
-            getPollVotes()
-            console.log('first useEffect run on TimeGraph comp')
+        if (postData.id) {
+            console.log('PollResultsTimeGraph: getPollVotes')
+            axios
+                .get(config.environmentURL + `/poll-votes?postId=${postId}`)
+                .then(res => setPollVotes(res.data))
         }
-    }, [])
+    }, [postData.id])
 
     var pollVotesGroupedByAnswer = d3.nest()
         .key(function(d) { return d.pollAnswerId })
@@ -90,10 +87,9 @@ function PollResultsTimeGraph() {
         .scale(y)
         .tickArguments([6])
 
-
     useEffect(() => {
-        console.log('second useEffect run on TimeGraph comp')
         if (postData.PollAnswers.length) {
+            console.log('second useEffect run on TimeGraph comp')
             pollVotesGroupedByAnswer.forEach((answer, i) => {
                 if (answer.values[0].parsedCreatedAt) {
                     let line = d3.selectAll(`#line-${answer.key}`)

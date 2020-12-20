@@ -8,11 +8,12 @@ function Homepage() {
             <div className={styles.mainContent}>
                 <img className={styles.logo} src='/images/logo-002-blurred.png'/>
                 <span className={styles.title}>
-                    weco<span className={`${styles.title} ${styles.grey}`}>.io</span>
+                    {/* weco<span className={`${styles.title} ${styles.grey}`}>.io</span> */}
+                    we{`{`}<span className={`${styles.title} ${styles.grey}`}>collective</span>{`}`}
                 </span>
-                {/* <span className={styles.subTitle}>holonic social media coop</span> */}
-                <span className={styles.subTitle}>evolving social media tools and governance</span>
-                <div className={`${styles.wrapper} mt-70 mb-50`}>
+                <span className={styles.subTitle}>holonic social media coop</span>
+                {/* <span className={`${styles.subTitle} mb-20`}>evolving social media tools and governance</span> */}
+                <div className={styles.wrapper}>
                     <span className={styles.mediumText}>Under construction...</span>
                     <img className={styles.icon} src='/icons/tools-solid.svg'/>
                 </div>
@@ -22,10 +23,8 @@ function Homepage() {
                     <ul className={styles.ul}>
                         <li><input type="checkbox" checked={true} readOnly/>Log in / out with JWT authentication and encrypted password</li>
                         <li><input type="checkbox" checked={true} readOnly/>Profile page</li>
-                        {/* <ul> */}
-                            <li><input type="checkbox" checked={true} readOnly/>Access to followed and moderated spaces</li>
-                            <li><input type="checkbox" checked={true} readOnly/>Search and filter created posts</li>
-                        {/* </ul> */}
+                        <li><input type="checkbox" checked={true} readOnly/>Access to followed and moderated spaces</li>
+                        <li><input type="checkbox" checked={true} readOnly/>Search and filter created posts</li>
                     </ul>
                     <span className={`mt-20`}>Spaces</span>
                     <ul className={styles.ul}>
@@ -60,9 +59,8 @@ function Homepage() {
                         <li><input type="checkbox" checked={true} readOnly/>Toggle view of posts between scrollable list and post map</li>
                         <li><input type="checkbox" checked={true} readOnly/>Posts and links visualised on post map</li>
                     </ul>
-                    <span className={`${styles.largeText} mt-50`}>Future features</span>
+                    <span className={`${styles.largeText} mt-50`}>Coming features</span>
                     <ul className={styles.ul}>
-                        <li><input type="checkbox" checked={false} readOnly/>Up/down vote links between posts</li>
                         <li><input type="checkbox" checked={false} readOnly/>Account notifications</li>
                         <li><input type="checkbox" checked={false} readOnly/>User to user messaging</li>
                         <li><input type="checkbox" checked={false} readOnly/>Personalised stream (pulling in content from followed spaces) on user profile</li>
@@ -72,13 +70,14 @@ function Homepage() {
                             <li><input type="checkbox" checked={false} readOnly/>Decision trees</li>
                             <li><input type="checkbox" checked={false} readOnly/>Knowledge maps</li>
                         </ul>
-                        <li><input type="checkbox" checked={false} readOnly/>Flag posts</li>
-                        <li><input type="checkbox" checked={false} readOnly/>Personalised flag filters</li>
+                        <li><input type="checkbox" checked={false} readOnly/>Nested comment replies</li>
+                        <li><input type="checkbox" checked={false} readOnly/>Comment permalinks</li>
+                        <li><input type="checkbox" checked={false} readOnly/>Up/down vote links between posts</li>
+                        <li><input type="checkbox" checked={false} readOnly/>Flag posts for moderation</li>
+                        <li><input type="checkbox" checked={false} readOnly/>Custom filtering of content based on flags</li>
                         <li><input type="checkbox" checked={false} readOnly/>Log in through Facebook, Twitter, Google</li>
                         <li><input type="checkbox" checked={false} readOnly/>Zoomable circle packing view for spaces</li>
                         <li><input type="checkbox" checked={false} readOnly/>Responsive UI for small screens</li>
-                        <li><input type="checkbox" checked={false} readOnly/>Nested comment replies</li>
-                        <li><input type="checkbox" checked={false} readOnly/>Comment permalinks</li>
                     </ul>
                 </div>
             </div>
