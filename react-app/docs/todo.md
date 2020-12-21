@@ -1,16 +1,13 @@
 # Todos
 Last updated: 22-11-2020
 
-+ Create link preview and modal
-+ Create link table
-+ Display links on postmap
-+ Allow users to vote on links
-
-- Bug: Sort by Date (Descending) not loading all posts
+- Create link previews
+- Allow users to vote on links
+- create expandable comments
+- Bug: Sort by Date (Descending) not loading all posts (?)
 - Add current spaces to repost modal
 - Add loading states for each db call in contexts, updated effected functions, and test load-order bugs
 - Add mod controls
-    - remove parent space
     - remove child space
     - delete space
 - Update 'holon' names to 'space' throughout codebase to avoid confusion
@@ -34,7 +31,6 @@ Last updated: 22-11-2020
 - Re-consider layout/approach used for pie chart and time graph components
 - Set up verification/welcome emails
 - Add privacy setting to labels (public, anonymous etc.)
-- create expandable comments
 - Holon, post, and user visualisations
     - Bubble map
     - Radial tree
@@ -100,6 +96,7 @@ Last updated: 22-11-2020
     - name change
     - add new mod
     - add new parent space
+    - remove parent space
 - Seperate 'direct' and 'indirect' handles when creating posts then set up option to show all posts vs direct posts
 - Set up reaction previews
 - Set up reposts
@@ -111,3 +108,6 @@ Last updated: 22-11-2020
 - Create Link type labels in db
 - Change 'Labels' table to 'Reactions' (freeing up 'labels' for other uses)
 - Set up 'visible holons' on post (vs. all included holons)
+- Create link modal
+- Create link table
+- Display links on postmap

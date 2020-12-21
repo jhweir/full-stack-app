@@ -30,7 +30,7 @@ function HolonContextProvider({ children }) {
     const [holonPostPaginationOffset, setHolonPostPaginationOffset] = useState(0)
     const [holonPostPaginationHasMore, setHolonPostPaginationHasMore] = useState(true)
     // const [holonPostViewsOpen, setHolonPostViewsOpen] = useState(false)
-    const [holonPostViewLayout, setHolonPostViewLayout] = useState('List')
+    const [holonPostView, setHolonPostView] = useState('List')
 
     const [holonSpaces, setHolonSpaces] = useState([])
     const [holonSpaceFiltersOpen, setHolonSpaceFiltersOpen] = useState(false)
@@ -122,7 +122,6 @@ function HolonContextProvider({ children }) {
             }&limit=${totalMatchingPosts
             }&offset=0`)
             .then(res => {
-                console.log('res: ', res)
                 setHolonPostPaginationHasMore(false)
                 setHolonPosts(res.data.posts)
                 setTotalMatchingPosts(res.data.totalMatchingPosts)
@@ -301,7 +300,7 @@ function HolonContextProvider({ children }) {
             holonPostPaginationOffset, setHolonPostPaginationOffset,
             holonPostPaginationHasMore, setHolonPostPaginationHasMore,
             //holonPostViewsOpen, setHolonPostViewsOpen,
-            holonPostViewLayout, setHolonPostViewLayout,
+            holonPostView, setHolonPostView,
 
             holonSpaces, setHolonSpaces,
             holonSpaceFiltersOpen, setHolonSpaceFiltersOpen,

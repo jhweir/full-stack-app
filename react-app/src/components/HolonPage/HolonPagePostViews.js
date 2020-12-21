@@ -4,7 +4,7 @@ import DropDownMenu from '../DropDownMenu'
 
 function HolonPagePostViews() {
     const {
-        holonPostViewLayout, setHolonPostViewLayout
+        holonPostView, setHolonPostView
     } = useContext(HolonContext)
 
     return (
@@ -12,8 +12,8 @@ function HolonPagePostViews() {
             <DropDownMenu
                 title='Layout'
                 options={['List', 'Map']}
-                selectedOption={holonPostViewLayout}
-                setSelectedOption={setHolonPostViewLayout}
+                selectedOption={holonPostView}
+                setSelectedOption={setHolonPostView}
             />
         </div>
     )

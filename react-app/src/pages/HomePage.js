@@ -13,10 +13,19 @@ function Homepage() {
                 </span>
                 <span className={styles.subTitle}>holonic social media coop</span>
                 {/* <span className={`${styles.subTitle} mb-20`}>evolving social media tools and governance</span> */}
-                <div className={styles.wrapper}>
-                    <span className={styles.mediumText}>Under construction...</span>
+                <div className={styles.underConstruction}>
+                    <span className={styles.underConstructionText}>under construction...</span>
                     <img className={styles.icon} src='/icons/tools-solid.svg'/>
                 </div>
+            </div>
+            <div className={styles.waves}>
+                <img className={styles.backgroundWave} src='/images/wave.svg'/>
+                {/* <div className={styles.underConstruction}>
+                    <span className={styles.underConstructionText}>Under construction...</span>
+                    <img className={styles.icon} src='/icons/tools-solid.svg'/>
+                </div> */}
+            </div>
+            <div className={styles.section2}>
                 <div className={styles.list}>
                     <span className={`${styles.largeText} mb-10`}>Working features</span>
                     <span>User accounts</span>
@@ -80,9 +89,9 @@ function Homepage() {
                         <li><input type="checkbox" checked={false} readOnly/>Responsive UI for small screens</li>
                     </ul>
                 </div>
-            </div>
-            <div className={styles.credits}>
-                All icons created by FontAwesome https://fontawesome.com/license
+                <div className={styles.credits}>
+                    All icons created by FontAwesome https://fontawesome.com/license
+                </div>
             </div>
         </div>
     )

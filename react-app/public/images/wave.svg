@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 450">
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#1fc8db;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2cb5e8;stop-opacity:1" />
+    </linearGradient>
+    <path fill="url(#grad1)" fill-opacity="1" d="M0,192L48,192C96,192,192,192,288,197.3C384,203,480,213,576,192C672,171,768,117,864,112C960,107,1056,149,1152,170.7C1248,192,1344,192,1392,192L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z">
+    </path>
+
+    <linearGradient id="grad2" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#0ea6de;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0077b7;stop-opacity:1" />
+    </linearGradient>
+    <path fill="url(#grad2)" transform="translate(0,150)"  fill-opacity="1" d="M0,96L80,90.7C160,85,320,75,480,85.3C640,96,800,128,960,144C1120,160,1280,160,1360,160L1440,160L1440,320L1360,320C1280,320,1120,320,960,320C800,320,640,320,480,320C320,320,160,320,80,320L0,320Z">
+    </path>
+
+    <linearGradient id="grad3" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#002d50;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#002d50;stop-opacity:1" />
+    </linearGradient>
+        <!-- <path fill="url(#grad3)" transform="translate(0,240)" fill-opacity="1" d="M0,64L120,74.7C240,85,480,107,720,117.3C960,128,1200,128,1320,128L1440,128L1440,320L1320,320C1200,320,960,320,720,320C480,320,240,320,120,320L0,320Z">
+        </path> -->
+        <path fill="url(#grad3)" transform="translate(0,200)" fill-opacity="1" d="M0,224L80,224C160,224,320,224,480,213.3C640,203,800,181,960,170.7C1120,160,1280,160,1360,160L1440,160L1440,320L1360,320C1280,320,1120,320,960,320C800,320,640,320,480,320C320,320,160,320,80,320L0,320Z"></path>
+</svg>

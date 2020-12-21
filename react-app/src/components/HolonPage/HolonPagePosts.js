@@ -26,7 +26,7 @@ function HolonPagePosts() {
         holonPostSearchFilter,
         holonPostFiltersOpen, setHolonPostFiltersOpen,
         // holonPostViewsOpen, setHolonPostViewsOpen,
-        holonPostViewLayout, setHolonPostViewLayout,
+        holonPostView, setHolonPostView,
         holonPostTimeRangeFilter,
         holonPostTypeFilter,
         holonPostSortByFilter,
@@ -45,10 +45,10 @@ function HolonPagePosts() {
     }
 
     function toggleView() {
-        if (holonPostViewLayout === 'List') { 
-            setHolonPostViewLayout('Map')
+        if (holonPostView === 'List') { 
+            setHolonPostView('Map')
         } else {
-            setHolonPostViewLayout('List')
+            setHolonPostView('List')
         }
     }
 
@@ -73,7 +73,7 @@ function HolonPagePosts() {
     ])
 
     useEffect(() => {
-        if (holonPostViewLayout === 'List' && pageBottomReached && !holonContextLoading && holonData.id) { getNextHolonPosts() }
+        if (holonPostView === 'List' && pageBottomReached && !holonContextLoading && holonData.id) { getNextHolonPosts() }
     }, [pageBottomReached])
 
     return (
@@ -88,8 +88,8 @@ function HolonPagePosts() {
                         {/* <button
                             className='wecoButton mr-10'
                             onClick={() => {
-                                if (holonPostViewLayout === 'List') setHolonPostViewLayout('Map')
-                                else setHolonPostViewLayout('List')
+                                if (holonPostView === 'List') setHolonPostView('Map')
+                                else setHolonPostView('List')
                             }}>
                             View
                             <img className='wecoButtonIcon' src='/icons/eye-solid.svg'/>
@@ -98,24 +98,24 @@ function HolonPagePosts() {
                             Create Post
                         </button>
                     </div>
-                    <Toggle leftText='List' rightText='Map' onClickFunction={toggleView} positionLeft={holonPostViewLayout === 'List' ? true : false}/>
+                    <Toggle leftText='List' rightText='Map' onClickFunction={toggleView} positionLeft={holonPostView === 'List' ? true : false}/>
                 </div>
                 {holonPostFiltersOpen && <HolonPagePostsFilters/>}
                 {/* {holonPostViewsOpen && <HolonPagePostViews/>} */}
             </div>
-            {holonPostViewLayout === 'List' && holonPosts.length > 0 &&
+            {holonPostView === 'List' && holonPosts.length > 0 &&
                 <ul className={`${styles.posts} ${holonContextLoading && styles.hidden}`} key={renderKey}>
                     {holonPosts.map((post, index) =>
                         <PostCard postData={post} key={index} index={index} location='holon-posts'/>
                     )}
                 </ul>
             }
-            {holonPostViewLayout === 'List' && holonPosts.length < 1 && holonPostPaginationOffset > 0 &&
+            {holonPostView === 'List' && holonPosts.length < 1 && holonPostPaginationOffset > 0 &&
                 <div className='wecoNoContentPlaceholder'>
                     No posts yet that match those settings...
                 </div>
             }
-            {holonPostViewLayout === 'Map' &&
+            {holonPostView === 'Map' &&
                 <HolonPostMap/>
             }
         </div>

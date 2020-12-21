@@ -1,8 +1,8 @@
 .homePage {
     width: 100%;
-    height: 100%;
+    //height: 100%;
     margin-top: 70px;
-    padding: 20px;
+    //padding: 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -34,30 +34,63 @@
     margin-bottom: 10px;
     color: rgb(133, 136, 138)
 }
-.wrapper {
-    display: flex;
-    flex-direction: row;
-    margin-top: 100px;
-    margin-bottom: 50px;
-    //align-items: center;
-}
 .largeText {
     font-size: 24px;
+}
+.waves {
+    width: 100%;
+    position: relative;
+    margin-top: -30px;
+    //height: 500px;
+}
+.backgroundWave {
+
+}
+.underConstruction {
+    width: 260px;
+    display: flex;
+    flex-direction: row;
+    //color: white;
+    justify-content: center;
+    margin-top: 60px;
+    // position: absolute;
+    // bottom: 20%;
+    // left: calc(50% - 130px);
+    opacity: 0.8;
+    z-index: 3;
+}
+.underConstructionText {
+    font-size: 20px;
+    //color: rgb(103, 107, 109)
 }
 .icon {
     width: 25px;
     height: 25px;
     margin-left: 15px;
-    opacity: 0.2;
+    opacity: 0.3;
+    //filter: invert(1);
 }
-.mediumText {
-    font-size: 20px;
-    //color: rgb(103, 107, 109)
+.section2 {
+    z-index: 2;
+    margin-top: -10px;
+    width: 100%;
+    background-color: #002d50;//#045fa7;//#006fb7;//#0077b7;//#15a1d4;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.section2Fade {
+    width: 100%;
+    background-image: linear-gradient(to bottom, #2cb5e8, #0077b7);
+    height: 200px;
 }
 .list {
     display: flex;
     flex-direction: column;
-    margin: 150px 0 100px 0;
+    margin: 60px 0 100px 0;
+    color: white;
+    padding: 0 20px;
+    opacity: 0.9;
 }
 .ul {
     //list-style-type: none;
@@ -74,5 +107,5 @@
 }
 .credits {
     margin: 40px 0 20px 0;
-    color: #aaa;
+    color: white;//#aaa;
 }

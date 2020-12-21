@@ -1,6 +1,4 @@
 import React, { useContext, useState, useEffect, useRef } from 'react'
-import axios from 'axios'
-import config from '../../Config'
 import * as d3 from 'd3'
 import { HolonContext } from '../../contexts/HolonContext'
 import styles from '../../styles/components/HolonPostMap.module.scss'
@@ -20,24 +18,17 @@ function HolonPostMap() {
     const [rangeValue, setRangeValue] = useState(50)
     const [showKey, setShowKey] = useState(false)
 
-    //console.log('holonPosts: ', holonPosts)
-    // let selectedPost = holonPosts.find(post => post.id = selectedPostId)
-    // console.log('selectedPost: ', selectedPost)
-
     const range = useRef()
 
     const width = 700
     const height = 500
 
     function updateRangeInput() {
-        // console.log('setRangeValue: ', range.current.value)
         setRangeValue(range.current.value)
     }
     
     useEffect(() => {
         setSelectedPost(holonPosts[0])
-        // let rangeValue2 = rangeValue
-        let rangeValue2 = rangeValue;
         console.log('HolonPostMap: first useEffect')
         let dMin = 0, dMax
         if (holonPostSortByFilter === 'Reactions') dMax = d3.max(holonPosts.map(post => post.total_reactions))
@@ -68,7 +59,6 @@ function HolonPostMap() {
                 // search posts using id to find target index
                 holonPosts.forEach((p, i) => {
                     if (p.id === link.itemBId) {
-                        console.log('i: ', i)
                         targetIndex = i
                     }
                 })
@@ -82,14 +72,10 @@ function HolonPostMap() {
                 }
             })
         })
-        console.log('textLinkData', textLinkData)
-        console.log('turnLinkData', turnLinkData)
 
         let simulation = d3
             .forceSimulation(holonPosts)
             .force('charge', d3.forceManyBody().strength(function (d) {
-                //let charge = -80 - (d.total_likes * d.total_likes * 100)
-                // let charge = -200 - (d.total_likes * d.total_likes * 300)
                 let charge
                 if (holonPostSortByFilter === 'Reactions') { charge = d.total_reactions; return -100 - (charge * 100) }
                 if (holonPostSortByFilter === 'Likes') charge = d.total_likes
@@ -101,12 +87,10 @@ function HolonPostMap() {
                 return newCharge
             }))
             .force('center', d3.forceCenter(width/2, height/2))
-            .force('x', d3.forceX(width/2).strength(rangeValue2/1000)) //0.05
-            .force('y', d3.forceY(height/2).strength(rangeValue2/1000))
+            .force('x', d3.forceX(width/2).strength(rangeValue/1000)) //0.05
+            .force('y', d3.forceY(height/2).strength(rangeValue/1000))
             .force('textLinks', d3.forceLink().links(textLinkData).strength(0.05))
             .force('turnLinks', d3.forceLink().links(turnLinkData).strength(0.09))
-            // .force('x', d3.forceX(width / 2).strength(0.2))
-            // .force('y', d3.forceY(height / 2).strength(0.2))
             .force('collide', d3.forceCollide(function(d) {
                 let radius
                 if (holonPostSortByFilter === 'Reactions') radius = d.total_reactions
@@ -281,7 +265,7 @@ function HolonPostMap() {
             .attr('class', 'post-map-node-text')
             .text(function(d){ 
                 let text = d.text.substring(0, 30)
-                if (text.length === 50) text = text.concat('...')
+                if (text.length === 30) text = text.concat('...')
                 return text
             })
             .on('click', e => {
@@ -342,18 +326,10 @@ function HolonPostMap() {
         }
     
         d3.select("#range").on("input", function() {
-            //update(+this.value);
-            
-            // rangeValue2 = range.current.value
-            console.log('range changed: ', range.current.value)
-            // simulation.force('x', d3.forceX(width/2).strength(rangeValue/1000)) //0.05
-            // .force('y', d3.forceY(height/2).strength(rangeValue/1000))
-
             let forceX = simulation.force("x")
             let forceY = simulation.force("y")
             forceX.strength(range.current.value/1000)
             forceY.strength(range.current.value/1000)
-            //simulation.restart()
             simulation.alphaTarget(.03).restart()
         });
 
@@ -384,6 +360,26 @@ function HolonPostMap() {
                     {showKey &&
                         <div className={styles.keyItems}>
                             <div className={styles.postMapKeyItem}>
+                                <span className={styles.text}>No Account Reaction</span>
+                                <div className={styles.colorBox} style={{ border: '2px solid rgb(140 140 140)' }}/>
+                                {/* <span className={styles.text}>No Reaction</span> */}
+                            </div>
+                            <div className={styles.postMapKeyItem}>
+                                <span className={styles.text}>Account Reaction</span>
+                                <div className={styles.colorBox} style={{ border: '2px solid #83b0ff' }}/>
+                                {/* <span className={styles.text}>Reaction</span> */}
+                            </div>
+                            <div className={styles.postMapKeyItem}>
+                                <span className={styles.text}>Text Link</span>
+                                <div className={styles.textLink}/>
+                                {/* <span className={styles.text}>Reaction</span> */}
+                            </div>
+                            <div className={styles.postMapKeyItem}>
+                                <span className={styles.text}>Turn Link</span>
+                                <div className={styles.turnLink}/>
+                                {/* <span className={styles.text}>Reaction</span> */}
+                            </div>
+                            <div className={styles.postMapKeyItem}>
                                 <span className={styles.text}>Text</span>
                                 <div className={styles.colorBox} style={{ backgroundColor: colors.green }}/>
                                 {/* <span className={styles.text}>Text</span> */}
@@ -413,34 +409,16 @@ function HolonPostMap() {
                                 <div className={styles.colorBox} style={{ backgroundColor: colors.orange }}/>
                                 {/* <span className={styles.text}>Plot Graph</span> */}
                             </div>
-                            <div className={styles.postMapKeyItem}>
-                                <span className={styles.text}>No Account Reaction</span>
-                                <div className={styles.colorBox} style={{ border: '2px solid rgb(140 140 140)' }}/>
-                                {/* <span className={styles.text}>No Reaction</span> */}
-                            </div>
-                            <div className={styles.postMapKeyItem}>
-                                <span className={styles.text}>Account Reaction</span>
-                                <div className={styles.colorBox} style={{ border: '2px solid #83b0ff' }}/>
-                                {/* <span className={styles.text}>Reaction</span> */}
-                            </div>
-                            <div className={styles.postMapKeyItem}>
-                                <span className={styles.text}>Text Link</span>
-                                <div className={styles.textLink}/>
-                                {/* <span className={styles.text}>Reaction</span> */}
-                            </div>
-                            <div className={styles.postMapKeyItem}>
-                                <span className={styles.text}>Turn Link</span>
-                                <div className={styles.turnLink}/>
-                                {/* <span className={styles.text}>Reaction</span> */}
-                            </div>
                         </div>
                     }
                 </div>
             </div>
             <div id='canvas' style={{ height, width }}/>
-            <div className={styles.selectedPostWrapper}>
-                <PostCard postData={selectedPost} location='holon-post-map'/>
-            </div>
+            {selectedPost &&
+                <div className={styles.selectedPostWrapper}>
+                    <PostCard postData={selectedPost} location='holon-post-map'/>
+                </div>
+            }
         </div>
     )
 }
