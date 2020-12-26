@@ -23,14 +23,14 @@ function ImageUploadModal() {
         formData.append('image', image[0])
         axios
             .create({
-                baseURL: config.environmentURL,
+                baseURL: config.apiURL,
                 headers: { 
                     Authorization: `Bearer ${accessToken}`,
                     'Access-Control-Allow-Origin': '*'
                 }
             })
             .post(
-                config.environmentURL + 
+                config.apiURL + 
                 `/${imageUploadType}-upload${holonQuery}`, 
                 formData,{ headers: { 
                     'Content-Type': 'multipart/form-data',

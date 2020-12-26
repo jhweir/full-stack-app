@@ -24,7 +24,7 @@ function SpaceInput(props) {
 
     function getSuggestedSpaces() {
         axios
-            .get(config.environmentURL + `/suggested-space-handles?searchQuery=${newSpace}`)
+            .get(config.apiURL + `/suggested-space-handles?searchQuery=${newSpace}`)
             .then(res => {
                 let spaces = res.data.filter(space =>
                     !addedSpaces.includes(space.handle) && !blockedSpaces.includes(space.handle) && space.handle != holonData.handle
@@ -36,7 +36,7 @@ function SpaceInput(props) {
     function addSpace(e) {
         e.preventDefault()
         axios
-            .get(config.environmentURL + `/validate-space-handle?searchQuery=${newSpace}`)
+            .get(config.apiURL + `/validate-space-handle?searchQuery=${newSpace}`)
             .then(res => {
                 if (res.data === 'success') { 
                     setAddedSpaces([...addedSpaces, newSpace])

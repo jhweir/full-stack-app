@@ -6,7 +6,7 @@ function Homepage() {
     return (
         <div className={styles.homePage}>
             <div className={styles.mainContent}>
-                <img className={styles.logo} src='/images/logo-002-blurred.png'/>
+                <img className={styles.logo} src='/images/logo-007.png'/>
                 <span className={styles.title}>
                     {/* weco<span className={`${styles.title} ${styles.grey}`}>.io</span> */}
                     we{`{`}<span className={`${styles.title} ${styles.grey}`}>collective</span>{`}`}
@@ -20,10 +20,6 @@ function Homepage() {
             </div>
             <div className={styles.waves}>
                 <img className={styles.backgroundWave} src='/images/wave.svg'/>
-                {/* <div className={styles.underConstruction}>
-                    <span className={styles.underConstructionText}>Under construction...</span>
-                    <img className={styles.icon} src='/icons/tools-solid.svg'/>
-                </div> */}
             </div>
             <div className={styles.section2}>
                 <div className={styles.list}>
@@ -37,7 +33,7 @@ function Homepage() {
                     </ul>
                     <span className={`mt-20`}>Spaces</span>
                     <ul className={styles.ul}>
-                        <li><input type="checkbox" checked={true} readOnly/>Create spaces within spaces with spaces to any depth</li>
+                        <li><input type="checkbox" checked={true} readOnly/>Create spaces within spaces within spaces to any depth</li>
                         <li><input type="checkbox" checked={true} readOnly/>Edit space name, url handle, and bio</li>
                         <li><input type="checkbox" checked={true} readOnly/>Upload space flag and cover images</li>
                         <li><input type="checkbox" checked={true} readOnly/>Add new moderators</li>

@@ -12,7 +12,7 @@ function PlotGraph() {
 
     function getPlotGraphData() {
         console.log('PlotGraph: getPlotGraphData')
-        axios.get(config.environmentURL + `/plot-graph-data?postId=${postData.id}`)
+        axios.get(config.apiURL + `/plot-graph-data?postId=${postData.id}`)
             .then(res => setPlotGraphData(res.data))
     }
 

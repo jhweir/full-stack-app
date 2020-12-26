@@ -238,6 +238,28 @@ app.post('/api/holon-cover-image-upload', authenticateToken, function(req, res) 
   })
 })
 
+// // test email
+// const sgMail = require('@sendgrid/mail')
+// sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+// const msg = {
+//   to: 'jhweir@hotmail.co.uk',
+//   from: 'admin@weco.io',
+//   subject: 'Sending with SendGrid is Fun!!!',
+//   text: 'and easy to do anywhere, even with Node.js yeah...',
+//   html: '<strong>and easy to do anywhere, even with Node.js mmhmmm</strong>',
+// }
+// sgMail
+//   .send(msg)
+//   .then(() => {
+//     console.log('Email sent')
+//   })
+//   .catch((error) => {
+//     console.error(error)
+//   })
+
+
+
+
 // // Facebook strategry
 // passport.serializeUser(function(user, done) {
 //   done(null, user.id);

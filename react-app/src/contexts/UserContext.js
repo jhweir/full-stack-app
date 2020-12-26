@@ -27,13 +27,13 @@ function UserContextProvider({ children }) {
     function getUserData() {
         console.log('UserContext: getUserData')
         setUserContextLoading(true)
-        axios.get(config.environmentURL + `/user-data?userHandle=${userHandle}`)
+        axios.get(config.apiURL + `/user-data?userHandle=${userHandle}`)
             .then(res => { setUserData(res.data); setUserContextLoading(false) })
     }
 
     function getCreatedPosts() {
         console.log(`UserContext: getCreatedPosts (0 to ${createdPostPaginationLimit})`)
-        axios.get(config.environmentURL + 
+        axios.get(config.apiURL + 
             `/user-posts?accountId=${isLoggedIn ? accountData.id : null
             }&userId=${userData.id ? userData.id : null
             }&timeRange=${createdPostTimeRangeFilter
@@ -54,7 +54,7 @@ function UserContextProvider({ children }) {
     function getNextCreatedPosts() {
         if (createdPostPaginationHasMore) {
             console.log(`UserContext: getNextCreatedPosts (${createdPostPaginationOffset} to ${createdPostPaginationOffset + createdPostPaginationLimit})`)
-            axios.get(config.environmentURL + 
+            axios.get(config.apiURL + 
                 `/user-posts?accountId=${isLoggedIn ? accountData.id : null
                 }&userId=${userData.id ? userData.id : null
                 }&timeRange=${createdPostTimeRangeFilter

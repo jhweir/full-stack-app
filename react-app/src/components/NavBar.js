@@ -1,8 +1,9 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { HolonContext } from '../contexts/HolonContext'
 import { AccountContext } from '../contexts/AccountContext'
 import styles from '../styles/components/NavBar.module.scss'
+import config from '../Config'
 
 function NavBar() {
     const {
@@ -10,36 +11,49 @@ function NavBar() {
         accountData,
         setAuthModalOpen,
         userControlsModalOpen,
-        setUserControlsModalOpen
+        setUserControlsModalOpen,
+        accountContextLoading
     } = useContext(AccountContext)
-    const { setHolonHandle } = useContext(HolonContext)
+    const { setHolonHandle, selectedHolonSubPage } = useContext(HolonContext)
+
+    const [selectedItem, setSelectedItem] = useState('')
+
+    useEffect(() => {
+        console.log('config.appURL: ', config.appURL)
+        if (window.location.href === config.appURL) setSelectedItem('home')
+        else if (window.location.href === `${config.appURL}s/all/posts`) setSelectedItem('posts')
+        else if (window.location.href === `${config.appURL}s/all/spaces`) setSelectedItem('spaces')
+        else if (window.location.href === `${config.appURL}s/all/users`) setSelectedItem('users')
+        else setSelectedItem('')
+    }, [window.location.pathname])
 
     return (
         <div className={styles.navBar}>
             <div className={styles.navBarContainer}>
                 <div className={styles.navBarLinks}>
                     <Link to="/"
-                        className={styles.navBarLink}>
+                        className={styles.navBarLink}
+                        onClick={() => setSelectedItem('home')}>
                         {/* <img className={styles.navBarIcon} src="/icons/home-solid.svg" alt=''/> */}
-                        <div className={styles.navBarText}>Home</div>
-                    </Link> |
+                        <div className={`${styles.navBarText} ${selectedItem === 'home' && styles.selected}`}>Home</div>
+                    </Link>
                     <Link to="/s/all"
                         className={styles.navBarLink}
-                        onClick={() => { setHolonHandle('all') }}>
+                        onClick={() => { setSelectedItem('posts'); setHolonHandle('all') }}>
                         {/* <img className={styles.navBarIcon} src="/icons/edit-solid.svg" alt=''/> */}
-                        <div className={styles.navBarText}>Posts</div>
-                    </Link> | 
+                        <div className={`${styles.navBarText} ${selectedItem === 'posts' && styles.selected}`}>Posts</div>
+                    </Link>
                     <Link to="/s/all/spaces"
                         className={styles.navBarLink}
-                        onClick={() => { setHolonHandle('all') }}>
+                        onClick={() => { setSelectedItem('spaces'); setHolonHandle('all') }}>
                         {/* <img className={styles.navBarIcon} src="/icons/overlapping-circles-thick.svg" alt=''/> */}
-                        <div className={styles.navBarText}>Spaces</div>
-                    </Link> | 
+                        <div className={`${styles.navBarText} ${selectedItem === 'spaces' && styles.selected}`}>Spaces</div>
+                    </Link> 
                     <Link to="/s/all/users"
                         className={styles.navBarLink}
-                        onClick={() => { setHolonHandle('all') }}>
+                        onClick={() => { setSelectedItem('users'); setHolonHandle('all') }}>
                         {/* <img className={styles.navBarIcon} src="/icons/users-solid.svg" alt=''/> */}
-                        <div className={styles.navBarText}>Users</div>
+                        <div className={`${styles.navBarText} ${selectedItem === 'users' && styles.selected}`}>Users</div>
                     </Link>
                 </div>
                 {!isLoggedIn &&

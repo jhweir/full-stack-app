@@ -33,7 +33,7 @@ function AuthModal() {
         if (invalidPassword) { setPasswordError(true) }
         if (!invalidEmailOrHandle && !invalidPassword) {
             axios
-                .post(config.environmentURL + '/log-in', { emailOrHandle, password })
+                .post(config.apiURL + '/log-in', { emailOrHandle, password })
                 .then(res => {
                     if (res.data === 'user-not-found') { setLogInFlashMessage('User not found') }
                     if (res.data === 'incorrect-password') { setLogInFlashMessage('Incorrect password') }
@@ -63,7 +63,7 @@ function AuthModal() {
         }
         if (!invalidNewHandle && !invalidNewName && !invalidNewEmail && !invalidNewPassword && !invalidNewPasswordTwo) {
             axios
-                .post(config.environmentURL + '/register', { newHandle, newName, newEmail, newPassword })
+                .post(config.apiURL + '/register', { newHandle, newName, newEmail, newPassword })
                 .then(res => {
                     if (res.data === 'handle-taken') { 
                         setRegisterFlashMessage('Handle already taken')

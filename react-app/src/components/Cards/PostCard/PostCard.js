@@ -78,7 +78,7 @@ function PostCard(props) {
 
     function deletePost() {
         console.log('PostCard: deletePost')
-        axios.delete(config.environmentURL + '/delete-post', { data: { postId: id } })
+        axios.delete(config.apiURL + '/delete-post', { data: { postId: id } })
             .then(setTimeout(() => { 
                 if (location === 'holon-posts') { getHolonPosts() }
                 if (location === 'user-created-posts') { getCreatedPosts() }
@@ -275,13 +275,13 @@ export default PostCard
 
 
 // function pinPost() {
-//     axios({ method: 'put', url: config.environmentURL + '/pinpost', data: { id } })
+//     axios({ method: 'put', url: config.apiURL + '/pinpost', data: { id } })
 //         //.then(setTimeout(() => { updatePosts() }, 100))
 //         .catch(error => { console.log(error) })
 // }
 
 // function unpinPost() {
-//     axios({ method: 'put', url: config.environmentURL + '/unpinpost', data: { id } })
+//     axios({ method: 'put', url: config.apiURL + '/unpinpost', data: { id } })
 //         //.then(setTimeout(() => { updatePosts() }, 100))
 //         .catch(error => { console.log(error) })
 // }

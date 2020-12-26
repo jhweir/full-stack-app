@@ -19,7 +19,7 @@ function CommentCard(props) {
     }
 
     function deleteComment() {
-        axios.delete(config.environmentURL  + '/delete-comment', { data: { commentId: comment.id } })
+        axios.delete(config.apiURL  + '/delete-comment', { data: { commentId: comment.id } })
             .then(setTimeout(() => { getPostData(); getPostComments() }, 200))
             .catch(error => { console.log(error) })
     }

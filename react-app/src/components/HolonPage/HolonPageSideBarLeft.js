@@ -15,13 +15,13 @@ function HolonPageSideBarLeft() {
     function followSpace() {
         if (isFollowing) {
             setIsFollowing(false)
-            axios.put(config.environmentURL + `/unfollowHolon`, { holonId: holonData.id, userId: accountData.id })
+            axios.put(config.apiURL + `/unfollowHolon`, { holonId: holonData.id, userId: accountData.id })
                 // TODO: remove setTime out and wait for response
                 .then(setTimeout(() => { getHolonUsers() }, 200))
                 .catch(error => { console.log(error) })} 
         else {
             setIsFollowing(true)
-            axios.post(config.environmentURL + `/followHolon`, { holonId: holonData.id, userId: accountData.id })
+            axios.post(config.apiURL + `/followHolon`, { holonId: holonData.id, userId: accountData.id })
                 .then(setTimeout(() => { getHolonUsers() }, 200))
                 .catch(error => { console.log(error) })
         }

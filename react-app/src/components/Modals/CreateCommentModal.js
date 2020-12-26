@@ -20,7 +20,7 @@ function CreateCommentModal() {
         else {
             if (invalidComment) { setCommentError(true) }
             else {
-                axios.post(config.environmentURL + '/add-comment', { creatorId: accountData.id, postId: postData.id, text: newComment })
+                axios.post(config.apiURL + '/add-comment', { creatorId: accountData.id, postId: postData.id, text: newComment })
                     .then(setCreateCommentModalOpen(false))
                     .then(setTimeout(() => { getPostData(); getPostComments() }, 200))
             }

@@ -57,7 +57,7 @@ function SettingModal() {
         else {
             if (settingModalType === 'change-holon-handle') {
                 axios
-                    .post(config.environmentURL + '/update-holon-setting', { holonId: holonData.id, setting: settingModalType, newValue })
+                    .post(config.apiURL + '/update-holon-setting', { holonId: holonData.id, setting: settingModalType, newValue })
                     .then((res) => {
                         if (res.data === 'success') {
                             history.push(`/s/${newValue}/settings`)
@@ -68,7 +68,7 @@ function SettingModal() {
             }
             else {
                 axios
-                    .post(config.environmentURL + '/update-holon-setting', { holonId: holonData.id, setting: settingModalType, newValue })
+                    .post(config.apiURL + '/update-holon-setting', { holonId: holonData.id, setting: settingModalType, newValue })
                     .then(res => {
                         if (res.data !== 'success') {
                             console.log('res.data: ', res.data)
@@ -142,7 +142,7 @@ export default SettingModal
     //     if (invalidDescription) { setDescriptionError(true); setFlashMessage('Invalid description') }
     //     if (!invalidHandle && !invalidName && !invalidDescription) {
     //         const data = { creatorId: accountData.id, handle, name, description, parentHolonId: holonData.id }
-    //         axios.post(config.environmentURL + `/create-holon`, data)
+    //         axios.post(config.apiURL + `/create-holon`, data)
     //             .then(res => {
     //                 if (res.data === 'holon-handle-taken') { setHandleError(true); setFlashMessage('Holon handle already taken') }
     //                 if (res.data === 'success') { // TODO: work out why getAccountData() is not recieving new ModeratedHolons

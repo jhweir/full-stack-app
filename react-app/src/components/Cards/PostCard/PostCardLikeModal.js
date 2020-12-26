@@ -24,7 +24,7 @@ function PostCardLikeModal(props) {
 
     function addLike() {
         console.log('add like')
-        axios.post(config.environmentURL + '/add-like', { 
+        axios.post(config.apiURL + '/add-like', { 
             accountId: accountData.id, 
             postId: postData.id
         })
@@ -42,7 +42,7 @@ function PostCardLikeModal(props) {
 
     function removeLike() {
         console.log('remove like')
-        axios.post(config.environmentURL + '/remove-like', { 
+        axios.post(config.apiURL + '/remove-like', { 
             accountId: accountData.id, 
             postId: postData.id
         })

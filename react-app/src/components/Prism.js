@@ -12,7 +12,7 @@ function Prism() {
 
     function getPrismData() {
         console.log('Prism: getPrismData')
-        axios.get(config.environmentURL + `/prism-data?postId=${postData.id}`)
+        axios.get(config.apiURL + `/prism-data?postId=${postData.id}`)
             .then(res => setPrismData(res.data))
     }
 

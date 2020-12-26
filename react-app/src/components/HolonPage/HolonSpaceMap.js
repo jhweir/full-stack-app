@@ -18,7 +18,7 @@ function HolonSpaceMap() {
     const height = 700
 
     function getSpaceMapData() {
-        axios.get(config.environmentURL + `/space-map-data?spaceId=${holonData.id}`)
+        axios.get(config.apiURL + `/space-map-data?spaceId=${holonData.id}`)
             .then(res => setSpaceMapData(res.data))
     }
 

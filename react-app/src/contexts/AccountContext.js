@@ -33,7 +33,7 @@ function AccountContextProvider({ children, pageBottomReached }) {
         if (accessToken !== undefined) {
             // create new axios instance with JWT in authorization header
             axios.create({
-                baseURL: config.environmentURL,
+                baseURL: config.apiURL,
                 headers: { Authorization: `Bearer ${accessToken}` }
             })
             .get(`/account-data`)

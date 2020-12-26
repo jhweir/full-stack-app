@@ -40,7 +40,7 @@ function PostCardRatingModal(props) {
             setTotalReactions(totalReactions + 1)
             setTotalRatingPoints(totalRatingPoints + parseInt(newRating, 10))
             setAccountRating(accountRating + 1)
-            axios.post(config.environmentURL + '/add-rating', { accountId: accountData.id, postId: postData.id, holonId: holonData.id, newRating })
+            axios.post(config.apiURL + '/add-rating', { accountId: accountData.id, postId: postData.id, holonId: holonData.id, newRating })
                 .then(res => {
                     if (res.data === 'success') {
                         setNewRating('')
@@ -65,7 +65,7 @@ function PostCardRatingModal(props) {
         setTotalReactions(totalReactions - 1)
         setTotalRatingPoints(newTotalRatingPoints())
         setAccountRating(0)
-        axios.post(config.environmentURL + '/remove-rating', { accountId: accountData.id, postId: postData.id, holonId: holonData.id })
+        axios.post(config.apiURL + '/remove-rating', { accountId: accountData.id, postId: postData.id, holonId: holonData.id })
             .then(res => {
                 if (res.data === 'success') {
                     setTimeout(() => getReactionData(), 200)

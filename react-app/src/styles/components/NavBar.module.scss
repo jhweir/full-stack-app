@@ -47,6 +47,9 @@
     text-decoration: none;
     padding: 0 15px;
     opacity: 1;
+    &.selected {
+        font-weight: 800;
+    }
     @media screen and (max-width: 600px) {
         display: none;
     }

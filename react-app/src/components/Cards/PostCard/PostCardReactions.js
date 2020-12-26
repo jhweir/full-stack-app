@@ -42,7 +42,7 @@ function PostCardReactions(props) {
     function getReactionData() {
         console.log('PostCardReactions: getReactionData')
         axios
-            .get(config.environmentURL + `/post-reaction-data?postId=${postData.id}`)
+            .get(config.apiURL + `/post-reaction-data?postId=${postData.id}`)
             .then(res => res.data !== null && setReactionData(res.data))
     }
 
@@ -165,14 +165,14 @@ export default PostCardReactions
 //             setTotalHearts(totalHearts - 1)
 //             setTotalReactions(totalReactions - 1)
 //             setAccountHeart(0)
-//             axios.put(config.environmentURL + '/remove-heart', { accountId: accountData.id, postId: id })
+//             axios.put(config.apiURL + '/remove-heart', { accountId: accountData.id, postId: id })
 //                 .catch(error => { console.log(error) })
 //         }
 //         else {
 //             setTotalHearts(totalHearts + 1)
 //             setTotalReactions(totalReactions + 1)
 //             setAccountHeart(accountHeart + 1)
-//             axios.put(config.environmentURL + '/add-heart', { accountId: accountData.id, postId: id, holonId: holonData.id })
+//             axios.put(config.apiURL + '/add-heart', { accountId: accountData.id, postId: id, holonId: holonData.id })
 //                 .catch(error => { console.log(error) })
 //         }
 //     }
@@ -186,7 +186,7 @@ export default PostCardReactions
     //             let invalidRating = isNaN(n) || n === '' || n > 100 || n < 0
     //             if (invalidRating) { setNewRatingError(true) }
     //             else {
-    //                 axios.put(config.environmentURL + '/update-rating', { accountId: accountData.id, postId: id, holonId: holonData.id, newRating })
+    //                 axios.put(config.apiURL + '/update-rating', { accountId: accountData.id, postId: id, holonId: holonData.id, newRating })
     //                     .then(() => { setNewRating(''); getHolonPosts() })
     //                     .catch(error => { console.log(error) })
     //             }
@@ -199,7 +199,7 @@ export default PostCardReactions
     //                 setTotalReactions(totalReactions + 1)
     //                 setTotalRatingPoints(totalRatingPoints + parseInt(newRating, 10))
     //                 setAccountRating(accountRating + 1)
-    //                 axios.put(config.environmentURL + '/add-rating', { accountId: accountData.id, postId: id, holonId: holonData.id, newRating })
+    //                 axios.put(config.apiURL + '/add-rating', { accountId: accountData.id, postId: id, holonId: holonData.id, newRating })
     //                     .then(setNewRating(''))
     //                     .catch(error => { console.log(error) })
     //             }

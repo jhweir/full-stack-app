@@ -68,7 +68,7 @@ function CreatePostModal() {
         if (isValidUrl(url)) {
             setUrlLoading(true)
             axios
-                .post(config.environmentURL + '/scrape-url', { url })
+                .post(config.apiURL + '/scrape-url', { url })
                 .then(res => {
                     console.log('res: ', res.data)
                     if (typeof res.data === 'string') {
@@ -137,7 +137,7 @@ function CreatePostModal() {
                 axis2Bottom,
                 createPostFromTurnData
             }
-            axios.post(config.environmentURL + '/create-post', { post })
+            axios.post(config.apiURL + '/create-post', { post })
                 .then(() => {setCreatePostModalOpen(false); resetForm() })
                 .then(setTimeout(() => { getHolonPosts() }, 200))
         }

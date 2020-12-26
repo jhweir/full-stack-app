@@ -1,5 +1,7 @@
 # Todos
-Last updated: 22-11-2020
+Last updated: 26-12-2020
+
++ Set up verification/welcome emails
 
 - Create link previews
 - Allow users to vote on links
@@ -29,7 +31,6 @@ Last updated: 22-11-2020
     - Messages
 - set up JWT refresh token (https://www.youtube.com/watch?v=iD49_NIQ-R4&t=9s)
 - Re-consider layout/approach used for pie chart and time graph components
-- Set up verification/welcome emails
 - Add privacy setting to labels (public, anonymous etc.)
 - Holon, post, and user visualisations
     - Bubble map

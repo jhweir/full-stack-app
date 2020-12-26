@@ -43,7 +43,7 @@ function PostContextProvider({ children }) {
     function getPostData() {
         console.log('PostContext: getPostData')
         setPostContextLoading(true)
-        axios.get(config.environmentURL + `/post-data?accountId=${isLoggedIn ? accountData.id : null}&postId=${postId}`)
+        axios.get(config.apiURL + `/post-data?accountId=${isLoggedIn ? accountData.id : null}&postId=${postId}`)
             .then(res => {
                 setPostData(res.data)
                 setPostContextLoading(false)
@@ -53,7 +53,7 @@ function PostContextProvider({ children }) {
     function getPostComments() {
         setPostCommentPaginationHasMore(true)
         console.log(`PostContext: getPostComments (0 to ${postCommentPaginationLimit})`)
-        axios.get(config.environmentURL + 
+        axios.get(config.apiURL + 
             `/post-comments?accountId=${isLoggedIn ? accountData.id : null
             }&postId=${postId
             }&sortBy=${postCommentSortByFilter
@@ -72,7 +72,7 @@ function PostContextProvider({ children }) {
     function getNextPostComments() {
         if (postCommentPaginationHasMore) {
             console.log(`PostContext: getNextPostComments (${postCommentPaginationOffset} to ${postCommentPaginationOffset + postCommentPaginationLimit})`)
-            axios.get(config.environmentURL + 
+            axios.get(config.apiURL + 
                 `/post-comments?accountId=${isLoggedIn ? accountData.id : null
                 }&postId=${postId
                 }&sortBy=${postCommentSortByFilter
@@ -94,7 +94,7 @@ function PostContextProvider({ children }) {
         if (validVote) {
             let voteData = { postId, pollType: postData.subType, selectedPollAnswers }
             console.log('voteData: ', voteData)
-            axios.post(config.environmentURL + '/cast-vote', { voteData })
+            axios.post(config.apiURL + '/cast-vote', { voteData })
                 .then(setSelectedPollAnswers([]))
                 .then(setVoteCast(true))
         }

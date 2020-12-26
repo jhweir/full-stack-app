@@ -22,7 +22,7 @@ function PollResultsTimeGraph() {
         if (postData.id) {
             console.log('PollResultsTimeGraph: getPollVotes')
             axios
-                .get(config.environmentURL + `/poll-votes?postId=${postId}`)
+                .get(config.apiURL + `/poll-votes?postId=${postId}`)
                 .then(res => setPollVotes(res.data))
         }
     }, [postData.id])

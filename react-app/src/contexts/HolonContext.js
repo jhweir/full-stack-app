@@ -59,14 +59,14 @@ function HolonContextProvider({ children }) {
     function getHolonData() {
         console.log('HolonContext: getHolonData')
         setHolonContextLoading(true)
-        axios.get(config.environmentURL + `/holon-data?handle=${holonHandle}`)
+        axios.get(config.apiURL + `/holon-data?handle=${holonHandle}`)
             .then(res => { setHolonData(res.data); setHolonContextLoading(false) })
     }
 
     function getHolonPosts() {
         console.log(`HolonContext: getHolonPosts (0 to ${holonPostPaginationLimit})`)
         setHolonPostPaginationHasMore(true)
-        axios.get(config.environmentURL + 
+        axios.get(config.apiURL + 
             `/holon-posts?accountId=${isLoggedIn ? accountData.id : null
             }&handle=${holonHandle
             }&timeRange=${holonPostTimeRangeFilter
@@ -88,7 +88,7 @@ function HolonContextProvider({ children }) {
     function getNextHolonPosts() {
         if (holonPostPaginationHasMore) {
             console.log(`HolonContext: getNextHolonPosts (${holonPostPaginationOffset} to ${holonPostPaginationOffset + holonPostPaginationLimit})`)
-            axios.get(config.environmentURL + 
+            axios.get(config.apiURL + 
                 `/holon-posts?accountId=${isLoggedIn ? accountData.id : null
                 }&handle=${holonHandle
                 }&timeRange=${holonPostTimeRangeFilter
@@ -110,7 +110,7 @@ function HolonContextProvider({ children }) {
     function getAllHolonPosts() {
         console.log(`HolonContext: getAllHolonPosts`)
         //setHolonPostPaginationHasMore(true)
-        axios.get(config.environmentURL + 
+        axios.get(config.apiURL + 
             `/holon-posts?accountId=${isLoggedIn ? accountData.id : null
             }&handle=${holonHandle
             }&timeRange=${holonPostTimeRangeFilter
@@ -132,7 +132,7 @@ function HolonContextProvider({ children }) {
     function getHolonSpaces() {
         console.log(`HolonContext: getHolonSpaces (0 to ${holonSpacePaginationLimit})`)
         setHolonSpacePaginationHasMore(true)
-        axios.get(config.environmentURL + 
+        axios.get(config.apiURL + 
             `/holon-spaces?accountId=${isLoggedIn ? accountData.id : null
             }&handle=${holonHandle
             }&timeRange=${holonSpaceTimeRangeFilter
@@ -153,7 +153,7 @@ function HolonContextProvider({ children }) {
     function getNextHolonSpaces() {
         if (holonSpacePaginationOffset > 0 && holonSpacePaginationHasMore) {
             console.log(`HolonContext: getNextHolonSpaces (${holonSpacePaginationOffset} to ${holonSpacePaginationOffset + holonSpacePaginationLimit})`)
-            axios.get(config.environmentURL + 
+            axios.get(config.apiURL + 
                 `/holon-spaces?accountId=${isLoggedIn ? accountData.id : null
                 }&handle=${holonHandle
                 }&timeRange=${holonSpaceTimeRangeFilter
@@ -178,7 +178,7 @@ function HolonContextProvider({ children }) {
     function getHolonUsers() {
         console.log(`HolonContext: getHolonUsers (0 to ${holonUserPaginationLimit})`)
         setHolonUserPaginationHasMore(true)
-        axios.get(config.environmentURL + 
+        axios.get(config.apiURL + 
             `/${queryPath}?accountId=${isLoggedIn ? accountData.id : null
             }&holonId=${holonData.id
             }&timeRange=${holonUserTimeRangeFilter
@@ -198,7 +198,7 @@ function HolonContextProvider({ children }) {
     function getNextHolonUsers() {
         if (holonUserPaginationHasMore) {
             console.log(`HolonContext: getNextHolonUsers (${holonUserPaginationOffset} to ${holonUserPaginationOffset + holonUserPaginationLimit})`)
-            axios.get(config.environmentURL + 
+            axios.get(config.apiURL + 
                 `/${queryPath}?accountId=${isLoggedIn ? accountData.id : null
                 }&holonId=${holonData.id
                 }&timeRange=${holonUserTimeRangeFilter

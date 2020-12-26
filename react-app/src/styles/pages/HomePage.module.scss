@@ -12,9 +12,10 @@
     // transition-duration: 2s;
 }
 .logo {
-    width: 150px;
-    height: 150px;
-    margin-top: 150px;
+    width: 400px;
+    // width: 150px;
+    // height: 150px;
+    margin-top: 100px;
 }
 .mainContent {
     display: flex;
@@ -24,14 +25,14 @@
 .title {
     font-size: 40px;
     //color: rgb(1, 108, 170);
-    margin: 20px 0 10px 0;
+    margin: 0 0 10px 0;
     &.grey {
         color: rgb(162, 167, 170)
     }
 }
 .subTitle {
     font-size: 20px;
-    margin-bottom: 10px;
+    //margin-bottom: 10px;
     color: rgb(133, 136, 138)
 }
 .largeText {
@@ -40,7 +41,7 @@
 .waves {
     width: 100%;
     position: relative;
-    margin-top: -30px;
+    margin-top: -160px;
     //height: 500px;
 }
 .backgroundWave {
@@ -48,11 +49,13 @@
 }
 .underConstruction {
     width: 260px;
+    height: 200px;
     display: flex;
     flex-direction: row;
     //color: white;
     justify-content: center;
-    margin-top: 60px;
+    align-items: center;
+    //margin: 60px 0 100px 0;
     // position: absolute;
     // bottom: 20%;
     // left: calc(50% - 130px);
@@ -71,10 +74,10 @@
     //filter: invert(1);
 }
 .section2 {
-    z-index: 2;
-    margin-top: -10px;
+    // z-index: 2;
+    margin-top: -15px;
     width: 100%;
-    background-color: #002d50;//#045fa7;//#006fb7;//#0077b7;//#15a1d4;
+    background-color: #002d50; //#dfe6f3;//;//#045fa7;//#006fb7;//#0077b7;//#15a1d4;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -88,7 +91,7 @@
     display: flex;
     flex-direction: column;
     margin: 60px 0 100px 0;
-    color: white;
+    color:white;
     padding: 0 20px;
     opacity: 0.9;
 }

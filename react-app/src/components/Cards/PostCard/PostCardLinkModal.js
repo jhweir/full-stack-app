@@ -44,7 +44,7 @@ function PostCardLinkModal(props) {
     if (linkTo === 'User') { prefix = 'u/'; placeholder = 'handle'; inputWidth = 70 }
 
     function getPostLinkData() {
-        axios.get(config.environmentURL + `/post-link-data?postId=${postData.id}`)
+        axios.get(config.apiURL + `/post-link-data?postId=${postData.id}`)
             .then(res => setLinks(res.data))
     }
 
@@ -53,7 +53,7 @@ function PostCardLinkModal(props) {
         let validLinkDescription = linkDescription.length > 0
         if (validTargetUrl && validLinkDescription) {
             console.log('PostCardLinkModal: addLink')
-            axios.post(config.environmentURL + '/add-link', { 
+            axios.post(config.apiURL + '/add-link', { 
                 creatorId: accountData.id,
                 type: `post-${linkTo.toLowerCase()}`,
                 relationship: linkType.toLowerCase(),
@@ -76,7 +76,7 @@ function PostCardLinkModal(props) {
 
     function removeLink(linkId) {
         console.log('PostCardLinkModal: removeLink')
-        axios.post(config.environmentURL + '/remove-link', { 
+        axios.post(config.apiURL + '/remove-link', { 
             //accountId: accountData.id,
             linkId
         })
