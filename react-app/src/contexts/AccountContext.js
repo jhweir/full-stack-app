@@ -9,6 +9,8 @@ function AccountContextProvider({ children, pageBottomReached }) {
     const [accountContextLoading, setAccountContextLoading] = useState(true)
     const [accountData, setAccountData] = useState({ FollowedHolons: [], ModeratedHolons: [] })
     const [isLoggedIn, setIsLoggedIn] = useState(false)
+
+    // modals
     const [alertModalOpen, setAlertModalOpen] = useState(false)
     const [alertMessage, setAlertMessage] = useState('')
     const [authModalOpen, setAuthModalOpen] = useState(false)
@@ -20,6 +22,8 @@ function AccountContextProvider({ children, pageBottomReached }) {
     const [settingModalType, setSettingModalType] = useState('')
     const [imageUploadModalOpen, setImageUploadModalOpen] = useState(false)
     const [imageUploadType, setImageUploadType] = useState('')
+    const [resetPasswordModalOpen, setResetPasswordModalOpen] = useState(false)
+    const [resetPasswordModalToken, setResetPasswordModalToken] = useState('')
 
     const [createPostFromTurn, setCreatePostFromTurn] = useState(false)
     const [createPostFromTurnData, setCreatePostFromTurnData] = useState({})
@@ -76,7 +80,9 @@ function AccountContextProvider({ children, pageBottomReached }) {
             settingModalOpen, setSettingModalOpen,
             settingModalType, setSettingModalType,
             createPostFromTurn, setCreatePostFromTurn,
-            createPostFromTurnData, setCreatePostFromTurnData
+            createPostFromTurnData, setCreatePostFromTurnData,
+            resetPasswordModalOpen, setResetPasswordModalOpen,
+            resetPasswordModalToken, setResetPasswordModalToken
         }}>
             {children}
         </AccountContext.Provider>

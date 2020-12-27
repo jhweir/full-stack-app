@@ -1683,9 +1683,7 @@ router.post('/reset-password-request', async (req, res) => {
     User.findOne({ where: { email } })
         .then(user => {
             if (user) {
-                // todo: set token in user db
                 user.update({ passwordResetToken: token })
-                
                 let message = {
                     to: email,
                     from: 'admin@weco.io',
@@ -1711,6 +1709,21 @@ router.post('/reset-password-request', async (req, res) => {
                     })
             }
             else { res.send('user-not-found') }
+        })
+})
+
+router.post('/reset-password', async (req, res) => {
+    const { password, token } = req.body
+
+    User.findOne({ where: { passwordResetToken: token } })
+        .then(async user => {
+            if (user) {
+                let hashedPassword = await bcrypt.hash(password, 10)
+                user.update({ password: hashedPassword, passwordResetToken: null })
+                res.send('success')
+            } else {
+                res.send('invalid-token')
+            }
         })
 })
 

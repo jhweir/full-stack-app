@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { BrowserRouter, Route, Switch } from 'react-router-dom'
 import { createBrowserHistory } from 'history'
-// import { AccountContext } from '../contexts/AccountContext'
 import AccountContextProvider from './contexts/AccountContext'
 import HolonContextProvider from './contexts/HolonContext'
 import UserContextProvider from './contexts/UserContext'
@@ -20,7 +19,7 @@ function App() {
   function handleScroll(e) {
     let pageBottomOffset = 150
     let pageBottomReached = e.target.scrollHeight - e.target.scrollTop.toFixed(0) - pageBottomOffset < e.target.clientHeight
-    if (pageBottomReached) { setPageBottomReached(true) } else { setPageBottomReached(false) }
+    setPageBottomReached(pageBottomReached ? true : false)
   }
 
   return (

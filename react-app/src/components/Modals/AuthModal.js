@@ -102,7 +102,7 @@ function AuthModal() {
                 .post(config.apiURL + '/reset-password-request', { email: resetEmail })
                 .then(res => {
                     if (res.data === 'user-not-found') { setForgotPasswordFlashMessage('User not found') }
-                    if (res.data === 'email-sent') { setForgotPasswordFlashMessage(`Success! We've sent you an email with a link to reset your password`) }
+                    if (res.data === 'email-sent') { setForgotPasswordFlashMessage(`Success! We've sent you an email with a link to reset your password.`) }
                 })
         }
     }

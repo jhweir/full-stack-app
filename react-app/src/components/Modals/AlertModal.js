@@ -17,10 +17,10 @@ function AlertModal() {
     })
 
     return (
-        <div className={styles.alertModalWrapper}>
-            <div className={styles.alertModal} ref={ref}>
+        <div className={styles.modalWrapper}>
+            <div className={styles.modal} ref={ref}>
                 <CloseButton onClick={() => setAlertModalOpen(false)}/>
-                <span className={styles.alertModalText}>{ alertMessage }</span>
+                <span className={styles.text}>{ alertMessage }</span>
                 {alertMessage.includes('Log in') &&
                     <div
                         className="wecoButton"

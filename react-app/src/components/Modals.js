@@ -8,6 +8,7 @@ import CreatePostModal from './Modals/CreatePostModal'
 import CreateHolonModal from './Modals/CreateHolonModal'
 import CreateCommentModal from './Modals/CreateCommentModal'
 import SettingModal from './Modals/SettingModal'
+import ResetPasswordModal from './Modals/ResetPasswordModal'
 
 function Modals() {
     const {
@@ -18,7 +19,8 @@ function Modals() {
         createPostModalOpen,
         createHolonModalOpen,
         createCommentModalOpen,
-        settingModalOpen
+        settingModalOpen,
+        resetPasswordModalOpen
     } = useContext(AccountContext)
 
     return (
@@ -31,6 +33,7 @@ function Modals() {
             {createHolonModalOpen && <CreateHolonModal/>}
             {createCommentModalOpen && <CreateCommentModal/>}
             {settingModalOpen && <SettingModal/>}
+            {resetPasswordModalOpen && <ResetPasswordModal/>}
         </>
     )
 }

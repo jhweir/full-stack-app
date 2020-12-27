@@ -3,7 +3,7 @@ import styles from '../styles/pages/HomePage.module.scss'
 import { AccountContext } from '../contexts/AccountContext'
 
 function Homepage() {
-    const { setAlertMessage, setAlertModalOpen } = useContext(AccountContext)
+    const { setAlertMessage, setAlertModalOpen, setResetPasswordModalOpen, setResetPasswordModalToken } = useContext(AccountContext)
     const urlParams = new URLSearchParams(window.location.search)
     const alert = urlParams.get('alert')
 
@@ -13,9 +13,11 @@ function Homepage() {
             setAlertModalOpen(true)
         }
         if (alert === 'reset-password') {
-            setAlertMessage(`Reset your password. Token: ${urlParams.get('token')}`)
-            console.log('token: ', urlParams.get('token'))
-            setAlertModalOpen(true)
+            //console.log('token: ', urlParams.get('token'))
+            setResetPasswordModalOpen(true)
+            setResetPasswordModalToken(urlParams.get('token'))
+            // setAlertMessage(`Reset your password. Token: ${urlParams.get('token')}`)
+            // setAlertModalOpen(true)
         }
     }, [])
 
