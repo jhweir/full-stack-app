@@ -6,6 +6,9 @@ const bcrypt = require('bcrypt')
 const Op = sequelize.Op
 const db = require('../models/index')
 const linkPreviewGenerator = require("link-preview-generator")
+const crypto = require('crypto')
+const sgMail = require('@sendgrid/mail')
+sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 
 const Holon = require('../models').Holon
 const VerticalHolonRelationship = require('../models').VerticalHolonRelationship
@@ -1610,31 +1613,104 @@ router.post('/cast-vote', (req, res) => {
 
 router.post('/register', async (req, res) => {
     const { newHandle, newName, newEmail, newPassword } = req.body
+    let token = crypto.randomBytes(64).toString('hex')
 
-    // Check username and email is available
-    User
-        .findOne({ where: { handle: newHandle } })
+    // Check username and email is available then create user (TODO: use [op.Or] to save double call)
+    User.findOne({ where: { handle: newHandle } })
         .then(user => {
             if (user) { res.send('handle-taken') }
-            else { User.findOne({ where: { email: newEmail } })
-                .then(async user => {
-                    if (user) { res.send('email-taken') }
-                    else {
-                        try {
-                            const hashedPassword = await bcrypt.hash(newPassword, 10)
+            else {
+                User.findOne({ where: { email: newEmail } })
+                    .then(async user => {
+                        if (user) { res.send('email-taken') }
+                        else {
+                            let hashedPassword = await bcrypt.hash(newPassword, 10)
                             User.create({
                                 handle: newHandle,
                                 name: newName,
                                 email: newEmail,
-                                password: hashedPassword
+                                password: hashedPassword,
+                                emailVerified: false,
+                                emailToken: token
                             })
+                            let message = {
+                                to: newEmail,
+                                from: 'admin@weco.io',
+                                subject: 'Weco - verify your email',
+                                text: `
+                                    Hi, thanks for creating an account on weco.
+                                    Please copy and paste the address below to verify your email address:
+                                    http://${process.env.NODE_ENV === 'dev' ? process.env.DEV_API_URL : process.env.PROD_API_URL}/api/verify-email?token=${token}
+                                `,
+                                html: `
+                                    <h1>Hi</h1>
+                                    <p>Thanks for creating an account on weco.</p>
+                                    <p>Please click the link below to verify your account:</p>
+                                    <a href='${process.env.NODE_ENV === 'dev' ? process.env.DEV_API_URL : process.env.PROD_API_URL}/api/verify-email?token=${token}'>Verfiy your account</a>
+                                `,
+                            }
+                            sgMail.send(message)
+                                .then(() => {
+                                    console.log('Email sent')
+                                })
+                                .catch((error) => {
+                                    console.error(error)
+                                })
                             res.send('account-registered')
-                        } catch {
-                            //res.redirect('/')
                         }
-                    }
-                })
+                    })
             }
+        })
+})
+
+router.get('/verify-email', async (req, res) => {
+    const { token } = req.query
+    User.findOne({ where: { emailToken: token } })
+        .then(user => {
+            if (user) {
+                user.update({ emailVerified: true, emailToken: null })
+                // log user in...
+                res.redirect(`${process.env.NODE_ENV === 'dev' ? process.env.DEV_APP_URL : process.env.PROD_APP_URL}?alert=email-verified`)
+            }
+            else res.send(`Sorry, we couldn't find a user with that email token.`)
+        })
+})
+
+router.post('/reset-password-request', async (req, res) => {
+    const { email } = req.body
+    let token = crypto.randomBytes(64).toString('hex')
+
+    User.findOne({ where: { email } })
+        .then(user => {
+            if (user) {
+                // todo: set token in user db
+                user.update({ passwordResetToken: token })
+                
+                let message = {
+                    to: email,
+                    from: 'admin@weco.io',
+                    subject: 'Weco - reset your password',
+                    text: `
+                        Hi, we recieved a request to reset your password.
+                        If that's correct, copy and paste the address below to set a new password:
+                        http://${process.env.NODE_ENV === 'dev' ? process.env.DEV_APP_URL : process.env.PROD_APP_URL}?alert=reset-password&token=${token}
+                    `,
+                    html: `
+                        <p>Hi, we recieved a request to reset your password on weco.</p>
+                        <p>If that's correct click the link below to set a new password:</p>
+                        <a href='${process.env.NODE_ENV === 'dev' ? process.env.DEV_APP_URL : process.env.PROD_APP_URL}?alert=reset-password&token=${token}'>Set new password</a>
+                    `,
+                }
+                sgMail.send(message)
+                    .then(() => {
+                        console.log('Email sent')
+                        res.send('email-sent')
+                    })
+                    .catch((error) => {
+                        console.error(error)
+                    })
+            }
+            else { res.send('user-not-found') }
         })
 })
 

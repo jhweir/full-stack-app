@@ -25,7 +25,7 @@ function HolonPageUsers() {
     }, [])
 
     useEffect(() => {
-        if (!holonContextLoading && holonData.id) { getHolonUsers() }
+        if (!holonContextLoading && holonData) { getHolonUsers() }
     }, [holonContextLoading, holonUserSearchFilter, holonUserTimeRangeFilter, holonUserSortByFilter, holonUserSortOrderFilter])
 
     useEffect(() => {

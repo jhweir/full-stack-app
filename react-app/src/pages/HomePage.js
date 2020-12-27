@@ -1,7 +1,23 @@
-import React from 'react'
+import React, { useContext, useEffect } from 'react'
 import styles from '../styles/pages/HomePage.module.scss'
+import { AccountContext } from '../contexts/AccountContext'
 
 function Homepage() {
+    const { setAlertMessage, setAlertModalOpen } = useContext(AccountContext)
+    const urlParams = new URLSearchParams(window.location.search)
+    const alert = urlParams.get('alert')
+
+    useEffect(() => {
+        if (alert === 'email-verified') {
+            setAlertMessage('Success! Your email has been verified. Log in to start using your account.')
+            setAlertModalOpen(true)
+        }
+        if (alert === 'reset-password') {
+            setAlertMessage(`Reset your password. Token: ${urlParams.get('token')}`)
+            console.log('token: ', urlParams.get('token'))
+            setAlertModalOpen(true)
+        }
+    }, [])
 
     return (
         <div className={styles.homePage}>

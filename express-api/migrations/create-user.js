@@ -32,6 +32,18 @@ module.exports = {
       facebookId: {
         type: Sequelize.STRING
       },
+      emailVerified: {
+        type: Sequelize.BOOLEAN
+      },
+      emailToken: {
+        type: Sequelize.TEXT
+      },
+      accountVerified: {
+        type: Sequelize.BOOLEAN
+      },
+      passwordResetToken: {
+        type: Sequelize.TEXT
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

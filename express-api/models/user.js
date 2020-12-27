@@ -8,7 +8,11 @@ module.exports = (sequelize, DataTypes) => {
     bio: DataTypes.TEXT,
     flagImagePath: DataTypes.TEXT,
     coverImagePath: DataTypes.TEXT,
-    facebookId: DataTypes.STRING
+    facebookId: DataTypes.STRING,
+    emailVerified: DataTypes.BOOLEAN,
+    emailToken: DataTypes.TEXT,
+    accountVerified: DataTypes.BOOLEAN,
+    passwordResetToken: DataTypes.TEXT
   }, {});
   User.associate = function(models) {
     User.hasMany(models.Post, {
