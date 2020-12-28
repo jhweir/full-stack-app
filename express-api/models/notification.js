@@ -1,6 +1,7 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   const Notification = sequelize.define('Notification', {
+    ownerId: DataTypes.INTEGER,
     type: DataTypes.STRING,
     text: DataTypes.TEXT,
     holonId: DataTypes.INTEGER,
@@ -9,7 +10,11 @@ module.exports = (sequelize, DataTypes) => {
     commentId: DataTypes.INTEGER
   }, {});
   Notification.associate = function(models) {
-    // associations can be defined here
+    //Notification.hasOne(models.User)
+    Notification.belongsTo(models.User, {
+      foreignKey: 'userId',
+      as: 'triggerUser'
+    })
   };
   return Notification;
 };

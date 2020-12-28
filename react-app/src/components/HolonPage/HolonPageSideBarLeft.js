@@ -41,44 +41,48 @@ function HolonPageSideBarLeft() {
                     {isModerator && <SideBarButton
                         icon='crown-solid.svg'
                         text='Moderator'
-                        marginBottom={10}
+                        marginBottom={5}
                     />}
                     {isLoggedIn && holonData.handle !== 'all' && <SideBarButton
                         icon={isFollowing ? 'eye-solid.svg' : 'eye-slash-solid.svg'}
                         text={isFollowing ? 'Following' : 'Not Following'}
                         onClickFunction={followSpace}
-                        marginBottom={10}
+                        marginBottom={5}
                     />}
                     {isModerator && <SideBarButton
                         icon='cog-solid.svg'
                         text='Settings'
                         url='settings'
                         selected={selectedHolonSubPage === 'settings'}
-                        // marginBottom={10}
+                        marginBottom={5}
                     />}
                     <SideBarButton
                         icon='book-open-solid.svg'
                         text='About'
                         url='about'
                         selected={selectedHolonSubPage === 'about'}
+                        marginBottom={5}
                     />
                     <SideBarButton
                         icon='edit-solid.svg'
                         text='Posts'
                         url='posts'
                         selected={selectedHolonSubPage === 'posts'}
+                        marginBottom={5}
                     />
                     <SideBarButton
                         icon='overlapping-circles-thick.svg'
                         text='Spaces'
                         url='spaces'
                         selected={selectedHolonSubPage === 'spaces'}
+                        marginBottom={5}
                     />
                     <SideBarButton
                         icon='users-solid.svg'
                         text={holonData.handle === 'all' ? 'Users' : 'Followers'}
                         url='users'
                         selected={selectedHolonSubPage === 'users'}
+                        marginBottom={5}
                     />
                 </div>
                 <div className={styles.description}>{holonData.description}</div>

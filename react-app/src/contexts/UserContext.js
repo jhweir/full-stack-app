@@ -24,6 +24,8 @@ function UserContextProvider({ children }) {
     const [createdPostPaginationOffset, setCreatedPostPaginationOffset] = useState(0)
     const [createdPostPaginationHasMore, setCreatedPostPaginationHasMore] = useState(true)
 
+    const [notifications, setNotifications] = useState([])
+
     function getUserData() {
         console.log('UserContext: getUserData')
         setUserContextLoading(true)
@@ -72,6 +74,18 @@ function UserContextProvider({ children }) {
         }
     }
 
+    function getNotifications() {
+        axios
+            .get(config.apiURL + `/user-notifications?userId=${accountData.id}`)
+            .then(res => {
+                setNotifications(res.data)
+            })
+    }
+
+    function getNextNotifications() {
+        //
+    }
+
     function resetCreatedPostFilters() {
         setCreatedPostFiltersOpen(false)
         setCreatedPostTimeRangeFilter('All Time')
@@ -95,7 +109,7 @@ function UserContextProvider({ children }) {
     useEffect(() => {
         if (isLoggedIn && userData && userData.id === accountData.id) { setIsOwnAccount(true) }
         else { setIsOwnAccount(false) }
-    }, [isLoggedIn, userData])
+    }, [isLoggedIn, userData.id])
 
     return (
         <UserContext.Provider value={{
@@ -116,9 +130,12 @@ function UserContextProvider({ children }) {
             createdPostSortByFilter, setCreatedPostSortByFilter,
             createdPostSortOrderFilter, setCreatedPostSortOrderFilter,
 
+            notifications, setNotifications,
+
             // functions
             getUserData,
             getCreatedPosts, getNextCreatedPosts,
+            getNotifications, getNextNotifications
         }}>
             {children}
         </UserContext.Provider>

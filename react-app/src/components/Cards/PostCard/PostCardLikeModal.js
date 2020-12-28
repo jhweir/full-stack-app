@@ -6,6 +6,7 @@ import styles from '../../../styles/components/PostCardLikeModal.module.scss'
 import CloseButton from '../../CloseButton'
 import SmallFlagImage from '../../SmallFlagImage'
 import { AccountContext } from '../../../contexts/AccountContext'
+import { HolonContext } from '../../../contexts/HolonContext'
 
 function PostCardLikeModal(props) {
     const {
@@ -19,14 +20,18 @@ function PostCardLikeModal(props) {
     } = props
 
     const { accountData } = useContext(AccountContext)
+    const { holonData } = useContext(HolonContext)
 
-    console.log('likes: ', likes)
+    console.log('accountData: ', accountData)
 
     function addLike() {
         console.log('add like')
         axios.post(config.apiURL + '/add-like', { 
-            accountId: accountData.id, 
-            postId: postData.id
+            accountId: accountData.id,
+            accountHandle: accountData.handle,
+            accountName: accountData.name,
+            postId: postData.id,
+            holonId: holonData.id
         })
         .then(res => {
             if (res.data === 'success') {

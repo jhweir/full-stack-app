@@ -24,7 +24,7 @@ const Prism = require('../models').Prism
 const PrismUser = require('../models').PrismUser
 const PlotGraph = require('../models').PlotGraph
 const Link = require('../models').Link
-// const Notifications = require('../models').Notification
+const Notification = require('../models').Notification
 
 //const postAttributes = (userId) => [
 const postAttributes = [
@@ -35,7 +35,7 @@ const postAttributes = [
     ],
     [sequelize.literal(
         `(SELECT COUNT(*) FROM Reactions AS Reaction WHERE Reaction.postId = Post.id AND Reaction.type != 'vote' AND Reaction.state = 'active')
-        + (SELECT COUNT(*) FROM Links AS Link WHERE Link.state = 'visible' AND Link.itemAId = Post.id OR Link.itemBId = Post.id AND Link.type = 'post-post')`
+        + (SELECT COUNT(*) FROM Links AS Link WHERE Link.state = 'visible' AND (Link.itemAId = Post.id OR Link.itemBId = Post.id) AND Link.type = 'post-post')`
         ),'total_reactions'
     ],
     [sequelize.literal(
@@ -55,7 +55,7 @@ const postAttributes = [
         ),'total_rating_points'
     ],
     [sequelize.literal(
-        `(SELECT COUNT(*) FROM Links AS Link WHERE Link.state = 'visible' AND Link.itemAId = Post.id OR Link.itemBId = Post.id AND Link.type = 'post-post')` //AND Link.state = 'active'
+        `(SELECT COUNT(*) FROM Links AS Link WHERE Link.state = 'visible' AND (Link.itemAId = Post.id OR Link.itemBId = Post.id) AND Link.type = 'post-post')` //AND Link.state = 'active'
         ),'total_links'
     ],
 ]
@@ -1029,6 +1029,23 @@ router.get('/user-posts', (req, res) => {
     .catch(err => console.log(err))
 })
 
+router.get('/user-notifications', (req, res) => {
+    //TODO: add authenticateToken middleware to protect endpoint
+    const { userId } = req.query
+    Notification
+        .findAll({
+            where: { ownerId: userId },
+            include: [
+                {
+                    model: User,
+                    as: 'triggerUser',
+                    attributes: ['id', 'handle', 'name', 'flagImagePath'],
+                }
+            ]
+        })
+        .then(notifications => res.send(notifications))
+})
+
 router.get('/post-data', (req, res) => {
     const { accountId, postId } = req.query
     let attributes = [
@@ -1068,6 +1085,7 @@ router.get('/post-data', (req, res) => {
             FROM Links
             AS Link
             WHERE Link.itemAId = Post.id
+            AND Link.state = 'visible'
             AND Link.creatorId = ${accountId}
             )`),'account_link'
         ]
@@ -1118,9 +1136,10 @@ router.get('/post-data', (req, res) => {
             space.setDataValue('type', space.dataValues.PostHolon.type)
             delete space.dataValues.PostHolon
         })
-        return post
+        //return post
+        res.json(post)
     })
-    .then(post => { res.json(post) })
+    //.then(post => { res.json(post) })
     .catch(err => console.log(err))
 })
 
@@ -1530,9 +1549,23 @@ router.post('/repost-post', (req, res) => {
 })
 
 router.post('/add-like', (req, res) => {
-    const { accountId, postId, holonId } = req.body
-    Reaction
-        .create({ 
+    const { accountId, accountHandle, accountName, postId, holonId } = req.body
+
+    // find post owner from postId
+    Post.findOne({
+        where: { id: postId },
+        attributes: [],
+        include: [
+            { 
+                model: User,
+                as: 'creator',
+                attributes: ['id', 'handle', 'name', 'flagImagePath', 'email']
+            },
+        ]
+    })
+    .then(post => {
+        // create reaction
+        Reaction.create({ 
             type: 'like',
             value: null,
             state: 'active',
@@ -1541,7 +1574,45 @@ router.post('/add-like', (req, res) => {
             postId,
             commentId: null,
         })
-        .then(res.send('success'))
+        // create notificaton for post owner
+        Notification.create({
+            ownerId: post.creator.id,
+            type: 'post-liked',
+            text: null,
+            holonId,
+            userId: accountId,
+            postId,
+            commentId: null
+        })
+        // send email to post owner
+        let message = {
+            to: post.creator.email,
+            from: 'admin@weco.io',
+            subject: 'Weco - notification',
+            text: `
+                Hi ${post.creator.name}, ${accountName} just liked your post on weco:
+                http://${process.env.NODE_ENV === 'dev' ? process.env.DEV_APP_URL : process.env.PROD_APP_URL}/p/${postId}
+            `,
+            html: `
+                <p>
+                    Hi ${post.creator.name},
+                    <br/>
+                    <a href='${process.env.NODE_ENV === 'dev' ? process.env.DEV_APP_URL : process.env.PROD_APP_URL}/u/${accountHandle}'>${accountName}</a>
+                    just liked your
+                    <a href='${process.env.NODE_ENV === 'dev' ? process.env.DEV_APP_URL : process.env.PROD_APP_URL}/p/${postId}'>post</a>
+                    on weco
+                </p>
+            `,
+        }
+        sgMail.send(message)
+            .then(() => {
+                console.log('Email sent')
+                res.send('success')
+            })
+            .catch((error) => {
+                console.error(error)
+            })
+    })
 })
 
 router.post('/remove-like', (req, res) => {
@@ -1551,13 +1622,6 @@ router.post('/remove-like', (req, res) => {
             where: { type: 'like', state: 'active', postId, userId: accountId }
         })
         .then(res.send('success'))
-})
-
-router.put('/remove-heart', (req, res) => {
-    const { accountId, postId } = req.body
-    Reaction.update({ state: 'removed' }, {
-        where: { type: 'heart', state: 'active', postId, userId: accountId }
-    })
 })
 
 router.post('/add-rating', (req, res) => {

@@ -122,14 +122,14 @@ function PostCardLinkModal(props) {
                             <div className={styles.link} key={index}>
                                 <Link className={styles.imageTextLink} to={`/u/${link.creator.handle}`}>
                                     <SmallFlagImage type='user' size={30} imagePath={link.creator.flagImagePath}/>
-                                    <span className={styles.linkText}>{accountData.id === link.creator.id ? 'You' : link.creator.name}</span>
+                                    <span >{accountData.id === link.creator.id ? 'You' : link.creator.name}</span>
                                 </Link>
                                 <div className={`${styles.text} greyText mr-10`}>
                                     linked from
                                 </div>
                                 <Link className={styles.imageTextLink} to={`/u/${link.postA.creator.handle}`}>
                                     <SmallFlagImage type='user' size={30} imagePath={link.postA.creator.flagImagePath}/>
-                                    <span className={styles.linkText}>{accountData.id === link.postA.creatorId ? 'Your' : link.postA.creator.name + "'s"}</span>
+                                    <span >{accountData.id === link.postA.creatorId ? 'Your' : link.postA.creator.name + "'s"}</span>
                                 </Link>
                                 <Link className={styles.imageTextLink} to={`/p/${link.postA.id}`} onClick={() => setPostId(link.postA.id)}>
                                     <span className={`blueText`}>post</span>
@@ -151,14 +151,14 @@ function PostCardLinkModal(props) {
                             <div className={styles.link} key={index}>
                                 <Link className={styles.imageTextLink} to={`/u/${link.creator.handle}`}>
                                     <SmallFlagImage type='user' size={30} imagePath={link.creator.flagImagePath}/>
-                                    <span className={styles.linkText}>{accountData.id === link.creator.id ? 'You' : link.creator.name}</span>
+                                    <span >{accountData.id === link.creator.id ? 'You' : link.creator.name}</span>
                                 </Link>
                                 <div className={`${styles.text} greyText mr-10`}>
                                     linked to
                                 </div>
                                 <Link className={styles.imageTextLink} to={`/u/${link.postB.creator.handle}`}>
                                     <SmallFlagImage type='user' size={30} imagePath={link.postB.creator.flagImagePath}/>
-                                    <span className={styles.linkText}>{accountData.id === link.postB.creatorId ? 'Your' : link.postB.creator.name + "'s"}</span>
+                                    <span >{accountData.id === link.postB.creatorId ? 'Your' : link.postB.creator.name + "'s"}</span>
                                 </Link>
                                 <Link className={styles.imageTextLink} to={`/p/${link.postB.id}`} onClick={() => setPostId(link.postB.id) } >
                                     <span className={`blueText`}>post</span>
