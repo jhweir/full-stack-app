@@ -2,7 +2,7 @@ import React, { useContext } from 'react'
 import { AccountContext } from '../contexts/AccountContext'
 import AlertModal from './Modals/AlertModal'
 import AuthModal from './Modals/AuthModal'
-import UserControlsModal from './Modals/UserControlsModal'
+import NavBarDropDownModal from './Modals/NavBarDropDownModal'
 import ImageUploadModal from './Modals/ImageUploadModal'
 import CreatePostModal from './Modals/CreatePostModal'
 import CreateHolonModal from './Modals/CreateHolonModal'
@@ -14,7 +14,7 @@ function Modals() {
     const {
         alertModalOpen,
         authModalOpen,
-        userControlsModalOpen,
+        navBarDropDownModalOpen,
         imageUploadModalOpen,
         createPostModalOpen,
         createHolonModalOpen,
@@ -27,7 +27,7 @@ function Modals() {
         <>
             {alertModalOpen && <AlertModal/>}
             {authModalOpen && <AuthModal/>}
-            {userControlsModalOpen && <UserControlsModal/>}
+            {navBarDropDownModalOpen && <NavBarDropDownModal/>}
             {imageUploadModalOpen && <ImageUploadModal/>}
             {createPostModalOpen && <CreatePostModal/>}
             {createHolonModalOpen && <CreateHolonModal/>}

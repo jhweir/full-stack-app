@@ -8,8 +8,13 @@ import styles from '../../styles/components/UserPageAbout.module.scss'
 function UserPageAbout() {
     const { userData, setSelectedUserSubPage } = useContext(UserContext)
 
+    function formatMinutes(number) {
+        if (number < 10) return `0${number}`
+        else return number
+    }
+
     let d = new Date(userData.createdAt)
-    let dateJoined = `${d.getHours()}:${d.getMinutes()} on ${d.getDate()}-${d.getMonth()}-${d.getFullYear()}`
+    let dateJoined = `${d.getHours()}:${formatMinutes(d.getMinutes())} on ${d.getDate()}-${d.getMonth()}-${d.getFullYear()}`
 
     useEffect(() => {
         setSelectedUserSubPage('about')
@@ -20,10 +25,13 @@ function UserPageAbout() {
             <div className={styles.header}>
                 About
             </div>
-            <div className={styles.body}>
-                <div><b>Name:</b> {userData.name}</div>
-                <div><b>Bio:</b> {userData.bio}</div>
-                <div><b>Joined:</b> {dateJoined}</div>
+            <div className={styles.content}>
+                <div className={styles.name}>{userData.name}</div>
+                <div className={styles.handle}>s/{userData.handle}</div>
+                <div className={styles.created}>
+                    <div className={`${styles.text} mr-10`}>Joined at {dateJoined}</div>
+                </div>
+                <div className={styles.text}>{userData.bio}</div>
             </div>
         </div>
     )

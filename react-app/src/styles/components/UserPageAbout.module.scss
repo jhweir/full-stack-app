@@ -16,10 +16,28 @@
     flex-direction: row;
     align-items: center;
 }
-.body {
+.content {
     width: 100%;
     //height: 600px;
     background-color: white;
     border-radius: 10px;
     padding: 20px;
+}
+.name {
+    font-size: 24px;
+}
+.handle {
+    font-size: 16px;
+    color: grey;
+    margin-bottom: 10px;
+}
+.created {
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.text {
+    // margin-bottom: 10px;
+    // &:last-child { margin-bottom: 0; }
 }

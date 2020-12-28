@@ -10,16 +10,15 @@ function NavBar() {
         isLoggedIn,
         accountData,
         setAuthModalOpen,
-        userControlsModalOpen,
-        setUserControlsModalOpen,
-        accountContextLoading
+        navBarDropDownModalOpen,
+        setNavBarDropDownModalOpen
     } = useContext(AccountContext)
-    const { setHolonHandle, selectedHolonSubPage } = useContext(HolonContext)
+    const { setHolonHandle } = useContext(HolonContext)
 
     const [selectedItem, setSelectedItem] = useState('')
 
     useEffect(() => {
-        if (window.location.href === config.appURL) setSelectedItem('home')
+        if (window.location.href === config.appURL || window.location.href.includes(`${config.appURL}?alert`)) setSelectedItem('home')
         else if (window.location.href === `${config.appURL}s/all/posts`) setSelectedItem('posts')
         else if (window.location.href === `${config.appURL}s/all/spaces`) setSelectedItem('spaces')
         else if (window.location.href === `${config.appURL}s/all/users`) setSelectedItem('users')
@@ -63,7 +62,7 @@ function NavBar() {
                     </div>
                 }
                 {isLoggedIn &&
-                    <div className={styles.userControls} onClick={() => setUserControlsModalOpen(!userControlsModalOpen)}>
+                    <div className={styles.userControls} onClick={() => setNavBarDropDownModalOpen(!navBarDropDownModalOpen)}>
                         <span className={styles.userName}>{accountData.name}</span>
                         {accountData.flagImagePath
                             ? <img className={styles.userImage} src={accountData.flagImagePath}/>

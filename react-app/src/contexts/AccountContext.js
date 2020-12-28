@@ -14,7 +14,7 @@ function AccountContextProvider({ children, pageBottomReached }) {
     const [alertModalOpen, setAlertModalOpen] = useState(false)
     const [alertMessage, setAlertMessage] = useState('')
     const [authModalOpen, setAuthModalOpen] = useState(false)
-    const [userControlsModalOpen, setUserControlsModalOpen] = useState(false)
+    const [navBarDropDownModalOpen, setNavBarDropDownModalOpen] = useState(false)
     const [createPostModalOpen, setCreatePostModalOpen] = useState(false)
     const [createHolonModalOpen, setCreateHolonModalOpen] = useState(false)
     const [createCommentModalOpen, setCreateCommentModalOpen] = useState(false)
@@ -69,7 +69,7 @@ function AccountContextProvider({ children, pageBottomReached }) {
             isLoggedIn, logOut,
             accountData, getAccountData, setAccountData,
             authModalOpen, setAuthModalOpen,
-            userControlsModalOpen, setUserControlsModalOpen,
+            navBarDropDownModalOpen, setNavBarDropDownModalOpen,
             alertMessage, setAlertMessage,
             alertModalOpen, setAlertModalOpen,
             imageUploadModalOpen, setImageUploadModalOpen,

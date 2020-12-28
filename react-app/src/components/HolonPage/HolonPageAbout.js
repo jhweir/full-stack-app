@@ -6,8 +6,13 @@ import { Link } from 'react-router-dom'
 function HolonPageAbout() {
     const { holonData, setSelectedHolonSubPage } = useContext(HolonContext)
 
+    function formatMinutes(number) {
+        if (number < 10) return `0${number}`
+        else return number
+    }
+
     let d = new Date(holonData.createdAt)
-    let dateCreated = `${d.getHours()}:${d.getMinutes()} on ${d.getDate()}-${d.getMonth()}-${d.getFullYear()}`
+    let dateCreated = `${d.getHours()}:${formatMinutes(d.getMinutes())} on ${d.getDate()}-${d.getMonth()}-${d.getFullYear()}`
 
     useEffect(() => {
         setSelectedHolonSubPage('about')

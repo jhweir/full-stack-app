@@ -18,7 +18,7 @@ function UserPageSettings() {
                 Settings
             </div>
             <div className={styles.body}>
-                Change settings here...
+                [Coming soon...]
             </div>
         </div>
     )

@@ -18,6 +18,11 @@ function PollResultsTimeGraph() {
     const height = 350
     const margin = { top: 50, right: 50, bottom: 50, left: 50 }
 
+    function formatMinutes(number) {
+        if (number < 10) return `0${number}`
+        else return number
+    }
+
     useEffect(() => {
         if (postData.id) {
             console.log('PollResultsTimeGraph: getPollVotes')
@@ -77,7 +82,7 @@ function PollResultsTimeGraph() {
         .scale(x)
         .tickFormat(function(d) {
             let date = new Date(d)
-            return `${date.getHours()}:${date.getMinutes()} | ${date.getDate()}-${date.getMonth()}-${date.getFullYear()}`
+            return `${date.getHours()}:${formatMinutes(date.getMinutes())} | ${date.getDate()}-${date.getMonth()}-${date.getFullYear()}`
         })
         .tickArguments([2])
         //.tickArguments([d3.timeMinute.every(15)])

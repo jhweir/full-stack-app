@@ -153,13 +153,23 @@ function AuthModal() {
                                 className={`wecoInput mb-10 ${emailOrHandleError && 'error'}`}
                                 placeholder='Email or Handle'
                                 type="text" value={emailOrHandle}
-                                onChange={(e) => { setEmailOrHandle(e.target.value); setEmailOrHandleError(false) }}
+                                onChange={(e) => {
+                                    setEmailOrHandle(e.target.value)
+                                    setEmailOrHandleError(false)
+                                    setDisplayResendVerificationEmailLink(false)
+                                    setLogInFlashMessage('')
+                                }}
                             />
                             <input 
                                 className={`wecoInput mb-10 ${passwordError && 'error'}`}
                                 placeholder='Password'
                                 type="password" value={password}
-                                onChange={(e) => { setPassword(e.target.value); setPasswordError(false) }}
+                                onChange={(e) => {
+                                    setPassword(e.target.value)
+                                    setPasswordError(false)
+                                    setDisplayResendVerificationEmailLink(false)
+                                    setLogInFlashMessage('')
+                                }}
                             />
                             <button className='wecoButton w-100 mt-10 mb-20'>Log in</button>
                             <span className='mb-10'>New? <a className='blueText' onClick={() => setDisplay('create-new-account')}>Create a new account</a></span>
