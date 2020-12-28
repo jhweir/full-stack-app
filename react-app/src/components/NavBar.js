@@ -19,7 +19,6 @@ function NavBar() {
     const [selectedItem, setSelectedItem] = useState('')
 
     useEffect(() => {
-        console.log('config.appURL: ', config.appURL)
         if (window.location.href === config.appURL) setSelectedItem('home')
         else if (window.location.href === `${config.appURL}s/all/posts`) setSelectedItem('posts')
         else if (window.location.href === `${config.appURL}s/all/spaces`) setSelectedItem('spaces')

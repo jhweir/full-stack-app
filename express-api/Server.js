@@ -45,22 +45,28 @@ app.post('/api/log-in', async (req, res) => {
           { email: emailOrHandle },
           { handle: emailOrHandle }
         ]
-      }
+      },
+      attributes: ['id', 'password', 'emailVerified']
     })
     .then(user => {
       //res.send(user)
       if (!user) { return res.send('user-not-found') }
-      bcrypt.compare(password, user.password, function(error, success) {
+      else {
+        bcrypt.compare(password, user.password, function(error, success) {
           if (error) { res.send('incorrect-password') }
-          if (success) { 
+          if (success) {
+            if (!user.emailVerified) { return res.send({ message: 'email-not-verified', userId: user.id }) }
+            else {
               const payload = { id: user.id }
               const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1d' })
               // const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' })
               // res.cookie('cookie_name', accessToken, { httpOnly: true })
               res.send(accessToken)
+            }
           }
           else { res.send('incorrect-password') }
-      })
+        })
+      }
     })
 })
 

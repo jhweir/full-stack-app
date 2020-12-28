@@ -688,6 +688,7 @@ router.get('/holon-users', (req, res) => {
     User.findAll({
         where: { 
             '$FollowedHolons.id$': holonId,
+            emailVerified: true,
             createdAt: { [Op.between]: [startDate, Date.now()] },
             [Op.or]: [
                 { handle: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } },
@@ -779,7 +780,8 @@ router.get('/all-users', (req, res) => {
     let firstAttributes = findFirstAttributes()
 
     User.findAll({
-        where: { 
+        where: {
+            emailVerified: true,
             createdAt: { [Op.between]: [startDate, Date.now()] },
             [Op.or]: [
                 { handle: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } },
@@ -1723,6 +1725,45 @@ router.post('/reset-password', async (req, res) => {
                 res.send('success')
             } else {
                 res.send('invalid-token')
+            }
+        })
+})
+
+router.post('/resend-verification-email', async (req, res) => {
+    const { userId } = req.body
+    let token = crypto.randomBytes(64).toString('hex')
+
+    User.findOne({ where: { id: userId } })
+        .then(user => {
+            if (user) {
+                user.update({ emailToken: token })
+                let message = {
+                    to: user.email,
+                    from: 'admin@weco.io',
+                    subject: 'Weco - verify your email',
+                    text: `
+                        Hi, thanks for creating an account on weco.
+                        Please copy and paste the address below to verify your email address:
+                        http://${process.env.NODE_ENV === 'dev' ? process.env.DEV_API_URL : process.env.PROD_API_URL}/api/verify-email?token=${token}
+                    `,
+                    html: `
+                        <h1>Hi</h1>
+                        <p>Thanks for creating an account on weco.</p>
+                        <p>Please click the link below to verify your account:</p>
+                        <a href='${process.env.NODE_ENV === 'dev' ? process.env.DEV_API_URL : process.env.PROD_API_URL}/api/verify-email?token=${token}'>Verfiy your account</a>
+                    `,
+                }
+                sgMail.send(message)
+                    .then(() => {
+                        console.log('Email sent')
+                    })
+                    .catch((error) => {
+                        console.error(error)
+                    })
+                res.send('success')
+            }
+            else {
+                res.send('user-not-found')
             }
         })
 })

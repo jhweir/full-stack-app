@@ -17,6 +17,8 @@ function AuthModal() {
     const [emailOrHandleError, setEmailOrHandleError] = useState(false)
     const [passwordError, setPasswordError] = useState(false)
     const [logInFlashMessage, setLogInFlashMessage] = useState('')
+    const [displayResendVerificationEmailLink, setDisplayResendVerificationEmailLink] = useState(false)
+    const [verificationEmailUserId, setVerificationEmailUserId] = useState(null)
 
     // register
     const [newHandle, setNewHandle] = useState('')
@@ -48,8 +50,14 @@ function AuthModal() {
                 .post(config.apiURL + '/log-in', { emailOrHandle, password })
                 .then(res => {
                     if (res.data === 'user-not-found') { setLogInFlashMessage('User not found') }
-                    if (res.data === 'incorrect-password') { setLogInFlashMessage('Incorrect password') }
-                    if (res.data !== 'user-not-found' && res.data !== 'incorrect-password') {
+                    else if (res.data === 'incorrect-password') { setLogInFlashMessage('Incorrect password') }
+                    else if (res.data.message === 'email-not-verified') {
+                        setLogInFlashMessage('Email not yet verified')
+                        // display option to resend verification email
+                        setDisplayResendVerificationEmailLink(true)
+                        setVerificationEmailUserId(res.data.userId)
+                    }
+                    else {
                         document.cookie = `accessToken=${res.data}; path=/`
                         setAuthModalOpen(false)
                         getAccountData()
@@ -101,10 +109,23 @@ function AuthModal() {
             axios
                 .post(config.apiURL + '/reset-password-request', { email: resetEmail })
                 .then(res => {
-                    if (res.data === 'user-not-found') { setForgotPasswordFlashMessage('User not found') }
+                    if (res.data === 'user-not-found') { setForgotPasswordFlashMessage('Account not found') }
                     if (res.data === 'email-sent') { setForgotPasswordFlashMessage(`Success! We've sent you an email with a link to reset your password.`) }
                 })
         }
+    }
+
+    function resendVerificationEmail() {
+        axios
+            .post(config.apiURL + '/resend-verification-email', { userId: verificationEmailUserId })
+            .then(res => {
+                console.log('res: ', res)
+                if (res.data === 'user-not-found') { setLogInFlashMessage('Account not found') }
+                if (res.data === 'success') {
+                    setLogInFlashMessage(`Success! We've sent you a new verification email.`)
+                    setDisplayResendVerificationEmailLink(false)
+                }
+            })
     }
 
     const ref = useRef()
@@ -124,6 +145,9 @@ function AuthModal() {
                     <div className={styles.authModalColumn}>
                         <span className={styles.authModalTitle}>Log in</span>
                         <span className={styles.authModalFlashMessage}>{ logInFlashMessage }</span>
+                        {displayResendVerificationEmailLink &&
+                            <span className='blueText mt-10 mb-10' onClick={() => resendVerificationEmail()}>Resend verification email</span>
+                        }
                         <form className={styles.authModalForm} onSubmit={ logIn }>
                             <input 
                                 className={`wecoInput mb-10 ${emailOrHandleError && 'error'}`}
@@ -176,7 +200,7 @@ function AuthModal() {
                             />
                             <input 
                                 className={`wecoInput mb-10 ${newPasswordTwoError && 'error'}`}
-                                placeholder='Repeat password'
+                                placeholder='Confirm password'
                                 type="password" value={newPasswordTwo}
                                 onChange={(e) => { setNewPasswordTwo(e.target.value); setNewPasswordTwoError(false) }}
                             />
@@ -193,9 +217,9 @@ function AuthModal() {
                         <form className={styles.authModalForm} onSubmit={sendResetLink}>
                             <input 
                                 className={`wecoInput mb-10 ${resetEmailError && 'error'}`}
-                                placeholder='Email'
-                                type="text" value={resetEmail}
-                                onChange={(e) => { setResetEmail(e.target.value); setResetEmailError(false) }}
+                                placeholder='Account email'
+                                type="email" value={resetEmail}
+                                onChange={(e) => { setResetEmail(e.target.value); setResetEmailError(false); setForgotPasswordFlashMessage('') }}
                             />
                             <button className='wecoButton w-100 mt-10 mb-20'>Send reset link</button>
                             <span className='mb-10'><a className='blueText' onClick={() => setDisplay('log-in')}>Return to log in</a></span>
