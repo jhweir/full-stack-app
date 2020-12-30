@@ -33,8 +33,9 @@ function HolonPageSideBarLeft() {
                 <LargeFlagImage
                     size={150}
                     imagePath={holonData.flagImagePath}
+                    type='space'
                     canEdit={isModerator}
-                    imageUploadType='holon-flag-image'
+                    //imageUploadType='holon-flag-image'
                 />
                 <div className={styles.name}>{ holonData.name }</div>
                 <div className={styles.navButtons}>

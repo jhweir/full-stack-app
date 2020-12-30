@@ -20,9 +20,23 @@ function CreateCommentModal() {
         else {
             if (invalidComment) { setCommentError(true) }
             else {
-                axios.post(config.apiURL + '/add-comment', { creatorId: accountData.id, postId: postData.id, text: newComment })
-                    .then(setCreateCommentModalOpen(false))
-                    .then(setTimeout(() => { getPostData(); getPostComments() }, 200))
+                axios
+                    .post(config.apiURL + '/add-comment', { 
+                        accountId: accountData.id,
+                        accountHandle: accountData.handle,
+                        accountName: accountData.name,
+                        postId: postData.id,
+                        text: newComment
+                    })
+                    .then(res => {
+                        //console.log('res: ', res)
+                        if (res.data === 'success') {
+                            setCreateCommentModalOpen(false)
+                            getPostData()
+                            getPostComments()
+                        }
+                    })
+                    //.then(setTimeout(() => { getPostData(); getPostComments() }, 200))
             }
         }
     }

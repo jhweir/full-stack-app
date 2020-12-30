@@ -1040,6 +1040,11 @@ router.get('/user-notifications', (req, res) => {
                     model: User,
                     as: 'triggerUser',
                     attributes: ['id', 'handle', 'name', 'flagImagePath'],
+                },
+                {
+                    model: Holon,
+                    as: 'triggerSpace',
+                    attributes: ['id', 'handle', 'name', 'flagImagePath'],
                 }
             ]
         })
@@ -1646,14 +1651,71 @@ router.post('/remove-rating', (req, res) => {
 })
 
 router.post('/add-comment', (req, res) => {
-    let { creatorId, postId, text } = req.body
-    Comment.create({ state: 'visible', creatorId, postId, text })
-        .catch(err => console.log(err))
+    let { accountId, accountHandle, accountName, postId, text } = req.body
 
-    // // Update number of comments on post in Post table
-    // Post.update({ comments: comments }, {
-    //     where: { id: postId }
-    // })
+    // find post owner from postId
+    Post.findOne({
+        where: { id: postId },
+        attributes: [],
+        include: [
+            { 
+                model: User,
+                as: 'creator',
+                attributes: ['id', 'handle', 'name', 'flagImagePath', 'email']
+            },
+        ]
+    })
+    .then(post => {
+        // create comment
+        Comment.create({
+            state: 'visible',
+            creatorId: accountId,
+            postId,
+            text
+        })
+        .then(comment => {
+            // create notificaton for post owner
+            Notification.create({
+                ownerId: post.creator.id,
+                type: 'post-comment',
+                //text: null,
+                holonId: null,
+                userId: accountId,
+                postId,
+                commentId: comment.id
+            })
+
+            // send email to post owner
+            let url = process.env.NODE_ENV === 'dev' ? process.env.DEV_APP_URL : process.env.PROD_APP_URL
+            let message = {
+                to: post.creator.email,
+                from: 'admin@weco.io',
+                subject: 'Weco - notification',
+                text: `
+                    Hi ${post.creator.name}, ${accountName} just liked your post on weco:
+                    http://${url}/p/${postId}
+                `,
+                html: `
+                    <p>
+                        Hi ${post.creator.name},
+                        <br/>
+                        <a href='${url}/u/${accountHandle}'>${accountName}</a>
+                        just commented on your
+                        <a href='${url}/p/${postId}'>post</a>
+                        on weco
+                    </p>
+                `,
+            }
+            sgMail.send(message)
+            .then(() => {
+                console.log('Email sent')
+                res.send('success')
+            })
+            .catch((error) => {
+                console.error(error)
+            })
+        })
+    })
 })
 
 router.delete('/delete-comment', (req, res) => {

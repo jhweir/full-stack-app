@@ -41,49 +41,40 @@ function NotificationCard(props) {
                         <Link className={styles.imageTextLink} to={`/p/${notification.postId}`} onClick={() => setPostId(notification.postId)}>
                             <span className={`blueText`}>post</span>
                         </Link>
+                        <div className={`greyText mr-10`}>in</div>
+                        <Link className={styles.imageTextLink} to={`/s/${notification.triggerSpace.handle}`}>
+                            <SmallFlagImage type='space' size={30} imagePath={notification.triggerSpace.flagImagePath}/>
+                            <span>{notification.triggerSpace.name}</span>
+                        </Link>
                         <div className={`greyText`}>| {formatDate(notification.createdAt)}</div>
-
                     </div>
                 </div>
             }
 
+            {notification.type === 'post-comment' &&
+                <div className={styles.content}>
+                    <div className={styles.iconWrapper}>
+                        <img className={styles.icon} src='/icons/comment-solid.svg' alt=''/>
+                    </div>
+                    <div className={styles.info}>
+                        <Link className={styles.imageTextLink} to={`/u/${notification.triggerUser.handle}`}>
+                            <SmallFlagImage type='user' size={30} imagePath={notification.triggerUser.flagImagePath}/>
+                            <span>{accountData.id === notification.triggerUser.id ? 'You' : notification.triggerUser.name}</span>
+                        </Link>
+                        <div className={`greyText`}>commented on your</div>
+                        <Link className={styles.imageTextLink} to={`/p/${notification.postId}`} onClick={() => setPostId(notification.postId)}>
+                            <span className={`blueText`}>post</span>
+                        </Link>
+                        {/* <div className={`greyText mr-10`}>in</div>
+                        <Link className={styles.imageTextLink} to={`/s/${notification.triggerSpace.handle}`}>
+                            <SmallFlagImage type='space' size={30} imagePath={notification.triggerSpace.flagImagePath}/>
+                            <span>{notification.triggerSpace.name}</span>
+                        </Link> */}
+                        <div className={`greyText`}>| {formatDate(notification.createdAt)}</div>
+                    </div>
+                </div>
+            }
 
-            {/*<Link className={styles.flagImage}
-                to={ `/s/${handle}` }
-                onClick={ () => { setHolonHandle(handle) } }>
-                    {flagImagePath === null
-                        ? <div className={styles.flagImagePlaceholderWrapper}>
-                            <img className={styles.flagImagePlaceholder} src='/icons/users-solid.svg' alt=''/>
-                        </div>
-                        : <img className={styles.flagImage} src={flagImagePath} alt=''/>
-                    }
-            </Link>
-            <div className={styles.info}>
-                <Link className={styles.title}
-                    to={ `/s/${handle}` }
-                    onClick={ () => { setHolonHandle(handle) } }>
-                    { name }
-                </Link>
-                <span className={styles.description}>{description}</span>
-                <div className={styles.stat}>
-                    <img className={styles.statIcon} src="/icons/users-solid.svg" alt=''/>
-                    <span>{ total_followers } Followers</span>
-                </div>
-                <div className={styles.stats}>
-                    <div className={styles.stat}>
-                        <img className={styles.statIcon} src="/icons/edit-solid.svg" alt=''/>
-                        <span>{ total_posts } Posts</span>
-                    </div>
-                    <div className={styles.stat}>
-                        <img className={styles.statIcon} src="/icons/comment-solid.svg" alt=''/>
-                        <span>{ total_comments } Comments</span>
-                    </div>
-                    <div className={styles.stat}>
-                        <img className={styles.statIcon} src="/icons/fire-alt-solid.svg" alt=''/>
-                        <span>{ total_reactions } Reactions</span>
-                    </div>
-                </div>
-            </div> */}
         </div>
     )
 }

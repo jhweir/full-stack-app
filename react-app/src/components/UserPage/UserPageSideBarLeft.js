@@ -13,7 +13,8 @@ function UserPageSideBarLeft() {
             <LargeFlagImage
                 size={150}
                 imagePath={userData.flagImagePath}
-                imageUploadType='user-flag-image'
+                type='user'
+                //imageUploadType='user-flag-image'
                 canEdit={isOwnAccount}
             />
             <div className={styles.userName}>{ userData.name }</div>
