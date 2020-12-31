@@ -92,6 +92,13 @@ app.get('/api/account-data', authenticateToken, (req, res) => {
   //console.log('req.user.id: ', req.user.id)
   User.findOne({ 
     where: { id: req.user.id },
+    attributes: [
+      'id', 'name', 'handle', 'flagImagePath',
+      [sequelize.literal(
+        `(SELECT COUNT(*) FROM Notifications AS Notification WHERE Notification.ownerId = User.id AND Notification.seen = false)`
+        ),'unseen_notifications'
+      ]
+    ],
     include: [
       {
         model: Holon,

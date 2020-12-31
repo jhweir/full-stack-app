@@ -1029,12 +1029,12 @@ router.get('/user-posts', (req, res) => {
     .catch(err => console.log(err))
 })
 
-router.get('/user-notifications', (req, res) => {
+router.get('/account-notifications', (req, res) => {
     //TODO: add authenticateToken middleware to protect endpoint
-    const { userId } = req.query
+    const { accountId } = req.query
     Notification
         .findAll({
-            where: { ownerId: userId },
+            where: { ownerId: accountId },
             include: [
                 {
                     model: User,
@@ -1504,13 +1504,18 @@ router.delete('/delete-post', (req, res) => {
 })
 
 router.post('/repost-post', (req, res) => {
-    const { accountId, postId, spaces } = req.body
+    const { accountId, accountHandle, accountName, postId, spaces } = req.body
 
     const createPostHolons = spaces.forEach(space => {
         Holon.findOne({
             where: { handle: space },
             attributes: ['id'],
-            include: [{ model: Holon, as: 'HolonHandles', attributes: ['id'], through: { attributes: [] } }]
+            include: [{
+                model: Holon,
+                as: 'HolonHandles',
+                attributes: ['id'],
+                through: { attributes: [] }
+            }]
         })
         .then(holon => {
             PostHolon.create({
@@ -1520,6 +1525,7 @@ router.post('/repost-post', (req, res) => {
                 postId: postId,
                 holonId: holon.id
             })
+            // TODO: move out of forEach loop
             Reaction.create({
                 type: 'repost',
                 state: 'active',
@@ -1583,6 +1589,7 @@ router.post('/add-like', (req, res) => {
         Notification.create({
             ownerId: post.creator.id,
             type: 'post-liked',
+            seen: false,
             text: null,
             holonId,
             userId: accountId,
@@ -1678,6 +1685,7 @@ router.post('/add-comment', (req, res) => {
             Notification.create({
                 ownerId: post.creator.id,
                 type: 'post-comment',
+                seen: false,
                 //text: null,
                 holonId: null,
                 userId: accountId,
@@ -2219,6 +2227,15 @@ router.get('/post-link-data', async (req, res) => {
     //     res.json(links)
     // })
     res.json(links)
+})
+
+router.post('/toggle-notification-seen', (req, res) => {
+    let { notificationId, seen } = req.body
+    // console.log('notificationId: ', notificationId)
+    // console.log('seen: ', seen)
+    Notification
+        .update({ seen }, { where: { id: notificationId } })
+        .then(res.send('success'))
 })
 
 module.exports = router

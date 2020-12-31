@@ -11,11 +11,11 @@ module.exports = {
       ownerId: {
         type: Sequelize.INTEGER
       },
+      seen: {
+        type: Sequelize.BOOLEAN
+      },
       type: {
         type: Sequelize.STRING
-      },
-      text: {
-        type: Sequelize.TEXT
       },
       holonId: {
         type: Sequelize.INTEGER

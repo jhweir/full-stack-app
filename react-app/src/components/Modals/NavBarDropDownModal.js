@@ -5,7 +5,7 @@ import { UserContext } from '../../contexts/UserContext'
 import styles from '../../styles/components/NavBarDropDownModal.module.scss'
 
 function NavBarDropDownModal() {
-    const { setNavBarDropDownModalOpen, setAccountData, accountData, logOut } = useContext(AccountContext)
+    const { setNavBarDropDownModalOpen, setAccountData, accountData, logOut, notifications } = useContext(AccountContext)
     const { setUserHandle } = useContext(UserContext)
 
     const ref = useRef()
@@ -31,7 +31,10 @@ function NavBarDropDownModal() {
                         className={styles.link}
                         onClick={() => { setNavBarDropDownModalOpen(false); setUserHandle(accountData.handle) }}>
                         <img className={styles.linkIcon} src={`/icons/bell-solid.svg`}/>
-                        <span className={styles.linkText}>Notifications</span>
+                        <span className={`${styles.linkText} ${accountData.unseen_notifications && 'ml-10'}`}>Notifications</span>
+                        {accountData.unseen_notifications > 0 &&
+                            <div className={styles.notification}>{ accountData.unseen_notifications }</div>
+                        }
                     </Link>
                     <Link to={`/u/${accountData.handle}/messages`}
                         className={styles.link}

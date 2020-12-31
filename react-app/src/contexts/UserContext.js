@@ -24,7 +24,7 @@ function UserContextProvider({ children }) {
     const [createdPostPaginationOffset, setCreatedPostPaginationOffset] = useState(0)
     const [createdPostPaginationHasMore, setCreatedPostPaginationHasMore] = useState(true)
 
-    const [notifications, setNotifications] = useState([])
+    // const [notifications, setNotifications] = useState([])
 
     function getUserData() {
         console.log('UserContext: getUserData')
@@ -74,17 +74,17 @@ function UserContextProvider({ children }) {
         }
     }
 
-    function getNotifications() {
-        axios
-            .get(config.apiURL + `/user-notifications?userId=${accountData.id}`)
-            .then(res => {
-                setNotifications(res.data)
-            })
-    }
+    // function getNotifications() {
+    //     axios
+    //         .get(config.apiURL + `/user-notifications?userId=${accountData.id}`)
+    //         .then(res => {
+    //             setNotifications(res.data)
+    //         })
+    // }
 
-    function getNextNotifications() {
-        //
-    }
+    // function getNextNotifications() {
+    //     //
+    // }
 
     function resetCreatedPostFilters() {
         setCreatedPostFiltersOpen(false)
@@ -130,12 +130,12 @@ function UserContextProvider({ children }) {
             createdPostSortByFilter, setCreatedPostSortByFilter,
             createdPostSortOrderFilter, setCreatedPostSortOrderFilter,
 
-            notifications, setNotifications,
+            // notifications, setNotifications,
 
             // functions
             getUserData,
             getCreatedPosts, getNextCreatedPosts,
-            getNotifications, getNextNotifications
+            // getNotifications, getNextNotifications
         }}>
             {children}
         </UserContext.Provider>

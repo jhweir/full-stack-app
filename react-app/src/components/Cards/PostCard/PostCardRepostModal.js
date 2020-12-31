@@ -31,7 +31,9 @@ function PostCardRepostModal(props) {
         if (addedSpaces < 1) { setNewSpaceError(true) }
         else {
             axios.post(config.apiURL + '/repost-post', { 
-                accountId: accountData.id, 
+                accountId: accountData.id,
+                accountHandle: accountData.handle,
+                accountName: accountData.name,
                 postId: postData.id, 
                 spaces: addedSpaces
             })

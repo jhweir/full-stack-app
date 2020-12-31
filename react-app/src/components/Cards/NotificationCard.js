@@ -1,9 +1,11 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { AccountContext } from '../../contexts/AccountContext'
 import { PostContext } from '../../contexts/PostContext'
 import styles from '../../styles/components/NotificationCard.module.scss'
 import SmallFlagImage from '../SmallFlagImage'
+import axios from 'axios'
+import config from '../../Config'
 
 function NotificationCard(props) {
     const {
@@ -12,8 +14,14 @@ function NotificationCard(props) {
     } = props
 
     // const { setHolonHandle } = useContext(HolonContext)
-    const { accountData } = useContext(AccountContext)
+    const { accountData, getAccountData, getNotifications } = useContext(AccountContext)
     const { setPostId } = useContext(PostContext)
+
+    const [seen, setSeen] = useState(false)
+
+    useEffect(() => {
+        if (notification.id) { setSeen(notification.seen) }
+    }, [notification.id])
 
     function formatDate(date) {
         if (date) {
@@ -23,8 +31,21 @@ function NotificationCard(props) {
         }
     }
 
+    function toggleSeen() {
+        setSeen(!seen)
+        axios.post(config.apiURL + '/toggle-notification-seen', { notificationId: notification.id, seen: seen ? false : true  })
+            .then(res => {
+                if (res.data === 'success') {
+                    setTimeout(() => {
+                        getAccountData()
+                        //getNotifications()
+                    }, 300)
+                }
+            })
+    }
+
     return (
-        <div className={styles.wrapper}>
+        <div className={`${styles.wrapper} ${seen && styles.seen}`}>
             <div className={styles.index}>{ index + 1 }</div>
             
             {notification.type === 'post-liked' &&
@@ -48,6 +69,11 @@ function NotificationCard(props) {
                         </Link>
                         <div className={`greyText`}>| {formatDate(notification.createdAt)}</div>
                     </div>
+                    <img
+                        className={styles.seenIcon}
+                        src={`/icons/${seen ? 'eye-solid.svg' : 'eye-slash-solid.svg'}`}
+                        onClick={() => toggleSeen()}
+                    />
                 </div>
             }
 
@@ -72,6 +98,11 @@ function NotificationCard(props) {
                         </Link> */}
                         <div className={`greyText`}>| {formatDate(notification.createdAt)}</div>
                     </div>
+                    <img
+                        className={styles.seenIcon}
+                        src={`/icons/${seen ? 'eye-solid.svg' : 'eye-slash-solid.svg'}`}
+                        onClick={() => toggleSeen()}
+                    />
                 </div>
             }
 

@@ -10,6 +10,8 @@ function AccountContextProvider({ children, pageBottomReached }) {
     const [accountData, setAccountData] = useState({ FollowedHolons: [], ModeratedHolons: [] })
     const [isLoggedIn, setIsLoggedIn] = useState(false)
 
+    const [notifications, setNotifications] = useState([])
+
     // modals
     const [alertModalOpen, setAlertModalOpen] = useState(false)
     const [alertMessage, setAlertMessage] = useState('')
@@ -44,11 +46,25 @@ function AccountContextProvider({ children, pageBottomReached }) {
             .then(res => {
                 if (res.data !== 'Invalid token') {
                     setAccountData(res.data)
+                    console.log('account data: ', res.data)
                     setIsLoggedIn(true)
                     console.log('AccountContext: logged in succesfully') }
                 setAccountContextLoading(false)
             })
         }
+    }
+
+    function getNotifications() {
+        console.log('AccountContext: getNotifications')
+        axios
+            .get(config.apiURL + `/account-notifications?accountId=${accountData.id}`)
+            .then(res => {
+                setNotifications(res.data)
+            })
+    }
+
+    function getNextNotifications() {
+        //
     }
 
     function logOut() {
@@ -60,6 +76,7 @@ function AccountContextProvider({ children, pageBottomReached }) {
 
     useEffect(() => {
         getAccountData()
+        //getNotifications()
     }, [])
 
     return (
@@ -82,7 +99,11 @@ function AccountContextProvider({ children, pageBottomReached }) {
             createPostFromTurn, setCreatePostFromTurn,
             createPostFromTurnData, setCreatePostFromTurnData,
             resetPasswordModalOpen, setResetPasswordModalOpen,
-            resetPasswordModalToken, setResetPasswordModalToken
+            resetPasswordModalToken, setResetPasswordModalToken,
+
+            notifications, setNotifications,
+
+            getNotifications, getNextNotifications
         }}>
             {children}
         </AccountContext.Provider>

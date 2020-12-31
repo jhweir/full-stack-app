@@ -4,6 +4,7 @@ import { HolonContext } from '../contexts/HolonContext'
 import { AccountContext } from '../contexts/AccountContext'
 import styles from '../styles/components/NavBar.module.scss'
 import config from '../Config'
+import SmallFlagImage from './SmallFlagImage'
 
 function NavBar() {
     const {
@@ -11,7 +12,8 @@ function NavBar() {
         accountData,
         setAuthModalOpen,
         navBarDropDownModalOpen,
-        setNavBarDropDownModalOpen
+        setNavBarDropDownModalOpen,
+        //notifications
     } = useContext(AccountContext)
     const { setHolonHandle } = useContext(HolonContext)
 
@@ -24,6 +26,8 @@ function NavBar() {
         else if (window.location.href === `${config.appURL}s/all/users`) setSelectedItem('users')
         else setSelectedItem('')
     }, [window.location.pathname])
+
+    //let newNotifications = notifications.filter(n => !n.seen)
 
     return (
         <div className={styles.navBar}>
@@ -64,11 +68,9 @@ function NavBar() {
                 {isLoggedIn &&
                     <div className={styles.userControls} onClick={() => setNavBarDropDownModalOpen(!navBarDropDownModalOpen)}>
                         <span className={styles.userName}>{accountData.name}</span>
-                        {accountData.flagImagePath
-                            ? <img className={styles.userImage} src={accountData.flagImagePath}/>
-                            : <div className={styles.userImageWrapper}>
-                                <img className={styles.userImagePlaceholder} src='/icons/user-solid.svg' alt=''/>
-                            </div>
+                        <SmallFlagImage type='user' size={40} imagePath={accountData.flagImagePath}/>
+                        {accountData.unseen_notifications > 0 &&
+                            <div className={styles.notification}>{ accountData.unseen_notifications }</div>
                         }
                     </div>
                 }
