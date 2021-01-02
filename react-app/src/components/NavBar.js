@@ -12,8 +12,7 @@ function NavBar() {
         accountData,
         setAuthModalOpen,
         navBarDropDownModalOpen,
-        setNavBarDropDownModalOpen,
-        //notifications
+        setNavBarDropDownModalOpen
     } = useContext(AccountContext)
     const { setHolonHandle } = useContext(HolonContext)
 
@@ -26,8 +25,6 @@ function NavBar() {
         else if (window.location.href === `${config.appURL}s/all/users`) setSelectedItem('users')
         else setSelectedItem('')
     }, [window.location.pathname])
-
-    //let newNotifications = notifications.filter(n => !n.seen)
 
     return (
         <div className={styles.navBar}>

@@ -40,7 +40,15 @@ function PostCardRatingModal(props) {
             setTotalReactions(totalReactions + 1)
             setTotalRatingPoints(totalRatingPoints + parseInt(newRating, 10))
             setAccountRating(accountRating + 1)
-            axios.post(config.apiURL + '/add-rating', { accountId: accountData.id, postId: postData.id, holonId: holonData.id, newRating })
+            axios
+                .post(config.apiURL + '/add-rating', {
+                    accountId: accountData.id,
+                    accountHandle: accountData.handle,
+                    accountName: accountData.name,
+                    postId: postData.id,
+                    holonId: window.location.pathname.includes('/s/') ? holonData.id : null,
+                    newRating
+                })
                 .then(res => {
                     if (res.data === 'success') {
                         setNewRating('')

@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react'
 import axios from 'axios'
 import config from '../Config'
 import { AccountContext } from './AccountContext'
+import { useHistory } from 'react-router-dom'
 
 export const UserContext = createContext()
 
@@ -12,6 +13,7 @@ function UserContextProvider({ children }) {
     const [userData, setUserData] = useState({ Posts: [], FollowedHolons: [], ModeratedHolons: [] })
     const [selectedUserSubPage, setSelectedUserSubPage] = useState('')
     const [isOwnAccount, setIsOwnAccount] = useState(false)
+    const [backButtonClicked, setBackButtonClicked] = useState(false)
 
     const [createdPosts, setCreatedPosts] = useState([])
     const [createdPostFiltersOpen, setCreatedPostFiltersOpen] = useState(false)
@@ -23,8 +25,6 @@ function UserContextProvider({ children }) {
     const [createdPostPaginationLimit, setCreatedPostPaginationLimit] = useState(10)
     const [createdPostPaginationOffset, setCreatedPostPaginationOffset] = useState(0)
     const [createdPostPaginationHasMore, setCreatedPostPaginationHasMore] = useState(true)
-
-    // const [notifications, setNotifications] = useState([])
 
     function getUserData() {
         console.log('UserContext: getUserData')
@@ -74,18 +74,6 @@ function UserContextProvider({ children }) {
         }
     }
 
-    // function getNotifications() {
-    //     axios
-    //         .get(config.apiURL + `/user-notifications?userId=${accountData.id}`)
-    //         .then(res => {
-    //             setNotifications(res.data)
-    //         })
-    // }
-
-    // function getNextNotifications() {
-    //     //
-    // }
-
     function resetCreatedPostFilters() {
         setCreatedPostFiltersOpen(false)
         setCreatedPostTimeRangeFilter('All Time')
@@ -109,7 +97,17 @@ function UserContextProvider({ children }) {
     useEffect(() => {
         if (isLoggedIn && userData && userData.id === accountData.id) { setIsOwnAccount(true) }
         else { setIsOwnAccount(false) }
-    }, [isLoggedIn, userData.id])
+    }, [isLoggedIn, userData])
+
+    // back button fix
+    const history = useHistory()
+    useEffect(() => {
+        history.listen(() => {
+            if (history.action === 'POP') {
+                history.go(history.location.pathname)
+            }
+        })
+    }, [])
 
     return (
         <UserContext.Provider value={{
@@ -130,12 +128,9 @@ function UserContextProvider({ children }) {
             createdPostSortByFilter, setCreatedPostSortByFilter,
             createdPostSortOrderFilter, setCreatedPostSortOrderFilter,
 
-            // notifications, setNotifications,
-
             // functions
             getUserData,
-            getCreatedPosts, getNextCreatedPosts,
-            // getNotifications, getNextNotifications
+            getCreatedPosts, getNextCreatedPosts
         }}>
             {children}
         </UserContext.Provider>

@@ -35,10 +35,10 @@ function HolonPageSideBarLeft() {
                     imagePath={holonData.flagImagePath}
                     type='space'
                     canEdit={isModerator}
-                    //imageUploadType='holon-flag-image'
                 />
                 <div className={styles.name}>{ holonData.name }</div>
                 <div className={styles.navButtons}>
+                    {/* TODO: replace side bar button component with actual content */}
                     {isModerator && <SideBarButton
                         icon='crown-solid.svg'
                         text='Moderator'

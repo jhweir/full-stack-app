@@ -1504,7 +1504,60 @@ router.delete('/delete-post', (req, res) => {
 })
 
 router.post('/repost-post', (req, res) => {
-    const { accountId, accountHandle, accountName, postId, spaces } = req.body
+    const { accountId, accountHandle, accountName, postId, holonId, spaces } = req.body
+
+    // find post creator from postId
+    const notifyPostCreator = Post.findOne({
+        where: { id: postId },
+        attributes: [],
+        include: [
+            { 
+                model: User,
+                as: 'creator',
+                attributes: ['id', 'handle', 'name', 'flagImagePath', 'email']
+            },
+        ]
+    })
+    .then(post => {
+        // create notificaton for post creator
+        Notification.create({
+            ownerId: post.creator.id,
+            type: 'post-repost',
+            seen: false,
+            holonId,
+            userId: accountId,
+            postId,
+            commentId: null
+        })
+        // send email to post creator
+        let message = {
+            to: post.creator.email,
+            from: 'admin@weco.io',
+            subject: 'Weco - notification',
+            text: `
+                Hi ${post.creator.name}, ${accountName} just reposted your post on weco:
+                http://${process.env.NODE_ENV === 'dev' ? process.env.DEV_APP_URL : process.env.PROD_APP_URL}/p/${postId}
+            `,
+            html: `
+                <p>
+                    Hi ${post.creator.name},
+                    <br/>
+                    <a href='${process.env.NODE_ENV === 'dev' ? process.env.DEV_APP_URL : process.env.PROD_APP_URL}/u/${accountHandle}'>${accountName}</a>
+                    just reposted your
+                    <a href='${process.env.NODE_ENV === 'dev' ? process.env.DEV_APP_URL : process.env.PROD_APP_URL}/p/${postId}'>post</a>
+                    on weco
+                </p>
+            `,
+        }
+        sgMail.send(message)
+            .then(() => {
+                console.log('Email sent')
+                //res.send('success')
+            })
+            .catch((error) => {
+                console.error(error)
+            })
+    })
 
     const createPostHolons = spaces.forEach(space => {
         Holon.findOne({
@@ -1525,7 +1578,6 @@ router.post('/repost-post', (req, res) => {
                 postId: postId,
                 holonId: holon.id
             })
-            // TODO: move out of forEach loop
             Reaction.create({
                 type: 'repost',
                 state: 'active',
@@ -1554,7 +1606,7 @@ router.post('/repost-post', (req, res) => {
     })
 
     Promise
-        .all([createPostHolons])
+        .all([createPostHolons, notifyPostCreator])
         .then(res.send('success'))
         .catch(err => { res.send(err) })
 })
@@ -1588,9 +1640,8 @@ router.post('/add-like', (req, res) => {
         // create notificaton for post owner
         Notification.create({
             ownerId: post.creator.id,
-            type: 'post-liked',
+            type: 'post-like',
             seen: false,
-            text: null,
             holonId,
             userId: accountId,
             postId,
@@ -1637,16 +1688,70 @@ router.post('/remove-like', (req, res) => {
 })
 
 router.post('/add-rating', (req, res) => {
-    const { accountId, postId, holonId, newRating } = req.body
-    Reaction.create({ 
-        type: 'rating',
-        value: newRating,
-        state: 'active',
-        holonId,
-        userId: accountId,
-        postId,
-        commentId: null,
-    }).then(res.send('success'))
+    const { accountId, accountHandle, accountName, postId, holonId, newRating } = req.body
+
+    // find post owner from postId
+    Post.findOne({
+        where: { id: postId },
+        attributes: [],
+        include: [
+            { 
+                model: User,
+                as: 'creator',
+                attributes: ['id', 'handle', 'name', 'flagImagePath', 'email']
+            },
+        ]
+    })
+    .then(post => {
+        // create reaction
+        Reaction.create({ 
+            type: 'rating',
+            value: newRating,
+            state: 'active',
+            holonId,
+            userId: accountId,
+            postId,
+            commentId: null,
+        })
+        // create notificaton for post owner
+        Notification.create({
+            ownerId: post.creator.id,
+            type: 'post-rating',
+            seen: false,
+            holonId,
+            userId: accountId,
+            postId,
+            commentId: null
+        })
+        // send email to post owner
+        let message = {
+            to: post.creator.email,
+            from: 'admin@weco.io',
+            subject: 'Weco - notification',
+            text: `
+                Hi ${post.creator.name}, ${accountName} just rated your post on weco:
+                http://${process.env.NODE_ENV === 'dev' ? process.env.DEV_APP_URL : process.env.PROD_APP_URL}/p/${postId}
+            `,
+            html: `
+                <p>
+                    Hi ${post.creator.name},
+                    <br/>
+                    <a href='${process.env.NODE_ENV === 'dev' ? process.env.DEV_APP_URL : process.env.PROD_APP_URL}/u/${accountHandle}'>${accountName}</a>
+                    just rated your
+                    <a href='${process.env.NODE_ENV === 'dev' ? process.env.DEV_APP_URL : process.env.PROD_APP_URL}/p/${postId}'>post</a>
+                    on weco
+                </p>
+            `,
+        }
+        sgMail.send(message)
+            .then(() => {
+                console.log('Email sent')
+                res.send('success')
+            })
+            .catch((error) => {
+                console.error(error)
+            })
+    })
 })
 
 router.post('/remove-rating', (req, res) => {
@@ -1658,7 +1763,7 @@ router.post('/remove-rating', (req, res) => {
 })
 
 router.post('/add-comment', (req, res) => {
-    let { accountId, accountHandle, accountName, postId, text } = req.body
+    let { accountId, accountHandle, accountName, postId, holonId, text } = req.body
 
     // find post owner from postId
     Post.findOne({
@@ -1686,8 +1791,7 @@ router.post('/add-comment', (req, res) => {
                 ownerId: post.creator.id,
                 type: 'post-comment',
                 seen: false,
-                //text: null,
-                holonId: null,
+                holonId,
                 userId: accountId,
                 postId,
                 commentId: comment.id
@@ -2155,11 +2259,65 @@ router.get('/plot-graph-data', (req, res) => {
 })
 
 router.post('/add-link', (req, res) => {
-    let { creatorId, type, relationship, description, itemAId, itemBId } = req.body
-    Link
-        .create({ state: 'visible', creatorId, type, relationship, description, itemAId, itemBId })
-        .then(res.send('success'))
-        .catch(err => console.log(err))
+    let { accountId, accountHandle, accountName, holonId, type, relationship, description, itemAId, itemBId } = req.body
+
+    // find post owner from postId
+    Post.findOne({
+        where: { id: itemAId },
+        attributes: [],
+        include: [
+            { 
+                model: User,
+                as: 'creator',
+                attributes: ['id', 'handle', 'name', 'flagImagePath', 'email']
+            },
+        ]
+    })
+    .then(post => {
+        const createLink = Link.create({
+            state: 'visible',
+            creatorId: accountId,
+            type,
+            relationship,
+            description,
+            itemAId,
+            itemBId
+        })
+        const createNotification = Notification.create({
+            ownerId: post.creator.id,
+            type: 'post-link',
+            seen: false,
+            holonId,
+            userId: accountId,
+            postId: itemAId,
+            commentId: null
+        })
+        const message = {
+            to: post.creator.email,
+            from: 'admin@weco.io',
+            subject: 'Weco - notification',
+            text: `
+                Hi ${post.creator.name}, ${accountName} just linked your post to another post on weco:
+                http://${process.env.NODE_ENV === 'dev' ? process.env.DEV_APP_URL : process.env.PROD_APP_URL}/p/${itemAId}
+            `,
+            html: `
+                <p>
+                    Hi ${post.creator.name},
+                    <br/>
+                    <a href='${process.env.NODE_ENV === 'dev' ? process.env.DEV_APP_URL : process.env.PROD_APP_URL}/u/${accountHandle}'>${accountName}</a>
+                    just linked your
+                    <a href='${process.env.NODE_ENV === 'dev' ? process.env.DEV_APP_URL : process.env.PROD_APP_URL}/p/${itemAId}'>post</a>
+                    to another post on weco
+                </p>
+            `,
+        }
+        const sendEmail = sgMail.send(message).then(() => console.log('Email sent'))
+        
+        Promise
+            .all([createLink, createNotification, sendEmail])
+            .then(res.send('success'))
+            .catch(err => { res.send(err) })
+    })
 })
 
 router.post('/remove-link', (req, res) => {

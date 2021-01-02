@@ -6,16 +6,13 @@ import styles from '../../../styles/components/PostCardLinkModal.module.scss'
 import CloseButton from '../../CloseButton'
 import SmallFlagImage from '../../SmallFlagImage'
 import DropDownMenu from '../../DropDownMenu'
-import PostCard from '../../Cards/PostCard/PostCard'
 import { AccountContext } from '../../../contexts/AccountContext'
 import { HolonContext } from '../../../contexts/HolonContext'
 import { PostContext } from '../../../contexts/PostContext'
-// import { useHistory } from "react-router-dom"
 
 function PostCardLinkModal(props) {
     const {
         postData,
-        //links,
         setLinkModalOpen,
         getReactionData,
         totalReactions, setTotalReactions,
@@ -24,9 +21,8 @@ function PostCardLinkModal(props) {
     } = props
 
     const { accountData } = useContext(AccountContext)
-    const { setHolonHandle } = useContext(HolonContext)
+    const { setHolonHandle, holonData } = useContext(HolonContext)
     const { setPostId } = useContext(PostContext)
-    // const history = useHistory()
 
     const [links, setLinks] = useState({ outgoingLinks: [], incomingLinks: [] })
 
@@ -54,7 +50,10 @@ function PostCardLinkModal(props) {
         if (validTargetUrl && validLinkDescription) {
             console.log('PostCardLinkModal: addLink')
             axios.post(config.apiURL + '/add-link', { 
-                creatorId: accountData.id,
+                accountId: accountData.id,
+                accountHandle: accountData.handle,
+                accountName: accountData.name,
+                holonId: window.location.pathname.includes('/s/') ? holonData.id : null,
                 type: `post-${linkTo.toLowerCase()}`,
                 relationship: linkType.toLowerCase(),
                 description: linkDescription,
@@ -132,7 +131,7 @@ function PostCardLinkModal(props) {
                                     <span >{accountData.id === link.postA.creatorId ? 'Your' : link.postA.creator.name + "'s"}</span>
                                 </Link>
                                 <Link className={styles.imageTextLink} to={`/p/${link.postA.id}`} onClick={() => setPostId(link.postA.id)}>
-                                    <span className={`blueText`}>post</span>
+                                    <span className={`blueText m-0`}>post</span>
                                 </Link>
                                 {accountData.id === link.creator.id &&
                                     <div className={styles.deleteLink} onClick={() => removeLink(link.id)}>
@@ -161,7 +160,7 @@ function PostCardLinkModal(props) {
                                     <span >{accountData.id === link.postB.creatorId ? 'Your' : link.postB.creator.name + "'s"}</span>
                                 </Link>
                                 <Link className={styles.imageTextLink} to={`/p/${link.postB.id}`} onClick={() => setPostId(link.postB.id) } >
-                                    <span className={`blueText`}>post</span>
+                                    <span className={`blueText m-0`}>post</span>
                                 </Link>
                                 {accountData.id === link.creator.id &&
                                     <div className={styles.deleteLink} onClick={() => removeLink(link.id)}>

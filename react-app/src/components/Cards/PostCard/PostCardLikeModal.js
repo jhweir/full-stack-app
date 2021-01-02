@@ -31,7 +31,7 @@ function PostCardLikeModal(props) {
             accountHandle: accountData.handle,
             accountName: accountData.name,
             postId: postData.id,
-            holonId: holonData.id
+            holonId: window.location.pathname.includes('/s/') ? holonData.id : null,
         })
         .then(res => {
             if (res.data === 'success') {

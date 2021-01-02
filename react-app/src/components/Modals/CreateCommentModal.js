@@ -3,12 +3,14 @@ import axios from 'axios'
 import config from '../../Config'
 import { AccountContext } from '../../contexts/AccountContext'
 import { PostContext } from '../../contexts/PostContext'
+import { HolonContext } from '../../contexts/HolonContext'
 import styles from '../../styles/components/CreateCommentModal.module.scss'
 // import HandleInput from './HandleInput'
 
 function CreateCommentModal() {
     const { accountData, isLoggedIn, setCreateCommentModalOpen, setAlertMessage, setAlertModalOpen } = useContext(AccountContext)
     const { postData, getPostData, getPostComments } = useContext(PostContext)
+    const { holonData } = useContext(HolonContext)
     
     const [newComment, setNewComment] = useState('')
     const [commentError, setCommentError] = useState(false)
@@ -26,6 +28,7 @@ function CreateCommentModal() {
                         accountHandle: accountData.handle,
                         accountName: accountData.name,
                         postId: postData.id,
+                        holonId: window.location.pathname.includes('/s/') ? holonData.id : null,
                         text: newComment
                     })
                     .then(res => {

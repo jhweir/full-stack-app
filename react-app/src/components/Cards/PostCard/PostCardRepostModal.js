@@ -22,7 +22,7 @@ function PostCardRepostModal(props) {
     } = props
 
     const { accountData } = useContext(AccountContext)
-    const { setHolonHandle } = useContext(HolonContext)
+    const { setHolonHandle, holonData } = useContext(HolonContext)
 
     const [addedSpaces, setAddedSpaces] = useState([])
     const [newSpaceError, setNewSpaceError] = useState(false)
@@ -34,7 +34,8 @@ function PostCardRepostModal(props) {
                 accountId: accountData.id,
                 accountHandle: accountData.handle,
                 accountName: accountData.name,
-                postId: postData.id, 
+                postId: postData.id,
+                holonId: window.location.pathname.includes('/s/') ? holonData.id : null,
                 spaces: addedSpaces
             })
             .then(res => {
