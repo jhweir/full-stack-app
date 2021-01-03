@@ -3,11 +3,13 @@ import { useHistory } from "react-router-dom"
 import axios from 'axios'
 import config from '../../Config'
 import { AccountContext } from '../../contexts/AccountContext'
+import { UserContext } from '../../contexts/UserContext'
 import { HolonContext } from '../../contexts/HolonContext'
 import styles from '../../styles/components/SettingModal.module.scss'
 
 function SettingModal() {
-    const { settingModalType, setSettingModalOpen, getAccountData, setAccountContextLoading } = useContext(AccountContext)
+    const { settingModalType, setSettingModalOpen, accountData, getAccountData, setAccountContextLoading } = useContext(AccountContext)
+    const { getUserData } = useContext(UserContext)
     const { holonData, getHolonData, setHolonHandle } = useContext(HolonContext)
     const [newValue, setNewValue] = useState('')
     const [error, setError] = useState(false)
@@ -16,6 +18,8 @@ function SettingModal() {
     const history = useHistory()
 
     let title, subTitle, placeholder, invalidValue
+
+    // holon settings
     if (settingModalType === 'change-holon-handle') { 
         title = `Change the unique handle for ${holonData.name}`
         subTitle = `The current handle is: ${holonData.handle}`
@@ -32,52 +36,81 @@ function SettingModal() {
         subTitle = `The current description is: ${holonData.description}`
         placeholder = 'New description'
     }
-
     if (settingModalType === 'add-new-moderator') {
         title = `Add a new moderator to ${holonData.name}`
         subTitle = `Paste their unique handle below`
         placeholder = 'New moderators handle'
     }
-
     if (settingModalType === 'add-parent-space') {
         title = `Add ${holonData.name} to a new parent space`
         subTitle = `Paste the handle of the new parent space below`
         placeholder = 'New parent space handle'
     }
-
     if (settingModalType === 'remove-parent-space') {
         title = `Remove ${holonData.name} from one of its parent spaces`
         subTitle = `Paste the handle of the parent space you want to remove ${holonData.name} from`
         placeholder = 'Parent space handle'
     }
 
+    // user settings
+    if (settingModalType === 'change-user-name') {
+        title = `Change your account name`
+        subTitle = `Your name is currently: ${accountData.name}`
+        placeholder = 'New name'
+    }
+    if (settingModalType === 'change-user-bio') {
+        title = `Change your bio`
+        subTitle = `Your current bio is: ${accountData.bio}`
+        placeholder = 'New bio'
+    }
+
     function saveNewValue(e) {
         e.preventDefault()
         if (invalidValue) { setError(true) }
         else {
-            if (settingModalType === 'change-holon-handle') {
-                axios
-                    .post(config.apiURL + '/update-holon-setting', { holonId: holonData.id, setting: settingModalType, newValue })
-                    .then((res) => {
-                        if (res.data === 'success') {
-                            history.push(`/s/${newValue}/settings`)
-                            setTimeout(() => { setHolonHandle(newValue); setAccountContextLoading(false); getAccountData() }, 500)
-                            setSettingModalOpen(false)
-                        }
-                    })
+            if (settingModalType.includes('holon')) {
+                if (settingModalType === 'change-holon-handle') {
+                    axios
+                        .post(config.apiURL + '/update-holon-setting', { holonId: holonData.id, setting: settingModalType, newValue })
+                        .then(res => {
+                            if (res.data === 'success') {
+                                history.push(`/s/${newValue}/settings`)
+                                setTimeout(() => { setHolonHandle(newValue); setAccountContextLoading(false); getAccountData() }, 500)
+                                setSettingModalOpen(false)
+                            }
+                        })
+                } else {
+                    axios
+                        .post(config.apiURL + '/update-holon-setting', { holonId: holonData.id, setting: settingModalType, newValue })
+                        .then(res => {
+                            if (res.data === 'success') {
+                                setSettingModalOpen(false); setTimeout(() => { getHolonData() }, 500)
+                            } else {
+                                console.log('res.data: ', res.data)
+                                //setError(true)
+                                //setErrorMessage(res.data)
+                            }
+                        })
+                }
             }
-            else {
+            if (settingModalType.includes('user')) {
                 axios
-                    .post(config.apiURL + '/update-holon-setting', { holonId: holonData.id, setting: settingModalType, newValue })
+                    .post(config.apiURL + '/update-user-setting', { accountId: accountData.id, setting: settingModalType, newValue })
                     .then(res => {
-                        if (res.data !== 'success') {
+                        if (res.data === 'success') {
+                            setSettingModalOpen(false)
+                            setTimeout(() => {
+                                getAccountData()
+                                getUserData()
+                            }, 500)
+                        } else {
                             console.log('res.data: ', res.data)
                             //setError(true)
                             //setErrorMessage(res.data)
                         }
-                        else { setSettingModalOpen(false); setTimeout(() => { getHolonData() }, 500)  }
                     })
             }
+
         }
     }
 

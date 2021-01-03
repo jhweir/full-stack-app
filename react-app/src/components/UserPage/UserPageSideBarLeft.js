@@ -1,11 +1,14 @@
 import React, { useContext } from 'react'
+import { Link } from 'react-router-dom'
 import { UserContext } from '../../contexts/UserContext'
+import { AccountContext } from '../../contexts/AccountContext'
 import styles from '../../styles/components/UserPageSideBarLeft.module.scss'
 import LargeFlagImage from '../LargeFlagImage'
 import SideBarButton from '../SideBarButton'
 //import HolonPageSideBarLeftPlaceholder from '../components/HolonPageSideBarLeftPlaceholder'
 
 function UserPageSideBarLeft() {
+    const { accountData } = useContext(AccountContext)
     const { userData, isOwnAccount, selectedUserSubPage } = useContext(UserContext)
 
     return (
@@ -14,11 +17,11 @@ function UserPageSideBarLeft() {
                 size={150}
                 imagePath={userData.flagImagePath}
                 type='user'
-                //imageUploadType='user-flag-image'
                 canEdit={isOwnAccount}
             />
             <div className={styles.userName}>{ userData.name }</div>
             <div className={styles.navButtons}>
+                {/* TODO: replace SideBarButton with actual content */}
                 {isOwnAccount && <>
                     <SideBarButton
                         icon='cog-solid.svg'
@@ -27,13 +30,22 @@ function UserPageSideBarLeft() {
                         selected={selectedUserSubPage === 'settings'}
                         marginBottom={5}
                     />
-                    <SideBarButton
+                    {/* <SideBarButton
                         icon='bell-solid.svg'
                         text='Notifications'
                         url='notifications'
                         selected={selectedUserSubPage === 'notifications'}
                         marginBottom={5}
-                    />
+                    /> */}
+                    <Link to={'notifications'}
+                        className={`${styles.navButton} ${selectedUserSubPage === 'notifications' && styles.selected}`}
+                        style={{marginBottom: 5}}>
+                        <img className={styles.navButtonIcon} src={`/icons/bell-solid.svg`}/>
+                        <span className={accountData.unseen_notifications && 'ml-10'}>Notifications</span>
+                        {accountData.unseen_notifications > 0 &&
+                            <div className={styles.notification}>{ accountData.unseen_notifications }</div>
+                        }
+                    </Link>
                     <SideBarButton
                         icon='envelope-solid.svg'
                         text='Messages'

@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 import { Link } from 'react-router-dom'
-import { HolonContext } from '../../contexts/HolonContext'
+import { AccountContext } from '../../contexts/AccountContext'
 import styles from '../../styles/components/UserCard.module.scss'
 
 function UserCard(props) {
@@ -15,13 +15,15 @@ function UserCard(props) {
         createdAt
     } = props.user
 
+    const { setSelectedNavBarItem } = useContext(AccountContext)
+
     let d = new Date(createdAt)
     let dateJoined = `${d.getDate()}-${d.getMonth()}-${d.getFullYear()}`
 
     return (
         <div className={styles.userCard}>
             <div className={styles.index}>{ props.index + 1 }</div>
-            <Link to={ `/u/${handle}` }>
+            <Link to={ `/u/${handle}` } onClick={() => setSelectedNavBarItem('')}>
                 {flagImagePath === null
                     ? <div className={styles.flagImagePlaceholderWrapper}>
                         <img className={styles.flagImagePlaceholder} src='/icons/user-solid.svg' alt=''/>
@@ -30,7 +32,7 @@ function UserCard(props) {
                 }
             </Link>
             <div className={styles.content}>
-                <Link className={styles.title} to={ `/u/${handle}` }>
+                <Link className={styles.title} to={`/u/${handle}`} onClick={() => setSelectedNavBarItem('')}>
                     { name }
                 </Link>
                 <span className={`${styles.text} ${styles.grey}`}>u/{ handle }</span>
@@ -56,10 +58,6 @@ function UserCard(props) {
                     {/* <div className={styles.stat}>
                         <img className={styles.statIcon} src="/icons/thumbs-up-solid.svg" alt=''/>
                         <span>{ total_likes } Likes</span>
-                    </div>
-                    <div className={styles.stat}>
-                        <img className={styles.statIcon} src="/icons/heart-solid.svg" alt=''/>
-                        <span>{ total_hearts } Hearts</span>
                     </div>
                     <div className={styles.stat}>
                         <img className={styles.statIcon} src="/icons/star-solid.svg" alt=''/>

@@ -1,11 +1,10 @@
 import React, { useContext, useEffect } from 'react'
+import { AccountContext } from '../../contexts/AccountContext'
 import { UserContext } from '../../contexts/UserContext'
 import styles from '../../styles/components/UserPageSettings.module.scss'
-// import PostCard from './PostCard'
-// import HolonPagePostsHeader from './HolonPagePostsHeader'
-// import HolonPagePostsPlaceholder from './HolonPagePostsPlaceholder'
 
 function UserPageSettings() {
+    const { accountData, setSettingModalType, setSettingModalOpen, getAccountData } = useContext(AccountContext)
     const { userData, setSelectedUserSubPage } = useContext(UserContext)
 
     useEffect(() => {
@@ -18,7 +17,14 @@ function UserPageSettings() {
                 Settings
             </div>
             <div className={styles.body}>
-                [Coming soon...]
+                <div className={styles.field}>
+                    <div className={styles.text}><b>Name:</b> {accountData && accountData.name}</div>
+                    <div className={styles.linkText} onClick={() => { setSettingModalType('change-user-name'); setSettingModalOpen(true) }}>Change</div>
+                </div>
+                <div className={styles.field}>
+                    <div className={styles.text}><b>Bio:</b> {accountData && accountData.bio}</div>
+                    <div className={styles.linkText} onClick={() => { setSettingModalType('change-user-bio'); setSettingModalOpen(true) }}>Change</div>
+                </div>
             </div>
         </div>
     )

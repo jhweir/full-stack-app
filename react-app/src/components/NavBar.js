@@ -8,22 +8,24 @@ import SmallFlagImage from './SmallFlagImage'
 
 function NavBar() {
     const {
+        accountContextLoading,
         isLoggedIn,
         accountData,
         setAuthModalOpen,
         navBarDropDownModalOpen,
-        setNavBarDropDownModalOpen
+        setNavBarDropDownModalOpen,
+        selectedNavBarItem,
+        setSelectedNavBarItem
     } = useContext(AccountContext)
     const { setHolonHandle } = useContext(HolonContext)
 
-    const [selectedItem, setSelectedItem] = useState('')
-
     useEffect(() => {
-        if (window.location.href === config.appURL || window.location.href.includes(`${config.appURL}?alert`)) setSelectedItem('home')
-        else if (window.location.href === `${config.appURL}s/all/posts`) setSelectedItem('posts')
-        else if (window.location.href === `${config.appURL}s/all/spaces`) setSelectedItem('spaces')
-        else if (window.location.href === `${config.appURL}s/all/users`) setSelectedItem('users')
-        else setSelectedItem('')
+        console.log('path change')
+        if (window.location.href === config.appURL || window.location.href.includes(`${config.appURL}?alert`)) setSelectedNavBarItem('home')
+        else if (window.location.href === `${config.appURL}s/all/posts`) setSelectedNavBarItem('posts')
+        else if (window.location.href === `${config.appURL}s/all/spaces`) setSelectedNavBarItem('spaces')
+        else if (window.location.href === `${config.appURL}s/all/users`) setSelectedNavBarItem('users')
+        else setSelectedNavBarItem('')
     }, [window.location.pathname])
 
     return (
@@ -32,37 +34,37 @@ function NavBar() {
                 <div className={styles.navBarLinks}>
                     <Link to="/"
                         className={styles.navBarLink}
-                        onClick={() => setSelectedItem('home')}>
+                        onClick={() => setSelectedNavBarItem('home')}>
                         {/* <img className={styles.navBarIcon} src="/icons/home-solid.svg" alt=''/> */}
-                        <div className={`${styles.navBarText} ${selectedItem === 'home' && styles.selected}`}>Home</div>
+                        <div className={`${styles.navBarText} ${selectedNavBarItem === 'home' && styles.selected}`}>Home</div>
                     </Link>
                     <Link to="/s/all"
                         className={styles.navBarLink}
-                        onClick={() => { setSelectedItem('posts'); setHolonHandle('all') }}>
+                        onClick={() => { setSelectedNavBarItem('posts'); setHolonHandle('all') }}>
                         {/* <img className={styles.navBarIcon} src="/icons/edit-solid.svg" alt=''/> */}
-                        <div className={`${styles.navBarText} ${selectedItem === 'posts' && styles.selected}`}>Posts</div>
+                        <div className={`${styles.navBarText} ${selectedNavBarItem === 'posts' && styles.selected}`}>Posts</div>
                     </Link>
                     <Link to="/s/all/spaces"
                         className={styles.navBarLink}
-                        onClick={() => { setSelectedItem('spaces'); setHolonHandle('all') }}>
+                        onClick={() => { setSelectedNavBarItem('spaces'); setHolonHandle('all') }}>
                         {/* <img className={styles.navBarIcon} src="/icons/overlapping-circles-thick.svg" alt=''/> */}
-                        <div className={`${styles.navBarText} ${selectedItem === 'spaces' && styles.selected}`}>Spaces</div>
+                        <div className={`${styles.navBarText} ${selectedNavBarItem === 'spaces' && styles.selected}`}>Spaces</div>
                     </Link> 
                     <Link to="/s/all/users"
                         className={styles.navBarLink}
-                        onClick={() => { setSelectedItem('users'); setHolonHandle('all') }}>
+                        onClick={() => { setSelectedNavBarItem('users'); setHolonHandle('all') }}>
                         {/* <img className={styles.navBarIcon} src="/icons/users-solid.svg" alt=''/> */}
-                        <div className={`${styles.navBarText} ${selectedItem === 'users' && styles.selected}`}>Users</div>
+                        <div className={`${styles.navBarText} ${selectedNavBarItem === 'users' && styles.selected}`}>Users</div>
                     </Link>
                 </div>
-                {!isLoggedIn &&
+                {!accountContextLoading && !isLoggedIn &&
                     <div className={styles.authButtons}>
                         <div className="button" onClick={() => setAuthModalOpen(true)}>
                             Log in
                         </div>
                     </div>
                 }
-                {isLoggedIn &&
+                {!accountContextLoading && isLoggedIn &&
                     <div className={styles.userControls} onClick={() => setNavBarDropDownModalOpen(!navBarDropDownModalOpen)}>
                         <span className={styles.userName}>{accountData.name}</span>
                         <SmallFlagImage type='user' size={40} imagePath={accountData.flagImagePath}/>

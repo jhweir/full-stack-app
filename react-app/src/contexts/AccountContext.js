@@ -11,6 +11,7 @@ function AccountContextProvider({ children, pageBottomReached }) {
     const [isLoggedIn, setIsLoggedIn] = useState(false)
 
     const [notifications, setNotifications] = useState([])
+    const [selectedNavBarItem, setSelectedNavBarItem] = useState('')
 
     // modals
     const [alertModalOpen, setAlertModalOpen] = useState(false)
@@ -100,6 +101,8 @@ function AccountContextProvider({ children, pageBottomReached }) {
             createPostFromTurnData, setCreatePostFromTurnData,
             resetPasswordModalOpen, setResetPasswordModalOpen,
             resetPasswordModalToken, setResetPasswordModalToken,
+
+            selectedNavBarItem, setSelectedNavBarItem,
 
             notifications, setNotifications,
 

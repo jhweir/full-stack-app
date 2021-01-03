@@ -14,10 +14,10 @@ import PostCardUrlPreview from './PostCardUrlPreview'
 
 function PostCard(props) {
     const { postData, index, location } = props
-    const { isLoggedIn, accountData, setAlertMessage, setAlertModalOpen, setCreatePostModalOpen, setCreatePostFromTurn, setCreatePostFromTurnData } = useContext(AccountContext)
+    const { isLoggedIn, accountData, setAlertMessage, setAlertModalOpen, setCreatePostModalOpen, setCreatePostFromTurn, setCreatePostFromTurnData, setSelectedNavBarItem } = useContext(AccountContext)
     const { setHolonHandle, getHolonPosts } = useContext(HolonContext)
     const { getCreatedPosts } = useContext(UserContext)
-    const { postContextLoading } = useContext(PostContext)
+    const { postContextLoading, setPostId } = useContext(PostContext)
     const history = useHistory()
 
     // console.log('postData: ', postData);
@@ -135,7 +135,7 @@ function PostCard(props) {
                             {postSpaces.length > 0
                                 ? postSpaces.map((space, index) =>
                                     <Link to={`/s/${space.handle}`}
-                                        onClick={ () => {setHolonHandle(space.handle)} }
+                                        onClick={ () => setHolonHandle(space.handle) }
                                         style={{marginRight: 10}}
                                         key={index}>
                                         {space.handle}
@@ -148,7 +148,7 @@ function PostCard(props) {
                             }
                         </div>
                         <span className={styles.subText}>|</span>
-                        <Link to={`/p/${id}`} className={styles.link}>
+                        <Link to={`/p/${id}`} className={styles.link} onClick={() => setSelectedNavBarItem('')}>
                             <img className={styles.linkIcon} src={'/icons/link-solid.svg'} alt=''/>
                             <span className={styles.subText}>{formattedDate() || 'no date'}</span>
                         </Link>

@@ -93,7 +93,7 @@ app.get('/api/account-data', authenticateToken, (req, res) => {
   User.findOne({ 
     where: { id: req.user.id },
     attributes: [
-      'id', 'name', 'handle', 'flagImagePath',
+      'id', 'name', 'handle', 'bio', 'flagImagePath',
       [sequelize.literal(
         `(SELECT COUNT(*) FROM Notifications AS Notification WHERE Notification.ownerId = User.id AND Notification.seen = false)`
         ),'unseen_notifications'
