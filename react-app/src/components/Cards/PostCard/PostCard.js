@@ -11,6 +11,8 @@ import styles from '../../../styles/components/PostCard.module.scss'
 import colors from '../../../styles/Colors.module.scss'
 import PostCardReactions from './PostCardReactions'
 import PostCardUrlPreview from './PostCardUrlPreview'
+import PostCardComments from './PostCardComments'
+import SmallFlagImage from '../../SmallFlagImage'
 
 function PostCard(props) {
     const { postData, index, location } = props
@@ -47,6 +49,8 @@ function PostCard(props) {
 
     const [blockedSpaces, setBlockedSpaces] = useState([])
     const [reactionsOpen, setReactionsOpen] = useState(false)
+    const [commentsOpen, setCommentsOpen] = useState(false)
+
     const finishedLoading = location !== 'post-page' || !postContextLoading
     const isOwnPost = finishedLoading && accountData.id === creator.id
     const showLinkPreview = (urlImage !== null || urlDomain !== null || urlTitle !== null || urlDescription !== null)
@@ -122,13 +126,8 @@ function PostCard(props) {
                 <div className={styles.body}>
                     <div className={styles.tags}>
                         <Link to={ `/u/${creator.handle}`} className={styles.creator}>
-                            {creator.flagImagePath
-                                ? <img className={styles.creatorImage} src={creator.flagImagePath} alt=''/>
-                                : <div className={styles.placeholderWrapper}>
-                                    <img className={styles.placeholder} src={'/icons/user-solid.svg'} alt=''/>
-                                </div>
-                            }
-                            <span className='mr-5'>{creator.name || 'Anonymous'}</span>
+                            <SmallFlagImage type='user' size={40} imagePath={creator.flagImagePath}/>
+                            <span className='ml-10 mr-5'>{ creator.name }</span>
                         </Link>
                         <span className={styles.subText}>to</span>
                         <div className={styles.postSpaces}>
@@ -174,11 +173,11 @@ function PostCard(props) {
                                 />
                                 <span className={'greyText'}>{totalReactions} Reactions</span>
                             </div>
-                            <Link className={styles.interactItem}
-                                to={`/p/${id}`}>
+                            <div className={styles.interactItem} onClick={() => setCommentsOpen(!commentsOpen)}>
+                                {/* to={`/p/${id}`} */}
                                 <img className={styles.icon} src="/icons/comment-solid.svg" alt=''/>
                                 <span className='greyText'>{ totalComments } Comments</span>
-                            </Link>
+                            </div>
                             {type === 'glass-bead' &&
                                 <div className={styles.interactItem} onClick={() => createPostFromTurn() }>
                                     <img 
@@ -209,7 +208,11 @@ function PostCard(props) {
                                 accountRepost={accountRepost} setAccountRepost={setAccountRepost}
                                 accountLink={accountLink} setAccountLink={setAccountLink}
                                 blockedSpaces={blockedSpaces} setBlockedSpaces={setBlockedSpaces}
+                                commentsOpen={commentsOpen}
                             />
+                        }
+                        {commentsOpen &&
+                            <PostCardComments postId={postData.id}/>
                         }
                     </div>
                 </div>

@@ -138,8 +138,13 @@ function CreatePostModal() {
                 createPostFromTurnData
             }
             axios.post(config.apiURL + '/create-post', { post })
-                .then(() => {setCreatePostModalOpen(false); resetForm() })
-                .then(setTimeout(() => { getHolonPosts() }, 200))
+                .then(res => {
+                    if (res.data === 'success') {
+                        setCreatePostModalOpen(false)
+                        resetForm()
+                        setTimeout(() => { getHolonPosts() }, 300)
+                    }
+                })
         }
     }
 

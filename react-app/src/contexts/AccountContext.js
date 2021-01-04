@@ -47,7 +47,7 @@ function AccountContextProvider({ children, pageBottomReached }) {
             .then(res => {
                 if (res.data !== 'Invalid token') {
                     setAccountData(res.data)
-                    console.log('account data: ', res.data)
+                    //console.log('account data: ', res.data)
                     setIsLoggedIn(true)
                     console.log('AccountContext: logged in succesfully') }
                 setAccountContextLoading(false)

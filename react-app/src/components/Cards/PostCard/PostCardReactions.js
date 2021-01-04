@@ -23,7 +23,8 @@ function PostCardReactions(props) {
         accountRepost, setAccountRepost,
         accountRating, setAccountRating,
         accountLink, setAccountLink,
-        blockedSpaces, setBlockedSpaces
+        blockedSpaces, setBlockedSpaces,
+        commentsOpen
     } = props
 
     const { isLoggedIn, accountData, setAlertMessage, setAlertModalOpen } = useContext(AccountContext)
@@ -51,7 +52,7 @@ function PostCardReactions(props) {
     }, [])
 
     return (
-        <div className={styles.postCardReactions}>
+        <div className={`${styles.postCardReactions} ${commentsOpen && 'mb-10'}`}>
             <PostCardReactionItem
                 text='Likes'
                 reactions={reactionData && reactionData.Reactions.filter(label => label.type === 'like')}

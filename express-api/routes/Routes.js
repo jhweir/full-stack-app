@@ -205,7 +205,12 @@ router.get('/holon-posts', (req, res) => {
             through,
         }]
     })
-    .then(posts => totalMatchingPosts = posts.length)
+    .then(posts => {
+        totalMatchingPosts = posts.length
+        console.log('total matching posts: ', totalMatchingPosts)
+        // console.log('Number(limit): ', Number(limit))
+        // console.log('Number(offset): ', Number(offset))
+    })
 
     // Double query required to to prevent results and pagination being effected by top level where clause.
     // Intial query used to find correct posts with calculated stats and pagination applied.
@@ -235,6 +240,9 @@ router.get('/holon-posts', (req, res) => {
         }]
     })
     .then(posts => {
+        console.log('posts.length: ', posts.length)
+        console.log('Number(limit): ', Number(limit))
+        console.log('Number(offset): ', Number(offset))
         // Add account reaction data to post attributes
         let mainAttributes = [
             ...postAttributes,
