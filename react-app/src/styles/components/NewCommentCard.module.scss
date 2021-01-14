@@ -1,5 +1,10 @@
 .wrapper {
     display: flex;
+    flex-direction: column;
+    margin-bottom: 5px;
+}
+.contentWrapper {
+    display: flex;
     flex-direction: row;
 }
 .content {
@@ -10,7 +15,7 @@
 .grey {
     padding: 8px 12px;
     border-radius: 10px;
-    background-color: #f7f7f9;
+    background-color: #f2f3f5;//#f7f7f9;
     display: flex;
     flex-direction: column;
     font-size: 14px;
@@ -32,13 +37,63 @@
 .interact {
     display: flex;
     flex-direction: row;
-    margin: 5px 0 5px 12px;
+    margin: 5px 0;
 }
 .interactItem {
     font-size: 12px;
     font-weight: 800;
     margin-right: 10px;
     opacity: 0.6;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    &:hover {
+        cursor: pointer;
+    }
+}
+.icon {
+    width: 14px;
+    height: 14px;
+    opacity: 0.5;
+    margin-right: 3px;
+    &.rotated {
+        transform: rotate(180deg);
+    }
+}
+.reply {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 5px 0;
+}
+.inputWrapper {
+    width: 100%;
+    //padding: 5px 0 0 35px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.input {
+    font-size: 14px;
+    height: 40px;
+    margin: 0 5px;
+    width: 100%;
+    border-radius: 10px;
+    padding: 10px 15px;
+    //margin-bottom: 10px;
+    outline: none;
+    border: none;
+    background-color: #f2f3f5;//#f7f7f9;//rgba(0,0,0,0.08); //gba(10, 8, 72, 0.1);
+    //box-shadow: 0 1px 10px 0 rgba(10, 8, 72, 0.2);
+    transition-property: box-shadow, background-color;
+    transition-duration: 0.3s, 1s;
+    &.error {
+        box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.6);
+    }
+    &:hover {
+        box-shadow: 0 0 0 3px rgb(183, 214, 255); //0 0 5px 6px rgba(58,136,240,0.4);
+        background-color: white;
+    }
 }
 // .index {
 //     margin-right: 20px;

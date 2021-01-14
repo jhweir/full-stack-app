@@ -24,15 +24,17 @@ function PostCardComments(props) {
     function getPostComments() {
         setPostCommentPaginationHasMore(true)
         console.log(`PostContext: getPostComments (0 to ${postCommentPaginationLimit})`)
-        axios.get(config.apiURL + 
-            `/post-comments?accountId=${isLoggedIn ? accountData.id : null
-            }&postId=${postId
-            }&sortBy=${postCommentSortByFilter
-            }&sortOrder=${postCommentSortOrderFilter
-            }&timeRange=${postCommentTimeRangeFilter
-            }&searchQuery=${postCommentSearchFilter
-            }&limit=${postCommentPaginationLimit
-            }&offset=0`)
+        axios
+            .get(config.apiURL + 
+                `/post-comments?accountId=${isLoggedIn ? accountData.id : null
+                }&postId=${postId
+                }&sortBy=${postCommentSortByFilter
+                }&sortOrder=${postCommentSortOrderFilter
+                }&timeRange=${postCommentTimeRangeFilter
+                }&searchQuery=${postCommentSearchFilter
+                }&limit=${postCommentPaginationLimit
+                }&offset=0`
+            )
             .then(res => {
                 if (res.data.length < postCommentPaginationLimit) { setPostCommentPaginationHasMore(false) }
                 setPostComments(res.data)

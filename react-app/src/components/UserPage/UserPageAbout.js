@@ -27,7 +27,7 @@ function UserPageAbout() {
             </div>
             <div className={styles.content}>
                 <div className={styles.name}>{userData.name}</div>
-                <div className={styles.handle}>s/{userData.handle}</div>
+                <div className={styles.handle}>u/{userData.handle}</div>
                 <div className={styles.created}>
                     <div className={`${styles.text} mr-10`}>Joined at {dateJoined}</div>
                 </div>

@@ -107,9 +107,9 @@ function CreatePostModal() {
     }
 
     function createPost() {
-        let invalidText = (!text.length || text.length > 2000) && !url.length
-        let invalidUrl = postType === 'Url' && !url.length
-        let invalidPollAnswers = postType === 'Poll' && pollAnswers.length < 2
+        const invalidText = (!text.length || text.length > 2000) && !url.length
+        const invalidUrl = postType === 'Url' && !url.length
+        const invalidPollAnswers = postType === 'Poll' && pollAnswers.length < 2
         if (invalidText) { setTextError(true) }
         if (invalidUrl) { setUrlError(true) }
         if (invalidPollAnswers) { setNewPollAnswerError(true) }
