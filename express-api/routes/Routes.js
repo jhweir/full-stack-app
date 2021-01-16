@@ -1235,7 +1235,7 @@ router.get('/post-comments', (req, res) => {
         order,
         limit: Number(limit),
         offset: Number(offset),
-        attributes: ['id', 'creatorId', 'postId', 'text', 'createdAt'],
+        attributes: ['id', 'creatorId', 'parentCommentId', 'postId', 'text', 'createdAt'],
         include: [
             {
                 model: User,
@@ -1245,9 +1245,10 @@ router.get('/post-comments', (req, res) => {
             {
                 model: Comment,
                 as: 'replies',
-                order,
                 separate: true,
-                //attributes: ['id', 'handle', 'name', 'flagImagePath']
+                where: { state: 'visible' },
+                order,
+                attributes: ['id', 'creatorId', 'parentCommentId', 'postId', 'text', 'createdAt'],
                 include: [
                     {
                         model: User,
@@ -1857,8 +1858,12 @@ router.post('/submit-comment', (req, res) => {
 router.delete('/delete-comment', (req, res) => {
     // TODO: endpoints like this are currently unsafe/open to anyone. include authenticate middleware.
     const { commentId } = req.body
-    Comment.update({ state: 'hidden' }, { where: { id: commentId } })
-    // Post.destroy({ where: { id: req.body.id }})
+    Comment
+        .update({ state: 'hidden' }, { where: { id: commentId } })
+        .then(res.send('success'))
+        .catch((error) => {
+            console.error(error)
+        })
 })
 
 router.post('/submit-reply', async (req, res) => {

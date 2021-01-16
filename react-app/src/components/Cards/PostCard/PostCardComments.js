@@ -1,11 +1,9 @@
 import React, { useState, useContext, useEffect } from 'react'
-import { Link } from 'react-router-dom'
 import axios from 'axios'
 import config from '../../../Config'
 import styles from '../../../styles/components/PostCardComments.module.scss'
 import { AccountContext } from '../../../contexts/AccountContext'
 import { HolonContext } from '../../../contexts/HolonContext'
-import CommentCard from '../../Cards/CommentCard'
 import NewCommentCard from '../../Cards/NewCommentCard'
 import SmallFlagImage from '../../../components/SmallFlagImage'
 
@@ -50,9 +48,8 @@ function PostCardComments(props) {
     
     function submitComment(e) {
         e.preventDefault()
-        console.log('add comment: ', newComment)
-        const invalid = newComment.length < 1 || newComment.length > 10000
-        if (invalid) { setNewCommentError(true) }
+        const invalidComment = newComment.length < 1 || newComment.length > 10000
+        if (invalidComment) { setNewCommentError(true) }
         else {
             axios
                 .post(config.apiURL + '/submit-comment', { 
@@ -68,10 +65,9 @@ function PostCardComments(props) {
                     if (res.data === 'success') {
                         //getPostData() update reactions
                         setNewComment('')
-                        getPostComments()
+                        setTimeout(() => { getPostComments() }, 300)
                     }
                 })
-                //.then(setTimeout(() => { getPostData(); getPostComments() }, 200))
         }
     }
 
@@ -91,22 +87,24 @@ function PostCardComments(props) {
     return (
         <div className={styles.wrapper}>
             {/* TODO: create comment input component */}
-            <div className={styles.commentInput}>
-                <SmallFlagImage type='user' size={35} imagePath={accountData.flagImagePath}/>
-                <form className={styles.inputWrapper} onSubmit={submitComment}>
-                    <textarea 
-                        className={`${styles.input} ${newCommentError && styles.error}`}
-                        type="text" rows='1' placeholder="Write a comment..."
-                        value={newComment}
-                        onChange={e => {
-                            setNewComment(e.target.value)
-                            setNewCommentError(false)
-                            resizeTextArea(e.target)
-                        }}
-                    />
-                    <button className={styles.button}>Comment</button>
-                </form>
-            </div>
+            {isLoggedIn &&
+                <div className={styles.commentInput}>
+                    <SmallFlagImage type='user' size={35} imagePath={accountData.flagImagePath}/>
+                    <form className={styles.inputWrapper} onSubmit={submitComment}>
+                        <textarea 
+                            className={`${styles.input} ${newCommentError && styles.error}`}
+                            type="text" rows='1' placeholder="Write a comment..."
+                            value={newComment}
+                            onChange={e => {
+                                setNewComment(e.target.value)
+                                setNewCommentError(false)
+                                resizeTextArea(e.target)
+                            }}
+                        />
+                        <button className={styles.button}>Comment</button>
+                    </form>
+                </div>
+            }
             {postComments.map((comment, index) => 
                 <NewCommentCard
                     key={index}
