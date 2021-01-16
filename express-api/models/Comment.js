@@ -3,8 +3,9 @@ module.exports = (sequelize, DataTypes) => {
   const Comment = sequelize.define('Comment', {
     state: DataTypes.STRING,
     creatorId: DataTypes.INTEGER,
-    parentCommentId: DataTypes.INTEGER,
+    holonId: DataTypes.INTEGER,
     postId: DataTypes.INTEGER,
+    parentCommentId: DataTypes.INTEGER,
     text: DataTypes.TEXT
   }, {});
   Comment.associate = function(models) {
@@ -15,7 +16,11 @@ module.exports = (sequelize, DataTypes) => {
     })
     Comment.belongsTo(models.User, {
       foreignKey: 'creatorId',
-      as: 'commentCreator'
+      as: 'creator'
+    })
+    Comment.hasMany(models.Comment, {
+      foreignKey: 'parentCommentId',
+      as: 'replies'
     })
   };
   return Comment;

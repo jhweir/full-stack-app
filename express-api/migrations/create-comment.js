@@ -14,10 +14,13 @@ module.exports = {
       creatorId: {
         type: Sequelize.INTEGER
       },
-      parentCommentId: {
+      holonId: {
         type: Sequelize.INTEGER
       },
       postId: {
+        type: Sequelize.INTEGER
+      },
+      parentCommentId: {
         type: Sequelize.INTEGER
       },
       text: {

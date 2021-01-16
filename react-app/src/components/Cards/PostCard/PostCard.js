@@ -13,6 +13,7 @@ import PostCardReactions from './PostCardReactions'
 import PostCardUrlPreview from './PostCardUrlPreview'
 import PostCardComments from './PostCardComments'
 import SmallFlagImage from '../../SmallFlagImage'
+import { timeSinceCreated, dateCreated } from '../../../GlobalFunctions'
 
 function PostCard(props) {
     const { postData, index, location } = props
@@ -91,14 +92,6 @@ function PostCard(props) {
             .catch(error => { console.log(error) })
     }
 
-    function formattedDate() {
-        if (createdAt) {
-            let a = createdAt.split(/[-.T :]/)
-            let formattedDate = a[3]+':'+a[4]+' on '+a[2]+'-'+a[1]+'-'+a[0]
-            return formattedDate
-        }
-    }
-
     function createPostFromTurn() {
         if (isLoggedIn) {
             let data = {
@@ -126,7 +119,7 @@ function PostCard(props) {
                 <div className={styles.body}>
                     <div className={styles.tags}>
                         <Link to={ `/u/${creator.handle}`} className={styles.creator}>
-                            <SmallFlagImage type='user' size={40} imagePath={creator.flagImagePath}/>
+                            <SmallFlagImage type='user' size={35} imagePath={creator.flagImagePath}/>
                             <span className='ml-10 mr-5'>{ creator.name }</span>
                         </Link>
                         <span className={styles.subText}>to</span>
@@ -146,10 +139,16 @@ function PostCard(props) {
                                 </Link>
                             }
                         </div>
+                        
+                        
                         <span className={styles.subText}>|</span>
                         <Link to={`/p/${id}`} className={styles.link} onClick={() => setSelectedNavBarItem('')}>
+                            
+                            
                             <img className={styles.linkIcon} src={'/icons/link-solid.svg'} alt=''/>
-                            <span className={styles.subText}>{formattedDate() || 'no date'}</span>
+                            <span className={styles.subText} title={dateCreated(createdAt)}>
+                                {timeSinceCreated(createdAt)}
+                            </span>
                         </Link>
                         {/* <span className={styles.subText}>|</span> */}
                         <div className={styles.postTypeFlag} style={{ backgroundColor }} title={type}/>
@@ -212,7 +211,10 @@ function PostCard(props) {
                             />
                         }
                         {commentsOpen &&
-                            <PostCardComments postId={postData.id}/>
+                            <PostCardComments
+                                postId={postData.id}
+                                totalComments={totalComments}
+                                setTotalComments={setTotalComments}/>
                         }
                     </div>
                 </div>

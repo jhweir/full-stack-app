@@ -7,29 +7,37 @@ import { AccountContext } from '../../contexts/AccountContext'
 import { HolonContext } from '../../contexts/HolonContext'
 import { PostContext } from '../../contexts/PostContext'
 import SmallFlagImage from '../../components/SmallFlagImage'
+import { timeSinceCreated, dateCreated } from '../../GlobalFunctions'
 
 function NewCommentCard(props) {
-    const { index, comment } = props
-    const { postId, commentCreator, text, createdAt } = comment
+    const { comment, totalComments, setTotalComments, getPostComments } = props
     const { accountData, isLoggedIn, setAlertModalOpen, setAlertMessage } = useContext(AccountContext)
     const { holonData } = useContext(HolonContext)
-    const { getPostData, getPostComments } = useContext(PostContext)
 
     const [replyInputOpen, setReplyInputOpen] = useState(false)
-    const [reply, setReply] = useState('')
-    const [replyError, setReplyError] = useState(false)
+    const [newReply, setNewReply] = useState('')
+    const [newReplyError, setNewReplyError] = useState(false)
 
-    const isOwnComment = accountData.id === commentCreator.id
+    const isOwnComment = accountData.id === comment.creator.id
 
-    function openReply() {
+    function deleteComment() {
+        // TODO: add confirmation modal
+        axios.delete(config.apiURL  + '/delete-comment', { data: { commentId: comment.id } })
+            .then(setTimeout(() => {
+                //getPostData(); getPostComments()
+            }, 200))
+            .catch(error => { console.log(error) })
+    }
+
+    function openReplyInput() {
         if (isLoggedIn) setReplyInputOpen(!replyInputOpen)
         else { setAlertModalOpen(true); setAlertMessage('Log in to reply') }
     }
 
     function submitReply(e) {
         e.preventDefault()
-        const invalidReply = reply.length < 1 || reply.length > 10000
-        if (invalidReply) { setReplyError(true) }
+        const invalidReply = newReply.length < 1 || newReply.length > 10000
+        if (invalidReply) { setNewReplyError(true) }
         else {
             axios
                 .post(config.apiURL + '/submit-reply', { 
@@ -37,57 +45,45 @@ function NewCommentCard(props) {
                     accountHandle: accountData.handle,
                     accountName: accountData.name,
                     holonId: window.location.pathname.includes('/s/') ? holonData.id : null,
-                    postId,
+                    postId: comment.postId,
                     parentCommentId: comment.id,
-                    text: reply
+                    text: newReply
                 })
                 .then(res => {
-                    //console.log('res: ', res)
                     if (res.data === 'success') {
-                        getPostData()
-                        getPostComments()
+                        setNewReply('')
+                        setTotalComments(totalComments + 1)
+                        setTimeout(() => {
+                            getPostComments()
+                        }, 300)
                     }
                 })
-                //.then(setTimeout(() => { getPostData(); getPostComments() }, 200))
         }
-    }
-
-    function deleteComment() {
-        // TODO: add confirmation modal
-        axios.delete(config.apiURL  + '/delete-comment', { data: { commentId: comment.id } })
-            .then(setTimeout(() => { getPostData(); getPostComments() }, 200))
-            .catch(error => { console.log(error) })
-    }
-
-    function parsedDate() {
-        const t = createdAt.split(/[-.T :]/)
-        let parsedDate = t[3]+':'+t[4]+' on '+t[2]+'-'+t[1]+'-'+t[0]
-        return parsedDate
     }
 
     return (
         <div className={styles.wrapper}>
-            <div className={styles.contentWrapper}>
-                <Link to={ `/u/${commentCreator.handle}`} className={styles.user}>
-                    <SmallFlagImage type='user' size={30} imagePath={commentCreator.flagImagePath}/>
-                    {/* <span className={styles.subText}>{ commentCreator.name }</span> */}
+            <div className={styles.commentWrapper}>
+                <Link to={ `/u/${comment.creator.handle}`} className={styles.user}>
+                    <SmallFlagImage type='user' size={35} imagePath={comment.creator.flagImagePath}/>
                 </Link>
-                <div className={styles.content}>
-                    <div className={styles.grey}>
+                <div className={styles.comment}>
+                    <div className={styles.content}>
                         <div className={styles.tags}>
-                            <span className={styles.name}>{ commentCreator.name }</span>
+                            <span className={styles.name}>{ comment.creator.name }</span>
                             <span className={styles.divider}>|</span>
-                            <span className={styles.date}>{ parsedDate() }</span>
+                            <span className={styles.date} title={dateCreated(comment.createdAt)}>
+                                { timeSinceCreated(comment.createdAt) }
+                            </span>
                         </div>
-                        <span className={styles.text}>{ text }</span>
+                        <span className={styles.text}>{ comment.text }</span>
                     </div>
                     <div className={styles.interact}>
                         {/* <span className={styles.interactItem}>Like</span> */}
-                        <div className={styles.interactItem} onClick={openReply}>
+                        <div className={styles.interactItem} onClick={openReplyInput}>
                             <img className={`${styles.icon} ${styles.rotated}`} src="/icons/reply-solid.svg" alt=''/>
                             <span>Reply</span>
                         </div>
-                        {/* <span className={styles.interactItem}>Reply</span> */}
                         {isOwnComment &&
                             <div className={styles.interactItem} onClick={deleteComment}>
                                 <img className={styles.icon} src="/icons/trash-alt-solid.svg" alt=''/>
@@ -97,18 +93,56 @@ function NewCommentCard(props) {
                     </div>
                 </div>
             </div>
+            {comment.replies.map((reply, index) => 
+                <div className={styles.replyWrapper} key={index}>
+                    <Link to={ `/u/${reply.creator.handle}`} className={styles.user}>
+                        <SmallFlagImage type='user' size={35} imagePath={reply.creator.flagImagePath}/>
+                    </Link>
+                    <div className={styles.reply}>
+                        <div className={styles.content}>
+                            <div className={styles.tags}>
+                                <span className={styles.name}>{ reply.creator.name }</span>
+                                <span className={styles.divider}>|</span>
+                                <span className={styles.date} title={dateCreated(reply.createdAt)}>
+                                    { timeSinceCreated(reply.createdAt) }
+                                </span>
+                            </div>
+                            <span className={styles.text}>{ reply.text }</span>
+                        </div>
+                        <div className={styles.interact}>
+                            {/* <span className={styles.interactItem}>Like</span> */}
+                            <div className={styles.interactItem} onClick={openReplyInput}>
+                                <img className={`${styles.icon} ${styles.rotated}`} src="/icons/reply-solid.svg" alt=''/>
+                                <span>Reply</span>
+                            </div>
+                            {accountData.id === reply.creator.id &&
+                                <div className={styles.interactItem} onClick={deleteComment}>
+                                    <img className={styles.icon} src="/icons/trash-alt-solid.svg" alt=''/>
+                                    <span>Delete</span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            )}
             {replyInputOpen &&
-                <div className={styles.reply}>
-                    <SmallFlagImage type='user' size={30} imagePath={accountData.flagImagePath}/>
+                <div className={styles.replyInput}>
+                    <SmallFlagImage type='user' size={35} imagePath={accountData.flagImagePath}/>
                     <form className={styles.inputWrapper} onSubmit={submitReply}>
                         <textarea 
-                            className={`${styles.input} ${replyError && 'error'}`}
+                            className={`${styles.input} ${newReplyError && 'error'}`}
                             type="text"
-                            value={reply}
-                            placeholder="Reply..."
-                            onChange={(e) => { setReply(e.target.value); setReplyError(false) }}
+                            rows='1'
+                            value={newReply}
+                            placeholder="Write a reply..."
+                            onChange={(e) => {
+                                setNewReply(e.target.value)
+                                setNewReplyError(false)
+                                e.target.style.height = ''
+                                e.target.style.height = e.target.scrollHeight + 'px'
+                            }}
                         />
-                        <button className='wecoButton'>Reply</button>
+                        <button className={styles.button}>Reply</button>
                     </form>
                 </div>
             }

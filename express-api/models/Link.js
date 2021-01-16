@@ -29,11 +29,11 @@ module.exports = (sequelize, DataTypes) => {
     // })
     // Link.belongsTo(models.User, {
     //   //foreignKey: 'creatorId',
-    //   //as: 'commentCreator'
+    //   //as: 'creator'
     // })
     // Link.belongsTo(models.Holon, {
     //   //foreignKey: 'creatorId',
-    //   //as: 'commentCreator'
+    //   //as: 'creator'
     // })
   };
   return Link;

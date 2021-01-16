@@ -8,11 +8,11 @@ import { PostContext } from '../../contexts/PostContext'
 
 function CommentCard(props) {
     const { index, comment } = props
-    const { postId, commentCreator, text, createdAt } = comment
+    const { postId, creator, text, createdAt } = comment
     const { accountData, isLoggedIn } = useContext(AccountContext)
     const { getPostData, getPostComments } = useContext(PostContext)
 
-    const isOwnComment = accountData.id === commentCreator.id
+    const isOwnComment = accountData.id === creator.id
 
     function reply() {
         //...
@@ -35,15 +35,15 @@ function CommentCard(props) {
             {/* <div className={styles.index}>{index + 1 || ''}</div> */}
             <div className={styles.body}>
                 <div className={styles.tags}>
-                    {commentCreator &&
-                        <Link to={ `/u/${commentCreator.handle}`} className={styles.user}>
-                            {commentCreator.flagImagePath ?
-                                <img className={styles.userImage} src={commentCreator.flagImagePath} alt=''/> :
+                    {creator &&
+                        <Link to={ `/u/${creator.handle}`} className={styles.user}>
+                            {creator.flagImagePath ?
+                                <img className={styles.userImage} src={creator.flagImagePath} alt=''/> :
                                 <div className={styles.userImagePlaceholderWrapper}>
                                     <img className={styles.userImagePlaceholder} src={'/icons/user-solid.svg'} alt=''/>
                                 </div>
                             }
-                            <span className={styles.subText}>{ commentCreator.name || 'Anonymous' }</span>
+                            <span className={styles.subText}>{ creator.name || 'Anonymous' }</span>
                         </Link>
                     }
                     <span className={`${styles.subText} mr-10`}>|</span>

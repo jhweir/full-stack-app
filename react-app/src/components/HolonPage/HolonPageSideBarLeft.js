@@ -65,17 +65,17 @@ function HolonPageSideBarLeft() {
                         marginBottom={5}
                     />
                     <SideBarButton
-                        icon='edit-solid.svg'
-                        text='Posts'
-                        url='posts'
-                        selected={selectedHolonSubPage === 'posts'}
-                        marginBottom={5}
-                    />
-                    <SideBarButton
                         icon='overlapping-circles-thick.svg'
                         text='Spaces'
                         url='spaces'
                         selected={selectedHolonSubPage === 'spaces'}
+                        marginBottom={5}
+                    />
+                    <SideBarButton
+                        icon='edit-solid.svg'
+                        text='Posts'
+                        url='posts'
+                        selected={selectedHolonSubPage === 'posts'}
                         marginBottom={5}
                     />
                     <SideBarButton

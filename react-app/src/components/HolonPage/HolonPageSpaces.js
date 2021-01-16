@@ -38,7 +38,7 @@ function HolonPageSpaces() {
     }, [])
 
     useEffect(() => {
-        if (!holonContextLoading && holonData.id) { getHolonSpaces() }
+        if (!holonContextLoading && holonData && holonData.id) { getHolonSpaces() }
     }, [holonContextLoading, holonSpaceSearchFilter, holonSpaceTimeRangeFilter, holonSpaceSortByFilter, holonSpaceSortOrderFilter, holonSpaceDepthFilter])
 
     useEffect(() => {

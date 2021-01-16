@@ -1195,7 +1195,7 @@ router.get('/post-reaction-data', (req, res) => {
 
 router.get('/post-comments', (req, res) => {
     const { accountId, postId, timeRange, postType, sortBy, sortOrder, searchQuery, limit, offset } = req.query
-    // console.log('req.query: ', req.query)
+    console.log('req.query: ', req.query)
 
     function findStartDate() {
         let offset = undefined
@@ -1224,23 +1224,38 @@ router.get('/post-comments', (req, res) => {
         where: {
             postId,
             state: 'visible',
+            parentCommentId: null,
             text: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` },
             createdAt: { [Op.between]: [startDate, Date.now()] },
             // [Op.or]: [
             //     { text: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } },
-            //     { commentCreator: { name: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } } }
+            //     { creator: { name: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } } }
             // ]
         },
         order,
         limit: Number(limit),
         offset: Number(offset),
-        attributes: ['id', 'creatorId', 'text', 'createdAt'],
+        attributes: ['id', 'creatorId', 'postId', 'text', 'createdAt'],
         include: [
             {
                 model: User,
-                as: 'commentCreator',
+                as: 'creator',
                 attributes: ['id', 'handle', 'name', 'flagImagePath']
-            }
+            },
+            {
+                model: Comment,
+                as: 'replies',
+                order,
+                separate: true,
+                //attributes: ['id', 'handle', 'name', 'flagImagePath']
+                include: [
+                    {
+                        model: User,
+                        as: 'creator',
+                        attributes: ['id', 'handle', 'name', 'flagImagePath']
+                    }
+                ]
+            },
         ]
     })
     .then(comments => { res.json(comments) })
@@ -1770,10 +1785,10 @@ router.post('/remove-rating', (req, res) => {
     .then(res.send('success'))
 })
 
-router.post('/add-comment', (req, res) => {
-    let { accountId, accountHandle, accountName, postId, holonId, text } = req.body
+router.post('/submit-comment', (req, res) => {
+    let { accountId, accountHandle, accountName, holonId, postId, text } = req.body
 
-    // find post owner from postId
+    // find post owner
     Post.findOne({
         where: { id: postId },
         attributes: [],
@@ -1790,6 +1805,7 @@ router.post('/add-comment', (req, res) => {
         Comment.create({
             state: 'visible',
             creatorId: accountId,
+            holonId,
             postId,
             text
         })
@@ -1812,7 +1828,7 @@ router.post('/add-comment', (req, res) => {
                 from: 'admin@weco.io',
                 subject: 'Weco - notification',
                 text: `
-                    Hi ${post.creator.name}, ${accountName} just liked your post on weco:
+                    Hi ${post.creator.name}, ${accountName} just commented on your post on weco:
                     http://${url}/p/${postId}
                 `,
                 html: `
@@ -1843,6 +1859,118 @@ router.delete('/delete-comment', (req, res) => {
     const { commentId } = req.body
     Comment.update({ state: 'hidden' }, { where: { id: commentId } })
     // Post.destroy({ where: { id: req.body.id }})
+})
+
+router.post('/submit-reply', async (req, res) => {
+    let { accountId, accountHandle, accountName, holonId, postId, parentCommentId, text } = req.body
+
+    // find post owner
+    const post = await Post.findOne({
+        where: { id: postId },
+        attributes: [],
+        include: [{ 
+            model: User,
+            as: 'creator',
+            attributes: ['id', 'handle', 'name', 'flagImagePath', 'email']
+        }]
+    })
+
+    // find parent comment owner
+    const parentComment = await Comment.findOne({
+        where: { id: parentCommentId },
+        attributes: [],
+        include: [{ 
+            model: User,
+            as: 'creator',
+            attributes: ['id', 'handle', 'name', 'flagImagePath', 'email']
+        }]
+    })
+
+    //create reply
+    Comment
+        .create({
+            state: 'visible',
+            creatorId: accountId,
+            holonId,
+            postId,
+            parentCommentId,
+            text
+        })
+        .then(comment => {
+            // create notificaton for post owner
+            Notification.create({
+                ownerId: post.creator.id,
+                type: 'post-comment',
+                seen: false,
+                holonId,
+                userId: accountId,
+                postId,
+                commentId: comment.id
+            })
+
+            // create notificaton for parent comment owner
+            Notification.create({
+                ownerId: parentComment.creator.id,
+                type: 'comment-reply',
+                seen: false,
+                holonId,
+                userId: accountId,
+                postId,
+                commentId: comment.id
+            })
+
+            // send email to post owner
+            let url = process.env.NODE_ENV === 'dev' ? process.env.DEV_APP_URL : process.env.PROD_APP_URL
+            let postOwnerMessage = {
+                to: post.creator.email,
+                from: 'admin@weco.io',
+                subject: 'Weco - notification',
+                text: `
+                    Hi ${post.creator.name}, ${accountName} just commented on your post on weco:
+                    http://${url}/p/${postId}
+                `,
+                html: `
+                    <p>
+                        Hi ${post.creator.name},
+                        <br/>
+                        <a href='${url}/u/${accountHandle}'>${accountName}</a>
+                        just commented on your
+                        <a href='${url}/p/${postId}'>post</a>
+                        on weco
+                    </p>
+                `,
+            }
+            let parentCommentOwnerMessage = {
+                to: parentComment.creator.email,
+                from: 'admin@weco.io',
+                subject: 'Weco - notification',
+                text: `
+                    Hi ${post.creator.name}, ${accountName} just replied to your comment on weco:
+                    http://${url}/p/${postId}
+                `,
+                html: `
+                    <p>
+                        Hi ${post.creator.name},
+                        <br/>
+                        <a href='${url}/u/${accountHandle}'>${accountName}</a>
+                        just replied to your
+                        <a href='${url}/p/${postId}'>comment</a>
+                        on weco
+                    </p>
+                `,
+            }
+            let sendPostOwnerMessage = sgMail.send(postOwnerMessage)
+            let sendParentCommentOwnerMessage = sgMail.send(parentCommentOwnerMessage)
+            Promise
+                .all([sendPostOwnerMessage, sendParentCommentOwnerMessage])
+                .then(() => {
+                    console.log('Emails sent')
+                    res.send('success')
+                })
+                .catch((error) => {
+                    console.error(error)
+                })
+        })
 })
 
 router.post('/cast-vote', (req, res) => {
