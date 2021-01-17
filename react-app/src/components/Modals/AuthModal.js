@@ -188,7 +188,11 @@ function AuthModal() {
                                 className={`wecoInput mb-10 ${newHandleError && 'error'}`}
                                 placeholder='Handle (must be unique)'
                                 type="text" value={newHandle}
-                                onChange={(e) => { setNewHandle(e.target.value); setNewHandleError(false) }}
+                                onChange={(e) => {
+                                    //setNewHandle(e.target.value)
+                                    setNewHandle(e.target.value.toLowerCase().replace(/[^a-z0-9]/g, '-'))
+                                    setNewHandleError(false)
+                                }}
                             />
                             <input
                                 className={`wecoInput mb-10 ${newNameError && 'error'}`}

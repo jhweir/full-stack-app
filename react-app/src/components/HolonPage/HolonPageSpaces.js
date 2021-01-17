@@ -67,7 +67,7 @@ function HolonPageSpaces() {
                             <img className='wecoButtonIcon' src='/icons/eye-solid.svg'/>
                         </button> */}
                         <button className="wecoButton" onClick={() => openCreateSpaceModal() }>
-                            Create Space
+                            New Space
                         </button>
                     </div>
                     <Toggle leftText='List' rightText='Map' onClickFunction={toggleView} positionLeft={holonSpaceView === 'List' ? true : false}/>

@@ -2,7 +2,7 @@
 // TODO: change to importing a variables file including transition speeds etc.
 
 .sideBarLeft {
-    width: 200px;
+    width: 230px;
     padding: 0 20px;
     position: relative;
     @media screen and (max-width: 1200px) {
@@ -12,10 +12,11 @@
 .name {
     font-size: 26px;
     line-height: 30px;
-    margin: 70px 0 20px 0;
+    //margin: 70px 0 20px 0;
+    margin: 90px 0 20px 12px;
 }
 .description {
-    margin-top: 20px;
+    margin: 20px 0 0 10px;
 }
 .navButtons {
     display: flex;

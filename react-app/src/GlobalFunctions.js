@@ -10,23 +10,23 @@ export const timeSinceCreated = (createdAt) => {
     let timeSinceCreated
     if (difference < hour) {
         let number = (difference / minute).toFixed(0)
-        timeSinceCreated = `${number} minute${number > 1 ? 's' : ''} ago`
+        timeSinceCreated = `${number} minute${number > 1 ? 's' : ''} ago` // `${number}m`
     }
     if (difference > hour && difference < day) {
         let number = (difference / hour).toFixed(0)
-        timeSinceCreated = `${number} hour${number > 1 ? 's' : ''} ago`
+        timeSinceCreated = `${number} hour${number > 1 ? 's' : ''} ago` // `${number}h`
     }
     if (difference > day && difference < week) {
         let number = (difference / day).toFixed(0)
-        timeSinceCreated = `${number} day${number > 1 ? 's' : ''} ago`
+        timeSinceCreated = `${number} day${number > 1 ? 's' : ''} ago` // `${number}d`
     }
     if (difference > week && difference < year) {
         let number = (difference / week).toFixed(0)
-        timeSinceCreated = `${number} week${number > 1 ? 's' : ''} ago`
+        timeSinceCreated = `${number} week${number > 1 ? 's' : ''} ago` // `${number}w`
     }
     if (difference > year) {
         let number = (difference / year).toFixed(0)
-        timeSinceCreated = `${number} year${number > 1 ? 's' : ''} ago`
+        timeSinceCreated = `${number} year${number > 1 ? 's' : ''} ago` // `${number}y`
     }
     return timeSinceCreated
 }

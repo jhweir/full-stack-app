@@ -60,9 +60,58 @@ const postAttributes = [
 ]
 
 router.get('/holon-data', (req, res) => {
+    const { handle } = req.query
+    let totalUsersQuery
+    if (handle === 'all') {
+        totalUsersQuery = [sequelize.literal(`(SELECT COUNT(*) FROM Users)`), 'total_users']
+    } else {
+        totalUsersQuery = [sequelize.literal(`(
+            SELECT COUNT(*)
+                FROM Users
+                WHERE Users.id IN (
+                    SELECT HolonUsers.userId
+                    FROM HolonUsers
+                    RIGHT JOIN Users
+                    ON HolonUsers.userId = Users.id
+                    WHERE HolonUsers.holonId = Holon.id
+                    AND HolonUsers.state = 'active'
+                    AND HolonUsers.relationship = 'follower'
+                )
+            )`), 'total_users'
+        ]
+    }
     Holon.findOne({ 
-        where: { handle: req.query.handle },
-        attributes: ['id', 'handle', 'name', 'description', 'flagImagePath', 'coverImagePath', 'createdAt'],
+        where: { handle: handle },
+        attributes: [
+            'id', 'handle', 'name', 'description', 'flagImagePath', 'coverImagePath', 'createdAt',
+            [sequelize.literal(`(
+                SELECT COUNT(*)
+                    FROM Holons
+                    WHERE Holons.handle != Holon.handle
+                    AND Holons.id IN (
+                        SELECT HolonHandles.holonAId
+                        FROM HolonHandles
+                        RIGHT JOIN Holons
+                        ON HolonHandles.holonAId = Holons.id
+                        WHERE HolonHandles.holonBId = Holon.id
+                    )
+                )`), 'total_spaces'
+            ],
+            [sequelize.literal(`(
+                SELECT COUNT(*)
+                    FROM Posts
+                    WHERE Posts.state = 'visible'
+                    AND Posts.id IN (
+                        SELECT PostHolons.postId
+                        FROM PostHolons
+                        RIGHT JOIN Posts
+                        ON PostHolons.postId = Posts.id
+                        WHERE PostHolons.HolonId = Holon.id
+                    )
+                )`), 'total_posts'
+            ],
+            totalUsersQuery
+        ],
         include: [
             { 
                 model: Holon,
@@ -2148,14 +2197,20 @@ router.post('/resend-verification-email', async (req, res) => {
 })
 
 // TODO: remove camel casing
-router.post('/followHolon', (req, res) => {
+router.post('/follow-space', (req, res) => {
     const { holonId, userId } = req.body
-    HolonUser.create({ relationship: 'follower', state: 'active', holonId, userId })
+    HolonUser
+        .create({ relationship: 'follower', state: 'active', holonId, userId })
+        .then(res.send('success'))
+        .catch(err => console.log(err))
 })
 
-router.put('/unfollowHolon', (req, res) => {
+router.put('/unfollow-space', (req, res) => {
     const { holonId, userId } = req.body
-    HolonUser.update({ state: 'removed' }, { where: { relationship: 'follower', holonId, userId }})
+    HolonUser
+        .update({ state: 'removed' }, { where: { relationship: 'follower', holonId, userId }})
+        .then(res.send('success'))
+        .catch(err => console.log(err))
 })
 
 router.post('/scrape-url', async (req, res) => {
@@ -2545,8 +2600,6 @@ router.get('/post-link-data', async (req, res) => {
 
 router.post('/toggle-notification-seen', (req, res) => {
     let { notificationId, seen } = req.body
-    // console.log('notificationId: ', notificationId)
-    // console.log('seen: ', seen)
     Notification
         .update({ seen }, { where: { id: notificationId } })
         .then(res.send('success'))

@@ -23,18 +23,20 @@ function SettingModal() {
     if (settingModalType === 'change-holon-handle') { 
         title = `Change the unique handle for ${holonData.name}`
         subTitle = `The current handle is: ${holonData.handle}`
-        placeholder = 'New handle'
-        invalidValue = newValue.length < 1
+        placeholder = 'New handle... (max 30 characters)'
+        invalidValue = newValue.length < 1 || newValue.length > 30
     }
     if (settingModalType === 'change-holon-name') {
         title = `Change the name for ${holonData.name}`
         subTitle = `The current name is: ${holonData.name}`
-        placeholder = 'New name'
+        placeholder = 'New name... (max 30 characters)'
+        invalidValue = newValue.length < 1 || newValue.length > 30
     }
     if (settingModalType === 'change-holon-description') {
         title = `Change the description for ${holonData.name}`
         subTitle = `The current description is: ${holonData.description}`
-        placeholder = 'New description'
+        placeholder = 'New description... (max 10K characters)'
+        invalidValue = newValue.length < 1 || newValue.length > 10000
     }
     if (settingModalType === 'add-new-moderator') {
         title = `Add a new moderator to ${holonData.name}`
@@ -55,13 +57,15 @@ function SettingModal() {
     // user settings
     if (settingModalType === 'change-user-name') {
         title = `Change your account name`
-        subTitle = `Your name is currently: ${accountData.name}`
-        placeholder = 'New name'
+        subTitle = `Your current name is: ${accountData.name}`
+        placeholder = 'New name... (max 30 characters)'
+        invalidValue = newValue.length < 1 || newValue.length > 30
     }
     if (settingModalType === 'change-user-bio') {
         title = `Change your bio`
         subTitle = `Your current bio is: ${accountData.bio}`
-        placeholder = 'New bio'
+        placeholder = 'New bio... (max 10K characters)'
+        invalidValue = newValue.length < 1 || newValue.length > 10000
     }
 
     function saveNewValue(e) {
@@ -125,12 +129,23 @@ function SettingModal() {
                 <span className={styles.title}>{title}</span>
                 <span className={styles.subTitle}>{subTitle}</span>
                 <form className={styles.form}  onSubmit={saveNewValue}>
-                    {settingModalType !== 'change-holon-description' &&
+                    {settingModalType !== 'change-holon-description' && settingModalType !== 'change-holon-handle' &&
                         <input 
                             className={`wecoInput mb-10 mr-10 ${error && 'error'}`}
                             placeholder={placeholder}
                             type="text" value={newValue}
                             onChange={(e) => { setNewValue(e.target.value); setError(false) }}
+                        />
+                    }
+                    {settingModalType === 'change-holon-handle' &&
+                        <input 
+                            className={`wecoInput mb-10 mr-10 ${error && 'error'}`}
+                            placeholder={placeholder}
+                            type="text" value={newValue}
+                            onChange={(e) => {
+                                setNewValue(e.target.value.toLowerCase().replace(/[^a-z0-9]/g, '-'))
+                                setError(false)
+                            }}
                         />
                     }
                     {settingModalType === 'change-holon-description' &&

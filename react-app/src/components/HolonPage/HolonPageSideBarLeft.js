@@ -9,20 +9,34 @@ import LargeFlagImage from '../LargeFlagImage'
 import SideBarButton from '../SideBarButton'
 
 function HolonPageSideBarLeft() {
-    const { isLoggedIn, accountData } = useContext(AccountContext)
-    const { getHolonUsers, holonData, isFollowing, setIsFollowing, isModerator, selectedHolonSubPage } = useContext(HolonContext)
+    const { isLoggedIn, accountData, getAccountData } = useContext(AccountContext)
+    const { getHolonUsers, holonData, getHolonData, isFollowing, setIsFollowing, isModerator, selectedHolonSubPage } = useContext(HolonContext)
 
     function followSpace() {
         if (isFollowing) {
-            setIsFollowing(false)
-            axios.put(config.apiURL + `/unfollowHolon`, { holonId: holonData.id, userId: accountData.id })
-                // TODO: remove setTime out and wait for response
-                .then(setTimeout(() => { getHolonUsers() }, 200))
+            axios.put(config.apiURL + `/unfollow-space`, { holonId: holonData.id, userId: accountData.id })
+                .then(res => {
+                    if (res.data === 'success') {
+                        setTimeout(() => {
+                            getAccountData()
+                            getHolonData()
+                            getHolonUsers()
+                        }, 500)
+                    }
+                })
                 .catch(error => { console.log(error) })} 
         else {
-            setIsFollowing(true)
-            axios.post(config.apiURL + `/followHolon`, { holonId: holonData.id, userId: accountData.id })
-                .then(setTimeout(() => { getHolonUsers() }, 200))
+            axios
+                .post(config.apiURL + `/follow-space`, { holonId: holonData.id, userId: accountData.id })
+                .then(res => {
+                    if (res.data === 'success') {
+                        setTimeout(() => {
+                            getAccountData()
+                            getHolonData()
+                            getHolonUsers()
+                        }, 500)
+                    }
+                })
                 .catch(error => { console.log(error) })
         }
     }
@@ -31,7 +45,7 @@ function HolonPageSideBarLeft() {
         return (
             <div className={styles.sideBarLeft}>
                 <LargeFlagImage
-                    size={150}
+                    size={180}
                     imagePath={holonData.flagImagePath}
                     type='space'
                     canEdit={isModerator}
@@ -39,17 +53,17 @@ function HolonPageSideBarLeft() {
                 <div className={styles.name}>{ holonData.name }</div>
                 <div className={styles.navButtons}>
                     {/* TODO: replace side bar button component with actual content */}
-                    {isModerator && <SideBarButton
-                        icon='crown-solid.svg'
-                        text='Moderator'
-                        marginBottom={5}
-                    />}
                     {isLoggedIn && holonData.handle !== 'all' && <SideBarButton
                         icon={isFollowing ? 'eye-solid.svg' : 'eye-slash-solid.svg'}
                         text={isFollowing ? 'Following' : 'Not Following'}
                         onClickFunction={followSpace}
                         marginBottom={5}
                     />}
+                    {/* {isModerator && <SideBarButton
+                        icon='crown-solid.svg'
+                        text='Moderator'
+                        marginBottom={5}
+                    />} */}
                     {isModerator && <SideBarButton
                         icon='cog-solid.svg'
                         text='Settings'
@@ -70,6 +84,7 @@ function HolonPageSideBarLeft() {
                         url='spaces'
                         selected={selectedHolonSubPage === 'spaces'}
                         marginBottom={5}
+                        total={holonData.total_spaces}
                     />
                     <SideBarButton
                         icon='edit-solid.svg'
@@ -77,6 +92,7 @@ function HolonPageSideBarLeft() {
                         url='posts'
                         selected={selectedHolonSubPage === 'posts'}
                         marginBottom={5}
+                        total={holonData.total_posts}
                     />
                     <SideBarButton
                         icon='users-solid.svg'
@@ -84,6 +100,7 @@ function HolonPageSideBarLeft() {
                         url='users'
                         selected={selectedHolonSubPage === 'users'}
                         marginBottom={5}
+                        total={holonData.total_users}
                     />
                 </div>
                 <div className={styles.description}>{holonData.description}</div>

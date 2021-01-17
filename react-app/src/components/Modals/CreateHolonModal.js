@@ -19,9 +19,9 @@ function CreateHolonModal() {
 
     function createHolon(e) {
         e.preventDefault()
-        let invalidHandle = handle.length === 0 || handle.length > 15
-        let invalidName = name.length === 0 || name.length > 25
-        let invalidDescription = description.length === 0 || description.length > 10000
+        let invalidHandle = handle.length < 1 || handle.length > 30
+        let invalidName = name.length < 1 || name.length > 30
+        let invalidDescription = description.length < 1 || description.length > 10000
         if (invalidHandle) { setHandleError(true); setFlashMessage('Invalid handle') }
         if (invalidName) { setNameError(true); setFlashMessage('Invalid name') }
         if (invalidDescription) { setDescriptionError(true); setFlashMessage('Invalid description') }
@@ -33,7 +33,7 @@ function CreateHolonModal() {
                     if (res.data === 'success') { // TODO: work out why getAccountData() is not recieving new ModeratedHolons
                         setCreateHolonModalOpen(false)
                         getAccountData()
-                        setTimeout(() => { getHolonSpaces() }, 900)
+                        setTimeout(() => { getHolonSpaces() }, 500)
                         // const a = setCreateHolonModalOpen(false)
                         // Promise.all([a]).then(() => setTimeout(() => { getAccountData() }, 200)).then(() => getHolonData())
                     }
@@ -56,7 +56,11 @@ function CreateHolonModal() {
                         className={`wecoInput mb-10 ${handleError && 'error'}`}
                         placeholder="Handle (must be unique)"
                         type="text" value={ handle }
-                        onChange={(e) => { setHandle(e.target.value); setHandleError(false); setFlashMessage('') }}
+                        onChange={(e) => {
+                            setHandle(e.target.value.toLowerCase().replace(/[^a-z0-9]/g, '-'))
+                            setHandleError(false)
+                            setFlashMessage('')
+                        }}
                     />
                     <input 
                         className={`wecoInput mb-10 ${nameError && 'error'}`}
