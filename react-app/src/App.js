@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { BrowserRouter, Route, Switch } from 'react-router-dom'
 import { createBrowserHistory } from 'history'
 import AccountContextProvider from './contexts/AccountContext'
@@ -16,14 +16,19 @@ import Modals from './components/Modals'
 function App() {
   const [pageBottomReached, setPageBottomReached] = useState(false)
 
-  function handleScroll(e) {
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+  }, [])
+
+  function handleScroll() {
+    let d = document.documentElement
     let pageBottomOffset = 150
-    let pageBottomReached = e.target.scrollHeight - e.target.scrollTop.toFixed(0) - pageBottomOffset < e.target.clientHeight
+    let pageBottomReached = d.scrollHeight - d.scrollTop - pageBottomOffset < d.clientHeight
     setPageBottomReached(pageBottomReached ? true : false)
   }
 
   return (
-    <div className="app" onScroll={handleScroll}>
+    <div className="app">
       <BrowserRouter history={createBrowserHistory}>
         <AccountContextProvider pageBottomReached={pageBottomReached}>
           <HolonContextProvider>

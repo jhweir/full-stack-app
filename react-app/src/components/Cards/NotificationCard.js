@@ -7,6 +7,7 @@ import styles from '../../styles/components/NotificationCard.module.scss'
 import SmallFlagImage from '../SmallFlagImage'
 import axios from 'axios'
 import config from '../../Config'
+import { timeSinceCreated, dateCreated } from '../../GlobalFunctions'
 
 function NotificationCard(props) {
     const {
@@ -18,21 +19,11 @@ function NotificationCard(props) {
     const { accountData, getAccountData, getNotifications } = useContext(AccountContext)
     const { setPostId } = useContext(PostContext)
 
-    const [seen, setSeen] = useState(false)
-
-    //console.log('notification: ', notification)
+    const [seen, setSeen] = useState(true)
 
     useEffect(() => {
         if (notification.id) { setSeen(notification.seen) }
     }, [notification.id])
-
-    function formatDate(date) {
-        if (date) {
-            let a = date.split(/[-.T :]/)
-            let formattedDate = a[3]+':'+a[4]+' on '+a[2]+'-'+a[1]+'-'+a[0]
-            return formattedDate
-        }
-    }
 
     function toggleSeen() {
         setSeen(!seen)
@@ -60,18 +51,20 @@ function NotificationCard(props) {
                             <SmallFlagImage type='user' size={30} imagePath={notification.triggerUser.flagImagePath}/>
                             <span>{accountData.id === notification.triggerUser.id ? 'You' : notification.triggerUser.name}</span>
                         </Link>
-                        <div className={`greyText`}>liked your</div>
+                        <div className={styles.text}>liked your</div>
                         <Link className={styles.imageTextLink} to={`/p/${notification.postId}`} onClick={() => setPostId(notification.postId)}>
                             <span className={`blueText`}>post</span>
                         </Link>
                         {notification.triggerSpace && <>
-                            <div className={`greyText mr-10`}>in</div>
+                            <div className={`${styles.text} mr-10`}>in</div>
                             <Link className={styles.imageTextLink} to={`/s/${notification.triggerSpace.handle}`}>
                                 <SmallFlagImage type='space' size={30} imagePath={notification.triggerSpace.flagImagePath}/>
                                 <span>{notification.triggerSpace.name}</span>
                             </Link>
                         </>}
-                        <div className={`greyText`}>| {formatDate(notification.createdAt)}</div>
+                        <div className={styles.text} title={dateCreated(notification.createdAt)}>
+                            | {timeSinceCreated(notification.createdAt)}
+                        </div>
                     </div>
                     <img
                         className={styles.seenIcon}
@@ -91,18 +84,20 @@ function NotificationCard(props) {
                             <SmallFlagImage type='user' size={30} imagePath={notification.triggerUser.flagImagePath}/>
                             <span>{accountData.id === notification.triggerUser.id ? 'You' : notification.triggerUser.name}</span>
                         </Link>
-                        <div className={`greyText`}>commented on your</div>
+                        <div className={styles.text}>commented on your</div>
                         <Link className={styles.imageTextLink} to={`/p/${notification.postId}`} onClick={() => setPostId(notification.postId)}>
                             <span className={`blueText`}>post</span>
                         </Link>
                         {notification.triggerSpace && <>
-                            <div className={`greyText mr-10`}>in</div>
+                            <div className={`${styles.text} mr-10`}>in</div>
                             <Link className={styles.imageTextLink} to={`/s/${notification.triggerSpace.handle}`}>
                                 <SmallFlagImage type='space' size={30} imagePath={notification.triggerSpace.flagImagePath}/>
                                 <span>{notification.triggerSpace.name}</span>
                             </Link>
                         </>}
-                        <div className={`greyText`}>| {formatDate(notification.createdAt)}</div>
+                        <div className={styles.text} title={dateCreated(notification.createdAt)}>
+                            | {timeSinceCreated(notification.createdAt)}
+                        </div>
                     </div>
                     <img
                         className={styles.seenIcon}
@@ -122,18 +117,20 @@ function NotificationCard(props) {
                             <SmallFlagImage type='user' size={30} imagePath={notification.triggerUser.flagImagePath}/>
                             <span>{accountData.id === notification.triggerUser.id ? 'You' : notification.triggerUser.name}</span>
                         </Link>
-                        <div className={`greyText`}>reposted your</div>
+                        <div className={styles.text}>reposted your</div>
                         <Link className={styles.imageTextLink} to={`/p/${notification.postId}`} onClick={() => setPostId(notification.postId)}>
                             <span className={`blueText`}>post</span>
                         </Link>
                         {notification.triggerSpace && <>
-                            <div className={`greyText mr-10`}>in</div>
+                            <div className={`${styles.text} mr-10`}>in</div>
                             <Link className={styles.imageTextLink} to={`/s/${notification.triggerSpace.handle}`}>
                                 <SmallFlagImage type='space' size={30} imagePath={notification.triggerSpace.flagImagePath}/>
                                 <span>{notification.triggerSpace.name}</span>
                             </Link>
                         </>}
-                        <div className={`greyText`}>| {formatDate(notification.createdAt)}</div>
+                        <div className={styles.text} title={dateCreated(notification.createdAt)}>
+                            | {timeSinceCreated(notification.createdAt)}
+                        </div>
                     </div>
                     <img
                         className={styles.seenIcon}
@@ -153,18 +150,20 @@ function NotificationCard(props) {
                             <SmallFlagImage type='user' size={30} imagePath={notification.triggerUser.flagImagePath}/>
                             <span>{accountData.id === notification.triggerUser.id ? 'You' : notification.triggerUser.name}</span>
                         </Link>
-                        <div className={`greyText`}>rated your</div>
+                        <div className={styles.text}>rated your</div>
                         <Link className={styles.imageTextLink} to={`/p/${notification.postId}`} onClick={() => setPostId(notification.postId)}>
                             <span className={`blueText`}>post</span>
                         </Link>
                         {notification.triggerSpace && <>
-                            <div className={`greyText mr-10`}>in</div>
+                            <div className={`${styles.text} mr-10`}>in</div>
                             <Link className={styles.imageTextLink} to={`/s/${notification.triggerSpace.handle}`}>
                                 <SmallFlagImage type='space' size={30} imagePath={notification.triggerSpace.flagImagePath}/>
                                 <span>{notification.triggerSpace.name}</span>
                             </Link>
                         </>}
-                        <div className={`greyText`}>| {formatDate(notification.createdAt)}</div>
+                        <div className={styles.text} title={dateCreated(notification.createdAt)}>
+                            | {timeSinceCreated(notification.createdAt)}
+                        </div>
                     </div>
                     <img
                         className={styles.seenIcon}
@@ -184,19 +183,54 @@ function NotificationCard(props) {
                             <SmallFlagImage type='user' size={30} imagePath={notification.triggerUser.flagImagePath}/>
                             <span>{accountData.id === notification.triggerUser.id ? 'You' : notification.triggerUser.name}</span>
                         </Link>
-                        <div className={`greyText`}>linked your</div>
+                        <div className={styles.text}>linked your</div>
                         <Link className={styles.imageTextLink} to={`/p/${notification.postId}`} onClick={() => setPostId(notification.postId)}>
                             <span className={`blueText`}>post</span>
                         </Link>
-                        <div className={`greyText mr-10`}>to another post</div>
+                        <div className={`${styles.text} mr-10`}>to another post</div>
                         {notification.triggerSpace && <>
-                            <div className={`greyText mr-10`}>in</div>
+                            <div className={`${styles.text} mr-10`}>in</div>
                             <Link className={styles.imageTextLink} to={`/s/${notification.triggerSpace.handle}`}>
                                 <SmallFlagImage type='space' size={30} imagePath={notification.triggerSpace.flagImagePath}/>
                                 <span>{notification.triggerSpace.name}</span>
                             </Link>
                         </>}
-                        <div className={`greyText`}>| {formatDate(notification.createdAt)}</div>
+                        <div className={styles.text} title={dateCreated(notification.createdAt)}>
+                            | {timeSinceCreated(notification.createdAt)}
+                        </div>
+                    </div>
+                    <img
+                        className={styles.seenIcon}
+                        src={`/icons/${seen ? 'eye-solid.svg' : 'eye-slash-solid.svg'}`}
+                        onClick={() => toggleSeen()}
+                    />
+                </div>
+            }
+
+            {notification.type === 'comment-reply' &&
+                <div className={styles.content}>
+                    <div className={styles.iconWrapper}>
+                        <img className={`${styles.icon} ${styles.rotated}`} src='/icons/reply-solid.svg' alt=''/>
+                    </div>
+                    <div className={styles.info}>
+                        <Link className={styles.imageTextLink} to={`/u/${notification.triggerUser.handle}`} onClick={() => setUserHandle(notification.triggerUser.handle)}>
+                            <SmallFlagImage type='user' size={30} imagePath={notification.triggerUser.flagImagePath}/>
+                            <span>{accountData.id === notification.triggerUser.id ? 'You' : notification.triggerUser.name}</span>
+                        </Link>
+                        <div className={styles.text}>replied to your</div>
+                        <Link className={styles.imageTextLink} to={`/p/${notification.postId}`} onClick={() => setPostId(notification.postId)}>
+                            <span className={`blueText`}>comment</span>
+                        </Link>
+                        {notification.triggerSpace && <>
+                            <div className={`${styles.text} mr-10`}>in</div>
+                            <Link className={styles.imageTextLink} to={`/s/${notification.triggerSpace.handle}`}>
+                                <SmallFlagImage type='space' size={30} imagePath={notification.triggerSpace.flagImagePath}/>
+                                <span>{notification.triggerSpace.name}</span>
+                            </Link>
+                        </>}
+                        <div className={styles.text} title={dateCreated(notification.createdAt)}>
+                            | {timeSinceCreated(notification.createdAt)}
+                        </div>
                     </div>
                     <img
                         className={styles.seenIcon}

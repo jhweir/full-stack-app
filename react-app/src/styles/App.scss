@@ -13,32 +13,38 @@
 
 html {
     // overflow: -moz-scrollbars-vertical; 
-    // overflow-y: scroll;
-    width: 100%;
-    height: 100%;
+    //overflow-y: scroll;
+    //width: 100%;
+    overflow-x: hidden;
+    //height: 100%;
+    //overflow: scroll
 }
 
 body {
     background-color: #f7f7f9; //#eee;
     width: 100%;
-    height: 100%;
+    overflow-x: hidden;
+    //height: 100%;
+    //overflow-y: visible
     // transition-property: background-color;
     // transition-duration: 2s;
 }
 
 #root {
     width: 100%;
-    height: 100%;
+    //overflow-x: hidden;
+    //height: 100%;
 }
 
 .app {
-    width: 100%;
-    height: 100%;
+    //width: 100%;
+    //overflow-x: hidden;
+    //height: 100%;
     //padding-bottom: 100px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    overflow: scroll;
+    overflow-y: scroll;
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */
     &::-webkit-scrollbar {

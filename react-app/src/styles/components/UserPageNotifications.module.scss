@@ -26,3 +26,14 @@
 .notifications {
     width: 100%;
 }
+.seenIcon {
+    width: 25px;
+    height: 25px;
+    opacity: 0.3;
+    position: absolute;
+    right: 20px;
+    top: 13px;
+    &:hover {
+        cursor: pointer;
+    }
+}

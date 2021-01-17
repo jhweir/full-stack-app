@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState, useRef } from 'react'
 import axios from 'axios'
 import config from '../../Config'
 import styles from '../../styles/components/NewCommentCard.module.scss'
@@ -16,8 +16,20 @@ function NewCommentCard(props) {
     const [newReply, setNewReply] = useState('')
     const [newReplyError, setNewReplyError] = useState(false)
 
+    const replyInput = useRef()
+
     function openReplyInput() {
-        if (isLoggedIn) setReplyInputOpen(!replyInputOpen)
+        if (isLoggedIn) {
+            Promise
+                .all([setReplyInputOpen(!replyInputOpen)])
+                .then(() => {
+                    if (!replyInputOpen) {
+                        const yOffset = (window.screen.height / 2.3)
+                        const top = replyInput.current.getBoundingClientRect().top + window.pageYOffset - yOffset
+                        window.scrollTo({ top, behavior: 'smooth' });
+                    }
+                })
+        }
         else { setAlertModalOpen(true); setAlertMessage('Log in to reply') }
     }
 
@@ -68,7 +80,7 @@ function NewCommentCard(props) {
                 />
             )}
             {replyInputOpen &&
-                <div className={styles.replyInput}>
+                <div className={styles.replyInput} ref={replyInput}>
                     <SmallFlagImage type='user' size={35} imagePath={accountData.flagImagePath}/>
                     <form className={styles.inputWrapper} onSubmit={submitReply}>
                         <textarea 

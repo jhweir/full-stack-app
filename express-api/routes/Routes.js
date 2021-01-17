@@ -2552,4 +2552,12 @@ router.post('/toggle-notification-seen', (req, res) => {
         .then(res.send('success'))
 })
 
+router.post('/mark-all-notifications-seen', (req, res) => {
+    let { accountId } = req.body
+
+    Notification
+        .update({ seen: true }, { where: { ownerId: accountId } })
+        .then(res.send('success'))
+})
+
 module.exports = router
