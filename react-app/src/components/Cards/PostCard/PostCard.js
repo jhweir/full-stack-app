@@ -13,13 +13,14 @@ import PostCardReactions from './PostCardReactions'
 import PostCardUrlPreview from './PostCardUrlPreview'
 import PostCardComments from './PostCardComments'
 import SmallFlagImage from '../../SmallFlagImage'
+import DeleteItemModal from '../../../components/Modals/DeleteItemModal'
 import { timeSinceCreated, dateCreated } from '../../../GlobalFunctions'
 
 function PostCard(props) {
     const { postData, index, location } = props
     const { isLoggedIn, accountData, setAlertMessage, setAlertModalOpen, setCreatePostModalOpen, setCreatePostFromTurn, setCreatePostFromTurnData, setSelectedNavBarItem } = useContext(AccountContext)
-    const { setHolonHandle, getHolonPosts } = useContext(HolonContext)
-    const { getCreatedPosts } = useContext(UserContext)
+    const { setHolonHandle, getHolonData, getHolonPosts } = useContext(HolonContext)
+    const { getCreatedPosts, getUserData } = useContext(UserContext)
     const { postContextLoading, setPostId } = useContext(PostContext)
     const history = useHistory()
 
@@ -51,6 +52,8 @@ function PostCard(props) {
     const [blockedSpaces, setBlockedSpaces] = useState([])
     const [reactionsOpen, setReactionsOpen] = useState(false)
     const [commentsOpen, setCommentsOpen] = useState(false)
+    const [deletePostModalOpen, setDeletePostModalOpen] = useState(false)
+
 
     const finishedLoading = location !== 'post-page' || !postContextLoading
     const isOwnPost = finishedLoading && accountData.id === creator.id
@@ -139,8 +142,6 @@ function PostCard(props) {
                                 </Link>
                             }
                         </div>
-                        
-                        
                         <span className={styles.subText}>|</span>
                         <Link to={`/p/${id}`} className={styles.link} onClick={() => setSelectedNavBarItem('')}>
                             
@@ -152,6 +153,13 @@ function PostCard(props) {
                         </Link>
                         {/* <span className={styles.subText}>|</span> */}
                         <div className={styles.postTypeFlag} style={{ backgroundColor }} title={type}/>
+                        {isOwnPost &&
+                            <span className={styles.delete} onClick={() => setDeletePostModalOpen(true)}>Delete</span>
+                            // <div className={styles.interactItem} onClick={deletePost}>
+                            //     <img className={styles.icon} src="/icons/trash-alt-solid.svg" alt=''/>
+                            //     <span className='greyText'>Delete</span>
+                            // </div>
+                        }
                     </div>
                     <div className={styles.content}>
                         {text && <div className={styles.text}>{text}</div>}
@@ -186,12 +194,12 @@ function PostCard(props) {
                                     <span className={'greyText'}>Add turn</span>
                                 </div>
                             }
-                            {isOwnPost &&
+                            {/* {isOwnPost &&
                                 <div className={styles.interactItem} onClick={deletePost}>
                                     <img className={styles.icon} src="/icons/trash-alt-solid.svg" alt=''/>
                                     <span className='greyText'>Delete</span>
                                 </div>
-                            }
+                            } */}
                         </div>
                         {reactionsOpen &&
                             <PostCardReactions
@@ -215,6 +223,24 @@ function PostCard(props) {
                                 postId={postData.id}
                                 totalComments={totalComments}
                                 setTotalComments={setTotalComments}/>
+                        }
+                        {deletePostModalOpen &&
+                            <DeleteItemModal
+                                text='Are you sure you want to delete your post?'
+                                endpoint='delete-post'
+                                itemId={postData.id}
+                                getItems1={() => {
+                                    if (location === 'holon-posts') return getHolonPosts()
+                                    if (location === 'user-created-posts') return getCreatedPosts()
+                                    if (location === 'post-page') return history.push('/s/all')
+                                }}
+                                getItems2={() => {
+                                    if (location === 'holon-posts') return getHolonData()
+                                    if (location === 'user-created-posts') return getUserData()
+                                    if (location === 'post-page') return history.push('/s/all')
+                                }}
+                                setDeleteItemModalOpen={setDeletePostModalOpen}
+                            />
                         }
                     </div>
                 </div>

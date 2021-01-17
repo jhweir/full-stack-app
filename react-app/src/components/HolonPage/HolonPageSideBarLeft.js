@@ -64,13 +64,6 @@ function HolonPageSideBarLeft() {
                         text='Moderator'
                         marginBottom={5}
                     />} */}
-                    {isModerator && <SideBarButton
-                        icon='cog-solid.svg'
-                        text='Settings'
-                        url='settings'
-                        selected={selectedHolonSubPage === 'settings'}
-                        marginBottom={5}
-                    />}
                     <SideBarButton
                         icon='book-open-solid.svg'
                         text='About'
@@ -78,6 +71,13 @@ function HolonPageSideBarLeft() {
                         selected={selectedHolonSubPage === 'about'}
                         marginBottom={5}
                     />
+                    {isModerator && <SideBarButton
+                        icon='cog-solid.svg'
+                        text='Settings'
+                        url='settings'
+                        selected={selectedHolonSubPage === 'settings'}
+                        marginBottom={5}
+                    />}
                     <SideBarButton
                         icon='overlapping-circles-thick.svg'
                         text='Spaces'

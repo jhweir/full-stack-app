@@ -21,7 +21,7 @@ function CreatePostModal() {
         createPostFromTurnData,
         setCreatePostFromTurnData
     } = useContext(AccountContext)
-    const { holonData, getHolonPosts } = useContext(HolonContext)
+    const { holonData, getHolonData, getHolonPosts } = useContext(HolonContext)
     const { setPostId } = useContext(PostContext)
 
     const [postType, setPostType] = useState('Url')
@@ -142,7 +142,10 @@ function CreatePostModal() {
                     if (res.data === 'success') {
                         setCreatePostModalOpen(false)
                         resetForm()
-                        setTimeout(() => { getHolonPosts() }, 300)
+                        setTimeout(() => {
+                            getHolonData()
+                            getHolonPosts()
+                        }, 300)
                     }
                 })
         }

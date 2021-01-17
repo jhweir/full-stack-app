@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import styles from '../../styles/components/CommentCardComment.module.scss'
 import { AccountContext } from '../../contexts/AccountContext'
 import SmallFlagImage from '../../components/SmallFlagImage'
-import DeleteCommentModal from '../../components/Modals/DeleteCommentModal'
+import DeleteItemModal from '../../components/Modals/DeleteItemModal'
 import { timeSinceCreated, dateCreated } from '../../GlobalFunctions'
 
 function CommentCardComment(props) {
@@ -68,12 +68,14 @@ function CommentCardComment(props) {
                 </div>
             </div>
             {deleteCommentModalOpen &&
-                <DeleteCommentModal
-                    commentId={comment.id}
-                    totalComments={totalComments}
-                    setTotalComments={setTotalComments}
-                    getPostComments={getPostComments}
-                    setDeleteCommentModalOpen={setDeleteCommentModalOpen}
+                <DeleteItemModal
+                    text='Are you sure you want to delete your comment?'
+                    endpoint='delete-comment'
+                    itemId={comment.id}
+                    totalItems={totalComments}
+                    setTotalItems={setTotalComments}
+                    getItems1={getPostComments}
+                    setDeleteItemModalOpen={setDeleteCommentModalOpen}
                 />
             }
         </div>

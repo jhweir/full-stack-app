@@ -33,6 +33,7 @@
     }
 }
 .index {
+    width: 10px;
     margin-right: 20px;
     display: flex;
     flex-direction: row;
@@ -45,7 +46,7 @@
     }
 }
 .body {
-    width: 100%;
+    width: calc(100% - 30px);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -109,6 +110,14 @@
     //color: #888;
     opacity: 0.6;
     margin-right: 7px;
+}
+.delete {
+    font-size: 14px;
+    margin-left: 10px;
+    opacity: 0.6;
+    &:hover {
+        cursor: pointer;
+    }
 }
 .content {
     width: 100%;

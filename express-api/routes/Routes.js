@@ -289,9 +289,9 @@ router.get('/holon-posts', (req, res) => {
         }]
     })
     .then(posts => {
-        console.log('posts.length: ', posts.length)
-        console.log('Number(limit): ', Number(limit))
-        console.log('Number(offset): ', Number(offset))
+        // console.log('posts.length: ', posts.length)
+        // console.log('Number(limit): ', Number(limit))
+        // console.log('Number(offset): ', Number(offset))
         // Add account reaction data to post attributes
         let mainAttributes = [
             ...postAttributes,
@@ -1153,13 +1153,13 @@ router.get('/post-data', (req, res) => {
         ]
     ]
     Post.findOne({ 
-        where: { id: postId },
+        where: { id: postId, state: 'visible' },
         attributes: attributes,
         include: [
             { 
                 model: User,
                 as: 'creator',
-                attributes: ['handle', 'name', 'flagImagePath']
+                attributes: ['id', 'handle', 'name', 'flagImagePath']
             },
             {
                 model: Holon,
@@ -1571,9 +1571,13 @@ router.post('/create-post', (req, res) => {
 
 router.delete('/delete-post', (req, res) => {
     // TODO: endpoints like this are currently unsafe/open to anyone. include authenticate middleware.
-    const { postId } = req.body
-    Post.update({ state: 'hidden' }, { where: { id: postId } })
-    // Post.destroy({ where: { id: req.body.id }})
+    const { itemId } = req.body
+    Post
+        .update({ state: 'hidden' }, { where: { id: itemId } })
+        .then(res.send('success'))
+        .catch((error) => {
+            console.error(error)
+        })
 })
 
 router.post('/repost-post', (req, res) => {
@@ -1906,9 +1910,10 @@ router.post('/submit-comment', (req, res) => {
 
 router.delete('/delete-comment', (req, res) => {
     // TODO: endpoints like this are currently unsafe/open to anyone. include authenticate middleware.
-    const { commentId } = req.body
+    const { itemId } = req.body
+
     Comment
-        .update({ state: 'hidden' }, { where: { id: commentId } })
+        .update({ state: 'hidden' }, { where: { id: itemId } })
         .then(res.send('success'))
         .catch((error) => {
             console.error(error)
@@ -2196,7 +2201,6 @@ router.post('/resend-verification-email', async (req, res) => {
         })
 })
 
-// TODO: remove camel casing
 router.post('/follow-space', (req, res) => {
     const { holonId, userId } = req.body
     HolonUser
