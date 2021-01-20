@@ -37,3 +37,8 @@ export const dateCreated = (createdAt) => {
     let dateCreated = d[4]+':'+d[5]+' on '+d[2]+' '+d[1]+' '+d[3]
     return dateCreated
 }
+
+export const resizeTextArea = (target) => {
+    target.style.height = ''
+    target.style.height = target.scrollHeight + 'px'
+}

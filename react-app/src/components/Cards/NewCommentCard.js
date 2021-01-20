@@ -6,6 +6,7 @@ import { AccountContext } from '../../contexts/AccountContext'
 import { HolonContext } from '../../contexts/HolonContext'
 import SmallFlagImage from '../../components/SmallFlagImage'
 import CommentCardComment from './CommentCardComment'
+import { resizeTextArea } from '../../GlobalFunctions'
 
 function NewCommentCard(props) {
     const { comment, totalComments, setTotalComments, getPostComments } = props
@@ -92,8 +93,9 @@ function NewCommentCard(props) {
                             onChange={(e) => {
                                 setNewReply(e.target.value)
                                 setNewReplyError(false)
-                                e.target.style.height = ''
-                                e.target.style.height = e.target.scrollHeight + 'px'
+                                resizeTextArea(e.target)
+                                // e.target.style.height = ''
+                                // e.target.style.height = e.target.scrollHeight + 'px'
                             }}
                         />
                         <button className={styles.button}>Reply</button>

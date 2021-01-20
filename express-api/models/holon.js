@@ -20,12 +20,6 @@ module.exports = (sequelize, DataTypes) => {
       as: 'DirectChildHolons',
       foreignKey: 'holonAId'
     })
-    // Holon.belongsToMany(models.Holon, {
-    //   through: models.VerticalHolonRelationship,
-    //   as: 'children',
-    //   foreignKey: 'holonAId'
-    // })
-    // HolonTags relationship
     Holon.belongsToMany(models.Holon, {
       through: models.HolonHandle,
       as: 'A', // ?

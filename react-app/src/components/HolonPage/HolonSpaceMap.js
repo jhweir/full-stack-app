@@ -22,46 +22,6 @@ function HolonSpaceMap() {
             .then(res => setSpaceMapData(res.data))
     }
 
-    const data = {
-        name: 'all',
-        children: [
-            {
-                name: 'science',
-                children: [
-                    {
-                        name: 'biology',
-                        //children: []
-                    },
-                    {
-                        name: 'physics',
-                        //children: []
-                    },
-                    {
-                        name: 'chemistry',
-                        //children: []
-                    }
-                ]
-            },
-            {
-                name: 'art',
-                children: [
-                    {
-                        name: 'painting',
-                        //children: []
-                    },
-                    {
-                        name: 'drawing',
-                        //children: []
-                    }
-                ]
-            },
-            {
-                name: 'technology',
-                //children: []
-            }
-        ]
-    }
-
     useEffect(() => {
         getSpaceMapData()
     },[holonData.id])
@@ -154,6 +114,10 @@ function HolonSpaceMap() {
             // console.log('tree: ', tree)
             console.log('root: ', root)
 
+            // .join("path")
+            // .attr("d", d3.linkRadial()
+            //     .angle(d => d.x)
+            //     .radius(d => d.y));
 
 
             let childrenAtEachDepth = []
@@ -246,6 +210,8 @@ function HolonSpaceMap() {
                 .selectAll('.link')
                 .data(root.descendants().slice(1))
                 .enter()
+                // .join("path")
+                // .attr("d", d3.linkRadial());
                 .append('path')
                 .attr("class", "link")
                 .attr('stroke', 'black')

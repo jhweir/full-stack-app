@@ -49,6 +49,7 @@ function HolonPageSideBarLeft() {
                     imagePath={holonData.flagImagePath}
                     type='space'
                     canEdit={isModerator}
+                    yOffset={-110}
                 />
                 <div className={styles.name}>{ holonData.name }</div>
                 <div className={styles.navButtons}>
@@ -64,13 +65,6 @@ function HolonPageSideBarLeft() {
                         text='Moderator'
                         marginBottom={5}
                     />} */}
-                    <SideBarButton
-                        icon='book-open-solid.svg'
-                        text='About'
-                        url='about'
-                        selected={selectedHolonSubPage === 'about'}
-                        marginBottom={5}
-                    />
                     {isModerator && <SideBarButton
                         icon='cog-solid.svg'
                         text='Settings'
@@ -79,12 +73,11 @@ function HolonPageSideBarLeft() {
                         marginBottom={5}
                     />}
                     <SideBarButton
-                        icon='overlapping-circles-thick.svg'
-                        text='Spaces'
-                        url='spaces'
-                        selected={selectedHolonSubPage === 'spaces'}
+                        icon='book-open-solid.svg'
+                        text='About'
+                        url='about'
+                        selected={selectedHolonSubPage === 'about'}
                         marginBottom={5}
-                        total={holonData.total_spaces}
                     />
                     <SideBarButton
                         icon='edit-solid.svg'
@@ -95,6 +88,14 @@ function HolonPageSideBarLeft() {
                         total={holonData.total_posts}
                     />
                     <SideBarButton
+                        icon='overlapping-circles-thick.svg'
+                        text='Spaces'
+                        url='spaces'
+                        selected={selectedHolonSubPage === 'spaces'}
+                        marginBottom={5}
+                        total={holonData.total_spaces}
+                    />
+                    <SideBarButton
                         icon='users-solid.svg'
                         text={holonData.handle === 'all' ? 'Users' : 'Followers'}
                         url='users'
@@ -103,7 +104,7 @@ function HolonPageSideBarLeft() {
                         total={holonData.total_users}
                     />
                 </div>
-                <div className={styles.description}>{holonData.description}</div>
+                {/* <div className={styles.description}>{holonData.description}</div> */}
             </div>
         )
     } else { return null } //add side bar placeholder here? {/* <HolonPageSideBarLeftPlaceholder/> */}

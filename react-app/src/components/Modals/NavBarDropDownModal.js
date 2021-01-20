@@ -27,6 +27,12 @@ function NavBarDropDownModal() {
                         <img className={styles.linkIcon} src={`/icons/cog-solid.svg`}/>
                         <span className={styles.linkText}>Settings</span>
                     </Link>
+                    <Link to={`/u/${accountData.handle}/about`}
+                        className={styles.link}
+                        onClick={() => { setNavBarDropDownModalOpen(false); setUserHandle(accountData.handle) }}>
+                        <img className={styles.linkIcon} src={`/icons/book-open-solid.svg`}/>
+                        <span className={styles.linkText}>About</span>
+                    </Link>
                     <Link to={`/u/${accountData.handle}/notifications`}
                         className={styles.link}
                         onClick={() => { setNavBarDropDownModalOpen(false); setUserHandle(accountData.handle) }}>
@@ -41,12 +47,6 @@ function NavBarDropDownModal() {
                         onClick={() => { setNavBarDropDownModalOpen(false); setUserHandle(accountData.handle) }}>
                         <img className={styles.linkIcon} src={`/icons/envelope-solid.svg`}/>
                         <span className={styles.linkText}>Messages</span>
-                    </Link>
-                    <Link to={`/u/${accountData.handle}/about`}
-                        className={styles.link}
-                        onClick={() => { setNavBarDropDownModalOpen(false); setUserHandle(accountData.handle) }}>
-                        <img className={styles.linkIcon} src={`/icons/book-open-solid.svg`}/>
-                        <span className={styles.linkText}>About</span>
                     </Link>
                     <Link to={`/u/${accountData.handle}/posts`}
                         className={styles.link}

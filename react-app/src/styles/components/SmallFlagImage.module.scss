@@ -1,3 +1,4 @@
+
 .flagImageWrapper {
     border-radius: 50%;
     background-color: rgba(255, 255, 255, 1);
@@ -6,6 +7,9 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    &.outline {
+        border: 2px solid white;
+    }
 }
 .flagImage {
     width: 100%;
@@ -26,7 +30,10 @@
 .placeholder {
     width: 60%;
     opacity: 0.2;
-    &.user {
+    &.medium {
         width: 50%;
+    }
+    &.small {
+        width: 45%;
     }
 }

@@ -1,25 +1,39 @@
 import React, { useContext, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import styles from '../styles/pages/HomePage.module.scss'
 import { AccountContext } from '../contexts/AccountContext'
+import { HolonContext } from '../contexts/HolonContext'
+import SmallFlagImage from '../components/SmallFlagImage'
+import { Router } from 'react-router-dom'
 
 function Homepage() {
-    const { setAlertMessage, setAlertModalOpen, setResetPasswordModalOpen, setResetPasswordModalToken } = useContext(AccountContext)
+    const { accountContextLoading, setAlertMessage, setAlertModalOpen, setResetPasswordModalOpen, setResetPasswordModalToken } = useContext(AccountContext)
+    const { holonHandle, setHolonHandle, holonData, getHolonHighlights, holonHighlights } = useContext(HolonContext)
     const urlParams = new URLSearchParams(window.location.search)
     const alert = urlParams.get('alert')
 
-    useEffect(() => {
+    function showRedirectAlerts() {
         if (alert === 'email-verified') {
             setAlertMessage('Success! Your email has been verified. Log in to start using your account.')
             setAlertModalOpen(true)
         }
         if (alert === 'reset-password') {
-            //console.log('token: ', urlParams.get('token'))
             setResetPasswordModalOpen(true)
             setResetPasswordModalToken(urlParams.get('token'))
-            // setAlertMessage(`Reset your password. Token: ${urlParams.get('token')}`)
-            // setAlertModalOpen(true)
         }
+    }
+
+    useEffect(() => {
+        showRedirectAlerts()
     }, [])
+
+    useEffect(() => {
+        if (!accountContextLoading) setHolonHandle('all')
+    }, [accountContextLoading])
+
+    useEffect(() => {
+        if (holonData.id) getHolonHighlights()
+    }, [holonData.id])
 
     return (
         <div className={styles.homePage}>
@@ -35,10 +49,101 @@ function Homepage() {
                     <span className={styles.underConstructionText}>under construction...</span>
                     <img className={styles.icon} src='/icons/tools-solid.svg'/>
                 </div>
+                {holonHighlights &&
+                    <div className={styles.stats}>
+                        <div className={styles.stat}>
+                            <Link className={styles.statText} to={'/s/all/posts'}>
+                                {`${holonData.total_posts} Posts`}
+                            </Link>
+                            <div style={{ zIndex: 3 }}>
+                                <SmallFlagImage
+                                    type='post'
+                                    size={45}
+                                    outline
+                                    imagePath={holonHighlights.TopPosts[0] && holonHighlights.TopPosts[0].urlImage}
+                                />
+                            </div>
+                            <div style={{ marginLeft: -10, zIndex: 2 }}>
+                                <SmallFlagImage
+                                    type='post'
+                                    size={45}
+                                    outline
+                                    imagePath={holonHighlights.TopPosts[1] && holonHighlights.TopPosts[1].urlImage}
+                                />
+                            </div>
+                            <div style={{ marginLeft: -10, zIndex: 1 }}>
+                                <SmallFlagImage
+                                    type='post'
+                                    size={45}
+                                    outline
+                                    imagePath={holonHighlights.TopPosts[2] && holonHighlights.TopPosts[2].urlImage}
+                                />
+                            </div>
+                        </div>
+                        <div className={styles.stat}>
+                            <Link className={styles.statText} to={'/s/all/spaces'}>
+                                {`${holonData.total_spaces} Spaces`}
+                            </Link>
+                            <div style={{ zIndex: 3 }}>
+                                <SmallFlagImage
+                                    type='space'
+                                    size={45}
+                                    outline
+                                    imagePath={holonHighlights.TopSpaces[0] && holonHighlights.TopSpaces[0].flagImagePath}
+                                />
+                            </div>
+                            <div style={{ marginLeft: -10, zIndex: 2 }}>
+                                <SmallFlagImage
+                                    type='space'
+                                    size={45}
+                                    outline
+                                    imagePath={holonHighlights.TopSpaces[1] && holonHighlights.TopSpaces[1].flagImagePath}
+                                />
+                            </div>
+                            <div style={{ marginLeft: -10, zIndex: 1 }}>
+                                <SmallFlagImage
+                                    type='space'
+                                    size={45}
+                                    outline
+                                    imagePath={holonHighlights.TopSpaces[2] && holonHighlights.TopSpaces[2].flagImagePath}
+                                />
+                            </div>
+                        </div>
+                        <div className={styles.stat}>
+                            <Link className={styles.statText} to={'/s/all/users'}>
+                                {`${holonData.total_users} Users`}
+                            </Link>
+                            <div style={{ zIndex: 3 }}>
+                                <SmallFlagImage
+                                    type='user'
+                                    size={45}
+                                    outline
+                                    imagePath={holonHighlights.TopUsers[0] && holonHighlights.TopUsers[0].flagImagePath}
+                                />
+                            </div>
+                            <div style={{ marginLeft: -10, zIndex: 2 }}>
+                                <SmallFlagImage
+                                    type='user'
+                                    size={45}
+                                    outline
+                                    imagePath={holonHighlights.TopUsers[1] && holonHighlights.TopUsers[1].flagImagePath}
+                                />
+                            </div>
+                            <div style={{ marginLeft: -10, zIndex: 1 }}>
+                                <SmallFlagImage
+                                    type='user'
+                                    size={45}
+                                    outline
+                                    imagePath={holonHighlights.TopUsers[2] && holonHighlights.TopUsers[2].flagImagePath}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                }
             </div>
-            <div className={styles.waves}>
+            {/* <div className={styles.waves}>
                 <img className={styles.backgroundWave} src='/images/wave.svg'/>
-            </div>
+            </div> */}
             <div className={styles.section2}>
                 <div className={styles.list}>
                     <span className={`${styles.largeText} mb-10`}>Working features</span>

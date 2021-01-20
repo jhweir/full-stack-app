@@ -38,17 +38,17 @@ function NavBar() {
                         {/* <img className={styles.navBarIcon} src="/icons/home-solid.svg" alt=''/> */}
                         <div className={`${styles.navBarText} ${selectedNavBarItem === 'home' && styles.selected}`}>Home</div>
                     </Link>
-                    <Link to="/s/all/spaces"
-                        className={styles.navBarLink}
-                        onClick={() => { setSelectedNavBarItem('spaces'); setHolonHandle('all') }}>
-                        {/* <img className={styles.navBarIcon} src="/icons/overlapping-circles-thick.svg" alt=''/> */}
-                        <div className={`${styles.navBarText} ${selectedNavBarItem === 'spaces' && styles.selected}`}>Spaces</div>
-                    </Link>
                     <Link to="/s/all"
                         className={styles.navBarLink}
                         onClick={() => { setSelectedNavBarItem('posts'); setHolonHandle('all') }}>
                         {/* <img className={styles.navBarIcon} src="/icons/edit-solid.svg" alt=''/> */}
                         <div className={`${styles.navBarText} ${selectedNavBarItem === 'posts' && styles.selected}`}>Posts</div>
+                    </Link>
+                    <Link to="/s/all/spaces"
+                        className={styles.navBarLink}
+                        onClick={() => { setSelectedNavBarItem('spaces'); setHolonHandle('all') }}>
+                        {/* <img className={styles.navBarIcon} src="/icons/overlapping-circles-thick.svg" alt=''/> */}
+                        <div className={`${styles.navBarText} ${selectedNavBarItem === 'spaces' && styles.selected}`}>Spaces</div>
                     </Link>
                     <Link to="/s/all/users"
                         className={styles.navBarLink}

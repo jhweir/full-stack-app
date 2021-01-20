@@ -84,17 +84,6 @@ function PostCard(props) {
         setBlockedSpaces([...DirectSpaces.map(s => s.handle), ...IndirectSpaces.map(s => s.handle)])
     }
 
-    function deletePost() {
-        console.log('PostCard: deletePost')
-        axios.delete(config.apiURL + '/delete-post', { data: { postId: id } })
-            .then(setTimeout(() => { 
-                if (location === 'holon-posts') { getHolonPosts() }
-                if (location === 'user-created-posts') { getCreatedPosts() }
-                if (location === 'post-page') { history.push('/s/all') }
-            }, 200))
-            .catch(error => { console.log(error) })
-    }
-
     function createPostFromTurn() {
         if (isLoggedIn) {
             let data = {
@@ -144,8 +133,6 @@ function PostCard(props) {
                         </div>
                         <span className={styles.subText}>|</span>
                         <Link to={`/p/${id}`} className={styles.link} onClick={() => setSelectedNavBarItem('')}>
-                            
-                            
                             <img className={styles.linkIcon} src={'/icons/link-solid.svg'} alt=''/>
                             <span className={styles.subText} title={dateCreated(createdAt)}>
                                 {timeSinceCreated(createdAt)}

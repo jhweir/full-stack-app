@@ -6,6 +6,7 @@ import { AccountContext } from '../../contexts/AccountContext'
 import { UserContext } from '../../contexts/UserContext'
 import { HolonContext } from '../../contexts/HolonContext'
 import styles from '../../styles/components/SettingModal.module.scss'
+import { resizeTextArea } from '../../GlobalFunctions'
 
 function SettingModal() {
     const { settingModalType, setSettingModalOpen, accountData, getAccountData, setAccountContextLoading } = useContext(AccountContext)
@@ -152,9 +153,9 @@ function SettingModal() {
                         <textarea 
                             className={`wecoInput mb-10 mr-10 ${error && 'error'}`}
                             style={{ height:'auto', paddingTop:10 }}
-                            placeholder="Description" rows="3"
+                            placeholder="Description" rows="1"
                             type="text" value={newValue}
-                            onChange={(e) => { setNewValue(e.target.value); setError(false) }}
+                            onChange={(e) => { setNewValue(e.target.value); setError(false); resizeTextArea(e.target) }}
                         />
                     }
                     <button className="wecoButton">Update</button>

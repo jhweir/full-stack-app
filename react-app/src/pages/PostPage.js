@@ -39,12 +39,12 @@ function PostPage({ match, location }) {
                 {postData.type === 'poll' && <PageSectionSelector url={url} pathname={pathname}/>}
                 <Switch>
                     {/* {!postContextLoading && postData.type !== 'prism' && */}
-                        <Redirect from={`${url}`} to={`${url}/comments`} exact/>
+                        {/* <Redirect from={`${url}`} to={`${url}/comments`} exact/> */}
                     {/* } */}
-                    <Route path={`${url}/comments`} render={() => <PostPageComments/>} exact/>
+                    {/* <Route path={`${url}/comments`} render={() => <PostPageComments/>} exact/> */}
                     <Route path={`${url}/vote`} render={() => <PostPagePollVote/>} exact />
                     <Route path={`${url}/results`} render={() => <PostPagePollResults/>} exact />
-                    <Route component={ EmptyPage }/>
+                    {/* <Route component={ EmptyPage }/> */}
                 </Switch> 
             </div>
         )

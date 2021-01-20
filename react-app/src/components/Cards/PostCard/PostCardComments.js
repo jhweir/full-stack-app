@@ -6,6 +6,7 @@ import { AccountContext } from '../../../contexts/AccountContext'
 import { HolonContext } from '../../../contexts/HolonContext'
 import NewCommentCard from '../../Cards/NewCommentCard'
 import SmallFlagImage from '../../../components/SmallFlagImage'
+import { resizeTextArea } from '../../../GlobalFunctions'
 
 function PostCardComments(props) {
     const { postId, totalComments, setTotalComments } = props
@@ -71,18 +72,9 @@ function PostCardComments(props) {
         }
     }
 
-    function resizeTextArea(target) {
-        target.style.height = ''
-        target.style.height = target.scrollHeight + 'px'
-    }
-
     useEffect(() => {
         getPostComments()
     }, [])
-
-    useEffect(() => {
-        console.log('postComments: ', postComments)
-    }, [postComments])
 
     return (
         <div className={styles.wrapper}>

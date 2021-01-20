@@ -10,6 +10,7 @@ function HolonContextProvider({ children }) {
 
     const [holonHandle, setHolonHandle] = useState('')
     const [holonData, setHolonData] = useState({ DirectChildHolons: [], DirectParentHolons: [], HolonHandles: [] })
+    const [holonHighlights, setHolonHighlights] = useState(null)
     const [isFollowing, setIsFollowing] = useState(false)
     const [isModerator, setIsModerator] = useState(false)
     const [selectedHolonSubPage, setSelectedHolonSubPage] = useState('')
@@ -22,7 +23,7 @@ function HolonContextProvider({ children }) {
     const [holonPostFiltersOpen, setHolonPostFiltersOpen] = useState(false)
     const [holonPostTimeRangeFilter, setHolonPostTimeRangeFilter] = useState('All Time')
     const [holonPostTypeFilter, setHolonPostTypeFilter] = useState('All Types')
-    const [holonPostSortByFilter, setHolonPostSortByFilter] = useState('Likes')
+    const [holonPostSortByFilter, setHolonPostSortByFilter] = useState('Date')
     const [holonPostSortOrderFilter, setHolonPostSortOrderFilter] = useState('Descending')
     const [holonPostDepthFilter, setHolonPostDepthFilter] = useState('All Contained Posts')
     const [holonPostSearchFilter, setHolonPostSearchFilter] = useState('')
@@ -63,6 +64,15 @@ function HolonContextProvider({ children }) {
             .then(res => { setHolonData(res.data); setHolonContextLoading(false) })
     }
 
+    function getHolonHighlights() {
+        console.log('HolonContext: getHolonHighlights')
+        axios.get(config.apiURL + `/holon-highlights?id=${holonData.id}`)
+            .then(res => {
+                //console.log('res: ', res.data)
+                setHolonHighlights(res.data)
+            })
+    }
+
     function getHolonPosts() {
         console.log(`HolonContext: getHolonPosts (0 to ${holonPostPaginationLimit})`)
         setHolonPostPaginationHasMore(true)
@@ -86,7 +96,7 @@ function HolonContextProvider({ children }) {
     }
 
     function getNextHolonPosts() {
-        if (holonPostPaginationHasMore) {
+        if (holonPosts.length && holonPostPaginationHasMore) {
             console.log(`HolonContext: getNextHolonPosts (${holonPostPaginationOffset} to ${holonPostPaginationOffset + holonPostPaginationLimit})`)
             axios.get(config.apiURL + 
                 `/holon-posts?accountId=${isLoggedIn ? accountData.id : null
@@ -221,7 +231,7 @@ function HolonContextProvider({ children }) {
         setHolonPostFiltersOpen(false)
         setHolonPostTimeRangeFilter('All Time')
         setHolonPostTypeFilter('All Types')
-        setHolonPostSortByFilter('Likes')
+        setHolonPostSortByFilter('Date')
         setHolonPostSortOrderFilter('Descending')
         setHolonPostDepthFilter('All Contained Posts')
         setHolonPostSearchFilter('')
@@ -283,6 +293,7 @@ function HolonContextProvider({ children }) {
             holonContextLoading, setHolonContextLoading,
             holonHandle, setHolonHandle,
             holonData, setHolonData,
+            holonHighlights, setHolonHighlights,
             isFollowing, setIsFollowing,
             isModerator, setIsModerator,
             selectedHolonSubPage, setSelectedHolonSubPage,
@@ -328,6 +339,7 @@ function HolonContextProvider({ children }) {
 
             // functions
             getHolonData,
+            getHolonHighlights,
             getHolonPosts, getNextHolonPosts, getAllHolonPosts,
             getHolonSpaces, getNextHolonSpaces,
             getHolonUsers, getNextHolonUsers,

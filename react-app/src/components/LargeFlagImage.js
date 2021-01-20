@@ -3,7 +3,7 @@ import { AccountContext } from '../contexts/AccountContext'
 import styles from '../styles/components/LargeFlagImage.module.scss'
 
 function LargeFlagImage(props) {
-    const { size, imagePath, canEdit, type } = props
+    const { size, imagePath, canEdit, type, yOffset } = props
     const { setImageUploadType, setImageUploadModalOpen } = useContext(AccountContext)
 
     let iconPath, imageUploadType
@@ -11,7 +11,7 @@ function LargeFlagImage(props) {
     if (type === 'user') { iconPath = '/icons/user-solid.svg'; imageUploadType = 'user-flag-image' }
 
     return (
-        <div className={styles.flagImageWrapper} style={{ width: size, height: size }}>
+        <div className={styles.flagImageWrapper} style={{ width: size, height: size, top: yOffset }}>
             {imagePath === null ?
                 <div className={styles.placeholderWrapper}>
                     <img className={styles.placeholder} src={iconPath} alt='' style={{ width: type === 'user' && '50%' }}/>

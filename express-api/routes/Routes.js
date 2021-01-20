@@ -138,8 +138,63 @@ router.get('/holon-data', (req, res) => {
             }
         ]
     })
-    .then(data => { res.json(data) })
+    .then(holon => res.send(holon))
     .catch(err => console.log(err))
+})
+
+router.get('/holon-highlights', async (req, res) => {
+    const { id } = req.query
+
+    const TopPosts = Post.findAll({
+        subQuery: false,
+        where: { 
+            '$DirectSpaces.id$': id,
+            state: 'visible',
+            urlImage: { [Op.ne]: null }
+        },
+        order: [['createdAt', 'DESC']],
+        limit: 3,
+        attributes: ['id', 'urlImage'],
+        include: [{ 
+            model: Holon,
+            as: 'DirectSpaces',
+            attributes: []
+        }]
+    })
+
+    const TopSpaces = Holon.findAll({
+        subQuery: false,
+        where: {
+            '$HolonHandles.id$': id,
+            id: { [Op.ne]: [id] }
+        },
+        limit: 3,
+        attributes: ['handle', 'flagImagePath'],
+        include: [{ 
+            model: Holon,
+            as: 'HolonHandles',
+            attributes: [],
+            through: { attributes: [] }
+        }]
+    })
+
+    const TopUsers = User.findAll({
+        where: {
+            emailVerified: true,
+            flagImagePath: { [Op.ne]: null }
+        },
+        limit: 3,
+        order: [['createdAt', 'DESC']],
+        attributes: ['handle', 'flagImagePath']
+    })
+
+    Promise
+        .all([TopPosts, TopSpaces, TopUsers])
+        .then(data => {
+            res.send({ TopPosts: data[0], TopSpaces: data[1], TopUsers: data[2]})
+        })
+
+    //res.send({ TopUsers })
 })
 
 router.get('/holon-posts', (req, res) => {

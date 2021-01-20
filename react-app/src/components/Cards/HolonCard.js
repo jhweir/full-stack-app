@@ -1,6 +1,7 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect, useState, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { HolonContext } from '../../contexts/HolonContext'
+import LargeFlagImage from '../LargeFlagImage'
 import styles from '../../styles/components/HolonCard.module.scss'
 
 function HolonCard(props) {
@@ -10,6 +11,7 @@ function HolonCard(props) {
         name,
         description,
         flagImagePath,
+        coverImagePath,
         total_followers,
         total_posts,
         total_comments,
@@ -21,31 +23,50 @@ function HolonCard(props) {
 
     const { setHolonHandle } = useContext(HolonContext)
 
+    const [descriptionOverflow, setDescriptionOverflow] = useState(false)
+    const [showFullDescription, setShowFullDescription] = useState(false)
+
+    const descriptionRef = useRef()
+
+    useEffect(() => {
+        if (descriptionRef.current && descriptionRef.current.scrollHeight > 40) {
+            setDescriptionOverflow(true)
+        } else {
+            setDescriptionOverflow(false)
+        }
+    }, [props])
+
     return (
-        <div className={styles.holonCard}>
-            <div className={styles.index}>{ props.index + 1 }</div>
-            <Link className={styles.flagImage}
-                to={ `/s/${handle}` }
-                onClick={ () => { setHolonHandle(handle) } }>
-                    {flagImagePath === null
-                        ? <div className={styles.flagImagePlaceholderWrapper}>
-                            <img className={styles.flagImagePlaceholder} src='/icons/users-solid.svg' alt=''/>
+        <div className={styles.wrapper}>
+            {/* <div className={styles.index}>{ props.index + 1 }</div> */}
+            <div className={styles.content}>
+                <div className={styles.coverImage}
+                    style={{ backgroundImage: `${coverImagePath ? 'url(' + coverImagePath + ')' : 'linear-gradient(141deg, #9fb8ad 0%, #1fc8db 51%, #2cb5e8 75%'}` }}>
+                        <div className={styles.coverImageFade}>
+                        <Link to={ `/s/${handle}` }
+                            className={styles.flagImage}
+                            onClick={ () => { setHolonHandle(handle) } }>
+                                <LargeFlagImage
+                                    size={150}
+                                    imagePath={flagImagePath}
+                                    type='space'
+                                    canEdit={false}
+                                />
+                        </Link>
+                        <div className={styles.nameWrapper}>
+                            <Link to={`/s/${handle}`}
+                                onClick={() => setHolonHandle(handle)}>
+                                <span className={styles.name}>{ name }</span>
+                            </Link>
+                            <span className={styles.handle}>{ `s/${handle}` }</span>
                         </div>
-                        : <img className={styles.flagImage} src={flagImagePath} alt=''/>
-                    }
-            </Link>
-            <div className={styles.info}>
-                <Link className={styles.title}
-                    to={ `/s/${handle}` }
-                    onClick={ () => { setHolonHandle(handle) } }>
-                    { name }
-                </Link>
-                <span className={styles.description}>{description}</span>
-                <div className={styles.stat}>
-                    <img className={styles.statIcon} src="/icons/users-solid.svg" alt=''/>
-                    <span>{ total_followers } Followers</span>
+                    </div>
                 </div>
                 <div className={styles.stats}>
+                    <div className={styles.stat}>
+                        <img className={styles.statIcon} src="/icons/users-solid.svg" alt=''/>
+                        <span>{ total_followers } Followers</span>
+                    </div>
                     <div className={styles.stat}>
                         <img className={styles.statIcon} src="/icons/edit-solid.svg" alt=''/>
                         <span>{ total_posts } Posts</span>
@@ -58,18 +79,24 @@ function HolonCard(props) {
                         <img className={styles.statIcon} src="/icons/fire-alt-solid.svg" alt=''/>
                         <span>{ total_reactions } Reactions</span>
                     </div>
-                    {/* <div className={styles.stat}>
-                        <img className={styles.statIcon} src="/icons/thumbs-up-solid.svg" alt=''/>
-                        <span>{ total_likes } Likes</span>
-                    </div>
-                    <div className={styles.stat}>
-                        <img className={styles.statIcon} src="/icons/heart-solid.svg" alt=''/>
-                        <span>{ total_hearts } Hearts</span>
-                    </div>
-                    <div className={styles.stat}>
-                        <img className={styles.statIcon} src="/icons/star-solid.svg" alt=''/>
-                        <span>{ total_ratings } Ratings</span>
-                    </div> */}
+                </div>
+                <div className={styles.info}>
+                    {/* <Link className={styles.title}
+                        to={ `/s/${handle}` }
+                        onClick={ () => { setHolonHandle(handle) } }>
+                        { name }
+                    </Link> */}
+                    {/* <span className={styles.description}>{description}</span> */}
+                    <span ref={descriptionRef} className={`${styles.description} ${showFullDescription && styles.expanded}`}>
+                        { description }
+                    </span>
+                    {descriptionOverflow &&
+                        <span
+                            className={styles.showMoreLessText}
+                            onClick={() => setShowFullDescription(!showFullDescription)}>
+                            {showFullDescription ? 'Show less' : 'Show more'}
+                        </span>
+                    }
                 </div>
             </div>
         </div>

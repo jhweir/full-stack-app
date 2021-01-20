@@ -10,7 +10,7 @@ function CoverImage(props) {
         <div className={styles.coverImageWrapper}>
             {coverImagePath === null
                 ? <div className={styles.placeholder}/>
-                : <img className={styles.coverImage} src={coverImagePath}/>
+                : <div className={styles.coverImage} style={{ backgroundImage: `url(${coverImagePath})`}}/>//<img className={styles.coverImage} src={coverImagePath}/>
             }
             {canEdit &&
                 <div 

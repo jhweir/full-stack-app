@@ -95,7 +95,7 @@ function HolonPagePosts() {
                             <img className='wecoButtonIcon' src='/icons/eye-solid.svg'/>
                         </button> */}
                         <button className='wecoButton mr-10' onClick={() => openCreatePostModal()}>
-                            Create Post
+                            New Post
                         </button>
                     </div>
                     <Toggle leftText='List' rightText='Map' onClickFunction={toggleView} positionLeft={holonPostView === 'List' ? true : false}/>

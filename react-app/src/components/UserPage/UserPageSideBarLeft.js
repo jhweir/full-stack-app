@@ -18,17 +18,11 @@ function UserPageSideBarLeft() {
                 imagePath={userData.flagImagePath}
                 type='user'
                 canEdit={isOwnAccount}
+                yOffset={-110}
             />
             <div className={styles.userName}>{ userData.name }</div>
             <div className={styles.navButtons}>
                 {/* TODO: replace SideBarButton with actual content */}
-                <SideBarButton
-                    icon='book-open-solid.svg'
-                    text='About'
-                    url='about'
-                    selected={selectedUserSubPage === 'about'}
-                    marginBottom={5}
-                />
                 {isOwnAccount &&
                     <SideBarButton
                         icon='cog-solid.svg'
@@ -38,6 +32,13 @@ function UserPageSideBarLeft() {
                         marginBottom={5}
                     />
                 }
+                <SideBarButton
+                    icon='book-open-solid.svg'
+                    text='About'
+                    url='about'
+                    selected={selectedUserSubPage === 'about'}
+                    marginBottom={5}
+                />
                 {isOwnAccount && <>
                     <Link to={'notifications'}
                         className={`${styles.button} ${selectedUserSubPage === 'notifications' && styles.selected}`}
@@ -63,7 +64,7 @@ function UserPageSideBarLeft() {
                     selected={selectedUserSubPage === 'posts'}
                     marginBottom={5}
                 />
-                <span className={styles.bio}>{userData.bio}</span>
+                {/* <span className={styles.bio}>{userData.bio}</span> */}
             </div>
         </div>
     )
