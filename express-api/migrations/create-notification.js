@@ -17,7 +17,10 @@ module.exports = {
       type: {
         type: Sequelize.STRING
       },
-      holonId: {
+      holonAId: {
+        type: Sequelize.INTEGER
+      },
+      holonBId: {
         type: Sequelize.INTEGER
       },
       userId: {

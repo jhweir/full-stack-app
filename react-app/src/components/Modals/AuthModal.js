@@ -93,7 +93,7 @@ function AuthModal() {
                         setRegisterFlashMessage('Email already taken')
                         setNewEmailError(true)
                     }
-                    if (res.data === 'account-registered') { 
+                    if (res.data === 'success') { 
                         setRegisterFlashMessage("Success! We've sent you an email. Follow the instructions there to complete the registration process.")
                         setNewHandle(''); setNewName(''); setNewEmail(''); setNewPassword(''); setNewPasswordTwo('')
                     }

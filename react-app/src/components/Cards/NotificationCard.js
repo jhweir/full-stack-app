@@ -39,7 +39,47 @@ function NotificationCard(props) {
 
     return (
         <div className={`${styles.wrapper} ${seen && styles.seen}`}>
-            <div className={styles.index}>{ index + 1 }</div>
+            {/* <div className={styles.index}>{ index + 1 }</div> */}
+
+            {notification.type === 'welcome-message' &&
+                <div className={styles.content}>
+                    <div className={styles.iconWrapper}>
+                        <img className={styles.iconLarge} src='/icons/baby-solid.svg' alt=''/>
+                    </div>
+                    <div className={styles.info}>
+                        <div className={`${styles.text} mr-10`}>Account created</div>
+                        <img className={styles.checkIcon} src='/icons/check-circle-regular.svg' alt=''/>
+                        <div className={styles.text} title={dateCreated(notification.createdAt)}>
+                            | {timeSinceCreated(notification.createdAt)}
+                        </div>
+                    </div>
+                    <img
+                        className={styles.seenIcon}
+                        src={`/icons/${seen ? 'eye-solid.svg' : 'eye-slash-solid.svg'}`}
+                        onClick={() => toggleSeen()}
+                    />
+                </div>
+            }
+
+            {notification.type === 'email-verified' &&
+                <div className={styles.content}>
+                    <div className={styles.iconWrapper}>
+                        <img className={styles.icon} src='/icons/envelope-solid.svg' alt=''/>
+                    </div>
+                    <div className={styles.info}>
+                        <div className={`${styles.text} mr-10`}>Email verified</div>
+                        <img className={styles.checkIcon} src='/icons/check-circle-regular.svg' alt=''/>
+                        <div className={styles.text} title={dateCreated(notification.createdAt)}>
+                            | {timeSinceCreated(notification.createdAt)}
+                        </div>
+                    </div>
+                    <img
+                        className={styles.seenIcon}
+                        src={`/icons/${seen ? 'eye-solid.svg' : 'eye-slash-solid.svg'}`}
+                        onClick={() => toggleSeen()}
+                    />
+                </div>
+            }
             
             {notification.type === 'post-like' &&
                 <div className={styles.content}>
@@ -231,6 +271,41 @@ function NotificationCard(props) {
                         <div className={styles.text} title={dateCreated(notification.createdAt)}>
                             | {timeSinceCreated(notification.createdAt)}
                         </div>
+                    </div>
+                    <img
+                        className={styles.seenIcon}
+                        src={`/icons/${seen ? 'eye-solid.svg' : 'eye-slash-solid.svg'}`}
+                        onClick={() => toggleSeen()}
+                    />
+                </div>
+            }
+
+            {notification.type === 'parent-space-request' &&
+                <div className={styles.content}>
+                    <div className={styles.iconWrapper}>
+                        <img className={styles.iconLarge} src='/icons/overlapping-circles-thick.svg' alt=''/>
+                    </div>
+                    <div className={styles.info}>
+                        <Link className={styles.imageTextLink} to={`/u/${notification.triggerUser.handle}`} onClick={() => setUserHandle(notification.triggerUser.handle)}>
+                            <SmallFlagImage type='user' size={30} imagePath={notification.triggerUser.flagImagePath}/>
+                            <span>{accountData.id === notification.triggerUser.id ? 'You' : notification.triggerUser.name}</span>
+                        </Link>
+                        <div className={`${styles.text} mr-10`}>requested</div>
+                        <Link className={styles.imageTextLink} to={`/s/${notification.triggerSpace.handle}`}>
+                            <SmallFlagImage type='space' size={30} imagePath={notification.triggerSpace.flagImagePath}/>
+                            <span>{notification.triggerSpace.name}</span>
+                        </Link>
+                        <div className={`${styles.text} mr-10`}>become a child space of</div>
+                        <Link className={styles.imageTextLink} to={`/s/${notification.secondarySpace.handle}`}>
+                            <SmallFlagImage type='space' size={30} imagePath={notification.secondarySpace.flagImagePath}/>
+                            <span>{notification.secondarySpace.name}</span>
+                        </Link>
+                        <div className={styles.text} title={dateCreated(notification.createdAt)}>
+                            | {timeSinceCreated(notification.createdAt)}
+                        </div>
+                        {/* <div className={}>
+                            Accept
+                        </div> */}
                     </div>
                     <img
                         className={styles.seenIcon}

@@ -1,74 +1,107 @@
-import React, { useContext } from 'react'
-import { Link } from 'react-router-dom'
+import React, { useContext, useState, useRef } from 'react'
 import axios from 'axios'
 import config from '../../Config'
 import styles from '../../styles/components/CommentCard.module.scss'
 import { AccountContext } from '../../contexts/AccountContext'
-import { PostContext } from '../../contexts/PostContext'
+import { HolonContext } from '../../contexts/HolonContext'
+import SmallFlagImage from '../../components/SmallFlagImage'
+import CommentCardComment from './CommentCardComment'
+import { resizeTextArea } from '../../GlobalFunctions'
 
 function CommentCard(props) {
-    const { index, comment } = props
-    const { postId, creator, text, createdAt } = comment
-    const { accountData, isLoggedIn } = useContext(AccountContext)
-    const { getPostData, getPostComments } = useContext(PostContext)
+    const { comment, totalComments, setTotalComments, getPostComments } = props
+    const { accountData, isLoggedIn, setAlertModalOpen, setAlertMessage } = useContext(AccountContext)
+    const { holonData } = useContext(HolonContext)
 
-    const isOwnComment = accountData.id === creator.id
+    const [replyInputOpen, setReplyInputOpen] = useState(false)
+    const [newReply, setNewReply] = useState('')
+    const [newReplyError, setNewReplyError] = useState(false)
 
-    function reply() {
-        //...
+    const replyInput = useRef()
+
+    function openReplyInput() {
+        if (isLoggedIn) {
+            Promise
+                .all([setReplyInputOpen(!replyInputOpen)])
+                .then(() => {
+                    if (!replyInputOpen) {
+                        const yOffset = (window.screen.height / 2.3)
+                        const top = replyInput.current.getBoundingClientRect().top + window.pageYOffset - yOffset
+                        window.scrollTo({ top, behavior: 'smooth' });
+                    }
+                })
+        }
+        else { setAlertModalOpen(true); setAlertMessage('Log in to reply') }
     }
 
-    function deleteComment() {
-        axios.delete(config.apiURL  + '/delete-comment', { data: { commentId: comment.id } })
-            .then(setTimeout(() => { getPostData(); getPostComments() }, 200))
-            .catch(error => { console.log(error) })
-    }
-
-    function formatDate() {
-        const t = createdAt.split(/[-.T :]/)
-        let formattedDate = t[3]+':'+t[4]+' on '+t[2]+'-'+t[1]+'-'+t[0]
-        return formattedDate
+    function submitReply(e) {
+        e.preventDefault()
+        const invalidReply = newReply.length < 1 || newReply.length > 10000
+        if (invalidReply) { setNewReplyError(true) }
+        else {
+            axios
+                .post(config.apiURL + '/submit-reply', { 
+                    accountId: accountData.id,
+                    accountHandle: accountData.handle,
+                    accountName: accountData.name,
+                    holonId: window.location.pathname.includes('/s/') ? holonData.id : null,
+                    postId: comment.postId,
+                    parentCommentId: comment.id,
+                    text: newReply
+                })
+                .then(res => {
+                    if (res.data === 'success') {
+                        setNewReply('')
+                        setTotalComments(totalComments + 1)
+                        setTimeout(() => {
+                            getPostComments()
+                        }, 300)
+                    }
+                })
+        }
     }
 
     return (
-        <div className={styles.commentCard}>
-            {/* <div className={styles.index}>{index + 1 || ''}</div> */}
-            <div className={styles.body}>
-                <div className={styles.tags}>
-                    {creator &&
-                        <Link to={ `/u/${creator.handle}`} className={styles.user}>
-                            {creator.flagImagePath ?
-                                <img className={styles.userImage} src={creator.flagImagePath} alt=''/> :
-                                <div className={styles.userImagePlaceholderWrapper}>
-                                    <img className={styles.userImagePlaceholder} src={'/icons/user-solid.svg'} alt=''/>
-                                </div>
-                            }
-                            <span className={styles.subText}>{ creator.name || 'Anonymous' }</span>
-                        </Link>
-                    }
-                    <span className={`${styles.subText} mr-10`}>|</span>
-                    <span className={styles.subText}>{ formatDate() || 'no date' }</span>
+        <div className={styles.wrapper}>
+            <CommentCardComment
+                comment={comment}
+                totalComments={totalComments}
+                setTotalComments={setTotalComments}
+                getPostComments={getPostComments}
+                openReplyInput={openReplyInput}
+            />
+            {comment.replies.map((reply, index) => 
+                <CommentCardComment
+                    key={index}
+                    comment={reply}
+                    totalComments={totalComments}
+                    setTotalComments={setTotalComments}
+                    getPostComments={getPostComments}
+                    openReplyInput={openReplyInput}
+                />
+            )}
+            {replyInputOpen &&
+                <div className={styles.replyInput} ref={replyInput}>
+                    <SmallFlagImage type='user' size={35} imagePath={accountData.flagImagePath}/>
+                    <form className={styles.inputWrapper} onSubmit={submitReply}>
+                        <textarea 
+                            className={`${styles.input} ${newReplyError && styles.error}`}
+                            type="text"
+                            rows='1'
+                            value={newReply}
+                            placeholder="Write a reply..."
+                            onChange={(e) => {
+                                setNewReply(e.target.value)
+                                setNewReplyError(false)
+                                resizeTextArea(e.target)
+                                // e.target.style.height = ''
+                                // e.target.style.height = e.target.scrollHeight + 'px'
+                            }}
+                        />
+                        <button className={styles.button}>Reply</button>
+                    </form>
                 </div>
-
-                <div className={styles.content}>
-                    <div className={styles.text}>{ text }</div>
-                    
-                    <div className={styles.interact}>
-                        {isLoggedIn &&
-                            <div className={styles.interactItem} onClick={reply}>
-                                <img className={`${styles.icon} ${styles.reply}`} src="/icons/reply-solid.svg" alt=''/>
-                                <span>Reply</span>
-                            </div>
-                        }
-                        {isOwnComment &&
-                            <div className={styles.interactItem} onClick={deleteComment}>
-                                <img className={styles.icon} src="/icons/trash-alt-solid.svg" alt=''/>
-                                <span>Delete</span>
-                            </div>
-                        }
-                    </div>
-                </div>
-            </div>
+            }
         </div>
     )
 }

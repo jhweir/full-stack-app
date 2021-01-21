@@ -4,7 +4,8 @@ module.exports = (sequelize, DataTypes) => {
     ownerId: DataTypes.INTEGER,
     seen: DataTypes.BOOLEAN,
     type: DataTypes.STRING,
-    holonId: DataTypes.INTEGER,
+    holonAId: DataTypes.INTEGER,
+    holonBId: DataTypes.INTEGER,
     userId: DataTypes.INTEGER,
     postId: DataTypes.INTEGER,
     commentId: DataTypes.INTEGER
@@ -16,9 +17,13 @@ module.exports = (sequelize, DataTypes) => {
       as: 'triggerUser'
     })
     Notification.belongsTo(models.Holon, {
-      foreignKey: 'holonId',
+      foreignKey: 'holonAId',
       as: 'triggerSpace'
     })
+    Notification.belongsTo(models.Holon, {
+        foreignKey: 'holonBId',
+        as: 'secondarySpace'
+      })
   };
   return Notification;
 };

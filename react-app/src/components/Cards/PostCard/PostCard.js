@@ -131,21 +131,20 @@ function PostCard(props) {
                                 </Link>
                             }
                         </div>
-                        <span className={styles.subText}>|</span>
+                        <span className={styles.subText}>•</span>
                         <Link to={`/p/${id}`} className={styles.link} onClick={() => setSelectedNavBarItem('')}>
                             <img className={styles.linkIcon} src={'/icons/link-solid.svg'} alt=''/>
                             <span className={styles.subText} title={dateCreated(createdAt)}>
                                 {timeSinceCreated(createdAt)}
                             </span>
                         </Link>
-                        {/* <span className={styles.subText}>|</span> */}
-                        <div className={styles.postTypeFlag} style={{ backgroundColor }} title={type}/>
+                        {/* <span className={styles.subText}>•</span> */}
+                        {/* <div className={styles.postTypeFlag} style={{ backgroundColor }} title={type}/> */}
                         {isOwnPost &&
-                            <span className={styles.delete} onClick={() => setDeletePostModalOpen(true)}>Delete</span>
-                            // <div className={styles.interactItem} onClick={deletePost}>
-                            //     <img className={styles.icon} src="/icons/trash-alt-solid.svg" alt=''/>
-                            //     <span className='greyText'>Delete</span>
-                            // </div>
+                            <>
+                                <span className={styles.subText}>•</span>
+                                <span className={styles.delete} onClick={() => setDeletePostModalOpen(true)}>Delete</span>
+                            </>
                         }
                     </div>
                     <div className={styles.content}>

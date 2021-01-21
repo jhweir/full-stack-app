@@ -1157,6 +1157,11 @@ router.get('/account-notifications', (req, res) => {
                     model: Holon,
                     as: 'triggerSpace',
                     attributes: ['id', 'handle', 'name', 'flagImagePath'],
+                },
+                {
+                    model: Holon,
+                    as: 'secondarySpace',
+                    attributes: ['id', 'handle', 'name', 'flagImagePath'],
                 }
             ]
         })
@@ -1418,43 +1423,78 @@ router.post('/create-holon', (req, res) => {
         Holon
             .create({ creatorId, name, handle, description })
             .then(newHolon => {
-                // Set up moderator relationship between creator and holon
+                // set up moderator relationship between creator and holon
                 HolonUser.create({
                     relationship: 'moderator',
                     state: 'active',
                     holonId: newHolon.id,
                     userId: creatorId
                 })
-                // Attach new holon to parent holon(s)
+                // attach new holon to 'all' (until accepted into a parent space, if requested)
+                // TODO: if user is already moderator of parent space, allow automatically
                 VerticalHolonRelationship.create({
                     state: 'open',
-                    holonAId: parentHolonId,
+                    holonAId: 1,
                     holonBId: newHolon.id,
                 })
-                // Create a unique tag for the holon
+                // create a unique tag for the holon and inherit the tag for 'all'
                 HolonHandle.create({
                     state: 'open',
                     holonAId: newHolon.id,
                     holonBId: newHolon.id,
                 })
+                HolonHandle.create({
+                    state: 'open',
+                    holonAId: newHolon.id,
+                    holonBId: 1,
+                })
+                // if parent space requested, send notification to parent spaces moderators
+                if (parentHolonId !== 1) {
+                    Holon
+                        .findOne({
+                            where: { id: parentHolonId },
+                            include: [{ model: User, as: 'HolonModerators' }]
+                        })
+                        .then(holon => {
+                            if (holon) {
+                                holon.HolonModerators.forEach(moderator => {
+                                    Notification.create({
+                                        ownerId: moderator.id,
+                                        seen: false,
+                                        type: 'parent-space-request',
+                                        holonAId: newHolon.id,
+                                        holonBId: parentHolonId,
+                                        userId: creatorId
+                                    })
+                                })
+                            }
+                        })
+                }
+
+                // // Attach new holon to parent holon(s)
+                // VerticalHolonRelationship.create({
+                //     state: 'open',
+                //     holonAId: parentHolonId,
+                //     holonBId: newHolon.id,
+                // })
                 // Copy the parent holons tags to the new holon
                 //// 1. Work out parent holons tags
-                Holon
-                    .findOne({
-                        where: { id: parentHolonId },
-                        include: [{ model: Holon, as: 'HolonHandles' }]
-                    })
-                    .then(data => {
-                        //// 2. Add them to the new holon
-                        data.HolonHandles.forEach((tag) => {
-                            HolonHandle.create({
-                                state: 'open',
-                                holonAId: newHolon.id,
-                                holonBId: tag.id,
-                            })
-                        })
-                    })
-                    .catch(err => console.log(err))
+                // Holon
+                //     .findOne({
+                //         where: { id: parentHolonId },
+                //         include: [{ model: Holon, as: 'HolonHandles' }]
+                //     })
+                //     .then(data => {
+                //         //// 2. Add them to the new holon
+                //         data.HolonHandles.forEach((tag) => {
+                //             HolonHandle.create({
+                //                 state: 'open',
+                //                 holonAId: newHolon.id,
+                //                 holonBId: tag.id,
+                //             })
+                //         })
+                //     })
+                //     .catch(err => console.log(err))
             })
             .then(res.send('success'))
             .catch(err => console.log(err))
@@ -1656,7 +1696,7 @@ router.post('/repost-post', (req, res) => {
             ownerId: post.creator.id,
             type: 'post-repost',
             seen: false,
-            holonId,
+            holonAId: holonId,
             userId: accountId,
             postId,
             commentId: null
@@ -1774,7 +1814,7 @@ router.post('/add-like', (req, res) => {
             ownerId: post.creator.id,
             type: 'post-like',
             seen: false,
-            holonId,
+            holonAId: holonId,
             userId: accountId,
             postId,
             commentId: null
@@ -1850,7 +1890,7 @@ router.post('/add-rating', (req, res) => {
             ownerId: post.creator.id,
             type: 'post-rating',
             seen: false,
-            holonId,
+            holonAId: holonId,
             userId: accountId,
             postId,
             commentId: null
@@ -1895,7 +1935,7 @@ router.post('/remove-rating', (req, res) => {
 })
 
 router.post('/submit-comment', (req, res) => {
-    let { accountId, accountHandle, accountName, holonId, postId, text } = req.body
+    const { accountId, accountHandle, accountName, holonId, postId, text } = req.body
 
     // find post owner
     Post.findOne({
@@ -1924,7 +1964,7 @@ router.post('/submit-comment', (req, res) => {
                 ownerId: post.creator.id,
                 type: 'post-comment',
                 seen: false,
-                holonId,
+                holonAId: holonId,
                 userId: accountId,
                 postId,
                 commentId: comment.id
@@ -1976,7 +2016,7 @@ router.delete('/delete-comment', (req, res) => {
 })
 
 router.post('/submit-reply', async (req, res) => {
-    let { accountId, accountHandle, accountName, holonId, postId, parentCommentId, text } = req.body
+    const { accountId, accountHandle, accountName, holonId, postId, parentCommentId, text } = req.body
 
     // find post owner
     const post = await Post.findOne({
@@ -2016,7 +2056,7 @@ router.post('/submit-reply', async (req, res) => {
                 ownerId: post.creator.id,
                 type: 'post-comment',
                 seen: false,
-                holonId,
+                holonAId: holonId,
                 userId: accountId,
                 postId,
                 commentId: comment.id
@@ -2027,7 +2067,7 @@ router.post('/submit-reply', async (req, res) => {
                 ownerId: parentComment.creator.id,
                 type: 'comment-reply',
                 seen: false,
-                holonId,
+                holonAId: holonId,
                 userId: accountId,
                 postId,
                 commentId: comment.id
@@ -2105,7 +2145,7 @@ router.post('/register', async (req, res) => {
     const { newHandle, newName, newEmail, newPassword } = req.body
     let token = crypto.randomBytes(64).toString('hex')
 
-    // Check username and email is available then create user (TODO: use [op.Or] to save double call)
+    // Check username and email is available then create user (TODO: use [op.Or] to save double call?)
     User.findOne({ where: { handle: newHandle } })
         .then(user => {
             if (user) { res.send('handle-taken') }
@@ -2114,16 +2154,22 @@ router.post('/register', async (req, res) => {
                     .then(async user => {
                         if (user) { res.send('email-taken') }
                         else {
-                            let hashedPassword = await bcrypt.hash(newPassword, 10)
-                            User.create({
+                            const hashedPassword = await bcrypt.hash(newPassword, 10)
+                            const createUserAndNotification = await User.create({
                                 handle: newHandle,
                                 name: newName,
                                 email: newEmail,
                                 password: hashedPassword,
                                 emailVerified: false,
                                 emailToken: token
+                            }).then(user => {
+                                Notification.create({
+                                    ownerId: user.id,
+                                    type: 'welcome-message',
+                                    seen: false
+                                })
                             })
-                            let message = {
+                            const message = {
                                 to: newEmail,
                                 from: 'admin@weco.io',
                                 subject: 'Weco - verify your email',
@@ -2139,28 +2185,32 @@ router.post('/register', async (req, res) => {
                                     <a href='${process.env.NODE_ENV === 'dev' ? process.env.DEV_API_URL : process.env.PROD_API_URL}/api/verify-email?token=${token}'>Verfiy your account</a>
                                 `,
                             }
-                            sgMail.send(message)
-                                .then(() => {
-                                    console.log('Email sent')
-                                })
-                                .catch((error) => {
-                                    console.error(error)
-                                })
-                            res.send('account-registered')
+                            const sendEmail = await sgMail.send(message)
+                            Promise
+                                .all([createUserAndNotification, sendEmail])
+                                .then(res.send('success'))
+                                .catch(error => console.log(error))
                         }
                     })
             }
         })
 })
 
-router.get('/verify-email', async (req, res) => {
+router.get('/verify-email', (req, res) => {
     const { token } = req.query
     User.findOne({ where: { emailToken: token } })
-        .then(user => {
+        .then(async user => {
             if (user) {
-                user.update({ emailVerified: true, emailToken: null })
-                // log user in...
-                res.redirect(`${process.env.NODE_ENV === 'dev' ? process.env.DEV_APP_URL : process.env.PROD_APP_URL}?alert=email-verified`)
+                const markEmailVerified = await user.update({ emailVerified: true, emailToken: null })
+                const createNotification = Notification.create({
+                    ownerId: user.id,
+                    type: 'email-verified',
+                    seen: false
+                })
+                // TODO: create 'current env' variable to avoid repeating conditionals seen in redirect below
+                Promise
+                    .all([markEmailVerified, createNotification])
+                    .then(res.redirect(`${process.env.NODE_ENV === 'dev' ? process.env.DEV_APP_URL : process.env.PROD_APP_URL}?alert=email-verified`))
             }
             else res.send(`Sorry, we couldn't find a user with that email token.`)
         })
@@ -2557,7 +2607,7 @@ router.post('/add-link', (req, res) => {
             ownerId: post.creator.id,
             type: 'post-link',
             seen: false,
-            holonId,
+            holonAId: holonId,
             userId: accountId,
             postId: itemAId,
             commentId: null

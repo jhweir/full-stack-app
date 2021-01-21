@@ -4,7 +4,7 @@ import config from '../../../Config'
 import styles from '../../../styles/components/PostCardComments.module.scss'
 import { AccountContext } from '../../../contexts/AccountContext'
 import { HolonContext } from '../../../contexts/HolonContext'
-import NewCommentCard from '../../Cards/NewCommentCard'
+import CommentCard from '../../Cards/CommentCard'
 import SmallFlagImage from '../../../components/SmallFlagImage'
 import { resizeTextArea } from '../../../GlobalFunctions'
 
@@ -98,7 +98,7 @@ function PostCardComments(props) {
                 </div>
             }
             {postComments.map((comment, index) => 
-                <NewCommentCard
+                <CommentCard
                     key={index}
                     comment={comment}
                     totalComments={totalComments}
