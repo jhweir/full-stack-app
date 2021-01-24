@@ -37,9 +37,9 @@ function HolonPageUsers() {
             <div className='wecoPageHeader'>
                 <div className='wecoPageHeaderRow'>
                     <SearchBar setSearchFilter={setHolonUserSearchFilter} placeholder='Search users...'/>
-                    <button className='wecoButton mr-10' onClick={() => setHolonUserFiltersOpen(!holonUserFiltersOpen)}>
-                        <img className='wecoButtonIcon' src='/icons/sliders-h-solid.svg'/>
-                    </button>
+                    <div className={styles.filterButton} onClick={() => setHolonUserFiltersOpen(!holonUserFiltersOpen)}>
+                        <img className={styles.filterButtonIcon} src='/icons/sliders-h-solid.svg'/>
+                    </div>
                 </div>
                 {holonUserFiltersOpen && <HolonPageUsersFilters/>}
             </div>

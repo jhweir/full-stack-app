@@ -39,9 +39,9 @@ function UserPagePosts() {
             <div className='wecoPageHeader'>
                 <div className='wecoPageHeaderRow'>
                     <SearchBar setSearchFilter={setCreatedPostSearchFilter} placeholder='Search posts...'/>
-                    <button className='wecoButton mr-10' onClick={() => setCreatedPostFiltersOpen(!createdPostFiltersOpen)}>
-                        <img className='wecoButtonIcon' src='/icons/sliders-h-solid.svg'/>
-                    </button>
+                    <div className={styles.filterButton} onClick={() => setCreatedPostFiltersOpen(!createdPostFiltersOpen)}>
+                        <img className={styles.filterButtonIcon} src='/icons/sliders-h-solid.svg'/>
+                    </div>
                 </div>
                 {createdPostFiltersOpen && <UserPagePostFilters/>}
             </div>

@@ -54,21 +54,12 @@ function HolonPageSpaces() {
                 <div className={styles.headerRow}>
                     <div className={styles.headerRowSection}>
                         <SearchBar setSearchFilter={setHolonSpaceSearchFilter} placeholder='Search spaces...'/>
-                        <button className='wecoButton mr-10' onClick={() => setHolonSpaceFiltersOpen(!holonSpaceFiltersOpen)}>
-                            <img className='wecoButtonIcon' src='/icons/sliders-h-solid.svg'/>
-                        </button>
-                        {/* <button
-                            className='wecoButton mr-10'
-                            onClick={() => {
-                                if (holonSpaceView === 'List') setHolonSpaceView('Map')
-                                else setHolonSpaceView('List')
-                            }}>
-                            View
-                            <img className='wecoButtonIcon' src='/icons/eye-solid.svg'/>
-                        </button> */}
-                        <button className="wecoButton" onClick={() => openCreateSpaceModal() }>
+                        <div className={styles.filterButton} onClick={() => setHolonSpaceFiltersOpen(!holonSpaceFiltersOpen)}>
+                            <img className={styles.filterButtonIcon} src='/icons/sliders-h-solid.svg'/>
+                        </div>
+                        <div className={styles.filterButton} onClick={() => openCreateSpaceModal() }>
                             New Space
-                        </button>
+                        </div>
                     </div>
                     <Toggle leftText='List' rightText='Map' onClickFunction={toggleView} positionLeft={holonSpaceView === 'List' ? true : false}/>
                 </div>

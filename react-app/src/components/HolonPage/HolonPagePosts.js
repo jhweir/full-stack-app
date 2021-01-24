@@ -82,21 +82,12 @@ function HolonPagePosts() {
                 <div className={styles.headerRow}>
                     <div className={styles.headerRowSection}>
                         <SearchBar setSearchFilter={setHolonPostSearchFilter} placeholder='Search posts...'/>
-                        <button className='wecoButton mr-10' onClick={() => setHolonPostFiltersOpen(!holonPostFiltersOpen)}>
-                            <img className='wecoButtonIcon' src='/icons/sliders-h-solid.svg'/>
-                        </button>
-                        {/* <button
-                            className='wecoButton mr-10'
-                            onClick={() => {
-                                if (holonPostView === 'List') setHolonPostView('Map')
-                                else setHolonPostView('List')
-                            }}>
-                            View
-                            <img className='wecoButtonIcon' src='/icons/eye-solid.svg'/>
-                        </button> */}
-                        <button className='wecoButton mr-10' onClick={() => openCreatePostModal()}>
+                        <div className={styles.filterButton} onClick={() => setHolonPostFiltersOpen(!holonPostFiltersOpen)}>
+                            <img className={styles.filterButtonIcon} src='/icons/sliders-h-solid.svg'/>
+                        </div>
+                        <div className={styles.filterButton} onClick={() => openCreatePostModal()}>
                             New Post
-                        </button>
+                        </div>
                     </div>
                     <Toggle leftText='List' rightText='Map' onClickFunction={toggleView} positionLeft={holonPostView === 'List' ? true : false}/>
                 </div>
