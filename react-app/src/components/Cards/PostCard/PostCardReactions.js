@@ -52,7 +52,7 @@ function PostCardReactions(props) {
     }, [])
 
     return (
-        <div className={`${styles.postCardReactions} ${commentsOpen && 'mb-10'}`}>
+        <div className={styles.postCardReactions}>
             <PostCardReactionItem
                 text='Likes'
                 reactions={reactionData && reactionData.Reactions.filter(label => label.type === 'like')}

@@ -35,12 +35,12 @@ function HolonPage({ match }) {
                 <div className={styles.holonPageCenterPanel}>
                     <Switch>
                         <Redirect from={url} to={`${url}/posts`} exact/>
-                        <Route path={`${url}/settings`} component={ HolonPageSettings } exact/>
+                        {isModerator && <Route path={`${url}/settings`} component={ HolonPageSettings } exact/>}
                         <Route path={`${url}/about`} component={ HolonPageAbout } exact/>
                         <Route path={`${url}/posts`} component={ HolonPagePosts } exact/>
                         <Route path={`${url}/spaces`} component={ HolonPageSpaces } exact/>
                         <Route path={`${url}/users`} component={ HolonPageUsers } exact/>
-                        <Route component={ EmptyPage }/> {/* TODO: Check if this needs to be doubled up on the App.js component */}
+                        {/* <Route component={ EmptyPage }/> TODO: Check if this needs to be doubled up on the App.js component */}
                     </Switch>
                 </div>
                 <HolonPageSideBarRight/>

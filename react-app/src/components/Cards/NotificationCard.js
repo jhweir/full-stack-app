@@ -315,6 +315,76 @@ function NotificationCard(props) {
                 </div>
             }
 
+            {notification.type === 'parent-space-request-accepted' &&
+                <div className={styles.content}>
+                    <div className={styles.iconWrapper}>
+                        <img className={styles.iconLarge} src='/icons/overlapping-circles-thick.svg' alt=''/>
+                    </div>
+                    <div className={styles.info}>
+                        <Link className={styles.imageTextLink} to={`/u/${accountData.handle}`} onClick={() => setUserHandle(accountData.handle)}>
+                            <SmallFlagImage type='user' size={30} imagePath={accountData.flagImagePath}/>
+                            <span>Your</span>
+                        </Link>
+                        <div className={`${styles.text} mr-10`}>request for</div>
+                        <Link className={styles.imageTextLink} to={`/s/${notification.triggerSpace.handle}`}>
+                            <SmallFlagImage type='space' size={30} imagePath={notification.triggerSpace.flagImagePath}/>
+                            <span>{notification.triggerSpace.name}</span>
+                        </Link>
+                        <div className={`${styles.text} mr-10`}>to become a child space of</div>
+                        <Link className={styles.imageTextLink} to={`/s/${notification.secondarySpace.handle}`}>
+                            <SmallFlagImage type='space' size={30} imagePath={notification.secondarySpace.flagImagePath}/>
+                            <span>{notification.secondarySpace.name}</span>
+                        </Link>
+                        <div className={`${styles.text} mr-10`}>has been accepted</div>
+                        <img className={styles.checkIcon} src='/icons/check-circle-regular.svg' alt=''/>
+                        <div className={`${styles.text} ml-10 mr-10`}>•</div>
+                        <div className={styles.text} title={dateCreated(notification.createdAt)}>
+                            {timeSinceCreated(notification.createdAt)}
+                        </div>
+                    </div>
+                    <img
+                        className={styles.seenIcon}
+                        src={`/icons/${seen ? 'eye-solid.svg' : 'eye-slash-solid.svg'}`}
+                        onClick={() => toggleSeen()}
+                    />
+                </div>
+            }
+
+            {notification.type === 'parent-space-request-rejected' &&
+                <div className={styles.content}>
+                    <div className={styles.iconWrapper}>
+                        <img className={styles.iconLarge} src='/icons/overlapping-circles-thick.svg' alt=''/>
+                    </div>
+                    <div className={styles.info}>
+                        <Link className={styles.imageTextLink} to={`/u/${accountData.handle}`} onClick={() => setUserHandle(accountData.handle)}>
+                            <SmallFlagImage type='user' size={30} imagePath={accountData.flagImagePath}/>
+                            <span>Your</span>
+                        </Link>
+                        <div className={`${styles.text} mr-10`}>request for</div>
+                        <Link className={styles.imageTextLink} to={`/s/${notification.triggerSpace.handle}`}>
+                            <SmallFlagImage type='space' size={30} imagePath={notification.triggerSpace.flagImagePath}/>
+                            <span>{notification.triggerSpace.name}</span>
+                        </Link>
+                        <div className={`${styles.text} mr-10`}>to become a child space of</div>
+                        <Link className={styles.imageTextLink} to={`/s/${notification.secondarySpace.handle}`}>
+                            <SmallFlagImage type='space' size={30} imagePath={notification.secondarySpace.flagImagePath}/>
+                            <span>{notification.secondarySpace.name}</span>
+                        </Link>
+                        <div className={`${styles.text} mr-10`}>has been rejected</div>
+                        <img className={styles.timesIcon} src='/icons/times-circle-regular.svg' alt=''/>
+                        <div className={`${styles.text} ml-10 mr-10`}>•</div>
+                        <div className={styles.text} title={dateCreated(notification.createdAt)}>
+                            {timeSinceCreated(notification.createdAt)}
+                        </div>
+                    </div>
+                    <img
+                        className={styles.seenIcon}
+                        src={`/icons/${seen ? 'eye-solid.svg' : 'eye-slash-solid.svg'}`}
+                        onClick={() => toggleSeen()}
+                    />
+                </div>
+            }
+
         </div>
     )
 }

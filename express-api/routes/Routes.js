@@ -25,6 +25,7 @@ const PrismUser = require('../models').PrismUser
 const PlotGraph = require('../models').PlotGraph
 const Link = require('../models').Link
 const Notification = require('../models').Notification
+const SpaceNotification = require('../models').SpaceNotification
 
 const postAttributes = [
     'id', 'type', 'subType', 'state', 'text', 'url', 'urlImage', 'urlDomain', 'urlTitle', 'urlDescription', 'createdAt',
@@ -117,13 +118,13 @@ router.get('/holon-data', (req, res) => {
                 model: Holon,
                 as: 'DirectChildHolons',
                 attributes: ['handle', 'name', 'description', 'flagImagePath'],
-                through: { attributes: [] }
+                through: { attributes: [], where: { state: 'open' } },
             },
             {
                 model: Holon,
                 as: 'DirectParentHolons',
                 attributes: ['handle', 'name', 'description', 'flagImagePath'],
-                through: { attributes: [] }
+                through: { attributes: [], where: { state: 'open' } },
             },
             {
                 model: Holon,
@@ -618,7 +619,7 @@ router.get('/holon-spaces', (req, res) => {
                 model: Holon,
                 as: 'DirectParentHolons',
                 attributes: [],
-                through: { attributes: [] }
+                through: { attributes: [], where: { state: 'open' } },
             }]
         }
         return include
@@ -843,6 +844,35 @@ router.get('/holon-users', (req, res) => {
         }).then(data => { res.json(data) })
     })
     .catch(err => console.log(err))
+})
+
+router.get('/holon-requests', (req, res) => {
+    const { holonId } = req.query
+    SpaceNotification
+        .findAll({
+            where: { type: 'parent-space-request', ownerId: holonId },
+            order: [['createdAt', 'DESC']],
+            include: [
+                {
+                    model: User,
+                    as: 'triggerUser',
+                    attributes: ['id', 'handle', 'name', 'flagImagePath'],
+                },
+                {
+                    model: Holon,
+                    as: 'triggerSpace',
+                    attributes: ['id', 'handle', 'name', 'flagImagePath'],
+                },
+                // {
+                //     model: Holon,
+                //     as: 'secondarySpace',
+                //     attributes: ['id', 'handle', 'name', 'flagImagePath'],
+                // }
+            ]
+        })
+        .then(notifications => {
+            res.send(notifications)
+        })
 })
 
 router.get('/all-users', (req, res) => {
@@ -1422,81 +1452,134 @@ router.post('/create-holon', (req, res) => {
     function createHolon() { 
         Holon
             .create({ creatorId, name, handle, description })
-            .then(newHolon => {
+            .then(async newHolon => {
                 // set up moderator relationship between creator and holon
-                HolonUser.create({
+                let creatModRelationship = await HolonUser.create({
                     relationship: 'moderator',
                     state: 'active',
                     holonId: newHolon.id,
                     userId: creatorId
                 })
-                // attach new holon to 'all' (until accepted into a parent space, if requested)
-                // TODO: if user is already moderator of parent space, allow automatically
-                VerticalHolonRelationship.create({
-                    state: 'open',
-                    holonAId: 1,
-                    holonBId: newHolon.id,
-                })
-                // create a unique tag for the holon and inherit the tag for 'all'
-                HolonHandle.create({
+                // create unique handle
+                let createUniqueHandle = await HolonHandle.create({
                     state: 'open',
                     holonAId: newHolon.id,
                     holonBId: newHolon.id,
                 })
-                HolonHandle.create({
-                    state: 'open',
-                    holonAId: newHolon.id,
-                    holonBId: 1,
-                })
-                // if parent space requested, send notification to parent spaces moderators
-                if (parentHolonId !== 1) {
-                    Holon
-                        .findOne({
-                            where: { id: parentHolonId },
-                            include: [{ model: User, as: 'HolonModerators' }]
-                        })
-                        .then(holon => {
-                            if (holon) {
-                                holon.HolonModerators.forEach(moderator => {
-                                    Notification.create({
-                                        ownerId: moderator.id,
-                                        seen: false,
-                                        type: 'parent-space-request',
-                                        holonAId: newHolon.id,
-                                        holonBId: parentHolonId,
-                                        userId: creatorId
-                                    })
+                Promise
+                    .all([creatModRelationship, createUniqueHandle])
+                    .then(async () => {
+                        if (parentHolonId === 1) {
+                            // attach new holon to 'all'
+                            let createVericalRelationship = await VerticalHolonRelationship.create({
+                                state: 'open',
+                                holonAId: 1,
+                                holonBId: newHolon.id,
+                            })
+                            // inherit the tag for 'all'
+                            let inherhitHandle = await HolonHandle.create({
+                                state: 'open',
+                                holonAId: newHolon.id,
+                                holonBId: 1,
+                            })
+                            Promise
+                                .all([createVericalRelationship, inherhitHandle])
+                                .then(res.send('attached-to-all'))
+                        } else {
+                            Holon
+                                .findOne({
+                                    where: { id: parentHolonId },
+                                    include: [
+                                        { model: User, as: 'HolonModerators' },
+                                        { model: Holon, as: 'HolonHandles' }
+                                    ]
                                 })
-                            }
-                        })
-                }
-
-                // // Attach new holon to parent holon(s)
-                // VerticalHolonRelationship.create({
-                //     state: 'open',
-                //     holonAId: parentHolonId,
-                //     holonBId: newHolon.id,
-                // })
-                // Copy the parent holons tags to the new holon
-                //// 1. Work out parent holons tags
-                // Holon
-                //     .findOne({
-                //         where: { id: parentHolonId },
-                //         include: [{ model: Holon, as: 'HolonHandles' }]
-                //     })
-                //     .then(data => {
-                //         //// 2. Add them to the new holon
-                //         data.HolonHandles.forEach((tag) => {
-                //             HolonHandle.create({
-                //                 state: 'open',
-                //                 holonAId: newHolon.id,
-                //                 holonBId: tag.id,
-                //             })
-                //         })
-                //     })
-                //     .catch(err => console.log(err))
+                                .then(async holon => {
+                                    // if user is moderator of parent space, attach space
+                                    if (holon.HolonModerators.some(mod => mod.id === creatorId)) {
+                                        // find all spaces below child space (effected spaces)
+                                        // include each spaces holon handles (second query used to avoid where clause issues)
+                                        // for each effected space: loop through parent spaces handles,
+                                        // check each against the effected spaces handles,
+                                        // if no match: add the handle, otherwise skip
+                                        let effectedSpaces = await Holon.findAll({
+                                            where: { '$HolonHandles.id$': newHolon.id },
+                                            include: [{ model: Holon, as: 'HolonHandles' }]
+                                        })
+                                        let effectedSpacesWithHolonHandles = await Holon.findAll({
+                                            where: { id: effectedSpaces.map(s => s.id) },
+                                            include: [{
+                                                model: Holon,
+                                                as: 'HolonHandles',
+                                                attributes: ['handle', 'id'],
+                                                through: { attributes: [] }
+                                            }]
+                                        })
+                                        let inheritHandles = await effectedSpacesWithHolonHandles.forEach(space => {
+                                            holon.HolonHandles.forEach(ph => {
+                                                let match = space.HolonHandles.some(sh => sh.handle === ph.handle)
+                                                if (!match) {
+                                                    // posts to A appear within B
+                                                    HolonHandle.create({
+                                                        state: 'open',
+                                                        holonAId: space.id,
+                                                        holonBId: ph.id,
+                                                    })
+                                                }
+                                            })
+                                        })
+                                        // create vertical relationship
+                                        let createVericalRelationship = await VerticalHolonRelationship.create({
+                                            state: 'open',
+                                            holonAId: parentHolonId,
+                                            holonBId: newHolon.id,
+                                        })
+                                        Promise
+                                            .all([inheritHandles, createVericalRelationship])
+                                            .then(res.send('attached-by-mod'))
+                                    } else {
+                                        // if user not moderator of parent space, attach to 'all' and send resquest to moderators
+                                        // attach new holon to 'all'
+                                        let createVerticalRelationship = await VerticalHolonRelationship.create({
+                                            state: 'open',
+                                            holonAId: 1,
+                                            holonBId: newHolon.id,
+                                        })
+                                        // inherit the tag for 'all'
+                                        let inherhitHandle = await HolonHandle.create({
+                                            state: 'open',
+                                            holonAId: newHolon.id,
+                                            holonBId: 1,
+                                        })
+                                        // create space notification
+                                        let createSpaceNotification = await SpaceNotification.create({
+                                            ownerId: parentHolonId,
+                                            seen: false,
+                                            type: 'parent-space-request',
+                                            state: 'pending',
+                                            holonAId: newHolon.id,
+                                            userId: creatorId
+                                        })
+                                        // create account notifications for each of the mods
+                                        let createAccountNotifications = await holon.HolonModerators.forEach(moderator => {
+                                            Notification.create({
+                                                ownerId: moderator.id,
+                                                seen: false,
+                                                type: 'parent-space-request',
+                                                holonAId: newHolon.id,
+                                                holonBId: parentHolonId,
+                                                userId: creatorId
+                                            })
+                                        })
+                                        Promise
+                                            .all([createVerticalRelationship, inherhitHandle, createSpaceNotification, createAccountNotifications])
+                                            .then(res.send('pending-acceptance'))
+                                    }
+                                })
+                        }
+                    })
             })
-            .then(res.send('success'))
+            //.then(res.send('success'))
             .catch(err => console.log(err))
     }
 })
@@ -2334,8 +2417,9 @@ router.post('/scrape-url', async (req, res) => {
 })
 
 router.post('/update-holon-setting', async (req, res) => {
-    let { holonId, setting, newValue } = req.body
-    console.log('req.body', req.body)
+    let { accountId, holonId, setting, newValue } = req.body
+    console.log('req.body: ', req.body)
+
     if (setting === 'change-holon-handle') {
         Holon.update({ handle: newValue }, { where : { id: holonId } })
             .then(res.send('success'))
@@ -2366,106 +2450,162 @@ router.post('/update-holon-setting', async (req, res) => {
                 else { res.send('No user with that handle') }
             })
     }
-    if (setting === 'add-parent-space') {
+    if (setting === 'add-parent-holon') {
+        // work out if user is moderator of parent space. If so: connect automatically, otherwise send request to parent space moderators
+        Holon
+            .findOne({
+                where: { handle: newValue },
+                include: [
+                    { model: User, as: 'HolonModerators' },
+                    { model: Holon, as: 'HolonHandles' }
+                ]
+            })
+            .then(async holon => {
+                // if user is moderator of parent space, attach space
+                if (holon.HolonModerators.some(mod => mod.id === accountId)) {
+                    console.log('user is mod')
+                    // find all spaces below child space (effected spaces)
+                    // include each spaces holon handles (second query used to avoid where clause issues)
+                    // for each effected space: loop through parent spaces handles,
+                    // check each against the effected spaces handles,
+                    // if no match: add the handle, otherwise skip
+                    let effectedSpaces = await Holon.findAll({
+                        where: { '$HolonHandles.id$': holonId },
+                        include: [{ model: Holon, as: 'HolonHandles' }]
+                    })
+                    let effectedSpacesWithHolonHandles = await Holon.findAll({
+                        where: { id: effectedSpaces.map(s => s.id) },
+                        include: [{
+                            model: Holon,
+                            as: 'HolonHandles',
+                            attributes: ['handle', 'id'],
+                            through: { attributes: [] }
+                        }]
+                    })
+                    let inheritHandles = await effectedSpacesWithHolonHandles.forEach(space => {
+                        holon.HolonHandles.forEach(ph => {
+                            let match = space.HolonHandles.some(sh => sh.handle === ph.handle)
+                            if (!match) {
+                                // posts to A appear within B
+                                HolonHandle.create({
+                                    state: 'open',
+                                    holonAId: space.id,
+                                    holonBId: ph.id,
+                                })
+                            }
+                        })
+                    })
+                    // if only current parent space is 'all', remove vertical relationshsip
+                    let removeVerticalRelationshipIfRequired = await VerticalHolonRelationship
+                        .findAll({
+                            where: { holonBId: holonId },
+                            attributes: ['holonAId']
+                        })
+                        .then(async holons => {
+                            // if child space was only connected to 'all', remove old connection
+                            let holonIds = holons.map(h => h.holonAId)
+                            console.log('holonIds: ', holonIds)
+                            if (holonIds.length === 1 && holonIds[0] === 1) {
+                                VerticalHolonRelationship.update({ state: 'closed' }, { where: { holonAId: 1, holonBId: holonId }})
+                            }
+                        })
+                    // create vertical relationship
+                    let createVericalRelationship = await VerticalHolonRelationship.create({
+                        state: 'open',
+                        holonAId: holon.id,
+                        holonBId: holonId,
+                    })
+                    Promise
+                        .all([inheritHandles, removeVerticalRelationshipIfRequired, createVericalRelationship])
+                        .then(res.send('attached-by-mod'))
+                } else {
+                    console.log('user is not mod')
+                    // if user not moderator of parent space
+                    // create space notification
+                    let createSpaceNotification = await SpaceNotification.create({
+                        ownerId: holon.id,
+                        seen: false,
+                        type: 'parent-space-request',
+                        state: 'pending',
+                        holonAId: holonId,
+                        userId: accountId
+                    })
+                    // create account notifications for each of the mods
+                    let createAccountNotifications = await holon.HolonModerators.forEach(moderator => {
+                        Notification.create({
+                            ownerId: moderator.id,
+                            seen: false,
+                            type: 'parent-space-request',
+                            holonAId: holonId,
+                            holonBId: holon.id,
+                            userId: accountId
+                        })
+                    })
+                    Promise
+                        .all([createSpaceNotification, createAccountNotifications])
+                        .then(res.send('pending-acceptance'))
+                }
+            })
+
+
+
+
         // find handles of parent space
         // find all spaces containing child spaces handles (effectedSpaces)
         // compare handles of parent space against handles of each spaces containing child spaces handles
         // add handles that don't match
 
-        let parent = await Holon.findOne({
-            where: { handle: newValue },
-            include: [{
-                model: Holon,
-                as: 'HolonHandles',
-                attributes: ['handle', 'id'],
-                through: { attributes: [] }
-            }]
-        })
-
-        let child = await Holon.findOne({
-            where: { id: holonId }
-        })
-
-        let effectedSpaces = await Holon.findAll({
-            where: { '$HolonHandles.handle$': child.dataValues.handle },
-            include: [{ model: Holon, as: 'HolonHandles' }]
-        })
-
-        let effectedSpacesWithHolonHandles = await Holon.findAll({
-            where: { id: effectedSpaces.map(s => s.id) },
-            include: [{
-                model: Holon,
-                as: 'HolonHandles',
-                attributes: ['handle', 'id'],
-                through: { attributes: [] }
-            }]
-        })
-
-        // A is a direct parent of B
-        VerticalHolonRelationship.create({
-            state: 'open',
-            holonAId: parent.id,
-            holonBId: child.id,
-        })
-
-        effectedSpacesWithHolonHandles.forEach(space => {
-            parent.HolonHandles.forEach(ph => {
-                let match = space.HolonHandles.some(sh => sh.handle === ph.handle)
-                if (!match) {
-                    // posts to A appear within B
-                    HolonHandle.create({
-                        state: 'open',
-                        holonAId: space.id,
-                        holonBId: ph.id,
-                    })
-                }
-            })
-        })
-
-
-        // check parent space exists and grab its holonHandles
-        // Holon.findOne({
+        // let parent = await Holon.findOne({
         //     where: { handle: newValue },
+        //     include: [{
+        //         model: Holon,
+        //         as: 'HolonHandles',
+        //         attributes: ['handle', 'id'],
+        //         through: { attributes: [] }
+        //     }]
+        // })
+
+        // let child = await Holon.findOne({
+        //     where: { id: holonId }
+        // })
+
+        // let effectedSpaces = await Holon.findAll({
+        //     where: { '$HolonHandles.handle$': child.dataValues.handle },
         //     include: [{ model: Holon, as: 'HolonHandles' }]
         // })
-        // .then(holon => {
-        //     if (holon) {
-                // if the parent space exists, create new VHR between the moderated space and the new parent space (A is a direct parent of B)
-                // VerticalHolonRelationship.create({
-                //     state: 'open',
-                //     holonAId: holon.id,
-                //     holonBId: holonId,
-                // })
-                // .then(() => {
-                    // TODO: need to add handles to all effected child spaces (all child-spaces of moderated space)
 
-                    // find handles of parent space
-                    // find all spaces containing child spaces handles
-                    // compare handles of parent space against handles of each spaces containing child spaces handles
-                    // add handles that don't match
+        // let effectedSpacesWithHolonHandles = await Holon.findAll({
+        //     where: { id: effectedSpaces.map(s => s.id) },
+        //     include: [{
+        //         model: Holon,
+        //         as: 'HolonHandles',
+        //         attributes: ['handle', 'id'],
+        //         through: { attributes: [] }
+        //     }]
+        // })
 
-                    // Holon.findAll({
-                    //     where: { '$HolonHandles.handle$': handle },
-                    //     include: [{ model: Holon, as: 'HolonHandles' }]
-                    // }).then(holons => {
-                    //     console.log('holons: ', holons)
-                    // })
+        // // A is a direct parent of B
+        // VerticalHolonRelationship.create({
+        //     state: 'open',
+        //     holonAId: parent.id,
+        //     holonBId: child.id,
+        // })
 
-                    // add all of the parent spaces handles to the child space (post to A appear within B)
-                //     holon.HolonHandles.forEach((handle) => {
-                //         HolonHandle.create({
-                //             state: 'open',
-                //             holonAId: holonId,
-                //             holonBId: handle.id,
-                //         })
-                //     })
-                // })
-                // .then(res.send('success'))
-        //     }
-        //     else { res.send('No space with that handle') }
+        // effectedSpacesWithHolonHandles.forEach(space => {
+        //     parent.HolonHandles.forEach(ph => {
+        //         let match = space.HolonHandles.some(sh => sh.handle === ph.handle)
+        //         if (!match) {
+        //             // posts to A appear within B
+        //             HolonHandle.create({
+        //                 state: 'open',
+        //                 holonAId: space.id,
+        //                 holonBId: ph.id,
+        //             })
+        //         }
+        //     })
         // })
     }
-    if (setting === 'remove-parent-space') {
+    if (setting === 'remove-parent-holon') {
         // check parent space exists
         Holon.findOne({
             where: { handle: newValue },
@@ -2478,6 +2618,7 @@ router.post('/update-holon-setting', async (req, res) => {
                     where: { holonBId: holon.id }
                 })
                 .then(holons => {
+                    // TODO: ...
                     console.log('holons: ', holons)
                 })
             }
@@ -2530,25 +2671,25 @@ router.get('/space-map-data', (req, res) => {
                 model: Holon,
                 as: 'DirectChildHolons',
                 attributes: ['id', 'handle', 'name', 'flagImagePath'],
-                through: { attributes: [] },
+                through: { attributes: [], where: { state: 'open' } },
                 include: [
                     { 
                         model: Holon,
                         as: 'DirectChildHolons',
                         attributes: ['id', 'handle', 'name', 'flagImagePath'],
-                        through: { attributes: [] },
+                        through: { attributes: [], where: { state: 'open' } },
                         include: [
                             { 
                                 model: Holon,
                                 as: 'DirectChildHolons',
                                 attributes: ['id', 'handle', 'name', 'flagImagePath'],
-                                through: { attributes: [] },
+                                through: { attributes: [], where: { state: 'open' } },
                                 include: [
                                     { 
                                         model: Holon,
                                         as: 'DirectChildHolons',
                                         attributes: ['id', 'handle', 'name', 'flagImagePath'],
-                                        through: { attributes: [] }
+                                        through: { attributes: [], where: { state: 'open' } },
                                     }
                                 ]
                             }
@@ -2716,10 +2857,161 @@ router.post('/toggle-notification-seen', (req, res) => {
 
 router.post('/mark-all-notifications-seen', (req, res) => {
     let { accountId } = req.body
-
     Notification
         .update({ seen: true }, { where: { ownerId: accountId } })
         .then(res.send('success'))
+})
+
+router.post('/toggle-space-notification-seen', (req, res) => {
+    let { notificationId, seen } = req.body
+    SpaceNotification
+        .update({ seen }, { where: { id: notificationId } })
+        .then(res.send('success'))
+})
+
+router.post('/mark-all-space-notifications-seen', (req, res) => {
+    let { holonId } = req.body
+    SpaceNotification
+        .update({ seen: true }, { where: { ownerId: holonId } })
+        .then(res.send('success'))
+})
+
+router.post('/accept-parent-space-request', (req, res) => {
+    let { notificationId } = req.body
+
+    SpaceNotification
+        .findOne({
+            where: { id: notificationId },
+            include: [
+                {
+                    model: User,
+                    as: 'triggerUser',
+                    attributes: ['id'],
+                },
+                {
+                    model: Holon,
+                    as: 'triggerSpace',
+                    attributes: ['id'],
+                },
+                {
+                    model: Holon,
+                    as: 'owner',
+                    attributes: ['id'],
+                    include: [{ model: Holon, as: 'HolonHandles' }]
+                }
+            ]
+        })
+        .then(notification => {
+            VerticalHolonRelationship
+                .findAll({
+                    where: { holonBId: notification.triggerSpace.id },
+                    attributes: ['holonAId']
+                })
+                .then(async holons => {
+                    // if child space was only connected to 'all', remove old connection
+                    let holonIds = holons.map(h => h.holonAId)
+                    if (holonIds.length === 1 && holonIds[0] === 1) {
+                        VerticalHolonRelationship.update({ state: 'closed' }, { where: { holonAId: 1, holonBId: notification.triggerSpace.id }})
+                    }
+                    // attach child space to parent space
+                    VerticalHolonRelationship.create({
+                        state: 'open',
+                        holonAId: notification.owner.id,
+                        holonBId: notification.triggerSpace.id,
+                    })
+                    // find all spaces below child space (effected spaces)
+                    // include each spaces holon handles (second query used to avoid where clause issues)
+                    // for each effected space: loop through parent spaces handles,
+                    // check each against the effected spaces handles,
+                    // if no match: add the handle, otherwise skip
+                    let effectedSpaces = await Holon.findAll({
+                        where: { '$HolonHandles.id$': notification.triggerSpace.id },
+                        include: [{ model: Holon, as: 'HolonHandles' }]
+                    })
+                    let effectedSpacesWithHolonHandles = await Holon.findAll({
+                        where: { id: effectedSpaces.map(s => s.id) },
+                        include: [{
+                            model: Holon,
+                            as: 'HolonHandles',
+                            attributes: ['handle', 'id'],
+                            through: { attributes: [] }
+                        }]
+                    })
+                    effectedSpacesWithHolonHandles.forEach(space => {
+                        notification.owner.HolonHandles.forEach(ph => {
+                            let match = space.HolonHandles.some(sh => sh.handle === ph.handle)
+                            if (!match) {
+                                // posts to A appear within B
+                                HolonHandle.create({
+                                    state: 'open',
+                                    holonAId: space.id,
+                                    holonBId: ph.id,
+                                })
+                            }
+                        })
+                    })
+                    // mark space notification as accepted
+                    notification.update({ state: 'accepted', seen: true })
+                    // notify request creator
+                    Notification.create({
+                        ownerId: notification.triggerUser.id,
+                        seen: false,
+                        type: 'parent-space-request-accepted',
+                        holonAId: notification.triggerSpace.id,
+                        holonBId: notification.owner.id
+                    })
+                })
+                .then(res.send('success'))
+                .catch(error => console.log(error))
+        })
+})
+
+router.post('/reject-parent-space-request', async (req, res) => {
+    let { notificationId } = req.body
+    SpaceNotification
+        .findOne({
+            where: { id: notificationId },
+            include: [
+                {
+                    model: User,
+                    as: 'triggerUser',
+                    attributes: ['id'],
+                },
+                {
+                    model: Holon,
+                    as: 'triggerSpace',
+                    attributes: ['id'],
+                },
+                {
+                    model: Holon,
+                    as: 'owner',
+                    attributes: ['id'],
+                }
+            ]
+        })
+        .then(notification => {
+            SpaceNotification.update({ state: 'rejected', seen: true }, { where: { id: notificationId } })
+            Notification.create({
+                ownerId: notification.triggerUser.id,
+                seen: false,
+                type: 'parent-space-request-rejected',
+                holonAId: notification.triggerSpace.id,
+                holonBId: notification.owner.id
+            })
+        })
+        .then(res.send('success'))
+    // let updateSpaceNotification = await SpaceNotification.update({ state: 'rejected', seen: true }, { where: { id: notificationId } })
+    // let notifyRequestCreator = await Notification.create({
+    //     ownerId: notification.triggerUser.id,
+    //     seen: false,
+    //     type: 'parent-space-request-accepted',
+    //     holonAId: notification.triggerSpace.id,
+    //     holonBId: notification.owner.id
+    // })
+
+    // Promise
+    //     .all([updateSpaceNotification, notifyRequestCreator])
+    //     .then(res.send('success'))
 })
 
 module.exports = router

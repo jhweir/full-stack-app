@@ -1,5 +1,5 @@
 .wrapper {
-    margin-top: 5px;
+    //margin-top: 5px;
     // background-color: #f7f7f9;
     // padding: 10px;
     // border-radius: 10px;
@@ -8,7 +8,7 @@
     display: flex;
     flex-direction: row;
     margin-bottom: 10px;
-    //margin-top: 5px;
+    margin-top: 5px;
 }
 .inputWrapper {
     width: 100%;
@@ -78,4 +78,7 @@
     }
     
     &:focus { outline: none }
+}
+.comments {
+    margin-top: 10px;
 }

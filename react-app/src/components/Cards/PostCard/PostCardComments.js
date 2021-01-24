@@ -97,15 +97,19 @@ function PostCardComments(props) {
                     </form>
                 </div>
             }
-            {postComments.map((comment, index) => 
-                <CommentCard
-                    key={index}
-                    comment={comment}
-                    totalComments={totalComments}
-                    setTotalComments={setTotalComments}
-                    getPostComments={getPostComments}
-                />
-            )}
+            {postComments.length > 0 &&
+                <div className={styles.comments}>
+                    {postComments.map((comment, index) => 
+                        <CommentCard
+                            key={index}
+                            comment={comment}
+                            totalComments={totalComments}
+                            setTotalComments={setTotalComments}
+                            getPostComments={getPostComments}
+                        />
+                    )}
+                </div>
+            }
         </div>
     )
 }

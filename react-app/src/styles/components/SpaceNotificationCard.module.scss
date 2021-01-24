@@ -105,3 +105,17 @@
     line-height: 30px;
     margin-bottom: 10px;
 }
+.greenText {
+    opacity: 0.6;
+    color: green;
+    line-height: 30px;
+    margin-bottom: 10px;
+}
+.linkText {
+    margin-bottom: 10px;
+    margin-left: 10px;
+    text-decoration: underline;
+    color: rgb(0, 160, 253);
+    line-height: 30px;
+    &:hover { cursor: pointer }
+}

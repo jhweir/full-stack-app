@@ -66,6 +66,9 @@ Posts to holon A appear within holon B
 ### Notification
 `npx sequelize-cli model:generate --name Notification --attributes type:string,text:string,holonId:integer,userId:integer,postId:integer,commentId:integer`
 
+### SpaceNotification
+`npx sequelize-cli model:generate --name SpaceNotification --attributes ownerId:integer,seen:boolean,type:string,state:string,holonAId:integer,holonBId:integer,userId:integer,postId:integer,commentId:integer`
+
 ### Message
 `npx sequelize-cli model:generate --name Message --attributes type:string,state:string,from:integer,to:integer,text:string`
 

@@ -11,7 +11,6 @@ module.exports = (sequelize, DataTypes) => {
     commentId: DataTypes.INTEGER
   }, {});
   Notification.associate = function(models) {
-    //Notification.hasOne(models.User)
     Notification.belongsTo(models.User, {
       foreignKey: 'userId',
       as: 'triggerUser'
@@ -23,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
     Notification.belongsTo(models.Holon, {
         foreignKey: 'holonBId',
         as: 'secondarySpace'
-      })
+    })
   };
   return Notification;
 };
