@@ -6,6 +6,7 @@ const bcrypt = require('bcrypt')
 const Op = sequelize.Op
 const db = require('../models/index')
 const linkPreviewGenerator = require("link-preview-generator")
+const _ = require('lodash');
 const crypto = require('crypto')
 const sgMail = require('@sendgrid/mail')
 sgMail.setApiKey(process.env.SENDGRID_API_KEY)
@@ -2659,48 +2660,136 @@ router.get('/prism-data', (req, res) => {
     .catch(err => console.log(err))
 })
 
-router.get('/space-map-data', (req, res) => {
+router.get('/space-map-data', async (req, res) => {
     const { spaceId } = req.query
 
-    // TODO: make recursive: if space has child spaces, fetch those too and check the next level down, repeat until no child spaces
-    Holon.findOne({ 
-        where: { id: spaceId },
-        attributes: ['id', 'handle', 'name', 'flagImagePath'],
-        include: [
-            { 
-                model: Holon,
-                as: 'DirectChildHolons',
-                attributes: ['id', 'handle', 'name', 'flagImagePath'],
-                through: { attributes: [], where: { state: 'open' } },
-                include: [
-                    { 
-                        model: Holon,
-                        as: 'DirectChildHolons',
-                        attributes: ['id', 'handle', 'name', 'flagImagePath'],
-                        through: { attributes: [], where: { state: 'open' } },
-                        include: [
-                            { 
-                                model: Holon,
-                                as: 'DirectChildHolons',
-                                attributes: ['id', 'handle', 'name', 'flagImagePath'],
-                                through: { attributes: [], where: { state: 'open' } },
-                                include: [
-                                    { 
-                                        model: Holon,
-                                        as: 'DirectChildHolons',
-                                        attributes: ['id', 'handle', 'name', 'flagImagePath'],
-                                        through: { attributes: [], where: { state: 'open' } },
-                                    }
-                                ]
-                            }
-                        ]
-                    }
+    const firstGenLimit = 8
+    const secondGenLimit = 3
+    const thirdGenLimit = 5
+    const fourthGenLimit = 5
+
+    // function findOrder() {
+    //     const sortOrder = 'Descending'
+    //     const sortBy = 'Posts'
+    //     let direction, order
+    //     if (sortOrder === 'Ascending') { direction = 'ASC' } else { direction = 'DESC' }
+    //     if (sortBy === 'Date') { order = [['createdAt', direction]] }
+    //     else { order = [[sequelize.literal(`total_${sortBy.toLowerCase()}`), direction]] }
+    //     return order
+    // }
+
+    async function asyncForEach(array, callback) {
+        for (let index = 0; index < array.length - 1; index++) {
+            await callback(array[index], index, array)
+        }
+    }
+
+    async function findNextGeneration(parent, limit) {
+        const nextGeneration = await Holon.findAll({
+            where: { '$DirectParentHolons.id$': parent.id },
+            attributes: [
+                'id', 'handle', 'name', 'flagImagePath',
+                [sequelize.literal(`(
+                    SELECT COUNT(*)
+                        FROM VerticalHolonRelationships
+                        AS VHR
+                        WHERE VHR.holonAId = Holon.id
+                        AND VHR.state = 'open'
+                    )`), 'total_children'
                 ]
-            }
+            ],
+            limit,
+            //order: findOrder(),
+            subQuery: false,
+            include: [{ 
+                model: Holon,
+                as: 'DirectParentHolons',
+                attributes: [],
+                through: { attributes: [], where: { state: 'open' } },
+            }]
+        })
+        parent.children = []
+        nextGeneration.forEach(child => {
+            parent.children.push(child.toJSON())
+        })
+        if (parent.children.length && parent.total_children > limit) {
+            parent.children.splice(-1, 1)
+            parent.children.push({ isExpander: true, name: `${parent.total_children - limit + 1} more spaces` })
+        }
+    }
+
+    const findRoot = await Holon.findOne({ 
+        where: { id: spaceId },
+        attributes: [
+            'id', 'handle', 'name', 'flagImagePath',
+            [sequelize.literal(`(
+                SELECT COUNT(*)
+                    FROM VerticalHolonRelationships
+                    AS VHR
+                    WHERE VHR.holonAId = Holon.id
+                    AND VHR.state = 'open'
+                )`), 'total_children'
+            ]
         ]
     })
-    .then(holons => { res.json(holons) })
-    .catch(err => console.log(err))
+    const root = findRoot.toJSON()
+    const findFirstGeneration = await findNextGeneration(root, firstGenLimit)
+    const findSecondGeneration = await asyncForEach(root.children, async(child) => {
+        await findNextGeneration(child, secondGenLimit)
+    })
+    const findThirdGeneration = await asyncForEach(root.children, async(child) => {
+        await asyncForEach(child.children, async(child2) => {
+            await findNextGeneration(child2, thirdGenLimit)
+        })
+    })
+    // const findFourthGeneration = await asyncForEach(root.children, async(child) => {
+    //     await asyncForEach(child.children, async(child2) => {
+    //         await asyncForEach(child2.children, async(child3) => {
+    //             await findNextGeneration(child3, fourthGenLimit)
+    //         })
+    //     })
+    // })
+
+    Promise
+        .all([findFirstGeneration, findSecondGeneration, findThirdGeneration])
+        .then(res.send(root))
+
+    // Holon.findOne({ 
+    //     where: { id: spaceId },
+    //     attributes: ['id', 'handle', 'name', 'flagImagePath'],
+    //     include: [
+    //         { 
+    //             model: Holon,
+    //             as: 'DirectChildHolons',
+    //             attributes: ['id', 'handle', 'name', 'flagImagePath'],
+    //             through: { attributes: [], where: { state: 'open' } },
+    //             include: [
+    //                 { 
+    //                     model: Holon,
+    //                     as: 'DirectChildHolons',
+    //                     attributes: ['id', 'handle', 'name', 'flagImagePath'],
+    //                     through: { attributes: [], where: { state: 'open' } },
+    //                     include: [
+    //                         { 
+    //                             model: Holon,
+    //                             as: 'DirectChildHolons',
+    //                             attributes: ['id', 'handle', 'name', 'flagImagePath'],
+    //                             through: { attributes: [], where: { state: 'open' } },
+    //                             include: [
+    //                                 { 
+    //                                     model: Holon,
+    //                                     as: 'DirectChildHolons',
+    //                                     attributes: ['id', 'handle', 'name', 'flagImagePath'],
+    //                                     through: { attributes: [], where: { state: 'open' } },
+    //                                 }
+    //                             ]
+    //                         }
+    //                     ]
+    //                 }
+    //             ]
+    //         }
+    //     ]
+    // })
 })
 
 router.get('/plot-graph-data', (req, res) => {

@@ -19,7 +19,10 @@ function HolonSpaceMap() {
 
     function getSpaceMapData() {
         axios.get(config.apiURL + `/space-map-data?spaceId=${holonData.id}`)
-            .then(res => setSpaceMapData(res.data))
+            .then(res => {
+                setSpaceMapData(res.data)
+                console.log('spaceMapData: ', res.data)
+            })
     }
 
     useEffect(() => {
@@ -64,7 +67,9 @@ function HolonSpaceMap() {
             // let treeWidth = 900
             // let treeHeight = 500
             //let height = treemap.nodeSize()[1] * nodes.length; 
-            let root = d3.hierarchy(spaceMapData, (d) => { return d.DirectChildHolons })
+            let root = d3.hierarchy(spaceMapData, d => {
+                return d.children
+            })
 
             function countGrandChildren(node) {
                 let childrenAtCurrentDepth = 0
@@ -170,8 +175,12 @@ function HolonSpaceMap() {
                         .attr('r', circleRadius + 2)
                 })
                 .on('mousedown', (d) => {
-                    history.push(`/s/${d.data.handle}/spaces`)
-                    setHolonHandle(d.data.handle)
+                    if (d.data.isExpander) {
+                        // 
+                    } else {
+                        history.push(`/s/${d.data.handle}/spaces`)
+                        setHolonHandle(d.data.handle)
+                    }
                 })
             // create image circle
             nodes.append('circle')

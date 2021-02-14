@@ -29,7 +29,7 @@ function HolonCard(props) {
     const descriptionRef = useRef()
 
     useEffect(() => {
-        if (descriptionRef.current && descriptionRef.current.scrollHeight > 40) {
+        if (descriptionRef.current && descriptionRef.current.scrollHeight > 50) {
             setDescriptionOverflow(true)
         } else {
             setDescriptionOverflow(false)

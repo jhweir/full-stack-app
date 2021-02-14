@@ -19,11 +19,25 @@ const cors = require('cors')
 //const { default: Users } = require("../react-app/src/components/Users")
 
 const app = express()
-//app.use(cors())
-
+var whitelist = []
+if (process.env.APP_ENV === 'prod') {
+    whitelist.push(process.env.PROD_APP_URL, process.env.PROD_APP_URL2)
+}
+if (process.env.APP_ENV === 'dev') {
+    whitelist.push(process.env.DEV_APP_URL)
+}
 app.use(cors({
-  origin: `${process.env.APP_ENV === 'prod' ? process.env.PROD_APP_URL : process.env.DEV_APP_URL}`
+    origin: function (origin, callback) {
+        if (whitelist.indexOf(origin) !== -1) {
+            callback(null, true)
+        } else {
+            callback(new Error('Not allowed by CORS'))
+        }
+    }
 }))
+// app.use(cors({
+//   origin: `${process.env.APP_ENV === 'prod' ? process.env.PROD_APP_URL : process.env.DEV_APP_URL}`
+// }))
 app.options('*', cors())
 app.use(passport.initialize())
 //app.use(cors({ origin:true, credentials: true }))
@@ -34,6 +48,7 @@ app.use('/api', require('./routes/Routes'))
 app.listen(5000, () => console.log('Listening on port 5000'))
 
 app.get('/', (req, res) => res.send('INDEX'))
+app.get('/test', (req, res) => res.send('test response'))
 
 app.post('/api/log-in', async (req, res) => {
   const { emailOrHandle, password } = req.body
