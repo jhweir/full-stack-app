@@ -13,6 +13,7 @@
     "d3-force": "^2.1.0",
     "d3-hexbin": "^0.2.2",
     "history": "^4.10.1",
+    "lodash": "^4.17.20",
     "node-sass": "^4.13.1",
     "query-string": "^6.13.1",
     "react": "^16.12.0",

@@ -95,14 +95,42 @@ function HolonPageSideBarLeft() {
                         marginBottom={5}
                         total={holonData.total_spaces}
                     />
-                    <SideBarButton
-                        icon='users-solid.svg'
-                        text={holonData.handle === 'all' ? 'Users' : 'Followers'}
-                        url='users'
-                        selected={selectedHolonSubPage === 'users'}
-                        marginBottom={5}
-                        total={holonData.total_users}
-                    />
+                    {holonData.handle !== 'coops' &&
+                        <SideBarButton
+                            icon='users-solid.svg'
+                            text={holonData.handle === 'all' ? 'Users' : 'Followers'}
+                            url='users'
+                            selected={selectedHolonSubPage === 'users'}
+                            marginBottom={5}
+                            total={holonData.total_users}
+                        />
+                    }
+                    {holonData.handle === 'coops' && <>
+                        <SideBarButton
+                            icon='handshake-regular.svg'
+                            text='Coops'
+                            url='spaces'
+                            //selected={selectedHolonSubPage === 'users'}
+                            marginBottom={5}
+                            total={12}
+                        />
+                        <SideBarButton
+                            icon='users-solid.svg'
+                            text='Cooperators'
+                            url='users'
+                            //selected={selectedHolonSubPage === 'users'}
+                            marginBottom={5}
+                            total={8}
+                        />
+                        <SideBarButton
+                            icon='copy-solid.svg'
+                            text='Publications'
+                            url='posts'
+                            //selected={selectedHolonSubPage === 'users'}
+                            marginBottom={5}
+                            total={4}
+                        />
+                    </>}
                 </div>
                 {/* <div className={styles.description}>{holonData.description}</div> */}
             </div>
