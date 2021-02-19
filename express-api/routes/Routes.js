@@ -6,7 +6,8 @@ const bcrypt = require('bcrypt')
 const Op = sequelize.Op
 const db = require('../models/index')
 const linkPreviewGenerator = require("link-preview-generator")
-const _ = require('lodash');
+const _ = require('lodash')
+const { v4: uuidv4 } = require('uuid')
 const crypto = require('crypto')
 const sgMail = require('@sendgrid/mail')
 sgMail.setApiKey(process.env.SENDGRID_API_KEY)
@@ -2719,7 +2720,7 @@ router.get('/space-map-data', async (req, res) => {
         // if hidden spaces, add expander
         if (parent.children.length && parent.total_children > limit) {
             parent.children.splice(-1, 1)
-            parent.children.push({ isExpander: true, id: `expander-${parent.id}`, name: `${parent.total_children - limit + 1} more spaces` })
+            parent.children.push({ isExpander: true, id: uuidv4(), name: `${parent.total_children - limit + 1} more spaces` })
         }
     }
 
@@ -2758,60 +2759,14 @@ router.get('/space-map-data', async (req, res) => {
     Promise
         .all([findFirstGeneration, findSecondGeneration, findThirdGeneration])
         .then(res.send(root))
-
-    // Promise.all([findFirstGeneration])
-    //     .then(() => Promise.all([findSecondGeneration]).then(res.send(root)))
-
-    // Promise.all([findFirstGeneration]).then((root) => {
-    //     const findSecondGeneration = asyncForEach(root.children, async(child) => {
-    //         console.log('child: ', child)
-    //         await findNextGeneration(child, secondGenLimit)
-    //     })
-    //     findSecondGeneration
-    // }).then(res.send(root))
-
-    // Holon.findOne({ 
-    //     where: { id: spaceId },
-    //     attributes: ['id', 'handle', 'name', 'flagImagePath'],
-    //     include: [
-    //         { 
-    //             model: Holon,
-    //             as: 'DirectChildHolons',
-    //             attributes: ['id', 'handle', 'name', 'flagImagePath'],
-    //             through: { attributes: [], where: { state: 'open' } },
-    //             include: [
-    //                 { 
-    //                     model: Holon,
-    //                     as: 'DirectChildHolons',
-    //                     attributes: ['id', 'handle', 'name', 'flagImagePath'],
-    //                     through: { attributes: [], where: { state: 'open' } },
-    //                     include: [
-    //                         { 
-    //                             model: Holon,
-    //                             as: 'DirectChildHolons',
-    //                             attributes: ['id', 'handle', 'name', 'flagImagePath'],
-    //                             through: { attributes: [], where: { state: 'open' } },
-    //                             include: [
-    //                                 { 
-    //                                     model: Holon,
-    //                                     as: 'DirectChildHolons',
-    //                                     attributes: ['id', 'handle', 'name', 'flagImagePath'],
-    //                                     through: { attributes: [], where: { state: 'open' } },
-    //                                 }
-    //                             ]
-    //                         }
-    //                     ]
-    //                 }
-    //             ]
-    //         }
-    //     ]
-    // })
 })
 
 router.get('/space-map-next-children', async (req, res) => {
     const { spaceId, offset } = req.query
 
-    const firstGenLimit = 8
+    console.log('offset: ', offset)
+
+    const firstGenLimit = 7
     const secondGenLimit = 3
     const thirdGenLimit = 3
     const fourthGenLimit = 3
@@ -2832,7 +2787,8 @@ router.get('/space-map-next-children', async (req, res) => {
         }
     }
 
-    async function findNextGeneration(parent, limit) {
+    async function findNextGeneration(generation, parent, limit, offset) {
+        parent.children = []
         if (!parent.isExpander && parent.total_children > 0) {
             const nextGeneration = await Holon.findAll({
                 where: { '$DirectParentHolons.id$': parent.id },
@@ -2858,17 +2814,29 @@ router.get('/space-map-next-children', async (req, res) => {
                     through: { attributes: [], where: { state: 'open' } },
                 }]
             })
-            parent.children = []
             nextGeneration.forEach(child => {
                 parent.children.push(child.toJSON())
             })
-        } else {
-            parent.children = []
         }
-        // if hidden spaces, add expander
-        if (parent.children.length && parent.total_children > limit) {
-            parent.children.splice(-1, 1)
-            parent.children.push({ isExpander: true, name: `${parent.total_children - limit + 1} more spaces` })
+
+        // if hidden spaces, replace last space with expander
+        if (parent.children.length) {
+            if (
+                generation === 1 &&
+                parent.total_children > Number(offset) + parent.children.length
+            ) {
+                parent.children.splice(-1, 1)
+                const remainingChildren = parent.total_children - parent.children.length - Number(offset)
+                parent.children.push({ isExpander: true, id: uuidv4(), name: `${remainingChildren} more spaces` })
+            }
+            if (
+                generation > 1 &&
+                parent.total_children > limit
+            ) {
+                parent.children.splice(-1, 1)
+                const remainingChildren = parent.total_children - parent.children.length
+                parent.children.push({ isExpander: true, id: uuidv4(), name: `${remainingChildren} more spaces` })
+            }
         }
     }
 
@@ -2887,13 +2855,13 @@ router.get('/space-map-next-children', async (req, res) => {
         ]
     })
     const root = findRoot.toJSON()
-    const findFirstGeneration = await findNextGeneration(root, firstGenLimit)
+    const findFirstGeneration = await findNextGeneration(1, root, firstGenLimit, offset)
     const findSecondGeneration = await asyncForEach(root.children, async(child) => {
-        await findNextGeneration(child, secondGenLimit)
+        await findNextGeneration(2, child, secondGenLimit, 0)
     })
     const findThirdGeneration = await asyncForEach(root.children, async(child) => {
         await asyncForEach(child.children, async(child2) => {
-            await findNextGeneration(child2, thirdGenLimit)
+            await findNextGeneration(3, child2, thirdGenLimit, 0)
         })
     })
     // const findFourthGeneration = await asyncForEach(root.children, async(child) => {
@@ -2907,31 +2875,6 @@ router.get('/space-map-next-children', async (req, res) => {
     Promise
         .all([findFirstGeneration, findSecondGeneration, findThirdGeneration])
         .then(res.send(root.children))
-    
-    // Holon.findOne({ 
-    //     where: { id: spaceId },
-    //     attributes: [],
-    //     include: [
-    //         { 
-    //             model: Holon,
-    //             as: 'DirectChildHolons',
-    //             attributes: [
-    //                 'id', 'handle', 'name', 'flagImagePath',
-    //                 [sequelize.literal(`(
-    //                     SELECT COUNT(*)
-    //                         FROM VerticalHolonRelationships
-    //                         AS VHR
-    //                         WHERE VHR.holonAId = Holon.id
-    //                         AND VHR.state = 'open'
-    //                     )`), 'total_children'
-    //                 ]
-    //             ],
-    //             through: { attributes: [], where: { state: 'open' } },
-    //         }
-    //     ]
-    // }).then(holon => {
-    //     res.send(holon.DirectChildHolons)
-    // })
 })
 
 router.get('/plot-graph-data', (req, res) => {

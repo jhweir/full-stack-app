@@ -6,10 +6,12 @@ import * as d3 from 'd3'
 import { HolonContext } from '../../contexts/HolonContext'
 import { useHistory } from "react-router-dom"
 import _ from 'lodash'
+import { v4 as uuidv4 } from 'uuid';
 
 function HolonSpaceMap() {
     const { holonData, setHolonHandle, holonContextLoading, holonSpaces, holonPostSortByFilter } = useContext(HolonContext)
     const [spaceMapData, setSpaceMapData] = useState()
+    const [loading, setLoading] = useState(false)
 
     const history = useHistory()
 
@@ -32,58 +34,28 @@ function HolonSpaceMap() {
             })
     }
 
-    // function findParent(object, id){
-    //     console.log('object: ', object)
-    //     if(object["id"] ==  id)
-    //         return object;
-    
-    //     for(var i=0; i<Object.keys(object).length; i++){
-    //         if(typeof object[Object.keys(object)[i]] == "object"){
-    //             var o = findParent(object[Object.keys(object)[i]]);
-    //             if(o != null)
-    //                 return o;
-    //         }
-    //     }
-    
-    //     return null;
-    // }
-
-    function getChildren(d) {
-        // todo: rewrite recursive function, searching 'children' property
-        function findParent(object, id){
-            if(object.hasOwnProperty('id') && object["id"] ==  d.parent.data.id)
-                return object;
-        
-            for(var i=0; i<Object.keys(object).length; i++){
-                if(typeof object[Object.keys(object)[i]] == "object"){
-                    var o = findParent(object[Object.keys(object)[i]]);
-                    if(o != null)
-                        return o;
-                }
+    function findParent(tree, itemId){
+        if (tree.id === itemId) {
+            return tree
+        } else if (tree.children) {
+            for (let i = 0; i < tree.children.length; i++) {
+                let match = findParent(tree.children[i], itemId)
+                if (match) return match
             }
-        
-            return null;
         }
-        const spaceMapDataClone = _.cloneDeep(spaceMapData)
-        console.log('spaceMapDataClone1: ', spaceMapDataClone)
-        const parent = findParent(spaceMapDataClone, d.parent.data.id)
-        //console.log('d: ', d)
-        axios.get(config.apiURL + `/space-map-next-children?spaceId=${d.parent.data.id}&offset=${d.parent.children.length - 1}`)
+    }
+
+    function getChildren(node) {
+        console.log('spaceMapData: ', spaceMapData)
+        console.log('node.children.length: ', node.children.length)
+        axios.get(config.apiURL + `/space-map-next-children?spaceId=${node.data.id}&offset=${node.children.length - 1}`)
             .then(res => {
-                //setSpaceMapData(res.data)
-    
-                console.log('parent: ', parent)
-                parent.children = parent.children.filter(child => !child.isExpander)
-                parent.children.push(...res.data)
-                console.log('spaceMapDataClone2: ', spaceMapDataClone)
-                // const firstGenParent = spaceMapDataClone.children.find(child => child.id === d.parent.data.id)
-                // if (firstGenParent) {
-                //     firstGenParent.children = firstGenParent.children.filter(child => !child.isExpander)
-                //     firstGenParent.children.push(...res.data)
-                // }
-                // //console.log('spaceMapDataClone: ', spaceMapDataClone)
-                setSpaceMapData(spaceMapDataClone)
-            })
+                const match = findParent(spaceMapData, node.data.id)
+                match.children = match.children.filter(child => !child.isExpander)
+                match.children.push(...res.data)
+                updateTree(spaceMapData)
+                //setLoading(false)
+            })//.then(setLoading(false))
     }
 
     function createCanvas() {
@@ -173,7 +145,8 @@ function HolonSpaceMap() {
                         .remove()
                     )
             );
-
+        
+        //let loading = false
         // create background circle
         d3.select('#node-group')
             .selectAll('.background-circle')
@@ -182,30 +155,39 @@ function HolonSpaceMap() {
                 enter => enter
                     .append('circle')
                     .attr('class', 'background-circle')
-                    .attr('id', (d, i) => `circle-${i}`)
+                    .attr('id', d => `circle-${d.data.id}`)
                     .attr('opacity', 0)
-                    .attr('r', circleRadius + 2)
-                    .attr('fill', '#aaa')
+                    .attr('r', circleRadius + 1)
+                    .attr('fill', '#fff')
+                    .attr('stroke', '#aaa')
+                    .attr('stroke-width', 3)
                     .attr('opacity', 0)
-                    .attr('transform', (d) => { return 'translate(' + d.x + ',' + d.y + ')' })
-                    .on('mouseover', (d, i) => {
-                        d3.select(`#circle-${i}`)
-                        .style("cursor", "pointer")
-                            .transition()
-                            .duration(200)
-                            .attr('fill', '#8ad1ff') //blue
-                            .attr('r', circleRadius + 6)
+                    .attr('transform', d => { return 'translate(' + d.x + ',' + d.y + ')' })
+                    .on('mouseover', d => {
+                        //if (!loading) {
+                            d3.select(`#circle-${d.data.id}`)
+                                .style("cursor", "pointer")
+                                .transition()
+                                .duration(200)
+                                .attr('fill', '#8ad1ff')
+                                .attr('stroke', '#8ad1ff')
+                                // .attr('fill', '#8ad1ff') // blue
+                                .attr('r', circleRadius + 6)
+                        //}
                     })
                     .on('mouseout', (d, i) => {
-                        d3.select(`#circle-${i}`)
-                            .transition()
-                            .duration(600)
-                            .attr('fill', '#888') //blue
-                            .attr('r', circleRadius + 2)
+                        //if (!loading) {
+                            d3.select(`#circle-${d.data.id}`)
+                                .transition()
+                                .duration(500)
+                                .attr('fill', '#fff')
+                                .attr('r', circleRadius + 1)
+                        //}
                     })
                     .on('mousedown', (d) => {
                         if (d.data.isExpander) {
-                            getChildren(d)
+                            //setLoading(true)
+                            getChildren(d.parent, spaceMapData)
                         } else {
                             history.push(`/s/${d.data.handle}/spaces`)
                             setHolonHandle(d.data.handle)
