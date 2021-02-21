@@ -8,12 +8,12 @@ import { useHistory } from "react-router-dom"
 import _ from 'lodash'
 
 function HolonSpaceMap() {
-    const { holonData, setHolonHandle } = useContext(HolonContext)
+    const { holonData, setHolonHandle, fullScreen } = useContext(HolonContext)
     const [spaceMapData, setSpaceMapData] = useState()
+    const [width, setWidth] = useState(700)
 
     const history = useHistory()
 
-    const width = 700
     const height = 700
     const circleRadius = 25
     const maxTextLength = 14
@@ -93,6 +93,22 @@ function HolonSpaceMap() {
       
         d3.select('svg')
             .call(zoom)
+    }
+
+    function updateCanvasSize() {
+        d3.select('#canvas')
+            .style('width', width)
+
+        d3.select('svg')
+            .attr('width', width)
+
+        const newWidth = parseInt(d3.select('svg').style('width'), 10)
+        
+        d3.select('#link-group')
+            .attr('transform', 'translate(' + (xOffset + (newWidth / 2)) + ',' + yOffset + ')')
+
+        d3.select('#node-group')
+            .attr('transform', 'translate(' + (xOffset + (newWidth / 2)) + ',' + yOffset + ')')
     }
 
     function interruptRunningTransitions(data) {
@@ -375,6 +391,13 @@ function HolonSpaceMap() {
         resetTreePosition()
     },[holonData.id])
 
+    useEffect(() => {
+        setWidth(fullScreen ? '100%' : 700)
+    }, [fullScreen])
+
+    useEffect(() => {
+        updateCanvasSize()
+    }, [width])
 
     useEffect(() => {
         if (spaceMapData) {

@@ -19,23 +19,20 @@ function HolonPagePosts() {
     } = useContext(AccountContext)
 
     const {
-        //holonHandle,
         holonContextLoading, holonData,
         holonPosts, getHolonPosts, getNextHolonPosts,
         setSelectedHolonSubPage, holonPostPaginationOffset,
         holonPostSearchFilter,
         holonPostFiltersOpen, setHolonPostFiltersOpen,
-        // holonPostViewsOpen, setHolonPostViewsOpen,
         holonPostView, setHolonPostView,
         holonPostTimeRangeFilter,
         holonPostTypeFilter,
         holonPostSortByFilter,
         holonPostSortOrderFilter,
         holonPostDepthFilter,
-        setHolonPostSearchFilter
+        setHolonPostSearchFilter,
+        fullScreen, setFullScreen
     } = useContext(HolonContext)
-
-    //console.log('holonPosts: ', holonPosts)
 
     const [renderKey, setRenderKey] = useState(0)
 
@@ -62,7 +59,6 @@ function HolonPagePosts() {
             setRenderKey(renderKey + 1)
         }
     },[
-        //holonHandle,
         holonContextLoading,
         holonPostSearchFilter,
         holonPostTimeRangeFilter,
@@ -89,7 +85,15 @@ function HolonPagePosts() {
                             New Post
                         </div>
                     </div>
-                    <Toggle leftText='List' rightText='Map' onClickFunction={toggleView} positionLeft={holonPostView === 'List' ? true : false}/>
+                    <div className={styles.headerRowSection}>
+                        <Toggle leftText='List' rightText='Map' onClickFunction={toggleView} positionLeft={holonPostView === 'List' ? true : false}/>
+                        <img
+                            className={styles.expandButton}
+                            title='Toggle full screen'
+                            src={fullScreen ? '/icons/compress-solid.svg' : '/icons/expand-solid.svg'}
+                            onClick={() => setFullScreen(!fullScreen)}
+                        />
+                    </div>
                 </div>
                 {holonPostFiltersOpen && <HolonPagePostsFilters/>}
                 {/* {holonPostViewsOpen && <HolonPagePostViews/>} */}

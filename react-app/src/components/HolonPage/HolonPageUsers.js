@@ -17,7 +17,8 @@ function HolonPageUsers() {
         holonUserSortByFilter,
         holonUserSortOrderFilter,
         setSelectedHolonSubPage, holonUserPaginationOffset,
-        setHolonUserSearchFilter
+        setHolonUserSearchFilter,
+        fullScreen, setFullScreen
     } = useContext(HolonContext)
 
     useEffect(() => {
@@ -35,10 +36,20 @@ function HolonPageUsers() {
     return (
         <div className={styles.usersWrapper}>
             <div className='wecoPageHeader'>
-                <div className='wecoPageHeaderRow'>
-                    <SearchBar setSearchFilter={setHolonUserSearchFilter} placeholder='Search users...'/>
-                    <div className={styles.filterButton} onClick={() => setHolonUserFiltersOpen(!holonUserFiltersOpen)}>
-                        <img className={styles.filterButtonIcon} src='/icons/sliders-h-solid.svg'/>
+                <div className={styles.headerRow}>
+                    <div className={styles.headerRowSection}>
+                        <SearchBar setSearchFilter={setHolonUserSearchFilter} placeholder='Search users...'/>
+                        <div className={styles.filterButton} onClick={() => setHolonUserFiltersOpen(!holonUserFiltersOpen)}>
+                            <img className={styles.filterButtonIcon} src='/icons/sliders-h-solid.svg'/>
+                        </div>
+                    </div>
+                    <div className={styles.headerRowSection}>
+                        <img
+                            className={styles.expandButton}
+                            title='Toggle full screen'
+                            src={fullScreen ? '/icons/compress-solid.svg' : '/icons/expand-solid.svg'}
+                            onClick={() => setFullScreen(!fullScreen)}
+                        />
                     </div>
                 </div>
                 {holonUserFiltersOpen && <HolonPageUsersFilters/>}

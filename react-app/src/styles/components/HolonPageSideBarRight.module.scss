@@ -4,6 +4,7 @@
 .sideBarRight {
     width: 200px;
     padding: 0 20px;
+    flex-shrink: 0;
     @media screen and (max-width: 1200px) {
         display: none;
     }

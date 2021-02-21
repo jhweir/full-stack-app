@@ -1,9 +1,13 @@
 .holonPostMap {
-
+    //width: 700px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 .controls {
     display: flex;
     justify-content: space-between;
+    width: 700px;
     //height: 40px;
     margin-top: 5px;
     height: 60px;//0px;
@@ -81,5 +85,6 @@
 }
 .selectedPostWrapper {
     //height: 400px;
+    width: 700px;
     margin-bottom: 200px;
 }

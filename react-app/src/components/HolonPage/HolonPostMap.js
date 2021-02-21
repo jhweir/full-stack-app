@@ -11,20 +11,48 @@ function HolonPostMap() {
         totalMatchingPosts,
         getAllHolonPosts,
         holonPostSortByFilter,
-        holonPostSortOrderFilter
+        holonPostSortOrderFilter,
+        fullScreen
     } = useContext(HolonContext)
 
     const [selectedPost, setSelectedPost] = useState({ creator: {}, DirectSpaces: [] })
     const [rangeValue, setRangeValue] = useState(50)
     const [showKey, setShowKey] = useState(false)
+    const [width, setWidth] = useState(700)
 
     const range = useRef()
 
-    const width = 700
     const height = 500
 
     function updateRangeInput() {
         setRangeValue(range.current.value)
+    }
+    
+    function updateCanvasSize() {
+        d3.select('#holonPostMap')
+            .style('width', width)
+
+        d3.select('#canvas')
+            // .transition()
+            // .duration(1000)
+            .style('width', width)
+
+        d3.select('svg')
+            // .transition()
+            // .duration(1000)
+            .attr('width', width)
+
+        const newWidth = parseInt(d3.select('svg').style('width'), 10)
+        
+        // d3.select('#link-group')
+        //     // .transition()
+        //     // .duration(500)
+        //     .attr('transform', 'translate(' + (xOffset + (newWidth / 2)) + ',' + yOffset + ')')
+
+        // d3.select('#node-group')
+        //     // .transition()
+        //     // .duration(500)
+        //     .attr('transform', 'translate(' + (xOffset + (newWidth / 2)) + ',' + yOffset + ')')
     }
     
     useEffect(() => {
@@ -339,8 +367,16 @@ function HolonPostMap() {
 
     },[holonPosts])
 
+    // useEffect(() => {
+    //     setWidth(fullScreen ? '100%' : 700)
+    // }, [fullScreen])
+
+    // useEffect(() => {
+    //     updateCanvasSize()
+    // }, [width])
+
     return (
-        <div className={styles.holonPostMap}>
+        <div className={styles.holonPostMap} id='holonPostMap'>
             <div className={styles.controls}>
                 <div className={styles.controlsLeft}>
                     <div className={styles.item}>

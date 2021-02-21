@@ -13,8 +13,16 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: flex-start;
+    // transition-property: width;
+    // transition-duration: 1s;
     @media screen and (max-width: 1200px) {
         width: 100%;
+    }
+    &.fullScreen {
+        width: 100%;
+        .holonPageCenterPanel {
+            width: 100%;
+        }
     }
 }
 .holonPageCenterPanel {
@@ -22,6 +30,8 @@
     margin: 0 10px;
     position: relative;
     display: flex;
+    flex-direction: column;
+    align-items: center;
     @media screen and (max-width: 1200px) {
         width: 100%;
     }

@@ -17,7 +17,7 @@ function HolonPage({ match }) {
     const { url } = match
     const { holonHandle } = match.params
     const { accountContextLoading } = useContext(AccountContext)
-    const { setHolonHandle, holonData, isModerator } = useContext(HolonContext)
+    const { setHolonHandle, holonData, isModerator, fullScreen } = useContext(HolonContext)
 
     useEffect(() => {
         if (!accountContextLoading) { setHolonHandle(holonHandle) }
@@ -30,7 +30,7 @@ function HolonPage({ match }) {
                 imageUploadType='holon-cover-image'
                 canEdit={isModerator}
             />
-            <div className={styles.holonPageContent}>
+            <div className={`${styles.holonPageContent} ${fullScreen ? styles.fullScreen : ''}`}>
                 <HolonPageSideBarLeft/>
                 <div className={styles.holonPageCenterPanel}>
                     <Switch>
