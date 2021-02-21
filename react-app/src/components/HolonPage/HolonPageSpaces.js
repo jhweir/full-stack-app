@@ -26,11 +26,8 @@ function HolonPageSpaces() {
     }
 
     function toggleView() {
-        if (holonSpaceView === 'List') { 
-            setHolonSpaceView('Map')
-        } else {
-            setHolonSpaceView('List')
-        }
+        if (holonSpaceView === 'List') setHolonSpaceView('Map')
+        else setHolonSpaceView('List')
     }
 
     useEffect(() => {

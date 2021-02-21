@@ -6,10 +6,9 @@ import * as d3 from 'd3'
 import { HolonContext } from '../../contexts/HolonContext'
 import { useHistory } from "react-router-dom"
 import _ from 'lodash'
-import { v4 as uuidv4 } from 'uuid';
 
 function HolonSpaceMap() {
-    const { holonData, setHolonHandle, holonContextLoading, holonSpaces, holonPostSortByFilter } = useContext(HolonContext)
+    const { holonData, setHolonHandle } = useContext(HolonContext)
     const [spaceMapData, setSpaceMapData] = useState()
 
     const history = useHistory()
@@ -23,10 +22,12 @@ function HolonSpaceMap() {
 
     function getSpaceMapData() {
         axios.get(config.apiURL + `/space-map-data?spaceId=${holonData.id}`)
-            .then(res => setSpaceMapData(res.data))
+            .then(res => {
+                setSpaceMapData(res.data)
+            })
     }
 
-    function findParent(tree, itemId){
+    function findParent(tree, itemId) {
         if (tree.id === itemId) {
             return tree
         } else if (tree.children) {
@@ -43,7 +44,7 @@ function HolonSpaceMap() {
                 const match = findParent(spaceMapData, node.data.id)
                 match.children = match.children.filter(child => !child.isExpander)
                 match.children.push(...res.data)
-                updateTree(spaceMapData)
+                setSpaceMapData(_.cloneDeep(spaceMapData))
             })
     }
 
@@ -94,6 +95,24 @@ function HolonSpaceMap() {
             .call(zoom)
     }
 
+    function interruptRunningTransitions(data) {
+        d3.selectAll('.background-circle').each((d) => {
+            if (!findParent(data, d.data.id)) {
+                d3.select(`#background-circle-${d.data.id}`).interrupt('background-circle-enter')
+            }
+        })
+        d3.selectAll('.image-circle').each((d) => {
+            if (!findParent(data, d.data.id)) {
+                d3.select(`#image-circle-${d.data.id}`).interrupt('image-circle-enter')
+            }
+        })
+        d3.selectAll('.node-text').each((d) => {
+            if (!findParent(data, d.data.id)) {
+                d3.select(`#node-text-${d.data.id}`).interrupt('node-text-enter')
+            }
+        })
+    }
+
     function updateTree(data) {
         const root = d3.hierarchy(data, d => { return d.children })
         const tree = d3.tree()
@@ -103,6 +122,8 @@ function HolonSpaceMap() {
         tree(root).links()
         const links = root.descendants().slice(1)
         const nodes = root.descendants()
+
+        interruptRunningTransitions(data)
 
         // create links
         d3.select('#link-group')
@@ -115,7 +136,7 @@ function HolonSpaceMap() {
                     .attr('stroke', 'black')
                     .attr('fill', 'none')
                     .attr('opacity', 0)
-                    .attr("d", function(d) {
+                    .attr("d", d => {
                         return "M" + d.x + "," + d.y
                         + "C" + d.x + "," + (d.y + d.parent.y) / 2
                         + " " + d.parent.x + "," +  (d.y + d.parent.y) / 2
@@ -128,9 +149,9 @@ function HolonSpaceMap() {
                     ),
                 update => update
                     .call(update => update
-                        .transition()
+                        .transition('link-update')
                         .duration(1000)
-                        .attr("d", function(d) {
+                        .attr("d", d => {
                             return "M" + d.x + "," + d.y
                             + "C" + d.x + "," + (d.y + d.parent.y) / 2
                             + " " + d.parent.x + "," +  (d.y + d.parent.y) / 2
@@ -142,7 +163,7 @@ function HolonSpaceMap() {
                         .transition()
                         .duration(500)
                         .attr('opacity', 0)
-                        // .attr("d", function(d) {
+                        // .attr("d", d => {
                         //     console.log('d: ', d)
                         //     return "M" + d.x + "," + d.y
                         //     + "C" + d.x + "," + (d.y + d.parent.y) / 2
@@ -161,7 +182,7 @@ function HolonSpaceMap() {
                 enter => enter
                     .append('circle')
                     .classed('background-circle', true)
-                    .attr('id', d => `circle-${d.data.id}`)
+                    .attr('id', d => `background-circle-${d.data.id}`)
                     .attr('opacity', 0)
                     .attr('r', circleRadius + 2)
                     .attr('fill', '#aaa')
@@ -169,7 +190,7 @@ function HolonSpaceMap() {
                     .attr('opacity', 0)
                     .attr('transform', d => { return 'translate(' + d.x + ',' + d.y + ')' })
                     .on('mouseover', d => {
-                        d3.select(`#circle-${d.data.id}`)
+                        d3.select(`#background-circle-${d.data.id}`)
                             .style('cursor', 'pointer')
                             .transition()
                             .duration(200)
@@ -177,7 +198,7 @@ function HolonSpaceMap() {
                             .attr('r', circleRadius + 6)
                     })
                     .on('mouseout', (d, i) => {
-                        d3.select(`#circle-${d.data.id}`)
+                        d3.select(`#background-circle-${d.data.id}`)
                             .transition()
                             .duration(500)
                             .attr('fill', '#aaa')
@@ -192,19 +213,19 @@ function HolonSpaceMap() {
                         }
                     })
                     .call(enter => enter
-                        .transition('enter')
+                        .transition('background-circle-enter')
                         .duration(1000)
                         .attr('opacity', 1)
                     ),
                 update => update
                     .call(update => update
-                        .transition('update')
+                        .transition('background-circle-update')
                         .duration(1000)
                         .attr('transform', (d) => { return 'translate(' + d.x + ',' + d.y + ')' })
                     ),
                 exit => exit
                     .call(exit => exit
-                        .transition('exit')
+                        .transition('background-circle-exit')
                         .duration(500)
                         .attr('opacity', 0)
                         .remove()
@@ -252,6 +273,7 @@ function HolonSpaceMap() {
                 enter => enter
                     .append('circle')
                     .classed('image-circle', true)
+                    .attr('id', d => `image-circle-${d.data.id}`)
                     .attr('opacity', 0)
                     .attr('r', circleRadius)
                     .attr('pointer-events', 'none')
@@ -284,19 +306,19 @@ function HolonSpaceMap() {
                     })
                     .attr('transform', (d) => { return 'translate(' + d.x + ',' + d.y + ')' })
                     .call(enter => enter
-                        .transition()
+                        .transition('image-circle-enter')
                         .duration(1000)
                         .attr('opacity', 1)
                     ),
                 update => update
                     .call(update => update
-                        .transition()
+                        .transition('image-circle-update')
                         .duration(1000)
                         .attr('transform', (d) => { return 'translate(' + d.x + ',' + d.y + ')' }),
                     ),
                 exit => exit
                     .call(exit => exit
-                        .transition()
+                        .transition('image-circle-exit')
                         .duration(500)
                         .attr('opacity', 0)
                         .remove()
@@ -311,6 +333,7 @@ function HolonSpaceMap() {
                 enter => enter
                     .append('text')
                     .classed('node-text', true)
+                    .attr('id', d => `node-text-${d.data.id}`)
                     .text((d) => {
                         var croppedText = d.data.name.length > maxTextLength ? d.data.name.substring(0, maxTextLength - 3) + "..." : d.data.name
                         return croppedText
@@ -323,19 +346,19 @@ function HolonSpaceMap() {
                     .attr('x', 0)
                     .attr('transform', (d) => { return 'translate(' + d.x + ',' + d.y + ')' })
                     .call(enter => enter
-                        .transition()
+                        .transition('node-text-enter')
                         .duration(1000)
                         .attr('opacity', 1)
                     ),
                 update => update
                     .call(update => update
-                        .transition()
+                        .transition('node-text-update')
                         .duration(1000)
                         .attr('transform', (d) => { return 'translate(' + d.x + ',' + d.y + ')' })
                     ),
                 exit => exit
                     .call(exit => exit
-                        .transition()
+                        .transition('node-text-exit')
                         .duration(500)
                         .attr('opacity', 0)
                         .remove()
@@ -344,14 +367,19 @@ function HolonSpaceMap() {
     }
 
     useEffect(() => {
-        getSpaceMapData()
         createCanvas()
+    }, [])
+
+    useEffect(() => {
+        getSpaceMapData()
         resetTreePosition()
     },[holonData.id])
 
 
     useEffect(() => {
-        if (spaceMapData) updateTree(spaceMapData)
+        if (spaceMapData) {
+            updateTree(spaceMapData)
+        }
     }, [spaceMapData])
 
     return (
