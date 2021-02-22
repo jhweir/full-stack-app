@@ -96,3 +96,14 @@ $darkGrey: #202129;
     justify-content: center;
     align-items: center;
 }
+.expandButton {
+    margin-left: 15px;
+    width: 23px;
+    opacity: 0.5;
+    filter: invert(1);
+    position: absolute;
+    right: 20px;
+    &:hover {
+        cursor: pointer;
+    }
+}

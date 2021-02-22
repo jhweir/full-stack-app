@@ -15,6 +15,7 @@ import PostCardComments from './PostCardComments'
 import SmallFlagImage from '../../SmallFlagImage'
 import DeleteItemModal from '../../../components/Modals/DeleteItemModal'
 import { timeSinceCreated, dateCreated } from '../../../GlobalFunctions'
+import ReactMarkdown from 'react-markdown'
 
 function PostCard(props) {
     const { postData, index, location } = props
@@ -148,7 +149,9 @@ function PostCard(props) {
                         }
                     </div>
                     <div className={styles.content}>
-                        {text && <div className={styles.text}>{text}</div>}
+                        {text && <div className={styles.text}>
+                            <ReactMarkdown>{text}</ReactMarkdown>
+                        </div>}
                         {showLinkPreview &&
                             <PostCardUrlPreview
                                 url={url}

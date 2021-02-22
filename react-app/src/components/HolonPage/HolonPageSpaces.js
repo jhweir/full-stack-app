@@ -17,8 +17,7 @@ function HolonPageSpaces() {
         holonSpaceFiltersOpen, setHolonSpaceFiltersOpen,
         holonSpaceSearchFilter, holonSpaceTimeRangeFilter, holonSpaceSortByFilter, holonSpaceSortOrderFilter, holonSpaceDepthFilter,
         setSelectedHolonSubPage, holonSpacePaginationOffset, holonSpaceView, setHolonSpaceView,
-        setHolonSpaceSearchFilter,
-        fullScreen, setFullScreen
+        setHolonSpaceSearchFilter
     } = useContext(HolonContext)
 
     function openCreateSpaceModal() {
@@ -65,12 +64,6 @@ function HolonPageSpaces() {
                             rightText='Map'
                             onClickFunction={toggleView}
                             positionLeft={holonSpaceView === 'List' ? true : false}
-                        />
-                        <img
-                            className={styles.expandButton}
-                            title='Toggle full screen'
-                            src={fullScreen ? '/icons/compress-solid.svg' : '/icons/expand-solid.svg'}
-                            onClick={() => setFullScreen(!fullScreen)}
                         />
                     </div>
                 </div>

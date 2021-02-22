@@ -17,7 +17,7 @@ function NavBar() {
         selectedNavBarItem,
         setSelectedNavBarItem
     } = useContext(AccountContext)
-    const { setHolonHandle } = useContext(HolonContext)
+    const { setHolonHandle, fullScreen, setFullScreen } = useContext(HolonContext)
 
     useEffect(() => {
         console.log('path change')
@@ -73,6 +73,12 @@ function NavBar() {
                         }
                     </div>
                 }
+                <img
+                    className={styles.expandButton}
+                    title='Toggle full screen'
+                    src={fullScreen ? '/icons/compress-solid.svg' : '/icons/expand-solid.svg'}
+                    onClick={() => setFullScreen(!fullScreen)}
+                />
             </div>
         </div>
     )

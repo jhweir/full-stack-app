@@ -87,12 +87,6 @@ function HolonPagePosts() {
                     </div>
                     <div className={styles.headerRowSection}>
                         <Toggle leftText='List' rightText='Map' onClickFunction={toggleView} positionLeft={holonPostView === 'List' ? true : false}/>
-                        <img
-                            className={styles.expandButton}
-                            title='Toggle full screen'
-                            src={fullScreen ? '/icons/compress-solid.svg' : '/icons/expand-solid.svg'}
-                            onClick={() => setFullScreen(!fullScreen)}
-                        />
                     </div>
                 </div>
                 {holonPostFiltersOpen && <HolonPagePostsFilters/>}

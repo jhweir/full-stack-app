@@ -257,7 +257,7 @@ function HolonSpaceMap() {
                     .append('circle')
                     .classed('image-background-circle', true)
                     .attr('opacity', 0)
-                    .attr('r', circleRadius)
+                    .attr('r', circleRadius - 0.1)
                     .attr('pointer-events', 'none')
                     .style('fill', 'white')
                     .attr('transform', (d) => { return 'translate(' + d.x + ',' + d.y + ')' })

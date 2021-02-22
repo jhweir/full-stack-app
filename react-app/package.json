@@ -19,6 +19,7 @@
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "react-images-upload": "^1.2.8",
+    "react-markdown": "^5.0.3",
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.3.1",
     "react-transition-group": "^4.3.0",

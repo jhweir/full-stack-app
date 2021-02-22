@@ -66,12 +66,13 @@ router.get('/holon-data', (req, res) => {
     const { handle } = req.query
     let totalUsersQuery
     if (handle === 'all') {
-        totalUsersQuery = [sequelize.literal(`(SELECT COUNT(*) FROM Users)`), 'total_users']
+        totalUsersQuery = [sequelize.literal(`(SELECT COUNT(*) FROM Users WHERE Users.emailVerified = true)`), 'total_users']
     } else {
         totalUsersQuery = [sequelize.literal(`(
             SELECT COUNT(*)
                 FROM Users
-                WHERE Users.id IN (
+                WHERE Users.emailVerified = true
+                AND Users.id IN (
                     SELECT HolonUsers.userId
                     FROM HolonUsers
                     RIGHT JOIN Users
@@ -196,8 +197,6 @@ router.get('/holon-highlights', async (req, res) => {
         .then(data => {
             res.send({ TopPosts: data[0], TopSpaces: data[1], TopUsers: data[2]})
         })
-
-    //res.send({ TopUsers })
 })
 
 router.get('/holon-posts', (req, res) => {

@@ -43,14 +43,7 @@ function HolonPageUsers() {
                             <img className={styles.filterButtonIcon} src='/icons/sliders-h-solid.svg'/>
                         </div>
                     </div>
-                    <div className={styles.headerRowSection}>
-                        <img
-                            className={styles.expandButton}
-                            title='Toggle full screen'
-                            src={fullScreen ? '/icons/compress-solid.svg' : '/icons/expand-solid.svg'}
-                            onClick={() => setFullScreen(!fullScreen)}
-                        />
-                    </div>
+                    {/* <div className={styles.headerRowSection}></div> */}
                 </div>
                 {holonUserFiltersOpen && <HolonPageUsersFilters/>}
             </div>
