@@ -1,7 +1,7 @@
 .post {
     margin-bottom: 10px;
     padding: 20px 30px 10px 20px;
-    width: 100%;
+    width: 700px;//100%;
     //height: 200px;
     border-radius: 10px;
     background-color: white;
@@ -46,7 +46,7 @@
     }
 }
 .body {
-    width: calc(100% - 30px);
+    width: 100%;//calc(100% - 30px);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -125,6 +125,8 @@
     flex-direction: column;
 }
 .text {
+    max-height: 200px;
+    overflow: hidden;
     color: black;
     font-size: 16px;
     font-weight: 400;
@@ -132,7 +134,91 @@
     margin-bottom: 10px;
     transition-property: color;
     transition-duration: 2s;
+    &.showFullText {
+        max-height: none;
+    }
     //overflow: hidden;
+    ul, ol {
+        padding-left: 30px;
+        margin-bottom: 10px;
+
+        > li > input {
+            margin-left: -20px;
+            margin-right: 10px;
+        }
+    }
+    h1 {
+        line-height: 30px;
+        margin-bottom: 5px;
+    }
+    h2 {
+        line-height: 25px;
+        margin-bottom: 3px;
+    }
+    img {
+        max-width: 500px;
+        max-height: 500px;
+        display: block;
+        margin: 20px auto;
+    }
+    a {
+        color:#82afff;
+        &:hover {
+            cursor: pointer;
+        }
+    }
+    p {
+        margin-bottom: 10px;
+    }
+    hr {
+        margin: 20px 0;
+        height: 2px;
+        border: none;
+        background-color: #ddd;
+    }
+    pre {
+        padding: 20px;
+        background-color: #f6f8fa;
+        border-radius: 5px;
+        margin: 15px 0;
+        code {
+            padding: 0;
+            background-color: none;
+            border-radius: none;
+            line-height: 20px;
+        }
+    }
+    code {
+        padding: 5px 10px;
+        background-color: #f6f8fa;
+        border-radius: 5px;
+        line-height: 40px;
+    }
+    blockquote {
+        padding: 0 10px;
+        color:#6a737d;
+        border-left: 3px solid #cacaca;
+    }
+    table {
+        border: 1px solid #dee2e6;
+        border-spacing: 0;
+        border-collapse: collapse;
+        > thead > tr {
+            border-top: 1px solid #dee2e6;
+            background-color: #fbfbfb;
+            > th {
+                padding: 10px;
+                border: 1px solid #dee2e6;
+            }
+        }
+        > tbody >  tr {
+            border-top: 1px solid #dee2e6;
+            > td {
+                padding: 10px;
+                border: 1px solid #dee2e6;
+            }
+        }
+    }
 }
 .interact {
     display: flex;
@@ -178,4 +264,12 @@
     border-radius: 50%;
     margin-left: 2px;
     opacity: 0.5;
+}
+.showMore {
+    margin-top: -10px;
+    margin-bottom: 10px;
+    color:#82afff;
+    &:hover {
+        cursor: pointer;
+    }
 }

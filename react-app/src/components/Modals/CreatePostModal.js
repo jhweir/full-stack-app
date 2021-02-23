@@ -11,6 +11,8 @@ import SpaceInput from '../SpaceInput'
 import PollAnswerForm from '../PostPage/Poll/PollAnswerForm'
 import DropDownMenu from '../DropDownMenu'
 import SmallFlagImage from '../SmallFlagImage'
+import PostCardPreview from '../Cards/PostCard/PostCardPreview'
+import { resizeTextArea } from '../../GlobalFunctions'
 
 function CreatePostModal() {
     const {
@@ -205,6 +207,16 @@ function CreatePostModal() {
                         </Link>
                     </div>
                 }
+                <PostCardPreview
+                    type={postType}
+                    spaces={[holonData.handle, ...addedSpaces]}
+                    text={text}
+                    url={url}
+                    urlImage={urlImage}
+                    urlDomain={urlDomain}
+                    urlTitle={urlTitle}
+                    urlDescription={urlDescription}
+                />
                 <div className={styles.dropDownOptions}>
                     <DropDownMenu
                         title='Post Type'
@@ -294,10 +306,10 @@ function CreatePostModal() {
                     }
                 </div>
                 <form className={styles.form}>
-                    <textarea className={`wecoInput textArea mb-10 ${textError && 'error'}`}
+                    <textarea className={`wecoInput textArea white mb-10 ${textError && 'error'}`}
                         placeholder="Text (max 20,000 characters)"
                         type="text" value={text}
-                        onChange={(e) => { setText(e.target.value); setTextError(false) }}
+                        onChange={(e) => { setText(e.target.value); setTextError(false); resizeTextArea(e.target) }}
                     />
                     {(postType === 'Url' || postType === 'Glass Bead') &&
                         <input className={`wecoInput mb-10 ${urlError && 'error'}`}
@@ -311,7 +323,7 @@ function CreatePostModal() {
                             }}
                         />
                     }
-                    <UrlPreview
+                    {/* <UrlPreview
                         url={url}
                         urlLoading={urlLoading}
                         urlImage={urlImage}
@@ -319,7 +331,7 @@ function CreatePostModal() {
                         urlTitle={urlTitle}
                         urlDescription={urlDescription}
                         urlFlashMessage={urlFlashMessage}
-                    />
+                    /> */}
                     <SpaceInput
                         style="align-items: center"
                         text='Tag other spaces you want the post to appear in:'

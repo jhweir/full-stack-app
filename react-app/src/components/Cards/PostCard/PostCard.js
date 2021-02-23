@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react'
+import React, { useState, useContext, useEffect, useRef } from 'react'
 import { useHistory } from "react-router-dom"
 import { Link } from 'react-router-dom'
 import axios from 'axios'
@@ -16,6 +16,7 @@ import SmallFlagImage from '../../SmallFlagImage'
 import DeleteItemModal from '../../../components/Modals/DeleteItemModal'
 import { timeSinceCreated, dateCreated } from '../../../GlobalFunctions'
 import ReactMarkdown from 'react-markdown'
+import gfm from 'remark-gfm'
 
 function PostCard(props) {
     const { postData, index, location } = props
@@ -55,6 +56,8 @@ function PostCard(props) {
     const [commentsOpen, setCommentsOpen] = useState(false)
     const [deletePostModalOpen, setDeletePostModalOpen] = useState(false)
 
+    const [textOverflow, setTextOverflow] = useState(false)
+    const [showFullText, setShowFullText] = useState(false)
 
     const finishedLoading = location !== 'post-page' || !postContextLoading
     const isOwnPost = finishedLoading && accountData.id === creator.id
@@ -102,13 +105,23 @@ function PostCard(props) {
     }
 
     useEffect(() => {
-        if (postData.id) { syncPostState() }
+        if (postData.id) { syncPostState(); console.log('postData: ', postData) }
     }, [postData.id])
+
+    const textRef = useRef()
+
+    useEffect(() => {
+        if (textRef.current && textRef.current.scrollHeight > 200) {
+            setTextOverflow(true)
+        } else {
+            setTextOverflow(false)
+        }
+    }, [text])
 
     if (finishedLoading) {
         return (
             <div className={styles.post}>
-                {location !== 'post-page' && location !== 'holon-post-map' && <div className={styles.index}>{index + 1}</div>}
+                {location !== 'post-page' && location !== 'holon-post-map' && location !== 'create-post-modal' && <div className={styles.index}>{index + 1}</div>}
                 <div className={styles.body}>
                     <div className={styles.tags}>
                         <Link to={ `/u/${creator.handle}`} className={styles.creator}>
@@ -120,7 +133,7 @@ function PostCard(props) {
                             {postSpaces.length > 0
                                 ? postSpaces.map((space, index) =>
                                     <Link to={`/s/${space.handle}`}
-                                        onClick={ () => setHolonHandle(space.handle) }
+                                        onClick={() => setHolonHandle(space.handle)}
                                         style={{marginRight: 10}}
                                         key={index}>
                                         {space.handle}
@@ -149,9 +162,14 @@ function PostCard(props) {
                         }
                     </div>
                     <div className={styles.content}>
-                        {text && <div className={styles.text}>
-                            <ReactMarkdown>{text}</ReactMarkdown>
+                        {text && <div className={`${styles.text} ${showFullText ? styles.showFullText : ''}`} ref={textRef}>
+                            <ReactMarkdown plugins={[gfm]} children={text}/>
                         </div>}
+                        {textOverflow &&
+                            <div className={styles.showMore} onClick={() => setShowFullText(!showFullText)}>
+                                {showFullText ? 'show less' : 'show more'}
+                            </div>
+                        }
                         {showLinkPreview &&
                             <PostCardUrlPreview
                                 url={url}

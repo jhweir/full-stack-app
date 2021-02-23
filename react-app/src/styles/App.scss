@@ -160,8 +160,11 @@ input {
     transition-property: box-shadow, background-color;
     transition-duration: 0.3s, 1s;
     &.textArea {
-        height: 60px;
+        //height: 60px;
         padding: 10px 15px;
+    }
+    &.white {
+        background-color: white;
     }
     &.error {
         box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.6);

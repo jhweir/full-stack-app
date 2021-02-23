@@ -46,9 +46,10 @@ $darkGrey: #202129;
     font-weight: 400;
     text-decoration: none;
     padding: 0 15px;
-    opacity: 1;
+    opacity: 0.8;
     &.selected {
         font-weight: 800;
+        opacity: 1;
     }
     @media screen and (max-width: 600px) {
         display: none;

@@ -23,6 +23,7 @@
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.3.1",
     "react-transition-group": "^4.3.0",
+    "remark-gfm": "^1.0.0",
     "universal-cookie": "^4.0.3",
     "uuid": "^8.3.2"
   },
