@@ -964,16 +964,11 @@ router.get('/all-users', (req, res) => {
 })
 
 router.get('/user-data', (req, res) => {
-    //console.log('req.query', req.query)
+    const { userHandle } = req.query
     User.findOne({ 
-        where: { handle: req.query.userHandle },
+        where: { handle: userHandle },
         attributes: ['id', 'handle', 'name', 'bio', 'flagImagePath', 'coverImagePath', 'createdAt'],
         include: [
-            { 
-                model: Post,
-                //as: 'createdPosts',
-                //attributes: postAttributes //['id']
-            },
             { 
                 model: Holon,
                 as: 'FollowedHolons',
@@ -991,18 +986,6 @@ router.get('/user-data', (req, res) => {
             //     //attributes: ['creator', 'text', 'createdAt']
             // }
         ]
-    })
-    .then(user => {
-        // replace PostHolons array of objects with simpler Post_Holons array of strings
-        // const spaces = post.PostHolons.map(ph => ph.handle)
-        // post.setDataValue("spaces", spaces)
-        // delete post.dataValues.PostHolons
-        // replace raw createdAt dates in PollAnswer.Reactions with parsed number strings
-        // post.PollAnswers.forEach(answer => answer.Votes.forEach(label => {
-        //     label.setDataValue("parsedCreatedAt", Date.parse(label.createdAt))
-        //     delete label.dataValues.createdAt
-        // }))
-        return user
     })
     .then(user => { res.json(user) })
     .catch(err => console.log(err))

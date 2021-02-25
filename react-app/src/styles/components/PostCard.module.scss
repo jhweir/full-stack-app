@@ -138,6 +138,7 @@
         max-height: none;
     }
     //overflow: hidden;
+    ul { list-style-type: disc; }
     ul, ol {
         padding-left: 30px;
         margin-bottom: 10px;
@@ -205,7 +206,7 @@
         border-collapse: collapse;
         > thead > tr {
             border-top: 1px solid #dee2e6;
-            background-color: #fbfbfb;
+            background-color: #f6f8fa;
             > th {
                 padding: 10px;
                 border: 1px solid #dee2e6;
