@@ -8,7 +8,15 @@ import { useHistory } from "react-router-dom"
 import _ from 'lodash'
 
 function HolonSpaceMap() {
-    const { holonData, setHolonHandle, fullScreen } = useContext(HolonContext)
+    const {
+        holonData,
+        setHolonHandle,
+        fullScreen,
+        holonSpaceSortByFilter,
+        holonSpaceSortOrderFilter,
+        holonSpaceTimeRangeFilter,
+        holonSpaceDepthFilter
+    } = useContext(HolonContext)
     const [spaceMapData, setSpaceMapData] = useState()
     const [width, setWidth] = useState(700)
 
@@ -21,8 +29,10 @@ function HolonSpaceMap() {
     const yOffset = 80
 
     function getSpaceMapData() {
-        axios.get(config.apiURL + `/space-map-data?spaceId=${holonData.id}`)
+        console.log('getSpaceMapData: ', holonData.id)
+        axios.get(config.apiURL + `/space-map-data?spaceId=${holonData.id}&sortBy=${holonSpaceSortByFilter}&sortOrder=${holonSpaceSortOrderFilter}&timeRange=${holonSpaceTimeRangeFilter}`)
             .then(res => {
+                console.log('setSpaceMapData: ', res.data)
                 setSpaceMapData(res.data)
             })
     }
@@ -39,12 +49,13 @@ function HolonSpaceMap() {
     }
 
     function getChildren(node) {
-        axios.get(config.apiURL + `/space-map-next-children?spaceId=${node.data.id}&offset=${node.children.length - 1}`)
+        axios.get(config.apiURL + `/space-map-next-children?spaceId=${node.data.id}&offset=${node.children.length - 1}&sortBy=${holonSpaceSortByFilter}&sortOrder=${holonSpaceSortOrderFilter}&timeRange=${holonSpaceTimeRangeFilter}`)
             .then(res => {
                 const match = findParent(spaceMapData, node.data.id)
                 match.children = match.children.filter(child => !child.isExpander)
                 match.children.push(...res.data)
-                setSpaceMapData(_.cloneDeep(spaceMapData))
+                // setSpaceMapData(_.cloneDeep(spaceMapData))
+                updateTree(spaceMapData)
             })
     }
 
@@ -117,6 +128,11 @@ function HolonSpaceMap() {
                 d3.select(`#background-circle-${d.data.id}`).interrupt('background-circle-enter')
             }
         })
+        // d3.selectAll('.image-background-circle').each((d) => {
+        //     if (!findParent(data, d.data.id)) {
+        //         d3.select(`#image-background-circle-${d.data.id}`).interrupt('image-background-circle-enter')
+        //     }
+        // })
         d3.selectAll('.image-circle').each((d) => {
             if (!findParent(data, d.data.id)) {
                 d3.select(`#image-circle-${d.data.id}`).interrupt('image-circle-enter')
@@ -256,24 +272,28 @@ function HolonSpaceMap() {
                 enter => enter
                     .append('circle')
                     .classed('image-background-circle', true)
+                    .attr('id', d => `image-background-circle-${d.data.id}`)
                     .attr('opacity', 0)
                     .attr('r', circleRadius - 0.1)
                     .attr('pointer-events', 'none')
                     .style('fill', 'white')
                     .attr('transform', (d) => { return 'translate(' + d.x + ',' + d.y + ')' })
                     .call(enter => enter
+                        // .transition('image-background-circle-enter')
                         .transition()
                         .duration(1000)
                         .attr('opacity', 1)
                     ),
                 update => update
                     .call(update => update
+                        // .transition('image-background-circle-update')
                         .transition()
                         .duration(1000)
                         .attr('transform', (d) => { return 'translate(' + d.x + ',' + d.y + ')' }),
                     ),
                 exit => exit
                     .call(exit => exit
+                        // .transition('image-background-circle-exit')
                         .transition()
                         .duration(500)
                         .attr('opacity', 0)
@@ -383,13 +403,20 @@ function HolonSpaceMap() {
     }
 
     useEffect(() => {
+        console.log('createCanvas')
         createCanvas()
     }, [])
 
     useEffect(() => {
+        //console.log('getSpaceMapData, resetTreePosition')
         getSpaceMapData()
         resetTreePosition()
-    },[holonData.id])
+    },[
+        holonData.id,
+        holonSpaceSortByFilter,
+        holonSpaceSortOrderFilter,
+        holonSpaceTimeRangeFilter
+    ])
 
     useEffect(() => {
         setWidth(fullScreen ? '100%' : 700)

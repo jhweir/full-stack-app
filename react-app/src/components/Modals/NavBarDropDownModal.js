@@ -21,18 +21,6 @@ function NavBarDropDownModal() {
         <div className={styles.modalWrapper}>
             <div className={styles.modalPositioner}>
                 <div className={styles.modal} ref={ref}>
-                    <Link to={`/u/${accountData.handle}/settings`}
-                        className={styles.link}
-                        onClick={() => { setNavBarDropDownModalOpen(false); setUserHandle(accountData.handle) }}>
-                        <img className={styles.linkIcon} src={`/icons/cog-solid.svg`}/>
-                        <span className={styles.linkText}>Settings</span>
-                    </Link>
-                    <Link to={`/u/${accountData.handle}/about`}
-                        className={styles.link}
-                        onClick={() => { setNavBarDropDownModalOpen(false); setUserHandle(accountData.handle) }}>
-                        <img className={styles.linkIcon} src={`/icons/book-open-solid.svg`}/>
-                        <span className={styles.linkText}>About</span>
-                    </Link>
                     <Link to={`/u/${accountData.handle}/notifications`}
                         className={styles.link}
                         onClick={() => { setNavBarDropDownModalOpen(false); setUserHandle(accountData.handle) }}>
@@ -53,6 +41,18 @@ function NavBarDropDownModal() {
                         onClick={() => { setNavBarDropDownModalOpen(false); setUserHandle(accountData.handle) }}>
                         <img className={styles.linkIcon} src={`/icons/edit-solid.svg`}/>
                         <span className={styles.linkText}>Posts</span>
+                    </Link>
+                    {/* <Link to={`/u/${accountData.handle}/about`}
+                        className={styles.link}
+                        onClick={() => { setNavBarDropDownModalOpen(false); setUserHandle(accountData.handle) }}>
+                        <img className={styles.linkIcon} src={`/icons/book-open-solid.svg`}/>
+                        <span className={styles.linkText}>About</span>
+                    </Link> */}
+                    <Link to={`/u/${accountData.handle}/settings`}
+                        className={styles.link}
+                        onClick={() => { setNavBarDropDownModalOpen(false); setUserHandle(accountData.handle) }}>
+                        <img className={styles.linkIcon} src={`/icons/cog-solid.svg`}/>
+                        <span className={styles.linkText}>Settings</span>
                     </Link>
                     <div className="wecoButton mt-10" onClick={() => {
                         setAccountData(null)

@@ -45,7 +45,7 @@ function HolonContextProvider({ children }) {
     const [holonSpacePaginationLimit, setHolonSpacePaginationLimit] = useState(10)
     const [holonSpacePaginationOffset, setHolonSpacePaginationOffset] = useState(0)
     const [holonSpacePaginationHasMore, setHolonSpacePaginationHasMore] = useState(true)
-    const [holonSpaceView, setHolonSpaceView] = useState('List')
+    const [holonSpaceView, setHolonSpaceView] = useState('Map')
 
     const [holonUsers, setHolonUsers] = useState([])
     const [holonUserFiltersOpen, setHolonUserFiltersOpen] = useState(false)
@@ -268,7 +268,7 @@ function HolonContextProvider({ children }) {
 
     useEffect(() => { //TODO: move to useEffect below?
         resetHolonPostFilters()
-        resetHolonSpaceFilters()
+        //resetHolonSpaceFilters()
         resetHolonUserFilters()
     }, [holonHandle])
 

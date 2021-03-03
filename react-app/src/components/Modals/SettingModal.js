@@ -41,7 +41,7 @@ function SettingModal() {
         placeholder = 'New description (max 10K characters)'
         invalidValue = newValue.length < 1 || newValue.length > 10000
     }
-    if (settingModalType === 'add-new-moderator') {
+    if (settingModalType === 'add-new-holon-moderator') {
         title = `Add a new moderator to ${holonData.name}`
         subTitle = `Paste their unique handle below`
         placeholder = 'New moderators handle'
@@ -145,7 +145,7 @@ function SettingModal() {
                 {successMessage.length < 1 && <>
                     <span className={styles.title}>{title}</span>
                     <span className={styles.subTitle}>{subTitle}</span>
-                    <form className={styles.form}  onSubmit={saveNewValue}>
+                    <form className={styles.form} onSubmit={saveNewValue}>
                         {settingModalType !== 'change-holon-description' && settingModalType !== 'change-holon-handle' &&
                             <input 
                                 className={`wecoInput mb-10 mr-10 ${error && 'error'}`}

@@ -82,7 +82,7 @@ function HolonPageSettings() {
                             </div>
                         </div>
                         <div className={styles.field}>
-                            <div className={styles.linkText} onClick={() => openSettingModal('add-new-moderator')}>Add moderator</div>
+                            <div className={styles.linkText} onClick={() => openSettingModal('add-new-holon-moderator')}>Add moderator</div>
                         </div>
                         <div className={styles.field}>
                             <div className={styles.linkText} onClick={() => openSettingModal('add-parent-holon')}>Add parent space</div>

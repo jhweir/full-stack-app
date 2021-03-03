@@ -5,6 +5,8 @@ import { AccountContext } from '../contexts/AccountContext'
 import { HolonContext } from '../contexts/HolonContext'
 import SmallFlagImage from '../components/SmallFlagImage'
 import { Router } from 'react-router-dom'
+import axios from 'axios'
+import config from './../Config'
 
 function Homepage() {
     const { accountContextLoading, setAlertMessage, setAlertModalOpen, setResetPasswordModalOpen, setResetPasswordModalToken } = useContext(AccountContext)
@@ -13,9 +15,14 @@ function Homepage() {
     const alert = urlParams.get('alert')
 
     function showRedirectAlerts() {
-        if (alert === 'email-verified') {
-            setAlertMessage('Success! Your email has been verified. Log in to start using your account.')
-            setAlertModalOpen(true)
+        if (alert === 'verify-email') {
+            console.log('verify email get request')
+            axios.get(config.apiURL + `/verify-email?token=${urlParams.get('token')}`)
+                .then(res => {
+                    if (res.data === 'success') setAlertMessage('Success! Your email has been verified. Log in to start using your account.')
+                    else setAlertMessage(res.data)
+                    setAlertModalOpen(true)
+                })
         }
         if (alert === 'reset-password') {
             setResetPasswordModalOpen(true)
