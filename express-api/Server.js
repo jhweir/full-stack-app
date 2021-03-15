@@ -4,6 +4,9 @@ const Holon = require('./models').Holon
 const bcrypt = require('bcrypt')
 const passport = require("passport")
 const jwt = require('jsonwebtoken')
+const { v4: uuidv4 } = require('uuid')
+const fs = require('fs')
+const path = require('path')
 
 const FacebookStrategy = require("passport-facebook").Strategy
 
@@ -11,6 +14,8 @@ var aws = require('aws-sdk')
 var multer = require('multer')
 var multerS3 = require('multer-s3')
 var sequelize = require('sequelize')
+
+var morgan = require('morgan')
 
 const Op = sequelize.Op
 const express = require('express')
@@ -35,10 +40,19 @@ app.use(cors({
         }
     }
 }))
-// app.use(cors({
-//   origin: `${process.env.APP_ENV === 'prod' ? process.env.PROD_APP_URL : process.env.DEV_APP_URL}`
-// }))
 app.options('*', cors())
+
+morgan.token('id', function getId(req) {
+    return req.id
+})
+function assignId(req, res, next) {
+    req.id = uuidv4()
+    next()
+}
+app.use(assignId)
+let accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), { flags: 'a' })
+app.use(morgan(':id :remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent"', { stream: accessLogStream }))
+
 app.use(passport.initialize())
 //app.use(cors({ origin:true, credentials: true }))
 app.use(bodyParser.urlencoded({ extended: true }))
