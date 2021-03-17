@@ -7,6 +7,7 @@ const jwt = require('jsonwebtoken')
 const { v4: uuidv4 } = require('uuid')
 const fs = require('fs')
 const path = require('path')
+const axios = require('axios')
 
 const FacebookStrategy = require("passport-facebook").Strategy
 
@@ -54,9 +55,10 @@ let accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), {
 app.use(morgan(':id :remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent"', { stream: accessLogStream }))
 
 app.use(passport.initialize())
-//app.use(cors({ origin:true, credentials: true }))
+
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
+
 app.use('/api', require('./routes/Routes'))
 
 app.listen(5000, () => console.log('Listening on port 5000'))
@@ -65,38 +67,37 @@ app.get('/', (req, res) => res.send('INDEX'))
 app.get('/test', (req, res) => res.send('test response'))
 
 app.post('/api/log-in', async (req, res) => {
-  const { emailOrHandle, password } = req.body
-  // Authenticate user
-  User
-    .findOne({
-      where: {
-        [Op.or]: [
-          { email: emailOrHandle },
-          { handle: emailOrHandle }
-        ]
-      },
-      attributes: ['id', 'password', 'emailVerified']
-    })
-    .then(user => {
-      //res.send(user)
-      if (!user) { return res.send('user-not-found') }
-      else {
-        bcrypt.compare(password, user.password, function(error, success) {
-          if (error) { res.send('incorrect-password') }
-          if (success) {
-            if (!user.emailVerified) { return res.send({ message: 'email-not-verified', userId: user.id }) }
-            else {
-              const payload = { id: user.id }
-              const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1d' })
-              // const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' })
-              // res.cookie('cookie_name', accessToken, { httpOnly: true })
-              res.send(accessToken)
-            }
-          }
-          else { res.send('incorrect-password') }
+    const { reCaptchaToken, emailOrHandle, password } = req.body
+    // validate recaptcha
+    const response = await axios.post(`https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA_SECRET_KEY}&response=${reCaptchaToken}`)
+    if (!response.data.success) res.status(400).send({ message: 'Recaptcha request failed' })
+    else if (response.data.score < 0.5) res.status(403).send({ message: 'Recaptcha score < 0.5' })
+    else {
+        console.log('emailOrHandle: ', emailOrHandle)
+        // check user exists
+        const matchingUser = await User.findOne({
+            where: { [Op.or]: [{ email: emailOrHandle }, { handle: emailOrHandle }] },
+            attributes: ['id', 'password', 'emailVerified']
         })
-      }
-    })
+        if (!matchingUser) res.status(404).send({ message: 'User not found' })
+        else {
+            // check password is correct
+            bcrypt.compare(password, matchingUser.password, function(error, success) {
+                if (!success) res.status(404).send({ message: 'Incorrect password' })
+                else {
+                    // check email is verified
+                    if (!matchingUser.emailVerified) res.status(403).send({ message: 'Email not yet verified', userId: matchingUser.id })
+                    else {
+                        // create access token
+                        const payload = { id: matchingUser.id }
+                        const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1d' })
+                        // const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' })
+                        res.status(200).send(accessToken)
+                    }
+                }
+            })
+        }
+    }
 })
 
 function authenticateToken(req, res, next) {

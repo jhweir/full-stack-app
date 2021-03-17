@@ -1,7 +1,7 @@
 require("dotenv").config()
 const express = require('express')
 const router = express.Router()
-var sequelize = require('sequelize')
+const sequelize = require('sequelize')
 const bcrypt = require('bcrypt')
 const Op = sequelize.Op
 const db = require('../models/index')
@@ -9,6 +9,7 @@ const linkPreviewGenerator = require("link-preview-generator")
 const _ = require('lodash')
 const { v4: uuidv4 } = require('uuid')
 const crypto = require('crypto')
+const axios = require('axios')
 const sgMail = require('@sendgrid/mail')
 sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 
@@ -2195,58 +2196,58 @@ router.post('/cast-vote', (req, res) => {
 })
 
 router.post('/register', async (req, res) => {
-    const { newHandle, newName, newEmail, newPassword } = req.body
-    let token = crypto.randomBytes(64).toString('hex')
-
-    // Check username and email is available then create user (TODO: use [op.Or] to save double call?)
-    User.findOne({ where: { handle: newHandle } })
-        .then(user => {
-            if (user) { res.send('handle-taken') }
-            else {
-                User.findOne({ where: { email: newEmail } })
-                    .then(async user => {
-                        if (user) { res.send('email-taken') }
-                        else {
-                            const hashedPassword = await bcrypt.hash(newPassword, 10)
-                            const createUserAndNotification = await User.create({
-                                handle: newHandle,
-                                name: newName,
-                                email: newEmail,
-                                password: hashedPassword,
-                                emailVerified: false,
-                                emailToken: token
-                            }).then(user => {
-                                Notification.create({
-                                    ownerId: user.id,
-                                    type: 'welcome-message',
-                                    seen: false
-                                })
-                            })
-                            const message = {
-                                to: newEmail,
-                                from: 'admin@weco.io',
-                                subject: 'Weco - verify your email',
-                                text: `
-                                    Hi, thanks for creating an account on weco.
-                                    Please copy and paste the address below to verify your email address:
-                                    http://${process.env.NODE_ENV === 'dev' ? process.env.DEV_APP_URL : process.env.PROD_APP_URL}?alert=verify-email&token=${token}
-                                `,
-                                html: `
-                                    <h1>Hi</h1>
-                                    <p>Thanks for creating an account on weco.</p>
-                                    <p>Please click the link below to verify your account:</p>
-                                    <a href='${process.env.NODE_ENV === 'dev' ? process.env.DEV_APP_URL : process.env.PROD_APP_URL}?alert=verify-email&token=${token}'>Verfiy your account</a>
-                                `,
-                            }
-                            const sendEmail = await sgMail.send(message)
-                            Promise
-                                .all([createUserAndNotification, sendEmail])
-                                .then(res.send('success'))
-                                .catch(error => console.log(error))
-                        }
-                    })
+    const { reCaptchaToken, newHandle, newName, newEmail, newPassword } = req.body
+    // validate recaptcha
+    const response = await axios.post(`https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA_SECRET_KEY}&response=${reCaptchaToken}`)
+    if (!response.data.success) res.status(400).send({ message: 'Recaptcha request failed' })
+    else if (response.data.score < 0.5) res.status(403).send({ message: 'Recaptcha score < 0.5' })
+    else {
+        // check if user handle or email already taken
+        const matchingHandle = await User.findOne({ where: { handle: newHandle } })
+        const matchingEmail = await User.findOne({ where: { email: newEmail } })
+        if (matchingHandle) res.status(403).send({ message: 'Handle already taken' })
+        else if (matchingEmail) res.status(403).send({ message: 'Email already taken' })
+        else {
+            // create account and send verification email
+            const hashedPassword = await bcrypt.hash(newPassword, 10)
+            const emailToken = crypto.randomBytes(64).toString('hex')
+            const createUserAndNotification = await User.create({
+                handle: newHandle,
+                name: newName,
+                email: newEmail,
+                password: hashedPassword,
+                emailVerified: false,
+                emailToken
+            }).then(user => {
+                Notification.create({
+                    ownerId: user.id,
+                    type: 'welcome-message',
+                    seen: false
+                })
+            })
+            const message = {
+                to: newEmail,
+                from: 'admin@weco.io',
+                subject: 'Weco - verify your email',
+                text: `
+                    Hi, thanks for creating an account on weco.
+                    Please copy and paste the address below to verify your email address:
+                    http://${process.env.NODE_ENV === 'dev' ? process.env.DEV_APP_URL : process.env.PROD_APP_URL}?alert=verify-email&token=${emailToken}
+                `,
+                html: `
+                    <h1>Hi</h1>
+                    <p>Thanks for creating an account on weco.</p>
+                    <p>Please click the link below to verify your account:</p>
+                    <a href='${process.env.NODE_ENV === 'dev' ? process.env.DEV_APP_URL : process.env.PROD_APP_URL}?alert=verify-email&token=${emailToken}'>Verfiy your account</a>
+                `,
             }
-        })
+            const sendEmail = await sgMail.send(message)
+            Promise
+                .all([createUserAndNotification, sendEmail])
+                .then(res.status(200).send({ message: 'Success' }))
+                .catch(error => console.log('error: ', error))
+        }
+    }
 })
 
 router.get('/verify-email', (req, res) => {
@@ -3233,6 +3234,8 @@ router.post('/accept-parent-space-request', (req, res) => {
                     attributes: ['holonAId']
                 })
                 .then(async holons => {
+                    // if parent space includes child spaces tag, reject connection and return message saying it would create a loop
+                    
                     // if child space was only connected to 'all', remove old connection
                     let holonIds = holons.map(h => h.holonAId)
                     if (holonIds.length === 1 && holonIds[0] === 1) {

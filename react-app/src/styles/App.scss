@@ -143,6 +143,20 @@ input {
     }
 }
 
+// recaptcha
+.grecaptcha-badge { 
+    visibility: hidden;
+    z-index: 5;
+}
+.recaptchaText {
+    font-size: 12px;
+    color: rgb(177, 177, 177);
+    a {
+        color: #68a1f7;
+        margin-left: 3px;
+    }
+}
+
 .wecoInput {
     font-size: 14px;
     height: 40px;
