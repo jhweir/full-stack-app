@@ -1,142 +1,344 @@
 import React, { useContext, useState, useEffect, useRef } from 'react'
 import * as d3 from 'd3'
 import { HolonContext } from '../../contexts/HolonContext'
+import { AccountContext } from '../../contexts/AccountContext'
 import styles from '../../styles/components/HolonPostMap.module.scss'
 import colors from '../../styles/Colors.module.scss'
 import PostCard from '../Cards/PostCard/PostCard'
+import axios from 'axios'
+import config from '../../Config'
 
 function HolonPostMap() {
+    const { accountData, isLoggedIn } = useContext(AccountContext)
     const {
-        holonPosts,
-        totalMatchingPosts,
-        getAllHolonPosts,
+        holonData,
         holonPostSortByFilter,
         holonPostSortOrderFilter,
-        fullScreen
+        holonPostTimeRangeFilter,
+        holonPostTypeFilter,
+        holonPostDepthFilter,
+        holonPostSearchFilter,
+        fullScreen,
     } = useContext(HolonContext)
 
-    const [selectedPost, setSelectedPost] = useState({ creator: {}, DirectSpaces: [] })
-    const [rangeValue, setRangeValue] = useState(50)
+    const [postMapData, setPostMapData] = useState([])
+    const [selectedPost, setSelectedPost] = useState(null)
+    const [gravity, setGravity] = useState(50)
     const [showKey, setShowKey] = useState(false)
+    const [postMapPaginationLimit, setPostMapPaginationLimit] = useState(50)
+    const [totalMatchingPosts, setTotalMatchingPosts] = useState(0)
     const [width, setWidth] = useState(700)
-
-    const range = useRef()
-
     const height = 500
+    const arrowPoints = 'M 0 0 6 3 0 6 1.5 3'
+    const gravitySlider = useRef()
+    const gravityInput = useRef()
 
-    function updateRangeInput() {
-        setRangeValue(range.current.value)
+    function getPostMapData(limit) {
+        console.log(`getPostMapData (0 to ${postMapPaginationLimit})`)
+        axios.get(config.apiURL + 
+            `/holon-posts?accountId=${isLoggedIn ? accountData.id : null
+            }&handle=${holonData.handle
+            }&sortBy=${holonPostSortByFilter
+            }&sortOrder=${holonPostSortOrderFilter
+            }&timeRange=${holonPostTimeRangeFilter
+            }&postType=${holonPostTypeFilter
+            }&depth=${holonPostDepthFilter
+            }&searchQuery=${holonPostSearchFilter
+            }&limit=${limit
+            }&offset=0`)
+            .then(res => {
+                // store previous node positions
+                let previousNodePositions = []
+                d3.selectAll('circle').each(d => {
+                    previousNodePositions.push({
+                        id: d.id,
+                        x: d.x,
+                        y: d.y,
+                        vx: d.vx,
+                        vy: d.vy
+                    })
+                })
+                // add previous positions to matching new nodes
+                res.data.posts.forEach(post => {
+                    const match = previousNodePositions.find(node => node.id === post.id)
+                    if (match) {
+                        post.x = match.x
+                        post.y = match.y
+                        post.vx = match.vx
+                        post.vy = match.vy
+                    } else {
+                        // if no match randomise starting position outside of viewport
+                        let randomX = ((Math.random() - 0.5) * 5000)
+                        let randomY = ((Math.random() - 0.5) * 5000)
+                        post.x = randomX > 0 ? randomX + 200 : randomX - 200
+                        post.y = randomY > 0 ? randomY + 200 : randomY - 200
+                    }
+                })
+                setPostMapData(res.data.posts)
+                setTotalMatchingPosts(res.data.totalMatchingPosts)
+            })
     }
-    
-    function updateCanvasSize() {
-        d3.select('#holonPostMap')
-            .style('width', width)
 
-        d3.select('#canvas')
-            // .transition()
-            // .duration(1000)
-            .style('width', width)
-
-        d3.select('svg')
-            // .transition()
-            // .duration(1000)
-            .attr('width', width)
-
-        const newWidth = parseInt(d3.select('svg').style('width'), 10)
-        
-        // d3.select('#link-group')
-        //     // .transition()
-        //     // .duration(500)
-        //     .attr('transform', 'translate(' + (xOffset + (newWidth / 2)) + ',' + yOffset + ')')
-
-        // d3.select('#node-group')
-        //     // .transition()
-        //     // .duration(500)
-        //     .attr('transform', 'translate(' + (xOffset + (newWidth / 2)) + ',' + yOffset + ')')
-    }
-    
-    useEffect(() => {
-        setSelectedPost(holonPosts[0])
-        console.log('HolonPostMap: first useEffect')
+    function findDomain() {
         let dMin = 0, dMax
-        if (holonPostSortByFilter === 'Reactions') dMax = d3.max(holonPosts.map(post => post.total_reactions))
-        if (holonPostSortByFilter === 'Likes') dMax = d3.max(holonPosts.map(post => post.total_likes))
-        if (holonPostSortByFilter === 'Reposts') dMax = d3.max(holonPosts.map(post => post.total_reposts))
-        if (holonPostSortByFilter === 'Ratings') dMax = d3.max(holonPosts.map(post => post.total_ratings))
-        if (holonPostSortByFilter === 'Comments') dMax = d3.max(holonPosts.map(post => post.total_comments))
+        if (holonPostSortByFilter === 'Reactions') dMax = d3.max(postMapData.map(post => post.total_reactions))
+        if (holonPostSortByFilter === 'Likes') dMax = d3.max(postMapData.map(post => post.total_likes))
+        if (holonPostSortByFilter === 'Reposts') dMax = d3.max(postMapData.map(post => post.total_reposts))
+        if (holonPostSortByFilter === 'Ratings') dMax = d3.max(postMapData.map(post => post.total_ratings))
+        if (holonPostSortByFilter === 'Comments') dMax = d3.max(postMapData.map(post => post.total_comments))
         if (holonPostSortByFilter === 'Date') {
-            dMin = d3.min(holonPosts.map(post => Date.parse(post.createdAt)))
-            dMax = d3.max(holonPosts.map(post => Date.parse(post.createdAt)))
+            dMin = d3.min(postMapData.map(post => Date.parse(post.createdAt)))
+            dMax = d3.max(postMapData.map(post => Date.parse(post.createdAt)))
         }
-
         let domainMin, domainMax
         if (holonPostSortOrderFilter === 'Descending') { domainMin = dMin; domainMax = dMax }
         if (holonPostSortOrderFilter === 'Ascending') { domainMin = dMax; domainMax = dMin }
+        return [domainMin, domainMax]
+    }
 
-        let radiusScale = d3.scaleLinear()
-            .domain([domainMin, domainMax]) // data values range
-            .range([20, 60]) // radius range
+    function findRadius(d) {
+        const radiusScale = d3.scaleLinear()
+            .domain(findDomain()) // data values spread
+            .range([20, 60]) // radius size spread
 
-        // create link arrays
-        let textLinkData = []
-        let turnLinkData = []
-        holonPosts.forEach((post, postIndex) => {
-            let filteredLinks = post.OutgoingLinks.filter(link => link.state === 'visible')
+        let radius
+        if (holonPostSortByFilter === 'Reactions') radius = d.total_reactions
+        if (holonPostSortByFilter === 'Likes') radius = d.total_likes
+        if (holonPostSortByFilter === 'Reposts') radius = d.total_reposts
+        if (holonPostSortByFilter === 'Ratings') radius = d.total_ratings
+        if (holonPostSortByFilter === 'Comments') radius = d.total_comments
+        if (holonPostSortByFilter === 'Date') radius = Date.parse(d.createdAt)
+
+        return radiusScale(radius)
+    }
+
+    function findFill(d) {
+        if (d.urlImage) {
+            const existingImage = d3.select(`#image-${d.id}`)._groups[0][0]
+            if (existingImage) {
+                // scale and reposition existing image
+                d3.select(`#image-${d.id}`)
+                    .transition()
+                    .duration(1000)
+                    .attr('height', findRadius(d) * 2)
+            } else {
+                // create new pattern
+                var pattern = d3.select('#image-defs')
+                    .append('pattern')
+                    .attr('id', `pattern-${d.id}`)
+                    .attr('height', 1)
+                    .attr('width', 1)
+                // append new image to pattern
+                pattern.append('image')
+                    .attr('id', `image-${d.id}`)
+                    .attr('height', findRadius(d) * 2)
+                    .attr('xlink:href', d.urlImage)
+            }
+            // return pattern url
+            return `url(#pattern-${d.id})`
+        } else {
+            // return color based on post type
+            if (d.type === 'url') { return colors.yellow }
+            if (d.type === 'poll') { return colors.red }
+            if (d.type === 'text') { return colors.green }
+            if (d.type === 'prism') { return colors.purple }
+            if (d.type === 'glass-bead') { return colors.blue }
+            if (d.type === 'plot-graph') { return colors.orange }
+        }
+    }
+
+    function findStroke(d) {
+        if (d.account_like || d.account_repost || d.account_rating || d.account_link) return '#83b0ff'
+        else return 'rgb(140 140 140)'
+    }
+
+    function createLinkData(data, linkType) {
+        const linkData = []
+        data.forEach((post, postIndex) => {
+            const filteredLinks = post.OutgoingLinks.filter(link => link.state === 'visible' && link.relationship === linkType)
             filteredLinks.forEach(link => {
                 let targetIndex = null
-                // search posts using id to find target index
-                holonPosts.forEach((p, i) => {
-                    if (p.id === link.itemBId) {
-                        targetIndex = i
-                    }
-                })
+                // search posts by id to find target index
+                data.forEach((p, i) => { if (p.id === link.itemBId) targetIndex = i })
                 if (targetIndex !== null) {
-                    let linkData = {
+                    let link = {
                         source: postIndex,
                         target: targetIndex
                     }
-                    if (link.relationship === 'text') textLinkData.push(linkData)
-                    if (link.relationship === 'turn') turnLinkData.push(linkData)
+                    linkData.push(link)
                 }
             })
         })
+        return linkData
+    }
 
-        let simulation = d3
-            .forceSimulation(holonPosts)
-            .force('charge', d3.forceManyBody().strength(function (d) {
-                let charge
-                if (holonPostSortByFilter === 'Reactions') { charge = d.total_reactions; return -100 - (charge * 100) }
-                if (holonPostSortByFilter === 'Likes') charge = d.total_likes
-                if (holonPostSortByFilter === 'Reposts') charge = d.total_reposts
-                if (holonPostSortByFilter === 'Ratings') charge = d.total_ratings
-                if (holonPostSortByFilter === 'Comments') charge = d.total_comments
-                if (holonPostSortByFilter === 'Date') { charge = - Date.parse(d.createdAt) / 10000000000; return charge }
-                let newCharge = -100 - (charge * 100)//-100 - (charge * 400)
-                return newCharge
-            }))
-            .force('center', d3.forceCenter(width/2, height/2))
-            .force('x', d3.forceX(width/2).strength(rangeValue/1000)) //0.05
-            .force('y', d3.forceY(height/2).strength(rangeValue/1000))
+    const zoom = d3.zoom().on("zoom", () => {
+        d3.select('#post-map-master-group').attr("transform", d3.event.transform)
+    })
+
+    function createCanvas() {
+        d3.select('#canvas')
+            .append('svg')
+            .attr('id', 'post-map-svg')
+            .attr('width', width)
+            .attr('height', height)
+
+        // create defs
+        d3.select('#post-map-svg')
+            .append("defs")
+            .attr("id", "image-defs")
+
+        // create text link arrow
+        d3.select('#post-map-svg')
+            .append('defs')
+            .attr('id', 'text-link-arrow-defs')
+            .append('marker')
+            .attr('id', 'text-link-arrow')
+            .attr('refX', 5)
+            .attr('refY', 3)
+            .attr('markerWidth', 40)
+            .attr('markerHeight', 40)
+            .attr('orient', 'auto-start-reverse')
+            .append('path')
+            .attr('d', arrowPoints)
+            .style('fill', 'black')
+
+        // create turn link arrow (currently === text link arrow)
+        d3.select('#post-map-svg')
+            .append('defs')
+            .attr('id', 'turn-link-arrow-defs')
+            .append('marker')
+            .attr('id', 'turn-link-arrow')
+            .attr('refX', 5)
+            .attr('refY', 3)
+            .attr('markerWidth', 40)
+            .attr('markerHeight', 40)
+            .attr('orient', 'auto-start-reverse')
+            .append('path')
+            .attr('d', arrowPoints)
+            .style('fill', 'black')
+
+        // create master group
+        d3.select('#post-map-svg')
+            .append('g')
+            .attr('id', 'post-map-master-group')
+
+        // create node group
+        d3.select('#post-map-master-group')
+            .append('g')
+            .attr('id', 'post-map-node-group')
+
+        // create link group
+        d3.select('#post-map-master-group')
+            .append('g')
+            .attr('id', 'post-map-link-group')
+
+        // create zoom listener and set initial position
+        d3.select('#post-map-svg').call(zoom)
+        d3.select('#post-map-svg').call(zoom.transform, d3.zoomIdentity.scale(1).translate(width/2,height/2))
+
+        // listen for 'p' keypress during node drag to pin or unpin selected node
+        d3.select("body").on("keydown", function() {
+            if (d3.event.keyCode === 80) {
+                const activeDrag = d3.select('.active-drag')
+                if (activeDrag.node()) {
+                    if (activeDrag.classed('pinned')) {
+                        activeDrag.classed('pinned', false)
+                    } else {
+                        activeDrag.classed('pinned', true)
+                    }
+                }
+            }
+        })
+    }
+
+    function updateCanvasSize() {
+        d3.select('#canvas').style('width', width)
+        d3.select('#post-map-svg').attr('width', width)
+        const newWidth = parseInt(d3.select('#post-map-svg').style('width'), 10)
+
+        // todo: smoothly transition size and scale
+        //d3.select('#post-map-svg').call(zoom.transform, d3.zoomIdentity.scale(scale).translate(newWidth/scale/2,height/scale/2))
+        
+        d3.select('#post-map-svg').call(zoom.transform, d3.zoomIdentity.scale(1).translate(newWidth/2,height/2))
+        repositionMap(postMapData)
+    }
+
+    function repositionMap(data) {
+        // work out total node area
+        const areaValues = []
+        data.forEach(d => {
+            let radius = findRadius(d) + 5
+            let area = radius * radius * Math.PI
+            areaValues.push(area)
+        })
+        const totalArea = areaValues.reduce((a, b) => a + b, 0)
+        // calculate required viewport scale from total area
+        var scale
+        if (totalArea === 0) scale = 1
+        else scale = (30000 / totalArea) + 0.5
+        // return map to default position at required scale
+        const svgWidth = parseInt(d3.select('#post-map-svg').style('width'), 10)
+        d3.select('#post-map-svg')
+            .transition()
+            .duration(2000)
+            .call(zoom.transform, d3.zoomIdentity.scale(scale).translate(svgWidth/scale/2,height/scale/2))
+    }
+
+    function updateMap(data) {
+        setGravity(50)
+        repositionMap(data)
+
+        const textLinkData = createLinkData(data, 'text')
+        const turnLinkData = createLinkData(data, 'turn')
+
+        const simulation = d3.forceSimulation(data)
+            .force('collide', d3.forceCollide().strength(.9).radius(d => findRadius(d) + 5).iterations(10))
+            .force('charge', d3.forceManyBody().strength(d => - findRadius(d) * 8))
+            .force('x', d3.forceX(0).strength(0.1)) // (50 / 500 = 0.1)
+            .force('y', d3.forceY(0).strength(0.1))
             .force('textLinks', d3.forceLink().links(textLinkData).strength(0.05))
             .force('turnLinks', d3.forceLink().links(turnLinkData).strength(0.09))
-            .force('collide', d3.forceCollide(function(d) {
-                let radius
-                if (holonPostSortByFilter === 'Reactions') radius = d.total_reactions
-                if (holonPostSortByFilter === 'Likes') radius = d.total_likes
-                if (holonPostSortByFilter === 'Reposts') radius = d.total_reposts
-                if (holonPostSortByFilter === 'Ratings') radius = d.total_ratings
-                if (holonPostSortByFilter === 'Comments') radius = d.total_comments
-                if (holonPostSortByFilter === 'Date') radius = Date.parse(d.createdAt)
-                return radiusScale(radius) + 5
-                //return radiusScale(d.total_likes) + 5
-            }))
+            .alpha(1)
+            .alphaTarget(0)
+            .alphaMin(0.01)
+            .alphaDecay(.002)
+            .velocityDecay(0.7)
+            .nodes(data)
+            .on('tick', updateSimulation)
 
-        function dragstarted(d) {
+        function updateSimulation() {
+            d3.selectAll('.post-map-node')
+                .attr('cx', d => d.x)
+                .attr('cy', d => d.y)
+
+            d3.selectAll('.post-map-node-text')
+                .attr('text-anchor', 'middle')
+                .attr('x', d => d.x)
+                .attr('y', d => d.y)
+
+            d3.selectAll('.post-map-text-link').call(updateLink)
+            d3.selectAll('.post-map-turn-link').call(updateLink)
+        }
+
+        function updateLink(link) {
+            function fixna(x) {
+                if (isFinite(x)) return x
+                return 0
+            }
+            link.attr('x1', d => fixna(d.source.x))
+                .attr('y1', d => fixna(d.source.y))
+                .attr('x2', d => fixna(d.target.x))
+                .attr('y2', d => fixna(d.target.y))
+        }
+
+        function dragStarted(d) {
+            d3.select(this).classed('active-drag', true)
             if (!d3.event.active) {
-                simulation.alphaTarget(.03).restart()
                 d.fx = d.x
                 d.fy = d.y
             }
+            simulation.alpha(1)
         }
 
         function dragged(d) {
@@ -144,251 +346,258 @@ function HolonPostMap() {
             d.fy = d3.event.y
         }
 
-        function dragended(d) {
-            if (!d3.event.active) {
-                simulation.alphaTarget(.03)
+        function dragEnded(d) {
+            d3.select(this).classed('active-drag', false)
+            if (!d3.event.active && !d3.select(this).classed('pinned')) {
                 d.fx = null
                 d.fy = null
             }
+            simulation.alpha(1)
         }
 
-        d3.select("#canvas")
-            .append("svg")
-            .attr('id', 'canvas-svg')
-            .attr("width", width) //+ margin.left + margin.right)
-            .attr("height", height) // + margin.top + margin.bottom)
-            // .call(d3.zoom().on("zoom", () => nodes.attr("transform", d3.event.transform)))
+        // connect simulation gravity to slider
+        d3.select('#gravity-slider').on('input', () => {
+            simulation.force('x').strength(gravitySlider.current.value/500)
+            simulation.force('y').strength(gravitySlider.current.value/500)
+            simulation.alpha(1)
+        })
+        d3.select('#gravity-input').on('input', () => {
+            simulation.force('x').strength(gravityInput.current.value/500)
+            simulation.force('y').strength(gravityInput.current.value/500)
+            simulation.alpha(1)
+        })
 
-        var svg = d3.select("#canvas-svg")
-
-        const arrowPoints = 'M 0 0 6 3 0 6 1.5 3'
-
-        // create text links
-        svg.append("svg:defs").append("svg:marker")
-            .attr("id", 'blue-arrow')
-            .attr("refX", 5)
-            .attr("refY", 3)
-            .attr("markerWidth", 40)
-            .attr("markerHeight", 40)
-            .attr('orient', 'auto-start-reverse')
-            .append("path")
-            .attr("d", arrowPoints)
-            .style("fill", colors.blue)
-        let textLinks = svg.append("g").attr("class", "textLinks")
-            .selectAll("#textLink")
-            .data(textLinkData)
-            .enter()
-            .append("line")
-            .attr("id", "textLink")
-            .attr("stroke", 'black')//colors.blue)
-            .attr("stroke-width", "3px")
-            .attr('opacity', 0.3)
-            //.attr('stroke-dasharray', 3)
-            //.attr("marker-end", "url(#blue-arrow)")
+        // reaheat simulation on svg click
+        d3.select('#post-map-svg').on('click', () => simulation.alpha(1))
 
         // create nodes
-        let nodes = svg.selectAll("node")
-            .data(holonPosts)
-            .enter()
-            .append('g')
-            //.call(d3.zoom().on("zoom", () => nodes.attr("transform", d3.event.transform)))
+        d3.select('#post-map-node-group')
+            .selectAll('.post-map-node')
+            .data(data, d => d.id)
+            .join(
+                enter => enter
+                    .append("circle")
+                    .classed('post-map-node', true)
+                    .attr('id', d => `post-map-node-${d.id}`)
+                    .attr("r", findRadius)
+                    .style("fill", findFill)
+                    .style("stroke", findStroke)
+                    .style("stroke-width", 2)
+                    .attr('opacity', 0)
+                    .on('click', e => {
+                        simulation.alpha(1)
+                        setSelectedPost(data.find(post => post.id === e.id))
+                        d3.selectAll('.post-map-node')
+                            .transition()
+                            .duration(200)
+                            .style("stroke-width", 2)
+                        d3.select(d3.event.target)
+                            .transition()
+                            .duration(200)
+                            .style("stroke-width", 6)
+                    })
+                    .call(d3.drag()
+                        .on("start", dragStarted)
+                        .on("drag", dragged)
+                        .on("end", dragEnded)
+                    )
+                    .call(enter => enter
+                        .transition()
+                        .duration(1000)
+                        .attr('opacity', 1)
+                    ),
+                update => update
+                    .call(update => update
+                        .transition()
+                        .duration(1000)
+                        .attr("r", findRadius)
+                        .style("fill", findFill)
+                    ),
+                exit => exit
+                    .call(exit => exit
+                        .transition()
+                        .duration(1000)
+                        .attr('opacity', 0)
+                        .attr('r', 0)
+                        .remove()
+                        .on('end', d => d3.select(`#pattern-${d.id}`).remove())
+                    )
+            )
+            
+        // create text 
+        d3.select('#post-map-node-group')
+            .selectAll(".post-map-node-text")
+            .data(data, d => d.id)
+            .join(
+                enter => enter
+                    .append("text")
+                    .classed('post-map-node-text', true)
+                    .text(function(d){ 
+                        let text = d.text.substring(0, 20)
+                        if (text.length === 20) text = text.concat('...')
+                        return text
+                    })
+                    .attr('opacity', 0)
+                    .attr('pointer-events', 'none')
+                    .on('click', e => {
+                        setSelectedPost(data.find(post => post.id === e.id))
+                        d3.selectAll('.post-map-node')
+                            .transition()
+                            .duration(200)
+                            .style("stroke-width", 2)
+                        d3.select(`#post-map-node-${e.id}`)
+                            .transition()
+                            .duration(200)
+                            .style("stroke-width", 6)
+                    })
+                    .call(enter => enter
+                        .transition()
+                        .duration(1000)
+                        .attr('opacity', 1)
+                    ),
+                update => update
+                    .call(update => update
+                        .transition()
+                        .duration(1000)
+                    ),
+                exit => exit
+                    .call(exit => exit
+                        .transition()
+                        .duration(1000)
+                        .attr('opacity', 0)
+                        .remove()
+                    )
+            )
+
+        // create text links
+        d3.select('#post-map-link-group')
+            .selectAll(".post-map-text-link")
+            .data(textLinkData)
+            .join(
+                enter => enter
+                    .append('line')
+                    .classed('post-map-text-link', true)
+                    .attr('stroke', 'black')
+                    .attr('stroke-width', '3px')
+                    .attr('marker-end', 'url(#text-link-arrow)')
+                    .attr('opacity', 0)
+                    .call(enter => enter
+                        .transition()
+                        .duration(1000)
+                        .attr('opacity', 0.3)
+                    ),
+                update => update
+                    .call(update => update
+                        .transition()
+                        .duration(1000)
+                    ),
+                exit => exit
+                    .call(exit => exit
+                        .transition()
+                        .duration(1000)
+                        .attr('opacity', 0)
+                        .remove()
+                    )
+            )
 
         // create turn links
-        svg.append("svg:defs").append("svg:marker")
-            .attr("id", 'green-arrow')
-            .attr("refX", 5)
-            .attr("refY", 3)
-            .attr("markerWidth", 40)
-            .attr("markerHeight", 40)
-            .attr('orient', 'auto-start-reverse')
-            .append("path")
-            .attr("d", arrowPoints)
-            .style("fill", 'black')//colors.darkGreen)
-        let turnLinks = svg.append("g").attr("class", "turnLinks")
-            .selectAll("#turnLink")
+        d3.select('#post-map-link-group')
+            .selectAll(".post-map-turn-link")
             .data(turnLinkData)
-            .enter()
-            .append("line")
-            .attr("id", "turnLink")
-            .attr("stroke", 'black')//colors.darkGreen)
-            .attr("stroke-width", "3px")
-            .attr('stroke-dasharray', 3)
-            .attr('opacity', 0.3)
-            .attr("marker-end", "url(#green-arrow)")
+            .join(
+                enter => enter
+                    .append('line')
+                    .classed('post-map-turn-link', true)
+                    .attr('stroke', 'black')
+                    .attr('stroke-width', '3px')
+                    .attr('stroke-dasharray', 3)
+                    .attr('marker-end', 'url(#turn-link-arrow)')
+                    .attr('opacity', 0)
+                    .call(enter => enter
+                        .transition()
+                        .duration(1000)
+                        .attr('opacity', 0.3)
+                    ),
+                update => update
+                    .call(update => update
+                        .transition()
+                        .duration(1000)
+                    ),
+                exit => exit
+                    .call(exit => exit
+                        .transition()
+                        .duration(1000)
+                        .attr('opacity', 0)
+                        .remove()
+                    )
+            )
 
-        var defs = svg.append("defs").attr("id", "imgdefs")
-
-        // add circles to nodes
-        nodes
-            .append("circle")
-            .attr('class', 'post-map-node')
-            .attr('id', d => `post-map-node-${d.id}`)
-            .attr("r", function(d) {
-                let radius
-                if (holonPostSortByFilter === 'Reactions') radius = d.total_reactions
-                if (holonPostSortByFilter === 'Likes') radius = d.total_likes
-                if (holonPostSortByFilter === 'Reposts') radius = d.total_reposts
-                if (holonPostSortByFilter === 'Ratings') radius = d.total_ratings
-                if (holonPostSortByFilter === 'Comments') radius = d.total_comments
-                if (holonPostSortByFilter === 'Date') radius = Date.parse(d.createdAt)
-                return radiusScale(radius)
-            })
-            .style("fill", function(d){
-                if (d.urlImage !== null) {
-                    var pattern = defs.append("pattern")
-                        .attr("id", `${d.id}`)
-                        .attr("height", 1)
-                        .attr("width", 1)
-                        .attr("x", "0")
-                        .attr("y", "0")
-        
-                    pattern.append("image")
-                        .attr("x", 0)
-                        .attr("y", 0)
-                        .attr("height", function() {
-                            let radius
-                            if (holonPostSortByFilter === 'Reactions') radius = d.total_reactions
-                            if (holonPostSortByFilter === 'Likes') radius = d.total_likes
-                            if (holonPostSortByFilter === 'Reposts') radius = d.total_reposts
-                            if (holonPostSortByFilter === 'Ratings') radius = d.total_ratings
-                            if (holonPostSortByFilter === 'Comments') radius = d.total_comments
-                            if (holonPostSortByFilter === 'Date') radius = Date.parse(d.createdAt)
-                            return radiusScale(radius) * 2
-                        })
-                        .attr("xlink:href", d.urlImage)
-
-                    return `url(#${d.id})`
-                }
-                else {
-                    if (d.type === 'url') { return colors.yellow }
-                    if (d.type === 'poll') { return colors.red }
-                    if (d.type === 'text') { return colors.green }
-                    if (d.type === 'prism') { return colors.purple }
-                    if (d.type === 'glass-bead') { return colors.blue }
-                    if (d.type === 'plot-graph') { return colors.orange }
-                }
-            })
-            .style("stroke", d => (d.account_like || d.account_repost || d.account_rating || d.account_link > 0) ? '#83b0ff' : 'rgb(140 140 140)')//"transparent")
-            .style("stroke-width", (d, i) => i === 0 ? 6 : 2 )
-            .attr('opacity', 0.9)
-            .on('click', e => {
-                setSelectedPost(holonPosts.find(post => post.id === e.id))
-                d3.selectAll('.post-map-node')
-                    .transition()
-                    .duration(200)
-                    .style("stroke-width", 2)
-                d3.select(d3.event.target)
-                    .transition()
-                    .duration(200)
-                    .style("stroke-width", 6)
-            })
-            .call(d3.drag()
-                .on("start", dragstarted)
-                .on("drag", dragged)
-                .on("end", dragended))
-
-        // add text to nodes
-        nodes
-            .append("text")
-            .attr('class', 'post-map-node-text')
-            .text(function(d){ 
-                let text = d.text.substring(0, 30)
-                if (text.length === 30) text = text.concat('...')
-                return text
-            })
-            .on('click', e => {
-                setSelectedPost(holonPosts.find(post => post.id === e.id))
-                d3.selectAll('.post-map-node')
-                    .transition()
-                    .duration(200)
-                    .style("stroke-width", 2)
-                d3.select(`#post-map-node-${e.id}`)
-                    .transition()
-                    .duration(200)
-                    .style("stroke-width", 6)
-            })
-            .call(d3.drag()
-                .on("start", dragstarted)
-                .on("drag", dragged)
-                .on("end", dragended))
-
-
-        svg.call(d3.zoom().on("zoom", () => {
-            nodes.attr("transform", d3.event.transform)
-            turnLinks.attr("transform", d3.event.transform)
-            textLinks.attr("transform", d3.event.transform)
-        }))
-            
-        simulation
-            .nodes(holonPosts)
-            .on('tick', update)
-
-        function update() {
-            d3.selectAll('.post-map-node')
-                .attr("cx", function(d) { return d.x })
-                .attr("cy", function(d) { return d.y })
-
-            d3.selectAll('.post-map-node-text')
-                .attr('text-anchor', 'middle')
-                .attr("x", function(d) { return d.x })
-                .attr("y", function(d) { return d.y })
-
-            d3.selectAll('#node-images')
-                .attr("x", function(d) { return d.x - 40 })
-                .attr("y", function(d) { return d.y - 40 })
-
-            turnLinks.call(updateLink)
-            textLinks.call(updateLink)
+        // if no selected post and posts present, select top post
+        if (!selectedPost && data[0]) {
+            setSelectedPost(data[0])
+            d3.select(`#post-map-node-${data[0].id}`).style("stroke-width", 6)
         }
+    }
 
-        function fixna(x) {
-            if (isFinite(x)) return x;
-            return 0;
-        }
+    useEffect(() => {
+        createCanvas()
+    }, [])
 
-        function updateLink(link) {
-            link.attr("x1", function(d) { return fixna(d.source.x); })
-                .attr("y1", function(d) { return fixna(d.source.y); })
-                .attr("x2", function(d) { return fixna(d.target.x); })
-                .attr("y2", function(d) { return fixna(d.target.y); });
-        }
-    
-        d3.select("#range").on("input", function() {
-            let forceX = simulation.force("x")
-            let forceY = simulation.force("y")
-            forceX.strength(range.current.value/1000)
-            forceY.strength(range.current.value/1000)
-            simulation.alphaTarget(.03).restart()
-        });
+    useEffect(() => {
+        getPostMapData(postMapPaginationLimit)
+    }, [
+        holonData.id,
+        holonPostSortByFilter,
+        holonPostSortOrderFilter,
+        holonPostTimeRangeFilter,
+        holonPostTypeFilter,
+        holonPostDepthFilter,
+        holonPostSearchFilter,
+    ])
 
-        return function cleanup() {
-            d3.select('#canvas').selectAll("*").remove()
-        }
+    useEffect(() => {
+        if (postMapData) updateMap(postMapData)
+    }, [postMapData])
 
-    },[holonPosts])
+    useEffect(() => {
+        setWidth(fullScreen ? '100%' : 700)
+    }, [fullScreen])
 
-    // useEffect(() => {
-    //     setWidth(fullScreen ? '100%' : 700)
-    // }, [fullScreen])
-
-    // useEffect(() => {
-    //     updateCanvasSize()
-    // }, [width])
+    useEffect(() => {
+        updateCanvasSize()
+    }, [width])
 
     return (
-        <div className={styles.holonPostMap} id='holonPostMap'>
-            <div className={styles.controls}>
-                <div className={styles.controlsLeft}>
+        <div className={styles.postMapWrapper}>
+            <div className={styles.controlsWrapper}>
+                <div className={styles.controls}>
                     <div className={styles.item}>
-                        Showing {holonPosts.length} of {totalMatchingPosts} posts
-                        <span className={`blueText ml-10`} onClick={getAllHolonPosts}>
+                        Showing {postMapData.length} of {totalMatchingPosts} posts
+                        <span className={`blueText ml-10`} onClick={() => getPostMapData(totalMatchingPosts)}>
                             load all
                         </span>
                     </div>
                     <div className={styles.item}>
-                        <span className={styles.rangeText}>Gravity:</span>
-                        <input ref={range} id='range' className={styles.rangeInput} type="range" value={rangeValue} min="-200" max="200" onChange={updateRangeInput}/>
-                        <span className={styles.rangeValue}>{ rangeValue }</span>
+                        <span className={styles.gravityText}>Gravity:</span>
+                        {/* todo: add regex to gavity input */}
+                        <input
+                            ref={gravitySlider}
+                            id='gravity-slider'
+                            className={styles.gravitySlider}
+                            type="range"
+                            value={gravity}
+                            min="-50"
+                            max="150"
+                            onChange={() => setGravity(gravitySlider.current.value)}
+                        />
+                        <input
+                            ref={gravityInput}
+                            id='gravity-input'
+                            className={styles.gravityInput}
+                            value={gravity}
+                            type='number'
+                            onChange={e => setGravity(e.target.value)}
+                        />
                     </div>
                 </div>
                 <div className={styles.key}>
@@ -398,58 +607,48 @@ function HolonPostMap() {
                             <div className={styles.postMapKeyItem}>
                                 <span className={styles.text}>No Account Reaction</span>
                                 <div className={styles.colorBox} style={{ border: '2px solid rgb(140 140 140)' }}/>
-                                {/* <span className={styles.text}>No Reaction</span> */}
                             </div>
                             <div className={styles.postMapKeyItem}>
                                 <span className={styles.text}>Account Reaction</span>
                                 <div className={styles.colorBox} style={{ border: '2px solid #83b0ff' }}/>
-                                {/* <span className={styles.text}>Reaction</span> */}
                             </div>
                             <div className={styles.postMapKeyItem}>
                                 <span className={styles.text}>Text Link</span>
                                 <div className={styles.textLink}/>
-                                {/* <span className={styles.text}>Reaction</span> */}
                             </div>
                             <div className={styles.postMapKeyItem}>
                                 <span className={styles.text}>Turn Link</span>
                                 <div className={styles.turnLink}/>
-                                {/* <span className={styles.text}>Reaction</span> */}
                             </div>
                             <div className={styles.postMapKeyItem}>
                                 <span className={styles.text}>Text</span>
                                 <div className={styles.colorBox} style={{ backgroundColor: colors.green }}/>
-                                {/* <span className={styles.text}>Text</span> */}
                             </div>
                             <div className={styles.postMapKeyItem}>
                                 <span className={styles.text}>Url</span>
                                 <div className={styles.colorBox} style={{ backgroundColor: colors.yellow }}/>
-                                {/* <span className={styles.text}>Url</span> */}
                             </div>
                             <div className={styles.postMapKeyItem}>
                                 <span className={styles.text}>Poll</span>
                                 <div className={styles.colorBox} style={{ backgroundColor: colors.red }}/>
-                                {/* <span className={styles.text}>Poll</span> */}
                             </div>
                             <div className={styles.postMapKeyItem}>
                                 <span className={styles.text}>Glass Bead</span>
                                 <div className={styles.colorBox} style={{ backgroundColor: colors.blue }}/>
-                                {/* <span className={styles.text}>Glass Bead</span> */}
                             </div>
                             <div className={styles.postMapKeyItem}>
                                 <span className={styles.text}>Prism</span>
                                 <div className={styles.colorBox} style={{ backgroundColor: colors.purple }}/>
-                                {/* <span className={styles.text}>Prism</span> */}
                             </div>
                             <div className={styles.postMapKeyItem}>
                                 <span className={styles.text}>Plot Graph</span>
                                 <div className={styles.colorBox} style={{ backgroundColor: colors.orange }}/>
-                                {/* <span className={styles.text}>Plot Graph</span> */}
                             </div>
                         </div>
                     }
                 </div>
             </div>
-            <div id='canvas' style={{ height, width }}/>
+            <div id='canvas'/>
             {selectedPost &&
                 <div className={styles.selectedPostWrapper}>
                     <PostCard postData={selectedPost} location='holon-post-map'/>
