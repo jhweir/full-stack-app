@@ -54,7 +54,7 @@ function PostCardReactionItem(props) {
                     }
                     {text === 'Links' &&
                         <PostCardLinkPreview
-                            reactions={reactions}
+                            links={reactions}
                         />
                     }
                 </>

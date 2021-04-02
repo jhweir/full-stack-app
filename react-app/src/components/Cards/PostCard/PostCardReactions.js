@@ -39,16 +39,23 @@ function PostCardReactions(props) {
     const [ratingModalOpen, setRatingModalOpen] = useState(false)
     const [linkPreviewOpen, setLinkPreviewOpen] = useState(false)
     const [linkModalOpen, setLinkModalOpen] = useState(false)
+    const [links, setLinks] = useState({ outgoingLinks: [], incomingLinks: [] })
 
     function getReactionData() {
         console.log('PostCardReactions: getReactionData')
         axios
             .get(config.apiURL + `/post-reaction-data?postId=${postData.id}`)
-            .then(res => res.data !== null && setReactionData(res.data))
+            .then(res => setReactionData(res.data))
+    }
+
+    function getPostLinkData() {
+        axios.get(config.apiURL + `/post-link-data?postId=${postData.id}`)
+            .then(res => setLinks(res.data))
     }
 
     useEffect(() => {
         getReactionData()
+        if (totalLinks > 0) getPostLinkData()
     }, [])
 
     return (
@@ -95,7 +102,7 @@ function PostCardReactions(props) {
             />
             <PostCardReactionItem
                 text='Links'
-                reactions={reactionData && reactionData.Reactions.filter(label => label.type === 'link')}
+                reactions={links && links}
                 previewOpen={linkPreviewOpen} setPreviewOpen={setLinkPreviewOpen}
                 accountReaction={accountLink}
                 totalReactions={totalLinks}
@@ -145,6 +152,7 @@ function PostCardReactions(props) {
             {linkModalOpen &&
                 <PostCardLinkModal
                     postData={postData}
+                    links={links}
                     //linkReactions={reactionData && reactionData.Reactions.filter(label => label.type === 'link')}
                     setLinkModalOpen={setLinkModalOpen}
                     getReactionData={getReactionData}

@@ -13,6 +13,7 @@ import { PostContext } from '../../../contexts/PostContext'
 function PostCardLinkModal(props) {
     const {
         postData,
+        links,
         setLinkModalOpen,
         getReactionData,
         totalReactions, setTotalReactions,
@@ -23,8 +24,6 @@ function PostCardLinkModal(props) {
     const { accountData } = useContext(AccountContext)
     const { setHolonHandle, holonData } = useContext(HolonContext)
     const { setPostId } = useContext(PostContext)
-
-    const [links, setLinks] = useState({ outgoingLinks: [], incomingLinks: [] })
 
     const [linkTo, setLinkTo] = useState('Post')
     const [linkType, setLinkType] = useState('Text')
@@ -38,11 +37,6 @@ function PostCardLinkModal(props) {
     if (linkTo === 'Comment') { prefix = 'c/'; placeholder = 'id'; inputWidth = 40 }
     if (linkTo === 'Space') { prefix = 's/'; placeholder = 'handle'; inputWidth = 70 }
     if (linkTo === 'User') { prefix = 'u/'; placeholder = 'handle'; inputWidth = 70 }
-
-    function getPostLinkData() {
-        axios.get(config.apiURL + `/post-link-data?postId=${postData.id}`)
-            .then(res => setLinks(res.data))
-    }
 
     function addLink() {
         let validTargetUrl = targetUrl.length > 0
@@ -90,14 +84,6 @@ function PostCardLinkModal(props) {
             else { console.log('error: ', res) }
         })
     }
-
-    useEffect(() => {
-        getPostLinkData()
-    },[postData.id])
-
-    useEffect(() => {
-        console.log('links: ', links)
-    },[links])
 
     const ref = useRef()
     function handleClickOutside(e) { if (!ref.current.contains(e.target)) { setLinkModalOpen(false) } }
