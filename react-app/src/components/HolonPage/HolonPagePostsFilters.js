@@ -8,19 +8,20 @@ function HolonPagePostsFilters() {
         holonPostTypeFilter, setHolonPostTypeFilter,
         holonPostSortByFilter, setHolonPostSortByFilter,
         holonPostSortOrderFilter, setHolonPostSortOrderFilter,
-        holonPostDepthFilter, setHolonPostDepthFilter
+        holonPostDepthFilter, setHolonPostDepthFilter,
+        holonPostView
     } = useContext(HolonContext)
 
     return (
         <div className='wecoFilters'>
             <DropDownMenu
-                title='Sort By'
+                title={holonPostView === 'Map'? 'Size By' : 'Sort By'}
                 options={['Reactions', 'Likes', 'Reposts', 'Ratings', 'Comments', 'Date']}
                 selectedOption={holonPostSortByFilter}
                 setSelectedOption={setHolonPostSortByFilter}
             />
             <DropDownMenu
-                title='Sort Order'
+                title={holonPostView === 'Map'? 'Size Order' : 'Sort Order'}
                 options={['Descending', 'Ascending']}
                 selectedOption={holonPostSortOrderFilter}
                 setSelectedOption={setHolonPostSortOrderFilter}

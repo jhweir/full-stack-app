@@ -7,11 +7,11 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    box-shadow: 0 1px 10px 0 rgba(10, 8, 72, 0.05);
+    box-shadow: 0 1px 10px 0 rgba(10, 8, 72, 0.04);
     transition-property: box-shadow;
     transition-duration: 0.3s;
     &:hover {
-        box-shadow: 0 1px 10px 0 rgba(10, 8, 72, 0.2);
+        box-shadow: 0 1px 10px 0 rgba(10, 8, 72, 0.1);
     }
 }
 .input {

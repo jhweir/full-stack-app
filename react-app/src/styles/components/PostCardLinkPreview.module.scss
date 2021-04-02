@@ -67,6 +67,36 @@
     width: 50%;
     opacity: 0.2;
 }
+.title {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+.subTitle {
+    font-size: 14px;
+    margin-bottom: 5px;
+}
 .text {
-    margin-left: 8px;
+
+}
+.links {
+    //margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+}
+.link {
+    font-size: 14px;
+    line-height: 1;
+    white-space: nowrap;
+    margin-bottom: 5px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-shrink: 0;
+    &:last-child { margin-bottom: 0 }
+}
+.imageTextLink {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    span { margin: 0 5px; }
 }

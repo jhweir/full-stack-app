@@ -1,10 +1,11 @@
-.postPage {
+.wrapper {
     margin-top: 60px;
-    width: 700px;
+    //width: 700px;
+    min-height: calc(100vh - 60px);
     padding: 10px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    //justify-content: center;
     align-items: center;
     @media screen and (max-width: 700px) {
         width: 100%;

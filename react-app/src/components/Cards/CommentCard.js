@@ -27,7 +27,7 @@ function CommentCard(props) {
                     if (!replyInputOpen) {
                         const yOffset = (window.screen.height / 2.3)
                         const top = replyInput.current.getBoundingClientRect().top + window.pageYOffset - yOffset
-                        window.scrollTo({ top, behavior: 'smooth' });
+                        window.scrollTo({ top, behavior: 'smooth' })
                     }
                 })
         }
@@ -37,7 +37,7 @@ function CommentCard(props) {
     function submitReply(e) {
         e.preventDefault()
         const invalidReply = newReply.length < 1 || newReply.length > 10000
-        if (invalidReply) { setNewReplyError(true) }
+        if (invalidReply) setNewReplyError(true)
         else {
             axios
                 .post(config.apiURL + '/submit-reply', { 
@@ -51,8 +51,9 @@ function CommentCard(props) {
                 })
                 .then(res => {
                     if (res.data === 'success') {
-                        setNewReply('')
                         setTotalComments(totalComments + 1)
+                        setReplyInputOpen(false)
+                        setNewReply('')
                         setTimeout(() => {
                             getPostComments()
                         }, 300)
@@ -81,10 +82,11 @@ function CommentCard(props) {
                 />
             )}
             {replyInputOpen &&
-                <div className={styles.replyInput} ref={replyInput}>
+                <div className={styles.replyInput}>
                     <SmallFlagImage type='user' size={35} imagePath={accountData.flagImagePath}/>
                     <form className={styles.inputWrapper} onSubmit={submitReply}>
-                        <textarea 
+                        <textarea
+                            ref={replyInput}
                             className={`${styles.input} ${newReplyError && styles.error}`}
                             type="text"
                             rows='1'
@@ -94,8 +96,6 @@ function CommentCard(props) {
                                 setNewReply(e.target.value)
                                 setNewReplyError(false)
                                 resizeTextArea(e.target)
-                                // e.target.style.height = ''
-                                // e.target.style.height = e.target.scrollHeight + 'px'
                             }}
                         />
                         <button className={styles.button}>Reply</button>

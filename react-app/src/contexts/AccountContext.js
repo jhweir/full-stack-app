@@ -31,37 +31,34 @@ function AccountContextProvider({ children, pageBottomReached }) {
     const [createPostFromTurn, setCreatePostFromTurn] = useState(false)
     const [createPostFromTurnData, setCreatePostFromTurnData] = useState({})
 
-    let cookies = new Cookies()
+    const cookies = new Cookies()
 
     function getAccountData() {
         console.log('AccountContext: getAccountData')
-        let accessToken = cookies.get('accessToken')
-        if (accessToken === undefined) { setAccountContextLoading(false) }
-        if (accessToken !== undefined) {
-            // create new axios instance with JWT in authorization header
-            axios.create({
-                baseURL: config.apiURL,
-                headers: { Authorization: `Bearer ${accessToken}` }
-            })
-            .get(`/account-data`)
-            .then(res => {
-                if (res.data !== 'Invalid token') {
-                    setAccountData(res.data)
-                    //console.log('account data: ', res.data)
-                    setIsLoggedIn(true)
-                    console.log('AccountContext: logged in succesfully') }
-                setAccountContextLoading(false)
-            })
+        const accessToken = cookies.get('accessToken')
+        if (!accessToken) setAccountContextLoading(false)
+        else {
+            axios
+                .get(`${config.apiURL}/account-data`, { headers: { Authorization: `Bearer ${accessToken}` } })
+                .then(res => {
+                    if (res.data !== 'Invalid token') {
+                        setAccountData(res.data)
+                        setIsLoggedIn(true)
+                        console.log('AccountContext: logged in succesfully')
+                    }
+                    setAccountContextLoading(false)
+                })
         }
     }
 
     function getNotifications() {
         console.log('AccountContext: getNotifications')
-        axios
-            .get(config.apiURL + `/account-notifications?accountId=${accountData.id}`)
-            .then(res => {
-                setNotifications(res.data)
-            })
+        const accessToken = cookies.get('accessToken')
+        if (accessToken) {
+            axios
+                .get(`${config.apiURL}/account-notifications`, { headers: { Authorization: `Bearer ${accessToken}` } })
+                .then(res => setNotifications(res.data))
+        }
     }
 
     function getNextNotifications() {

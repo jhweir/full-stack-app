@@ -8,6 +8,7 @@ import { HolonContext } from '../../contexts/HolonContext'
 import styles from '../../styles/components/SettingModal.module.scss'
 import { resizeTextArea } from '../../GlobalFunctions'
 import CloseButton from '../CloseButton'
+import Cookies from 'universal-cookie'
 
 function SettingModal() {
     const { settingModalType, setSettingModalOpen, accountData, getAccountData, setAccountContextLoading } = useContext(AccountContext)
@@ -19,6 +20,8 @@ function SettingModal() {
     const [successMessage, setSuccessMessage] = useState('')
 
     const history = useHistory()
+    const cookies = new Cookies()
+    const accessToken = cookies.get('accessToken')
 
     let title, subTitle, placeholder, invalidValue
 
@@ -86,10 +89,9 @@ function SettingModal() {
 
     function saveNewValue(e) {
         e.preventDefault()
-        if (invalidValue) { setError(true) }
-        else {
+        if (invalidValue) setError(true)
+        else if (accessToken) {
             if (settingModalType.includes('holon')) {
-                console.log()
                 axios
                     .post(config.apiURL + '/update-holon-setting', { accountId: accountData.id, holonId: holonData.id, setting: settingModalType, newValue })
                     .then(res => {
@@ -113,7 +115,7 @@ function SettingModal() {
             }
             if (settingModalType.includes('user')) {
                 axios
-                    .post(config.apiURL + '/update-user-setting', { accountId: accountData.id, setting: settingModalType, newValue })
+                    .post(`${config.apiURL}/update-account-setting`, { setting: settingModalType, newValue }, { headers: { Authorization: `Bearer ${accessToken}` } })
                     .then(res => {
                         if (res.data === 'success') {
                             setSettingModalOpen(false)

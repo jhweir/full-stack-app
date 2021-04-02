@@ -8,6 +8,9 @@ import CommentCard from '../../Cards/CommentCard'
 import SmallFlagImage from '../../../components/SmallFlagImage'
 import { resizeTextArea } from '../../../GlobalFunctions'
 
+const test = "test";
+console.log(test)
+
 function PostCardComments(props) {
     const { postId, totalComments, setTotalComments } = props
     const { accountData, isLoggedIn } = useContext(AccountContext)

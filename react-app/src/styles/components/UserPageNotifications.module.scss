@@ -29,11 +29,14 @@
 .seenIcon {
     width: 25px;
     height: 25px;
-    opacity: 0.2;
+    opacity: 0.1;
     position: absolute;
     right: 20px;
     top: 13px;
+    transition-property: opacity;
+    transition-duration: 0.5s;
     &:hover {
         cursor: pointer;
+        opacity: 0.2
     }
 }

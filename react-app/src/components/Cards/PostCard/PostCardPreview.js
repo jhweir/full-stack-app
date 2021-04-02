@@ -18,7 +18,6 @@ function PostCard(props) {
     const now = new Date()
     const minute = 1000 * 60 + 1000
     const createdAt = new Date(now.getTime() - minute).toISOString()
-    console.log('createdAt: ', createdAt)
 
     const [totalComments, setTotalComments] = useState(0)
     const [totalReactions, setTotalReactions] = useState(0)

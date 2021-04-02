@@ -14,7 +14,7 @@ function HolonContextProvider({ children }) {
     const [isFollowing, setIsFollowing] = useState(false)
     const [isModerator, setIsModerator] = useState(false)
     const [selectedHolonSubPage, setSelectedHolonSubPage] = useState('')
-    const [fullScreen, setFullScreen] = useState(false)
+    const [fullScreen, setFullScreen] = useState(true)
 
     // TODO: split holonContextLoading into holonDataLoading, holonPostsLoading, holonSpacesLoading, holonUsersLoading
     const [holonContextLoading, setHolonContextLoading] = useState(true)

@@ -2,9 +2,9 @@
     margin-bottom: 10px;
     padding: 20px 50px 10px 30px;
     width: 100%;
-    border-radius: 10px;
+    border-radius: 5px;
     background-color: #f7fbff; //transparent; #ededf5;
-    box-shadow: 0 1px 10px 0 rgba(10, 8, 72, 0.05);
+    //box-shadow: 0 1px 10px 0 rgba(10, 8, 72, 0.02);
     display: flex;
     flex-direction: row;
     transition-property: background-color;
@@ -91,12 +91,15 @@
 .seenIcon {
     width: 20px;
     height: 20px;
-    opacity: 0.2;
+    opacity: 0.1;
     position: absolute;
     right: 20px;
     top: calc(50% - 10px);
+    transition-property: opacity;
+    transition-duration: 0.5s;
     &:hover {
         cursor: pointer;
+        opacity: 0.15;
     }
 }
 .text {

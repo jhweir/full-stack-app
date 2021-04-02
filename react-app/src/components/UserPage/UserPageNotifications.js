@@ -5,12 +5,16 @@ import styles from '../../styles/components/UserPageNotifications.module.scss'
 import NotificationCard from '../Cards/NotificationCard'
 import axios from 'axios'
 import config from '../../Config'
+import Cookies from 'universal-cookie'
 
 function UserPageNotifications() {
-    const { accountData, getAccountData, getNotifications, getNextNotifications, notifications, accountContextLoading } = useContext(AccountContext)
+    const { getAccountData, getNotifications, getNextNotifications, notifications, accountContextLoading } = useContext(AccountContext)
     const { userData, userContextLoading, setSelectedUserSubPage, isOwnAccount } = useContext(UserContext)
 
     const [renderKey, setRenderKey] = useState(0)
+
+    const cookies = new Cookies()
+    const accessToken = cookies.get('accessToken')
 
     useEffect(() => {
         setSelectedUserSubPage('notifications')
@@ -22,12 +26,15 @@ function UserPageNotifications() {
     }, [notifications])
 
     function markAllNotificationsSeen() {
-        axios.post(config.apiURL + '/mark-all-notifications-seen', { accountId: accountData.id })
-            .then(res => {
-                if (res.data === 'success') {
-                    setTimeout(() => { getAccountData(); getNotifications() }, 500)
-                }
-            })
+        if (accessToken) {
+            axios
+                .post(`${config.apiURL}/mark-all-notifications-seen`, null, { headers: { Authorization: `Bearer ${accessToken}` } })
+                .then(res => {
+                    if (res.data === 'success') {
+                        setTimeout(() => { getAccountData(); getNotifications() }, 500)
+                    }
+                })
+        }
     }
 
     return (

@@ -8,6 +8,7 @@ import SmallFlagImage from '../SmallFlagImage'
 import axios from 'axios'
 import config from '../../Config'
 import { timeSinceCreated, dateCreated } from '../../GlobalFunctions'
+import Cookies from 'universal-cookie'
 
 function NotificationCard(props) {
     const {
@@ -21,20 +22,25 @@ function NotificationCard(props) {
 
     const [seen, setSeen] = useState(true)
 
+    const cookies = new Cookies()
+    const accessToken = cookies.get('accessToken')
+
     useEffect(() => {
         if (notification.id) { setSeen(notification.seen) }
     }, [notification.id])
 
     function toggleSeen() {
-        setSeen(!seen)
-        axios.post(config.apiURL + '/toggle-notification-seen', { notificationId: notification.id, seen: seen ? false : true  })
-            .then(res => {
-                if (res.data === 'success') {
-                    setTimeout(() => {
-                        getAccountData()
-                    }, 300)
-                }
-            })
+        if (accessToken) {
+            setSeen(!seen)
+            axios.post(`${config.apiURL}/toggle-notification-seen`, { notificationId: notification.id, seen: seen ? false : true  }, { headers: { Authorization: `Bearer ${accessToken}` } })
+                .then(res => {
+                    if (res.data === 'success') {
+                        setTimeout(() => {
+                            getAccountData()
+                        }, 300)
+                    }
+                })
+        }
     }
 
     return (

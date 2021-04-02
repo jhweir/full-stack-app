@@ -10,11 +10,11 @@ import SideBarButton from '../SideBarButton'
 
 function HolonPageSideBarLeft() {
     const { isLoggedIn, accountData, getAccountData } = useContext(AccountContext)
-    const { getHolonUsers, holonData, getHolonData, isFollowing, setIsFollowing, isModerator, selectedHolonSubPage } = useContext(HolonContext)
+    const { getHolonUsers, holonData, getHolonData, isFollowing, setIsFollowing, isModerator, selectedHolonSubPage, getHolonPosts } = useContext(HolonContext)
 
     function followSpace() {
         if (isFollowing) {
-            axios.put(config.apiURL + `/unfollow-space`, { holonId: holonData.id, userId: accountData.id })
+            axios.post(config.apiURL + `/unfollow-space`, { holonId: holonData.id, userId: accountData.id })
                 .then(res => {
                     if (res.data === 'success') {
                         setTimeout(() => {
@@ -60,32 +60,12 @@ function HolonPageSideBarLeft() {
                         onClickFunction={followSpace}
                         marginBottom={5}
                     />}
-                    {/* {isModerator && <SideBarButton
-                        icon='crown-solid.svg'
-                        text='Moderator'
-                        marginBottom={5}
-                    />} */}
-                    {isModerator && <SideBarButton
-                        icon='cog-solid.svg'
-                        text='Settings'
-                        url='settings'
-                        selected={selectedHolonSubPage === 'settings'}
-                        marginBottom={5}
-                    />}
                     <SideBarButton
                         icon='book-open-solid.svg'
                         text='About'
                         url='about'
                         selected={selectedHolonSubPage === 'about'}
                         marginBottom={5}
-                    />
-                    <SideBarButton
-                        icon='edit-solid.svg'
-                        text='Posts'
-                        url='posts'
-                        selected={selectedHolonSubPage === 'posts'}
-                        marginBottom={5}
-                        total={holonData.total_posts}
                     />
                     <SideBarButton
                         icon='overlapping-circles-thick.svg'
@@ -95,6 +75,23 @@ function HolonPageSideBarLeft() {
                         marginBottom={5}
                         total={holonData.total_spaces}
                     />
+                    <SideBarButton
+                        icon='edit-solid.svg'
+                        text='Posts'
+                        url='posts'
+                        selected={selectedHolonSubPage === 'posts'}
+                        marginBottom={5}
+                        total={holonData.total_posts}
+                        onClickFunction={() => getHolonPosts()}
+                    />
+                    {/* <SideBarButton
+                        icon='overlapping-circles-thick.svg'
+                        text='Spaces'
+                        url='spaces'
+                        selected={selectedHolonSubPage === 'spaces'}
+                        marginBottom={5}
+                        total={holonData.total_spaces}
+                    /> */}
                     {holonData.handle !== 'coops' &&
                         <SideBarButton
                             icon='users-solid.svg'
@@ -107,30 +104,21 @@ function HolonPageSideBarLeft() {
                     }
                     {holonData.handle === 'coops' && <>
                         <SideBarButton
-                            icon='handshake-regular.svg'
-                            text='Coops'
-                            url='spaces'
-                            //selected={selectedHolonSubPage === 'users'}
-                            marginBottom={5}
-                            total={12}
-                        />
-                        <SideBarButton
                             icon='users-solid.svg'
                             text='Cooperators'
                             url='users'
                             //selected={selectedHolonSubPage === 'users'}
                             marginBottom={5}
-                            total={8}
-                        />
-                        <SideBarButton
-                            icon='copy-solid.svg'
-                            text='Publications'
-                            url='posts'
-                            //selected={selectedHolonSubPage === 'users'}
-                            marginBottom={5}
-                            total={4}
+                            total={holonData.total_users}
                         />
                     </>}
+                    {isModerator && <SideBarButton
+                        icon='cog-solid.svg'
+                        text='Settings'
+                        url='settings'
+                        selected={selectedHolonSubPage === 'settings'}
+                        marginBottom={5}
+                    />}
                 </div>
                 {/* <div className={styles.description}>{holonData.description}</div> */}
             </div>

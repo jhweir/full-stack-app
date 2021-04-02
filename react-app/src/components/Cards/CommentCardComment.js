@@ -30,7 +30,7 @@ function CommentCardComment(props) {
         <div className={styles.wrapper}>
             <div className={`${styles.commentWrapper} ${isReply && styles.indented} ${!isLoggedIn && styles.marginBottom}`}>
                 <Link to={ `/u/${comment.creator.handle}`} className={styles.user}>
-                    <SmallFlagImage type='user' size={35} imagePath={comment.creator.flagImagePath}/>
+                    <SmallFlagImage type='user' size={30} imagePath={comment.creator.flagImagePath}/>
                 </Link>
                 <div className={styles.comment}>
                     <div className={styles.content}>
@@ -39,7 +39,7 @@ function CommentCardComment(props) {
                                 <span className={styles.name}>{ comment.creator.name }</span>
                             </Link>
                             <span className={styles.date} title={dateCreated(comment.createdAt)}>
-                                { `| ${timeSinceCreated(comment.createdAt)}` }
+                                { `• ${timeSinceCreated(comment.createdAt)}` }
                             </span>
                         </div>
                         <span ref={commentText} className={`${styles.text} ${showFullComment && styles.expanded}`}>{ comment.text }</span>
@@ -54,12 +54,12 @@ function CommentCardComment(props) {
                     {isLoggedIn &&
                         <div className={styles.interact}>
                             <div className={styles.interactItem} onClick={openReplyInput}>
-                                <img className={`${styles.icon} ${styles.rotated}`} src="/icons/reply-solid.svg" alt=''/>
+                                {/* <img className={`${styles.icon} ${styles.rotated}`} src="/icons/reply-solid.svg" alt=''/> */}
                                 <span>Reply</span>
                             </div>
                             {isOwnComment &&
                                 <div className={styles.interactItem} onClick={() => setDeleteCommentModalOpen(true)}>
-                                    <img className={styles.icon} src="/icons/trash-alt-solid.svg" alt=''/>
+                                    {/* <img className={styles.icon} src="/icons/trash-alt-solid.svg" alt=''/> */}
                                     <span>Delete</span>
                                 </div>
                             }

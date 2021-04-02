@@ -29,12 +29,9 @@ function HolonSpaceMap() {
     const yOffset = 80
 
     function getSpaceMapData() {
-        console.log('getSpaceMapData: ', holonData.id)
+        console.log('getSpaceMapData')
         axios.get(config.apiURL + `/space-map-data?spaceId=${holonData.id}&sortBy=${holonSpaceSortByFilter}&sortOrder=${holonSpaceSortOrderFilter}&timeRange=${holonSpaceTimeRangeFilter}`)
-            .then(res => {
-                console.log('setSpaceMapData: ', res.data)
-                setSpaceMapData(res.data)
-            })
+            .then(res => setSpaceMapData(res.data))
     }
 
     function findParent(tree, itemId) {
@@ -59,13 +56,6 @@ function HolonSpaceMap() {
             })
     }
 
-    function resetTreePosition() {
-        d3.select('svg')
-            .transition()
-            .duration(1000)
-            .call(zoom.transform, d3.zoomIdentity)
-    }
-
     function collapseChildren(d) {
         if(d.children) {
             d._children = d.children
@@ -75,34 +65,42 @@ function HolonSpaceMap() {
     }
 
     const zoom = d3.zoom().on("zoom", () => d3
-        .select('#master-group')
+        .select('#space-map-master-group')
         .attr("transform", d3.event.transform))
+
+    function resetTreePosition() {
+        d3.select('#space-map-svg')
+            .transition()
+            .duration(1000)
+            .call(zoom.transform, d3.zoomIdentity)
+    }
 
     function createCanvas() {
         d3.select('#canvas')
             .append('svg')
+            .attr('id', 'space-map-svg')
             .attr('width', width) //+ margin.left + margin.right)
             .attr('height', height)
 
-        d3.select('svg')
+        d3.select('#space-map-svg')
             .append('defs')
             .attr('id', 'imgdefs')
 
-        d3.select('svg')
+        d3.select('#space-map-svg')
             .append('g')
-            .attr('id', 'master-group')
+            .attr('id', 'space-map-master-group')
 
-        d3.select('#master-group')
+        d3.select('#space-map-master-group')
             .append('g')
             .attr('id', 'link-group')
             .attr('transform', 'translate(' + (xOffset + (width / 2)) + ',' + yOffset + ')')
 
-        d3.select('#master-group')
+        d3.select('#space-map-master-group')
             .append('g')
             .attr('id', 'node-group')
             .attr('transform', 'translate(' + (xOffset + (width / 2)) + ',' + yOffset + ')')
       
-        d3.select('svg')
+        d3.select('#space-map-svg')
             .call(zoom)
     }
 
@@ -110,10 +108,10 @@ function HolonSpaceMap() {
         d3.select('#canvas')
             .style('width', width)
 
-        d3.select('svg')
+        d3.select('#space-map-svg')
             .attr('width', width)
 
-        const newWidth = parseInt(d3.select('svg').style('width'), 10)
+        const newWidth = parseInt(d3.select('#space-map-svg').style('width'), 10)
         
         d3.select('#link-group')
             .attr('transform', 'translate(' + (xOffset + (newWidth / 2)) + ',' + yOffset + ')')
@@ -204,7 +202,7 @@ function HolonSpaceMap() {
                         // })
                         .remove()
                     )
-            );
+            )
         
         // create background circle
         d3.select('#node-group')
@@ -408,7 +406,6 @@ function HolonSpaceMap() {
     }, [])
 
     useEffect(() => {
-        //console.log('getSpaceMapData, resetTreePosition')
         getSpaceMapData()
         resetTreePosition()
     },[

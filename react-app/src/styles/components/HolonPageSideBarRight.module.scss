@@ -2,7 +2,7 @@
 // TODO: change to importing a variables file including transition speeds etc.
 
 .sideBarRight {
-    width: 200px;
+    width: 220px;
     padding: 0 20px;
     flex-shrink: 0;
     @media screen and (max-width: 1200px) {
@@ -15,6 +15,9 @@
     transition:  all $transitionSpeed;
     opacity: 0;
     &.visible { opacity: 1 }
+    ::-webkit-scrollbar {
+        display: none;
+    }
 }
 .sideBarRightText {
     margin-bottom: 10px;
@@ -24,6 +27,9 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    max-height: 615px;
+    overflow-y: scroll;
+    overflow-x: hidden;
 }
 .sideBarRightHolon {
     margin-bottom: 10px;

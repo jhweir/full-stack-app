@@ -22,7 +22,7 @@
 .content {
     padding: 8px 12px;
     border-radius: 15px;
-    background-color: #f2f3f5;//#f7f7f9;
+    background-color: #f7f7f9;//#f2f3f5;//#f7f7f9;
     display: flex;
     flex-direction: column;
     font-size: 14px;
@@ -40,7 +40,7 @@
     opacity: 0.6;
 }
 .date {
-    opacity: 0.6;
+    opacity: 0.5;
 }
 .text {
     line-height: 20px;
@@ -51,7 +51,8 @@
     }
 }
 .showMoreLessText {
-    opacity: 0.6;
+    color: #82afff;
+    // opacity: 0.6;
     &:hover {
         cursor: pointer;
     }
@@ -59,18 +60,19 @@
 .interact {
     display: flex;
     flex-direction: row;
-    margin: 5px 0 10px 0;
+    margin: 3px 0 10px 12px;
 }
 .interactItem {
     font-size: 12px;
     font-weight: 800;
     margin-right: 10px;
-    opacity: 0.6;
+    opacity: 0.4;
     display: flex;
     flex-direction: row;
     align-items: center;
     &:hover {
         cursor: pointer;
+        opacity: 0.6;
     }
 }
 .icon {

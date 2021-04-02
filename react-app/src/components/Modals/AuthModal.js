@@ -117,15 +117,18 @@ function AuthModal() {
 
     function sendResetLink(e) {
         e.preventDefault()
+        // todo: add proper regex email validation
         let invalidResetEmail = resetEmail.length === 0
-        if (invalidResetEmail) { setResetEmailError(true) }
+        if (invalidResetEmail) setResetEmailError(true)
         else {
-            axios
-                .post(config.apiURL + '/reset-password-request', { email: resetEmail })
-                .then(res => {
-                    if (res.data === 'user-not-found') { setForgotPasswordFlashMessage('Account not found') }
-                    if (res.data === 'email-sent') { setForgotPasswordFlashMessage(`Success! We've sent you an email with a link to reset your password.`) }
-                })
+            executeRecaptcha('reset-password-request').then(reCaptchaToken => {
+                axios
+                    .post(config.apiURL + '/reset-password-request', { reCaptchaToken, email: resetEmail })
+                    .then(res => {
+                        if (res.data === 'user-not-found') { setForgotPasswordFlashMessage('Account not found') }
+                        if (res.data === 'email-sent') { setForgotPasswordFlashMessage(`Success! We've sent you an email with a link to reset your password.`) }
+                    })
+            })
         }
     }
 
@@ -133,7 +136,6 @@ function AuthModal() {
         axios
             .post(config.apiURL + '/resend-verification-email', { userId: verificationEmailUserId })
             .then(res => {
-                console.log('res: ', res)
                 if (res.data === 'user-not-found') { setLogInFlashMessage('Account not found') }
                 if (res.data === 'success') {
                     setLogInFlashMessage(`Success! We've sent you a new verification email.`)
@@ -193,11 +195,6 @@ function AuthModal() {
                             <span className='mb-10'>New? <a className='blueText' onClick={() => setDisplay('create-new-account')}>Create a new account</a></span>
                             <a className='blueText' onClick={() => setDisplay('forgot-password')}>Forgot your password?</a>
                         </form>
-                        {/* <p class='recaptchaText'>
-                            This site is protected by reCAPTCHA and the Google
-                            <a href="https://policies.google.com/privacy">Privacy Policy</a> and
-                            <a href="https://policies.google.com/terms">Terms of Service</a> apply.
-                        </p> */}
                     </div>
                 }
 

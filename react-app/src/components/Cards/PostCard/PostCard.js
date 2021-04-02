@@ -1,8 +1,7 @@
 import React, { useState, useContext, useEffect, useRef } from 'react'
-import { useHistory } from "react-router-dom"
-import { Link } from 'react-router-dom'
-import axios from 'axios'
-import config from '../../../Config'
+import { useHistory, Link } from 'react-router-dom'
+import ReactMarkdown from 'react-markdown'
+import gfm from 'remark-gfm'
 import { AccountContext } from '../../../contexts/AccountContext'
 import { HolonContext } from '../../../contexts/HolonContext'
 import { UserContext } from '../../../contexts/UserContext'
@@ -13,14 +12,21 @@ import PostCardReactions from './PostCardReactions'
 import PostCardUrlPreview from './PostCardUrlPreview'
 import PostCardComments from './PostCardComments'
 import SmallFlagImage from '../../SmallFlagImage'
-import DeleteItemModal from '../../../components/Modals/DeleteItemModal'
+import DeleteItemModal from '../../Modals/DeleteItemModal'
 import { timeSinceCreated, dateCreated } from '../../../GlobalFunctions'
-import ReactMarkdown from 'react-markdown'
-import gfm from 'remark-gfm'
 
 function PostCard(props) {
     const { postData, index, location } = props
-    const { isLoggedIn, accountData, setAlertMessage, setAlertModalOpen, setCreatePostModalOpen, setCreatePostFromTurn, setCreatePostFromTurnData, setSelectedNavBarItem } = useContext(AccountContext)
+    const {
+        isLoggedIn,
+        accountData,
+        setAlertMessage,
+        setAlertModalOpen,
+        setCreatePostModalOpen,
+        setCreatePostFromTurn,
+        setCreatePostFromTurnData,
+        setSelectedNavBarItem,
+    } = useContext(AccountContext)
     const { setHolonHandle, getHolonData, getHolonPosts } = useContext(HolonContext)
     const { getCreatedPosts, getUserData } = useContext(UserContext)
     const { postContextLoading, setPostId } = useContext(PostContext)
@@ -59,10 +65,12 @@ function PostCard(props) {
     const [textOverflow, setTextOverflow] = useState(false)
     const [showFullText, setShowFullText] = useState(false)
 
-    const finishedLoading = location !== 'post-page' || !postContextLoading
-    const isOwnPost = finishedLoading && accountData.id === creator.id
+    const isOwnPost = accountData && accountData.id === creator.id
     const showLinkPreview = (urlImage !== null || urlDomain !== null || urlTitle !== null || urlDescription !== null)
     const postSpaces = DirectSpaces && DirectSpaces.filter(space => space.type === 'post')
+
+    const postRef = useRef()
+    const textRef = useRef()
 
     let backgroundColor
     if (type === 'text') backgroundColor = colors.green
@@ -85,12 +93,15 @@ function PostCard(props) {
         setAccountRating(account_rating)
         setAccountRepost(account_repost)
         setAccountLink(account_link)
-        setBlockedSpaces([...DirectSpaces.map(s => s.handle), ...IndirectSpaces.map(s => s.handle)])
+        setBlockedSpaces([
+            ...DirectSpaces.map((s) => s.handle),
+            ...IndirectSpaces.map((s) => s.handle),
+        ])
     }
 
     function createPostFromTurn() {
         if (isLoggedIn) {
-            let data = {
+            const data = {
                 creatorName: creator.name,
                 creatorHandle: creator.handle,
                 creatorFlagImagePath: creator.flagImagePath,
@@ -104,11 +115,18 @@ function PostCard(props) {
         }
     }
 
-    useEffect(() => {
-        if (postData.id) { syncPostState(); console.log('postData: ', postData) }
-    }, [postData.id])
+    function handleShowFullText() {
+        if (showFullText) {
+            const yOffset = (window.screen.height / 2) - 300
+            const top = postRef.current.getBoundingClientRect().top + window.pageYOffset - yOffset
+            window.scrollTo({ top, behavior: 'smooth' })
+        }
+        setShowFullText(!showFullText)
+    }
 
-    const textRef = useRef()
+    useEffect(() => {
+        if (postData.id) { syncPostState() }
+    }, [postData.id])
 
     useEffect(() => {
         if (textRef.current && textRef.current.scrollHeight > 200) {
@@ -118,142 +136,144 @@ function PostCard(props) {
         }
     }, [text])
 
-    if (finishedLoading) {
-        return (
-            <div className={styles.post}>
-                {location !== 'post-page' && location !== 'holon-post-map' && location !== 'create-post-modal' && <div className={styles.index}>{index + 1}</div>}
-                <div className={styles.body}>
-                    <div className={styles.tags}>
-                        <Link to={ `/u/${creator.handle}`} className={styles.creator}>
-                            <SmallFlagImage type='user' size={35} imagePath={creator.flagImagePath}/>
-                            <span className='ml-10 mr-5'>{ creator.name }</span>
-                        </Link>
-                        <span className={styles.subText}>to</span>
-                        <div className={styles.postSpaces}>
-                            {postSpaces.length > 0
-                                ? postSpaces.map((space, index) =>
-                                    <Link to={`/s/${space.handle}`}
-                                        onClick={() => setHolonHandle(space.handle)}
-                                        style={{marginRight: 10}}
-                                        key={index}>
-                                        {space.handle}
-                                    </Link>)
-                                : <Link to={`/s/all`}
-                                    onClick={() => {setHolonHandle('all')}}
-                                    style={{marginRight: 10}}>
-                                    all
-                                </Link>
-                            }
-                        </div>
-                        <span className={styles.subText}>•</span>
-                        <Link to={`/p/${id}`} className={styles.link} onClick={() => setSelectedNavBarItem('')}>
-                            <img className={styles.linkIcon} src={'/icons/link-solid.svg'} alt=''/>
-                            <span className={styles.subText} title={dateCreated(createdAt)}>
-                                {timeSinceCreated(createdAt)}
-                            </span>
-                        </Link>
-                        {/* <span className={styles.subText}>•</span> */}
-                        {/* <div className={styles.postTypeFlag} style={{ backgroundColor }} title={type}/> */}
-                        {isOwnPost &&
-                            <>
-                                <span className={styles.subText}>•</span>
-                                <span className={styles.delete} onClick={() => setDeletePostModalOpen(true)}>Delete</span>
-                            </>
+    let locationStyle
+    if (location === 'post-page') locationStyle = styles.postPage
+    if (location === 'holon-posts') locationStyle = styles.holonPosts
+
+    return (
+        <div className={`${styles.post} ${locationStyle}`} ref={postRef}>
+            {/* {location !== 'post-page' && location !== 'holon-post-map' && location !== 'create-post-modal' &&
+                <div className={styles.index}>{index + 1}</div>
+            } */}
+            <div className={styles.body}>
+                <div className={styles.tags}>
+                    <Link to={ `/u/${creator.handle}`} className={styles.creator} onClick={() => setSelectedNavBarItem('')}>
+                        <SmallFlagImage type='user' size={30} imagePath={creator.flagImagePath}/>
+                        <span className={styles.creatorName}>{ creator.name }</span>
+                    </Link>
+                    <span className={styles.subText}>to</span>
+                    <div className={styles.postSpaces}>
+                        {postSpaces.length > 0
+                            ? postSpaces.map((space, index) =>
+                                <Link to={`/s/${space.handle}`}
+                                    onClick={() => setHolonHandle(space.handle)}
+                                    style={{ marginRight: 5 }}
+                                    key={index}>
+                                    {space.handle}
+                                </Link>)
+                            : <Link to={`/s/all`} onClick={() => setHolonHandle('all')}>
+                                all
+                            </Link>
                         }
                     </div>
-                    <div className={styles.content}>
-                        {text && <div className={`${styles.text} ${showFullText ? styles.showFullText : ''}`} ref={textRef}>
-                            <ReactMarkdown plugins={[gfm]} children={text}/>
-                        </div>}
-                        {textOverflow &&
-                            <div className={styles.showMore} onClick={() => setShowFullText(!showFullText)}>
-                                {showFullText ? 'show less' : 'show more'}
-                            </div>
-                        }
-                        {showLinkPreview &&
-                            <PostCardUrlPreview
-                                url={url}
-                                urlImage={urlImage}
-                                urlDomain={urlDomain}
-                                urlTitle={urlTitle}
-                                urlDescription={urlDescription}
+                    <span className={styles.subText}>•</span>
+                    <Link to={`/p/${id}`} className={styles.link} onClick={() => setSelectedNavBarItem('')}>
+                        <img className={styles.linkIcon} src={'/icons/link-solid.svg'} alt=''/>
+                        <span className={styles.subText} title={dateCreated(createdAt)}>
+                            {timeSinceCreated(createdAt)}
+                        </span>
+                    </Link>
+                    {/* <span className={styles.subText}>•</span> */}
+                    {/* <div className={styles.postTypeFlag} style={{ backgroundColor }} title={type}/> */}
+                    {isOwnPost &&
+                        <>
+                            <span className={styles.subText}>•</span>
+                            <span className={styles.delete} onClick={() => setDeletePostModalOpen(true)}>Delete</span>
+                        </>
+                    }
+                </div>
+                <div className={styles.content}>
+                    {text && <div className={`${styles.text} ${showFullText ? styles.showFullText : ''}`} ref={textRef}>
+                        <ReactMarkdown plugins={[gfm]} children={text}/>
+                    </div>}
+                    {textOverflow &&
+                        <div className={styles.showMore} onClick={handleShowFullText}>
+                            {showFullText ? 'show less' : 'show more'}
+                        </div>
+                    }
+                    {showLinkPreview &&
+                        <PostCardUrlPreview
+                            url={url}
+                            urlImage={urlImage}
+                            urlDomain={urlDomain}
+                            urlTitle={urlTitle}
+                            urlDescription={urlDescription}
+                        />
+                    }
+                    <div className={styles.interact}>
+                        <div className={styles.interactItem} onClick={() => setReactionsOpen(!reactionsOpen)}>
+                            <img 
+                                className={`${styles.icon} ${(accountLike || accountRating || accountRepost || accountLink > 0) && styles.selected}`}
+                                src="/icons/fire-alt-solid.svg" alt=''
                             />
-                        }
-                        <div className={styles.interact}>
-                            <div className={styles.interactItem} onClick={() => setReactionsOpen(!reactionsOpen)}>
+                            <span className={'greyText'}>{totalReactions} Reactions</span>
+                        </div>
+                        <div className={styles.interactItem} onClick={() => setCommentsOpen(!commentsOpen)}>
+                            {/* to={`/p/${id}`} */}
+                            <img className={styles.icon} src="/icons/comment-solid.svg" alt=''/>
+                            <span className='greyText'>{ totalComments } Comments</span>
+                        </div>
+                        {type === 'glass-bead' &&
+                            <div className={styles.interactItem} onClick={() => createPostFromTurn() }>
                                 <img 
-                                    className={`${styles.icon} ${(accountLike || accountRating || accountRepost || accountLink > 0) && styles.selected}`}
-                                    src="/icons/fire-alt-solid.svg" alt=''
+                                    className={`${styles.icon} ${(accountTurn > 0) && styles.selected}`}
+                                    src="/icons/arrow-alt-circle-right-solid.svg" alt=''
                                 />
-                                <span className={'greyText'}>{totalReactions} Reactions</span>
+                                <span className={'greyText'}>Add turn</span>
                             </div>
-                            <div className={styles.interactItem} onClick={() => setCommentsOpen(!commentsOpen)}>
-                                {/* to={`/p/${id}`} */}
-                                <img className={styles.icon} src="/icons/comment-solid.svg" alt=''/>
-                                <span className='greyText'>{ totalComments } Comments</span>
+                        }
+                        {/* {isOwnPost &&
+                            <div className={styles.interactItem} onClick={deletePost}>
+                                <img className={styles.icon} src="/icons/trash-alt-solid.svg" alt=''/>
+                                <span className='greyText'>Delete</span>
                             </div>
-                            {type === 'glass-bead' &&
-                                <div className={styles.interactItem} onClick={() => createPostFromTurn() }>
-                                    <img 
-                                        className={`${styles.icon} ${(accountTurn > 0) && styles.selected}`}
-                                        src="/icons/arrow-alt-circle-right-solid.svg" alt=''
-                                    />
-                                    <span className={'greyText'}>Add turn</span>
-                                </div>
-                            }
-                            {/* {isOwnPost &&
-                                <div className={styles.interactItem} onClick={deletePost}>
-                                    <img className={styles.icon} src="/icons/trash-alt-solid.svg" alt=''/>
-                                    <span className='greyText'>Delete</span>
-                                </div>
-                            } */}
-                        </div>
-                        {reactionsOpen &&
-                            <PostCardReactions
-                                postData={postData}
-                                totalReactions={totalReactions} setTotalReactions={setTotalReactions}
-                                totalLikes={totalLikes} setTotalLikes={setTotalLikes}
-                                totalRatings={totalRatings} setTotalRatings={setTotalRatings}
-                                totalRatingPoints={totalRatingPoints} setTotalRatingPoints={setTotalRatingPoints}
-                                totalReposts={totalReposts} setTotalReposts={setTotalReposts}
-                                totalLinks={totalLinks} setTotalLinks={setTotalLinks}
-                                accountLike={accountLike} setAccountLike={setAccountLike}
-                                accountRating={accountRating} setAccountRating={setAccountRating}
-                                accountRepost={accountRepost} setAccountRepost={setAccountRepost}
-                                accountLink={accountLink} setAccountLink={setAccountLink}
-                                blockedSpaces={blockedSpaces} setBlockedSpaces={setBlockedSpaces}
-                                commentsOpen={commentsOpen}
-                            />
-                        }
-                        {commentsOpen &&
-                            <PostCardComments
-                                postId={postData.id}
-                                totalComments={totalComments}
-                                setTotalComments={setTotalComments}/>
-                        }
-                        {deletePostModalOpen &&
-                            <DeleteItemModal
-                                text='Are you sure you want to delete your post?'
-                                endpoint='delete-post'
-                                itemId={postData.id}
-                                getItems1={() => {
-                                    if (location === 'holon-posts') return getHolonPosts()
-                                    if (location === 'user-created-posts') return getCreatedPosts()
-                                    if (location === 'post-page') return history.push('/s/all')
-                                }}
-                                getItems2={() => {
-                                    if (location === 'holon-posts') return getHolonData()
-                                    if (location === 'user-created-posts') return getUserData()
-                                    if (location === 'post-page') return history.push('/s/all')
-                                }}
-                                setDeleteItemModalOpen={setDeletePostModalOpen}
-                            />
-                        }
+                        } */}
                     </div>
+                    {reactionsOpen &&
+                        <PostCardReactions
+                            postData={postData}
+                            totalReactions={totalReactions} setTotalReactions={setTotalReactions}
+                            totalLikes={totalLikes} setTotalLikes={setTotalLikes}
+                            totalRatings={totalRatings} setTotalRatings={setTotalRatings}
+                            totalRatingPoints={totalRatingPoints} setTotalRatingPoints={setTotalRatingPoints}
+                            totalReposts={totalReposts} setTotalReposts={setTotalReposts}
+                            totalLinks={totalLinks} setTotalLinks={setTotalLinks}
+                            accountLike={accountLike} setAccountLike={setAccountLike}
+                            accountRating={accountRating} setAccountRating={setAccountRating}
+                            accountRepost={accountRepost} setAccountRepost={setAccountRepost}
+                            accountLink={accountLink} setAccountLink={setAccountLink}
+                            blockedSpaces={blockedSpaces} setBlockedSpaces={setBlockedSpaces}
+                            commentsOpen={commentsOpen}
+                        />
+                    }
+                    {commentsOpen &&
+                        <PostCardComments
+                            postId={postData.id}
+                            totalComments={totalComments}
+                            setTotalComments={setTotalComments}/>
+                    }
+                    {deletePostModalOpen &&
+                        <DeleteItemModal
+                            text='Are you sure you want to delete your post?'
+                            endpoint='delete-post'
+                            itemId={postData.id}
+                            getItems1={() => {
+                                if (location === 'holon-posts') return getHolonPosts()
+                                if (location === 'user-created-posts') return getCreatedPosts()
+                                if (location === 'post-page') return history.push('/s/all')
+                            }}
+                            getItems2={() => {
+                                if (location === 'holon-posts') return getHolonData()
+                                if (location === 'user-created-posts') return getUserData()
+                                if (location === 'post-page') return history.push('/s/all')
+                            }}
+                            setDeleteItemModalOpen={setDeletePostModalOpen}
+                        />
+                    }
                 </div>
             </div>
-        )
-    } else { return null }
+        </div>
+    )
 }
 
 export default PostCard

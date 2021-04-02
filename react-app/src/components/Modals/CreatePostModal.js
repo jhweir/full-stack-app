@@ -13,10 +13,10 @@ import DropDownMenu from '../DropDownMenu'
 import SmallFlagImage from '../SmallFlagImage'
 import PostCardPreview from '../Cards/PostCard/PostCardPreview'
 import { resizeTextArea } from '../../GlobalFunctions'
+import Cookies from 'universal-cookie'
 
 function CreatePostModal() {
     const {
-        accountData,
         setCreatePostModalOpen,
         createPostFromTurn,
         setCreatePostFromTurn,
@@ -60,6 +60,9 @@ function CreatePostModal() {
     const [newSpaceError, setNewSpaceError] = useState(false)
     const [newPollAnswerError, setNewPollAnswerError] = useState(false)
 
+    const cookies = new Cookies()
+    const accessToken = cookies.get('accessToken')
+
     function isValidUrl(string) {
         try { new URL(string) }
         catch (_) { return false }
@@ -70,7 +73,7 @@ function CreatePostModal() {
         if (isValidUrl(url)) {
             setUrlLoading(true)
             axios
-                .post(config.apiURL + '/scrape-url', { url })
+                .get(config.apiURL + `/scrape-url?url=${url}`)
                 .then(res => {
                     console.log('res: ', res.data)
                     if (typeof res.data === 'string') {
@@ -115,12 +118,11 @@ function CreatePostModal() {
         if (invalidText) { setTextError(true) }
         if (invalidUrl) { setUrlError(true) }
         if (invalidPollAnswers) { setNewPollAnswerError(true) }
-        if (!invalidText && !invalidUrl && !invalidPollAnswers && !urlLoading) {
-            let post = { 
+        if (!invalidText && !invalidUrl && !invalidPollAnswers && !urlLoading && accessToken) {
+            const post = { 
                 type: postType.replace(/\s+/g, '-').toLowerCase(),
                 subType,
                 state: 'visible',
-                creatorId: accountData.id,
                 text,
                 url,
                 urlImage,
@@ -139,7 +141,8 @@ function CreatePostModal() {
                 axis2Bottom,
                 createPostFromTurnData
             }
-            axios.post(config.apiURL + '/create-post', { post })
+            axios
+                .post(`${config.apiURL}/create-post`, { post }, { headers: { Authorization: `Bearer ${accessToken}` } })
                 .then(res => {
                     if (res.data === 'success') {
                         setCreatePostModalOpen(false)

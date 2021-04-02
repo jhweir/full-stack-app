@@ -21,7 +21,7 @@ function ResetPasswordModal() {
         if (invalidNewPassword2) { setNewPassword2Error(true); setFlashMessage(`Passwords don't match`) }
         if (!invalidNewPassword && !invalidNewPassword2) {
             axios
-                .post(config.apiURL + '/reset-password', { password: newPassword, token: resetPasswordModalToken })
+                .post(config.apiURL + '/reset-password', { token: resetPasswordModalToken, newPassword })
                 .then(res => {
                     if (res.data === 'success') setFlashMessage('Success! Password updated.')
                     if (res.data === 'invalid-token') setFlashMessage('Invalid token')

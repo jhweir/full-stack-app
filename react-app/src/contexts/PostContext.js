@@ -9,7 +9,7 @@ export const PostContext = createContext()
 function PostContextProvider({ children }) {
     const { accountContextLoading, accountData, isLoggedIn } = useContext(AccountContext)
     const [postContextLoading, setPostContextLoading] = useState(true)
-    const [postId, setPostId] = useState('')
+    const [postId, setPostId] = useState(null)
     const [postData, setPostData] = useState({ spaces: [], PollAnswers: [] })
     const [selectedSubPage, setSelectedSubPage] = useState('')
     const [selectedPollAnswers, setSelectedPollAnswers] = useState([])
@@ -101,7 +101,7 @@ function PostContextProvider({ children }) {
     }
 
     useEffect(() => {
-        if (!accountContextLoading) { getPostData() }
+        if (postId && !accountContextLoading) { getPostData() }
     }, [postId, accountData.id])
 
     return (

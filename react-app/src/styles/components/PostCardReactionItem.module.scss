@@ -16,12 +16,20 @@
     flex-direction: row;
     align-items: center;
     z-index: 4;
+    &:hover {
+        cursor: pointer;
+        .icon {
+            opacity: 0.5;
+        }
+    }
 }
 .icon {
     width: 20px;
     height: 20px;
     margin-right: 5px;
     opacity: 0.3;
+    transition-property: opacity, filter;
+    transition-duration: 0.3s;
     &.small {
         width: 17px;
         height: 17px;
@@ -31,7 +39,7 @@
         height: 23px;
     }
     &.selected {
-        opacity: 0.8;
+        opacity: 0.8 !important;
         filter: invert(.5) sepia(1) saturate(5) hue-rotate(190deg);
     }
 }

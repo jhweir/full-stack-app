@@ -46,7 +46,7 @@ module.exports = (sequelize, DataTypes) => {
         through: models.HolonUser,
         as: 'HolonModerators',
         foreignKey: 'holonId',
-        where: { relationship: 'moderator'}
+        where: { relationship: 'moderator' }
     })
     Holon.belongsTo(models.User, {
       as: 'Creator',
