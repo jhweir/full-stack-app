@@ -133,6 +133,14 @@ function HolonPostMap() {
                     .attr('id', `image-${d.id}`)
                     .attr('height', findRadius(d) * 2)
                     .attr('xlink:href', d.urlImage)
+                    .on('error', function() {
+                        // try image proxy, fall back on placeholder
+                        if (!d3.select(this).attr('xlink:href').includes('//images.weserv.nl/')) {
+                            d3.select(this).attr('xlink:href', `//images.weserv.nl/?url=${d.urlImage}`)
+                        } else {
+                            d3.select(this).attr('xlink:href', '/images/placeholders/broken-image-left.jpg')
+                        }
+                    })
             }
             // return pattern url
             return `url(#pattern-${d.id})`

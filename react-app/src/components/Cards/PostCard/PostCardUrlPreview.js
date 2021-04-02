@@ -11,18 +11,33 @@ function PostCardUrlPreview(props) {
         urlDescription
     } = props
 
+    const availableContent = urlImage !== null || urlDomain !== null || urlTitle !== null || urlDescription !== null
+
+    function handleImageError(e) {
+        e.target.onerror = null
+        if (!e.target.src.includes('//images.weserv.nl/')) {
+            e.target.src=`//images.weserv.nl/?url=${urlImage}`
+        } else {
+            e.target.src = '/images/placeholders/broken-image.jpg'
+        }
+    }
+
     return (
         <>
-            {(urlImage !== null || urlDomain !== null || urlTitle !== null || urlDescription !== null) &&
+            {availableContent &&
                 <div className={styles.container}>
                     <a href={url}>
-                        <img className={styles.image} src={urlImage}/>
+                        <img
+                            className={styles.image}
+                            src={urlImage}
+                            onError={e => handleImageError(e)}
+                        />
                     </a>
                     <div className={styles.text}>
                         <div className={styles.title}>{urlTitle}</div>
                         <div className={styles.description}>{urlDescription}</div>
                         <a className={styles.domain} href={url}>
-                            <img className={styles.icon} src="/icons/link-solid.svg"/>
+                            <img className={styles.icon} src='/icons/link-solid.svg'/>
                             <div className={styles.domainText}>{urlDomain}</div>
                         </a>
                     </div>
