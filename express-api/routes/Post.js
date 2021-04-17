@@ -359,7 +359,7 @@ router.post('/create-post', authenticateToken, (req, res) => {
         urlDomain,
         urlTitle,
         urlDescription,
-        holonHandles,
+        spaceHandles,
         pollAnswers,
         numberOfPrismPlayers,
         prismDuration,
@@ -383,7 +383,7 @@ router.post('/create-post', authenticateToken, (req, res) => {
 
     function findDirectHandleIds() {
         Holon.findAll({
-            where: { handle: holonHandles },
+            where: { handle: spaceHandles },
             attributes: ['id']
         })
         .then(holons => {
@@ -403,7 +403,7 @@ router.post('/create-post', authenticateToken, (req, res) => {
 
     async function findHandleIds() {
         findDirectHandleIds()
-        await asyncForEach(holonHandles, async(handle) => {
+        await asyncForEach(spaceHandles, async(handle) => {
             await findIndirectHandleIds(handle)
         })
         // remove duplicates from indirect handle ids

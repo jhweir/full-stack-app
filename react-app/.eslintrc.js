@@ -3,6 +3,8 @@ module.exports = {
     rules: {
         'prettier/prettier': 'error',
         'react-hooks/exhaustive-deps': 'off',
+        // allow jsx files
+        'react/jsx-filename-extension': [1, { extensions: ['.jsx', '.tsx'] }],
     },
     parserOptions: {
         project: 'tsconfig.json',

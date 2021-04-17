@@ -38,15 +38,9 @@ module.exports = (sequelize, DataTypes) => {
     })
     // HolonUsers relationship
     Holon.belongsToMany(models.User, { 
-      through: models.HolonUser,
-      as: 'HolonFollowers',
-      foreignKey: 'holonId'
-    })
-    Holon.belongsToMany(models.User, { 
         through: models.HolonUser,
-        as: 'HolonModerators',
+        as: 'HolonUsers',
         foreignKey: 'holonId',
-        where: { relationship: 'moderator' }
     })
     Holon.belongsTo(models.User, {
       as: 'Creator',

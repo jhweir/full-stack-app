@@ -55,6 +55,12 @@
     @media screen and (max-width: 1200px) {
         width: 100%;
     }
+    &.fullScreen {
+        width: 100%;
+        .holonPageCenterPanel {
+            width: 100%;
+        }
+    }
 }
 
 .userPageCenterPanel {

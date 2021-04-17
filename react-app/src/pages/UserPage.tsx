@@ -1,6 +1,7 @@
 import React, { useContext, useEffect } from 'react'
 import { Route, Switch, Redirect } from 'react-router-dom'
 import { AccountContext } from '../contexts/AccountContext'
+import { SpaceContext } from '../contexts/SpaceContext'
 import { UserContext } from '../contexts/UserContext'
 import styles from '../styles/pages/UserPage.module.scss'
 import CoverImage from '../components/CoverImage'
@@ -20,6 +21,7 @@ const UserPage = ({
     const { url } = match
     const { userHandle } = match.params
     const { accountContextLoading } = useContext(AccountContext)
+    const { fullScreen } = useContext(SpaceContext)
     const { userData, setUserHandle, isOwnAccount } = useContext(UserContext)
 
     useEffect(() => {
@@ -35,19 +37,15 @@ const UserPage = ({
                 imageUploadType='user-cover-image'
                 canEdit={isOwnAccount}
             />
-            {!userData && (
-                <span style={{ padding: 20 }}>No user with that name!</span>
-            )}
+            {!userData && <span style={{ padding: 20 }}>No user with that name!</span>}
             {userData && (
-                <div className={styles.userPageContainer}>
+                <div
+                    className={`${styles.userPageContainer} ${fullScreen ? styles.fullScreen : ''}`}
+                >
                     <UserPageSideBarLeft />
                     <div className={styles.userPageCenterPanel}>
                         <Switch>
-                            <Redirect
-                                from={`${url}`}
-                                to={`${url}/about`}
-                                exact
-                            />
+                            <Redirect from={`${url}`} to={`${url}/about`} exact />
                             {isOwnAccount && (
                                 <Route
                                     path={`${url}/settings`}
@@ -69,16 +67,8 @@ const UserPage = ({
                                     exact
                                 />
                             )}
-                            <Route
-                                path={`${url}/about`}
-                                component={UserPageAbout}
-                                exact
-                            />
-                            <Route
-                                path={`${url}/posts`}
-                                component={UserPagePosts}
-                                exact
-                            />
+                            <Route path={`${url}/about`} component={UserPageAbout} exact />
+                            <Route path={`${url}/posts`} component={UserPagePosts} exact />
                         </Switch>
                     </div>
                     <UserPageSideBarRight />

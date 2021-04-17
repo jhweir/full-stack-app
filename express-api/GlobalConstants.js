@@ -1,7 +1,7 @@
 const sequelize = require('sequelize')
 
 const postAttributes = [
-    'id', 'type', 'subType', 'state', 'text', 'url', 'urlImage', 'urlDomain', 'urlTitle', 'urlDescription', 'createdAt',
+    'id', 'type', 'subType', 'text', 'url', 'urlImage', 'urlDomain', 'urlTitle', 'urlDescription', 'createdAt',
     [sequelize.literal(
         `(SELECT COUNT(*) FROM Comments AS Comment WHERE Comment.state = 'visible' AND Comment.postId = Post.id)`
         ),'total_comments'

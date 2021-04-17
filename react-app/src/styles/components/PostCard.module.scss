@@ -17,7 +17,7 @@
         // box-shadow: none;
     }
 
-    &.holonPosts {
+    &.spacePosts {
         padding: 25px 35px 15px 35px;
     }
 
@@ -150,10 +150,13 @@
     flex-direction: column;
 }
 .text {
+    position: relative;
     max-height: 200px;
+    margin-bottom: 10px;
     overflow: hidden;
     color: black;
     font-size: 16px;
+    line-height: 25px;
     font-weight: 400;
     text-decoration: none;
     transition-property: color;
@@ -245,6 +248,26 @@
         }
     }
 }
+.showMore {
+    position: absolute; 
+    bottom: 0; 
+    left: 0;
+    width: 100%;
+    height: 100px;
+    /* "transparent" only works here because == rgba(0,0,0,0) */
+    background-image: linear-gradient(to bottom, transparent, white);
+}
+.showMoreText {
+    text-align: center;
+    margin-top: -15px;
+    margin-bottom: 10px;
+    font-size: 16px;
+    color:#82afff;
+    z-index: 3;
+    &:hover {
+        cursor: pointer;
+    }
+}
 .interact {
     display: flex;
     flex-direction: row;
@@ -291,11 +314,4 @@
     border-radius: 50%;
     margin-left: 2px;
     opacity: 0.5;
-}
-.showMore {
-    margin-bottom: 10px;
-    color:#82afff;
-    &:hover {
-        cursor: pointer;
-    }
 }

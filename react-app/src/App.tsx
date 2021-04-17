@@ -3,7 +3,7 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom'
 import { createBrowserHistory } from 'history'
 import { GoogleReCaptchaProvider } from 'react-google-recaptcha-v3'
 import AccountContextProvider from './contexts/AccountContext'
-import HolonContextProvider from './contexts/HolonContext'
+import SpaceContextProvider from './contexts/SpaceContext'
 import UserContextProvider from './contexts/UserContext'
 import PostContextProvider from './contexts/PostContext'
 import config from './Config'
@@ -21,8 +21,7 @@ const App = (): JSX.Element => {
     function checkPageBottomReached() {
         const d = document.documentElement
         const offset = 150
-        const bottomReached =
-            d.scrollHeight - d.scrollTop - offset < d.clientHeight
+        const bottomReached = d.scrollHeight - d.scrollTop - offset < d.clientHeight
         setPageBottomReached(bottomReached)
     }
 
@@ -34,38 +33,23 @@ const App = (): JSX.Element => {
         <div className='app'>
             <BrowserRouter history={createBrowserHistory}>
                 <AccountContextProvider pageBottomReached={pageBottomReached}>
-                    <HolonContextProvider>
+                    <SpaceContextProvider>
                         <UserContextProvider>
                             <PostContextProvider>
-                                <GoogleReCaptchaProvider
-                                    reCaptchaKey={config.recaptchaSiteKey}
-                                >
+                                <GoogleReCaptchaProvider reCaptchaKey={config.recaptchaSiteKey}>
                                     <NavBar />
                                     <Modals />
                                     <Switch>
-                                        <Route
-                                            path='/'
-                                            exact
-                                            component={HomePage}
-                                        />
-                                        <Route
-                                            path='/s/:holonHandle'
-                                            component={HolonPage}
-                                        />
-                                        <Route
-                                            path='/p/:postId'
-                                            component={PostPage}
-                                        />
-                                        <Route
-                                            path='/u/:userHandle'
-                                            component={UserPage}
-                                        />
+                                        <Route path='/' exact component={HomePage} />
+                                        <Route path='/s/:spaceHandle' component={HolonPage} />
+                                        <Route path='/p/:postId' component={PostPage} />
+                                        <Route path='/u/:userHandle' component={UserPage} />
                                         <Route component={EmptyPage} />
                                     </Switch>
                                 </GoogleReCaptchaProvider>
                             </PostContextProvider>
                         </UserContextProvider>
-                    </HolonContextProvider>
+                    </SpaceContextProvider>
                 </AccountContextProvider>
             </BrowserRouter>
         </div>

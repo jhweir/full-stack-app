@@ -373,6 +373,8 @@ router.get('/holon-posts', (req, res) => {
                     as: 'creator',
                     attributes: ['id', 'handle', 'name', 'flagImagePath'],
                 },
+                // links could be removed for list calls, only needed for map.
+                // todo: seperate out 'get space posts' and 'get space map data', as more differeces required for map in future
                 {
                     model: Link,
                     as: 'OutgoingLinks',
@@ -1270,13 +1272,13 @@ router.post('/create-holon', (req, res) => {
                                 .findOne({
                                     where: { id: parentHolonId },
                                     include: [
-                                        { model: User, as: 'HolonModerators' },
+                                        { model: User, as: 'HolonUsers', through: { where: { relationship: 'moderator' } } },
                                         { model: Holon, as: 'HolonHandles' }
                                     ]
                                 })
                                 .then(async holon => {
                                     // if user is moderator of parent space, attach space
-                                    if (holon.HolonModerators.some(mod => mod.id === creatorId)) {
+                                    if (holon.HolonUsers.some(mod => mod.id === creatorId)) {
                                         // find all spaces below child space (effected spaces)
                                         // include each spaces holon handles (second query used to avoid where clause issues)
                                         // for each effected space: loop through parent spaces handles,
@@ -1341,7 +1343,7 @@ router.post('/create-holon', (req, res) => {
                                             userId: creatorId
                                         })
                                         // create account notifications for each of the mods
-                                        let createAccountNotifications = await holon.HolonModerators.forEach(moderator => {
+                                        let createAccountNotifications = await holon.HolonUsers.forEach(moderator => {
                                             Notification.create({
                                                 ownerId: moderator.id,
                                                 seen: false,
@@ -1405,13 +1407,13 @@ router.post('/update-holon-setting', async (req, res) => {
             .findOne({
                 where: { handle: newValue },
                 include: [
-                    { model: User, as: 'HolonModerators' },
+                    { model: User, as: 'HolonUsers', through: { where: { relationship: 'moderator' } } },
                     { model: Holon, as: 'HolonHandles' }
                 ]
             })
             .then(async holon => {
                 // if user is moderator of parent space, attach space
-                if (holon.HolonModerators.some(mod => mod.id === accountId)) {
+                if (holon.HolonUsers.some(mod => mod.id === accountId)) {
                     console.log('user is mod')
                     // find all spaces below child space (effected spaces)
                     // include each spaces holon handles (second query used to avoid where clause issues)
@@ -1480,7 +1482,7 @@ router.post('/update-holon-setting', async (req, res) => {
                         userId: accountId
                     })
                     // create account notifications for each of the mods
-                    let createAccountNotifications = await holon.HolonModerators.forEach(moderator => {
+                    let createAccountNotifications = await holon.HolonUsers.forEach(moderator => {
                         Notification.create({
                             ownerId: moderator.id,
                             seen: false,
@@ -1495,9 +1497,6 @@ router.post('/update-holon-setting', async (req, res) => {
                         .then(res.send('pending-acceptance'))
                 }
             })
-
-
-
 
         // find handles of parent space
         // find all spaces containing child spaces handles (effectedSpaces)

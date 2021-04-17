@@ -97,13 +97,18 @@ $darkGrey: #202129;
     justify-content: center;
     align-items: center;
 }
-.expandButton {
-    margin-left: 15px;
-    width: 23px;
-    opacity: 0.5;
-    filter: invert(1);
+.expandButtonWrapper {
+    width: 24px;
+    height: 24px;
     position: absolute;
     right: 20px;
+    outline: none;
+}
+.expandButton {
+    width: 24px;
+    height: 24px;
+    opacity: 0.5;
+    filter: invert(1);
     &:hover {
         cursor: pointer;
     }

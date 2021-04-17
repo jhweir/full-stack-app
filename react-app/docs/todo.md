@@ -20,7 +20,7 @@ Last updated: 26-12-2020
 - User to user messages
 - Add holon Id to comments when created
 - Add clickoutside approach from drop down menu to other modals
-- getHolonPosts run from sidebar buttons but not getHolonData (best approach?)
+- getSpacePosts run from sidebar buttons but not getSpaceData (best approach?)
 - Create links between posts
 - Include interests and location on register form
 - Multiple choice polls should spread value by number of selected answers? (i.e 1 vote = 100 points, 3 votes = 3 * 33.3 points)

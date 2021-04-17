@@ -37,36 +37,24 @@ const PostPage = ({
     //     if (pathname.includes('results')) { setPageSectionSelected('results') }
     // }, [accountContextLoading])
 
-    if (postData.type === 'prism') {
+    if (postData && postData.type === 'prism') {
         return <Prism />
     }
-    if (postData.type === 'plot-graph') {
+    if (postData && postData.type === 'plot-graph') {
         return <PlotGraph />
     }
 
     return (
         <div className={styles.wrapper}>
-            {postData.id && (
-                <PostCard postData={postData} location='post-page' />
-            )}
-            {postData.type === 'poll' && (
-                <PageSectionSelector url={url} pathname={pathname} />
-            )}
+            {postData.id && <PostCard postData={postData} location='post-page' />}
+            {postData.type === 'poll' && <PageSectionSelector url={url} pathname={pathname} />}
             <Switch>
                 {/* {!postContextLoading && postData.type !== 'prism' && */}
                 {/* <Redirect from={`${url}`} to={`${url}/comments`} exact/> */}
                 {/* } */}
                 {/* <Route path={`${url}/comments`} render={() => <PostPageComments/>} exact/> */}
-                <Route
-                    path={`${url}/vote`}
-                    render={() => <PostPagePollVote />}
-                    exact
-                />
-                <Route
-                    path={`${url}/results`}
-                    render={() => <PostPagePollResults />}
-                    exact
-                />
+                <Route path={`${url}/vote`} render={() => <PostPagePollVote />} exact />
+                <Route path={`${url}/results`} render={() => <PostPagePollResults />} exact />
                 {/* <Route component={ EmptyPage }/> */}
             </Switch>
         </div>
