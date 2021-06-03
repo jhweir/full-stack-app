@@ -192,7 +192,7 @@ const HolonPostMap = (): JSX.Element => {
         if (d.type === 'prism') {
             return colors.purple
         }
-        if (d.type === 'glass-bead') {
+        if (d.type === 'glass-bead-game') {
             return colors.blue
         }
         if (d.type === 'plot-graph') {

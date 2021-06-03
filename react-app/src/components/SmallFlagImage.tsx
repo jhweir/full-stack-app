@@ -3,7 +3,7 @@ import styles from '../styles/components/SmallFlagImage.module.scss'
 
 const SmallFlagImage = (props: {
     type: string
-    imagePath: string | undefined
+    imagePath: string | null
     size: number
     outline?: boolean
 }): JSX.Element => {

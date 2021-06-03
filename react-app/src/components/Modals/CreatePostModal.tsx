@@ -31,13 +31,13 @@ const CreatePostModal = (): JSX.Element => {
     const [postType, setPostType] = useState('Url')
     const [subType, setSubType] = useState('')
     const [text, setText] = useState('')
-    const [url, setUrl] = useState('')
+    const [url, setUrl] = useState<string | null>(null)
     const [urlLoading, setUrlLoading] = useState(false)
-    const [urlImage, setUrlImage] = useState('')
-    const [urlDomain, setUrlDomain] = useState('')
-    const [urlTitle, setUrlTitle] = useState('')
-    const [urlDescription, setUrlDescription] = useState('')
-    // const [urlFlashMessage, setUrlFlashMessage] = useState('')
+    const [urlImage, setUrlImage] = useState(null)
+    const [urlDomain, setUrlDomain] = useState(null)
+    const [urlTitle, setUrlTitle] = useState(null)
+    const [urlDescription, setUrlDescription] = useState(null)
+    // const [urlFlashMessage, setUrlFlashMessage] = useState(null)
     const [addedSpaces, setAddedSpaces] = useState([])
 
     const [pollAnswers, setPollAnswers] = useState([])
@@ -46,6 +46,8 @@ const CreatePostModal = (): JSX.Element => {
     const [numberOfPrismPlayers, setNumberOfPrismPlayers] = useState(3)
     const [prismDuration, setPrismDuration] = useState('1 Month')
     const [prismPrivacy, setPrismPrivacy] = useState('Private')
+
+    const [numberOfGBGPlayers, setNumberOfGBGPlayers] = useState(2)
 
     const [numberOfPlotGraphAxes, setNumberOfPlotGraphAxes] = useState(0)
     const [axis1Left, setAxis1Left] = useState('')
@@ -82,10 +84,10 @@ const CreatePostModal = (): JSX.Element => {
                 .then((res) => {
                     console.log('res: ', res.data)
                     if (typeof res.data === 'string') {
-                        setUrlDescription('')
-                        setUrlDomain('')
-                        setUrlImage('')
-                        setUrlTitle('')
+                        setUrlDescription(null)
+                        setUrlDomain(null)
+                        setUrlImage(null)
+                        setUrlTitle(null)
                         // setUrlFlashMessage(res.data)
                     } else {
                         const { description, domain, img, title } = res.data
@@ -108,11 +110,11 @@ const CreatePostModal = (): JSX.Element => {
         setPostType('Url')
         setSubType('')
         setText('')
-        setUrl('')
-        setUrlImage('')
-        setUrlDomain('')
-        setUrlTitle('')
-        setUrlDescription('')
+        setUrl(null)
+        setUrlImage(null)
+        setUrlDomain(null)
+        setUrlTitle(null)
+        setUrlDescription(null)
         setPollAnswers([])
         setCreatePostFromTurn(false)
         setCreatePostFromTurnData(null)
@@ -120,8 +122,8 @@ const CreatePostModal = (): JSX.Element => {
 
     function createPost() {
         console.log('create post!')
-        const invalidText = (!text.length || text.length > 2000) && !url.length
-        const invalidUrl = postType === 'Url' && !url.length
+        const invalidText = (!text || text.length > 2000) && !url
+        const invalidUrl = postType === 'Url' && !url
         const invalidPollAnswers = postType === 'Poll' && pollAnswers.length < 2
         if (invalidText) {
             setTextError(true)
@@ -255,7 +257,14 @@ const CreatePostModal = (): JSX.Element => {
                     <div className={styles.dropDownOptions}>
                         <DropDownMenu
                             title='Post Type'
-                            options={['Text', 'Url', 'Poll', 'Glass Bead', 'Plot Graph', 'Prism']}
+                            options={[
+                                'Text',
+                                'Url',
+                                'Poll',
+                                'Glass Bead Game',
+                                'Plot Graph',
+                                'Prism',
+                            ]}
                             selectedOption={postType}
                             setSelectedOption={setPostType}
                             orientation='horizontal'
@@ -290,6 +299,17 @@ const CreatePostModal = (): JSX.Element => {
                                     options={['Private', 'Public']}
                                     selectedOption={prismPrivacy}
                                     setSelectedOption={setPrismPrivacy}
+                                    orientation='horizontal'
+                                />
+                            </>
+                        )}
+                        {postType === 'Glass Bead Game' && (
+                            <>
+                                <DropDownMenu
+                                    title='Number Of Players'
+                                    options={[2]}
+                                    selectedOption={numberOfGBGPlayers}
+                                    setSelectedOption={setNumberOfGBGPlayers}
                                     orientation='horizontal'
                                 />
                             </>
@@ -377,10 +397,10 @@ const CreatePostModal = (): JSX.Element => {
                         />
                         {(postType === 'Url' || postType === 'Glass Bead') && (
                             <input
-                                className={`wecoInput mb-10 ${urlError && 'error'}`}
+                                className={`wecoInput white mb-10 ${urlError && 'error'}`}
                                 placeholder='Url'
                                 type='url'
-                                value={url}
+                                value={url || undefined}
                                 onChange={(e) => {
                                     setUrlError(false)
                                     // setUrlFlashMessage('')

@@ -85,7 +85,7 @@ const SpaceInput = (props: {
             {text && <div className={styles.text}>{text}</div>}
             <div className={styles.form}>
                 <input
-                    className={`wecoInput mr-10 ${newSpaceError && 'error'}`}
+                    className={`wecoInput white mr-10 ${newSpaceError && 'error'}`}
                     style={{ width: 200 }}
                     type='text'
                     placeholder='Add spaces...'

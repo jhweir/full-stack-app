@@ -1,0 +1,138 @@
+.wrapper {
+    margin-top: 60px;
+    // padding: 50px;
+    width: 100%;
+    height: calc(100vh - 60px);
+}
+.mainContent {
+    width: 100%;
+    height: calc(100% - 200px);
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.leftPanel {
+    width: 500px;
+    height: 100%;
+    border-right: 1px solid #ddd;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.rightPanel {
+    width: 500px;
+    height: 100%;
+    border-left: 1px solid #ddd;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.centerPanel {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.giftIcon {
+    width: 200px;
+}
+.activeTurn {
+    width: 400px;
+    height: 400px;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.soundWaveIcon {
+    width: 200px;
+    height: 200px;
+}
+.soundWaveIconSmall {
+    width: 80px;
+    height: 80px;
+}
+.user {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 30px;
+    > p {
+        margin-right: 20px;
+    }
+}
+
+.textInputWrapper {
+    padding: 30px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.textInput {
+    font-size: 16px;
+    height: 40px;
+    border-radius: 5px;
+    padding: 0px 15px;
+    background-color: #f7f7f9;
+    outline: none;
+    border: none;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-right: 10px;
+}
+.textButton {
+    background-color: #c0e0ff;
+    // width: 80px;
+    height: 40px;
+    border-radius: 5px;
+    padding: 0px 15px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+.turns {
+    padding: 0 40px;
+    background-color: white;
+    border-top: 1px solid #ddd;
+    height: 200px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.turnWrapper {
+    display: flex;
+    flex-direction: row;
+}
+.turn {
+    width: 120px;
+    height: 120px;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    background-color: white;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+.turnDivider {
+    width: 100px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.dividerLine {
+    height: 2px;
+    width: 40px;
+    background-color: #ddd;
+}
+.dividerConnector {
+    height: 40px;
+    width: 40px;
+}

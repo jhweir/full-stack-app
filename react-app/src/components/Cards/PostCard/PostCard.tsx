@@ -177,7 +177,7 @@ const PostCard = (props: {
                         <SmallFlagImage
                             type='user'
                             size={30}
-                            imagePath={creator && creator.flagImagePath}
+                            imagePath={(creator && creator.flagImagePath) || null}
                         />
                         <span className={styles.creatorName}>{creator && creator.name}</span>
                     </Link>
@@ -251,11 +251,11 @@ const PostCard = (props: {
                     )}
                     {showLinkPreview && (
                         <PostCardUrlPreview
-                            url={url}
-                            urlImage={urlImage}
-                            urlDomain={urlDomain}
-                            urlTitle={urlTitle}
-                            urlDescription={urlDescription}
+                            url={url || null}
+                            urlImage={urlImage || null}
+                            urlDomain={urlDomain || null}
+                            urlTitle={urlTitle || null}
+                            urlDescription={urlDescription || null}
                         />
                     )}
                     <div className={styles.interact}>
@@ -306,6 +306,20 @@ const PostCard = (props: {
                                 />
                                 <span className='greyText'>Add turn</span>
                             </div>
+                        )}
+                        {type === 'glass-bead-game' && (
+                            <Link
+                                to={`/p/${id}`}
+                                className={styles.interactItem}
+                                onClick={() => setSelectedNavBarItem('')}
+                            >
+                                <img
+                                    className={styles.icon}
+                                    src='/icons/arrow-alt-circle-right-solid.svg'
+                                    alt=''
+                                />
+                                <span className='greyText'>Open game</span>
+                            </Link>
                         )}
                     </div>
                     {reactionsOpen && (

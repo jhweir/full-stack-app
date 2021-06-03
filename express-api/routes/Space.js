@@ -178,7 +178,7 @@ router.get('/holon-posts', (req, res) => {
     function findType() {
         let type
         if (postType === 'All Types') {
-            type = ['text', 'poll', 'url', 'glass-bead', 'prism', 'plot-graph']
+            type = ['text', 'poll', 'url', 'glass-bead-game', 'prism', 'plot-graph']
         } else { 
             type = postType.replace(/\s+/g, '-').toLowerCase()
         }
@@ -1367,6 +1367,13 @@ router.post('/create-holon', (req, res) => {
     }
 })
 
+router.post('/delete-space', (req, res) => {
+    // 1. find space
+    // 2. option to delete all contained spaces if user is mod?
+    // 3. set space state from 'active' to 'removed-by-mod'
+    // 4. for each child-space, run logic for removing a parent space
+})
+
 router.post('/update-holon-setting', async (req, res) => {
     let { accountId, holonId, setting, newValue } = req.body
     console.log('req.body: ', req.body)
@@ -1387,6 +1394,7 @@ router.post('/update-holon-setting', async (req, res) => {
             .catch(err => console.log(err))
     }
     if (setting === 'add-new-holon-moderator') {
+        // todo: send mod invitation first and wait for it to be accepted before implementing
         User.findOne({ where: { handle: newValue } })
             .then(user => {
                 if (user) {
@@ -1446,7 +1454,7 @@ router.post('/update-holon-setting', async (req, res) => {
                             }
                         })
                     })
-                    // if only current parent space is 'all', remove vertical relationshsip
+                    // if only parent space is currently 'all', remove vertical relationshsip
                     let removeVerticalRelationshipIfRequired = await VerticalHolonRelationship
                         .findAll({
                             where: { holonBId: holonId },
@@ -1497,63 +1505,20 @@ router.post('/update-holon-setting', async (req, res) => {
                         .then(res.send('pending-acceptance'))
                 }
             })
-
-        // find handles of parent space
-        // find all spaces containing child spaces handles (effectedSpaces)
-        // compare handles of parent space against handles of each spaces containing child spaces handles
-        // add handles that don't match
-
-        // let parent = await Holon.findOne({
-        //     where: { handle: newValue },
-        //     include: [{
-        //         model: Holon,
-        //         as: 'HolonHandles',
-        //         attributes: ['handle', 'id'],
-        //         through: { attributes: [] }
-        //     }]
-        // })
-
-        // let child = await Holon.findOne({
-        //     where: { id: holonId }
-        // })
-
-        // let effectedSpaces = await Holon.findAll({
-        //     where: { '$HolonHandles.handle$': child.dataValues.handle },
-        //     include: [{ model: Holon, as: 'HolonHandles' }]
-        // })
-
-        // let effectedSpacesWithHolonHandles = await Holon.findAll({
-        //     where: { id: effectedSpaces.map(s => s.id) },
-        //     include: [{
-        //         model: Holon,
-        //         as: 'HolonHandles',
-        //         attributes: ['handle', 'id'],
-        //         through: { attributes: [] }
-        //     }]
-        // })
-
-        // // A is a direct parent of B
-        // VerticalHolonRelationship.create({
-        //     state: 'open',
-        //     holonAId: parent.id,
-        //     holonBId: child.id,
-        // })
-
-        // effectedSpacesWithHolonHandles.forEach(space => {
-        //     parent.HolonHandles.forEach(ph => {
-        //         let match = space.HolonHandles.some(sh => sh.handle === ph.handle)
-        //         if (!match) {
-        //             // posts to A appear within B
-        //             HolonHandle.create({
-        //                 state: 'open',
-        //                 holonAId: space.id,
-        //                 holonBId: ph.id,
-        //             })
-        //         }
-        //     })
-        // })
     }
     if (setting === 'remove-parent-holon') {
+        // 1. list current parent spaces on front end and allow user to select the parent space they want to remove
+        // 2. detach space from parent space (VHRelationship)
+        // 3. if no other parent spaces, re-attach to 'all'
+        // 4. find parent spaces handles (parent handles)
+        // 5. find all other parent spaces handles (other parent handles)
+        // 6. compare 'parent handles' with 'other parent handles' and find any 'parent handles' not included in 'other parent handles' (redundant handles)
+        // 7. if redundant handles, remove 'redundant handles' from space
+        // 8. find all direct child spaces of space
+        // 9. repeat stages 5-7 (compare all parent handles against passed down redundant handles), then run the same logic at each level below until no child spaces left
+
+        // rename space handles to a better descriptor: space tags?, space inheritance, inherited space ids
+
         // check parent space exists
         Holon.findOne({
             where: { handle: newValue },
@@ -1561,14 +1526,16 @@ router.post('/update-holon-setting', async (req, res) => {
         })
         .then(holon => {
             if (holon) {
-                // if it exists, find all its own parent spaces
-                VerticalHolonRelationship.findAll({
-                    where: { holonBId: holon.id }
-                })
-                .then(holons => {
-                    // TODO: ...
-                    console.log('holons: ', holons)
-                })
+                // 
+
+                // // if it exists, find all its own parent spaces
+                // VerticalHolonRelationship.findAll({
+                //     where: { holonBId: holon.id }
+                // })
+                // .then(holons => {
+                //     // TODO: ...
+                //     console.log('holons: ', holons)
+                // })
             }
             else { res.send('No space with that handle') }
         })

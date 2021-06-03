@@ -125,7 +125,7 @@ const SpaceNotificationCard = (props: {
                             <SmallFlagImage
                                 type='space'
                                 size={30}
-                                imagePath={spaceData.flagImagePath}
+                                imagePath={spaceData.flagImagePath || null}
                             />
                             <span>{spaceData.name}</span>
                         </Link>

@@ -10,17 +10,29 @@ const PostCardPreview = (props: {
     type: string
     spaces: any[]
     text: string
-    url?: string
-    urlImage?: string
-    urlDomain?: string
-    urlTitle?: string
-    urlDescription?: string
+    url: string | null
+    urlImage: string | null
+    urlDomain: string | null
+    urlTitle: string | null
+    urlDescription: string | null
 }): JSX.Element => {
     const { type, spaces, text, url, urlImage, urlDomain, urlTitle, urlDescription } = props
     const { accountData } = useContext(AccountContext)
 
     const [textOverflow, setTextOverflow] = useState(false)
     const [showFullText, setShowFullText] = useState(false)
+
+    const postRef = useRef<HTMLDivElement>(null)
+
+    function handleShowFullText() {
+        const { current } = postRef
+        if (showFullText && current) {
+            const yOffset = window.screen.height / 2 - 300
+            const top = current.getBoundingClientRect().top + window.pageYOffset - yOffset
+            window.scrollTo({ top, behavior: 'smooth' })
+        }
+        setShowFullText(!showFullText)
+    }
 
     const showLinkPreview = urlImage || urlDomain || urlTitle || urlDescription
 
@@ -35,7 +47,7 @@ const PostCardPreview = (props: {
     }, [text])
 
     return (
-        <div className={styles.post}>
+        <div className={styles.post} ref={postRef}>
             <div className={styles.body}>
                 <div className={styles.tags}>
                     <div className={styles.creator}>
@@ -65,32 +77,33 @@ const PostCardPreview = (props: {
                     </div>
                 </div>
                 <div className={styles.content}>
+                    {/* {text && ( */}
                     <div
                         className={`${styles.text} ${showFullText ? styles.showFullText : ''}`}
                         ref={textRef}
                     >
-                        <ReactMarkdown plugins={[gfm]}>
-                            {text.length > 0 ? text : '*text...*'}
-                        </ReactMarkdown>
+                        <ReactMarkdown plugins={[gfm]}>{text || '*Sample text...*'}</ReactMarkdown>
+                        {textOverflow && !showFullText && <div className={styles.showMore} />}
                     </div>
+                    {/* // )} */}
                     {textOverflow && (
                         <div
-                            className={styles.showMore}
+                            className={styles.showMoreText}
                             role='button'
                             tabIndex={0}
-                            onClick={() => setShowFullText(!showFullText)}
-                            onKeyDown={() => setShowFullText(!showFullText)}
+                            onClick={handleShowFullText}
+                            onKeyDown={handleShowFullText}
                         >
                             {showFullText ? 'show less' : 'show more'}
                         </div>
                     )}
                     {showLinkPreview && (
                         <PostCardUrlPreview
-                            url={url}
-                            urlImage={urlImage}
-                            urlDomain={urlDomain}
-                            urlTitle={urlTitle}
-                            urlDescription={urlDescription}
+                            url={url || null}
+                            urlImage={urlImage || null}
+                            urlDomain={urlDomain || null}
+                            urlTitle={urlTitle || null}
+                            urlDescription={urlDescription || null}
                         />
                     )}
                     <div className={styles.interact}>
@@ -119,12 +132,13 @@ const PostCardPreview = (props: {
     )
 }
 
-PostCardPreview.defaultProps = {
-    url: null,
-    urlImage: null,
-    urlDomain: null,
-    urlTitle: null,
-    urlDescription: null,
-}
+// PostCardPreview.defaultProps = {
+//     text: null,
+//     url: null,
+//     urlImage: null,
+//     urlDomain: null,
+//     urlTitle: null,
+//     urlDescription: null,
+// }
 
 export default PostCardPreview

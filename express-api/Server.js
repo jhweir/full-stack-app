@@ -49,3 +49,27 @@ const port = 5000
 app.listen(port, () => console.log(`Listening on port ${port}`))
 
 app.get('/', (req, res) => res.send('INDEX'))
+
+// set up websocket for live connections
+const server = require('http').createServer();
+const io = require('socket.io')(server, {
+    cors: {
+        origin: ['http://localhost:3000']
+    }
+});
+io.on('connection', socket => {
+    console.log(socket.id)
+
+    socket.on('join-room', (room, callback) => {
+        socket.join(room)
+        callback(`joined room: ${room}`)
+    })
+
+    socket.on('send-message', (message, room) => {
+        console.log('room: ', room)
+        socket.to(room).emit('relay-message', message)
+    })
+
+    // client.on('disconnect', () => { /* … */ });
+});
+server.listen(5001);

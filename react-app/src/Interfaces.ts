@@ -28,11 +28,11 @@ export interface IPost {
     type: string
     subType: string
     text: string
-    url: string
-    urlDescription: string
-    urlDomain: string
-    urlImage: string
-    urlTitle: string
+    url: string | null
+    urlDescription: string | null
+    urlDomain: string | null
+    urlImage: string | null
+    urlTitle: string | null
     createdAt: string
     account_like: number
     account_link: number

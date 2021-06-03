@@ -49,7 +49,15 @@ const HolonPagePostsFilters = (): JSX.Element => {
             />
             <DropDownMenu
                 title='Post Type'
-                options={['All Types', 'Text', 'Url', 'Poll', 'Glass Bead', 'Plot Graph', 'Prism']}
+                options={[
+                    'All Types',
+                    'Text',
+                    'Url',
+                    'Poll',
+                    'Glass Bead Game',
+                    'Plot Graph',
+                    'Prism',
+                ]}
                 selectedOption={spacePostsTypeFilter}
                 setSelectedOption={setSpacePostsTypeFilter}
                 orientation='vertical'

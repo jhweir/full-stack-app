@@ -57,13 +57,16 @@ const Homepage = (): JSX.Element => {
     return (
         <div className={styles.homePage}>
             <div className={styles.mainContent}>
-                <img className={styles.logo} src='/images/logo-007.png' alt='weco logo' />
+                <img className={styles.logo} src='/images/new-logo.svg' alt='weco logo' />
+                {/* <div className={styles.titleWrapper}> */}
                 <span className={styles.title}>
                     we{`{`}
                     <span className={`${styles.title} ${styles.grey}`}>collective</span>
                     {`}`}
                 </span>
-                <span className={styles.subTitle}>holonic social media coop</span>
+                {/* </div> */}
+                <span className={styles.subTitle}>holonic social media</span>
+                <span className={styles.preAlpha}>PRE-ALPHA</span>
                 <div className={styles.underConstruction}>
                     <span className={styles.underConstructionText}>under construction...</span>
                     <img
@@ -84,10 +87,11 @@ const Homepage = (): JSX.Element => {
                                     size={45}
                                     outline
                                     imagePath={
-                                        spaceHighlights &&
-                                        spaceHighlights.TopPosts &&
-                                        spaceHighlights.TopPosts[0] &&
-                                        spaceHighlights.TopPosts[0].urlImage
+                                        (spaceHighlights &&
+                                            spaceHighlights.TopPosts &&
+                                            spaceHighlights.TopPosts[0] &&
+                                            spaceHighlights.TopPosts[0].urlImage) ||
+                                        null
                                     }
                                 />
                             </div>
@@ -97,10 +101,11 @@ const Homepage = (): JSX.Element => {
                                     size={45}
                                     outline
                                     imagePath={
-                                        spaceHighlights &&
-                                        spaceHighlights.TopPosts &&
-                                        spaceHighlights.TopPosts[1] &&
-                                        spaceHighlights.TopPosts[1].urlImage
+                                        (spaceHighlights &&
+                                            spaceHighlights.TopPosts &&
+                                            spaceHighlights.TopPosts[1] &&
+                                            spaceHighlights.TopPosts[1].urlImage) ||
+                                        null
                                     }
                                 />
                             </div>
@@ -110,10 +115,11 @@ const Homepage = (): JSX.Element => {
                                     size={45}
                                     outline
                                     imagePath={
-                                        spaceHighlights &&
-                                        spaceHighlights.TopPosts &&
-                                        spaceHighlights.TopPosts[2] &&
-                                        spaceHighlights.TopPosts[2].urlImage
+                                        (spaceHighlights &&
+                                            spaceHighlights.TopPosts &&
+                                            spaceHighlights.TopPosts[2] &&
+                                            spaceHighlights.TopPosts[2].urlImage) ||
+                                        null
                                     }
                                 />
                             </div>
@@ -128,10 +134,11 @@ const Homepage = (): JSX.Element => {
                                     size={45}
                                     outline
                                     imagePath={
-                                        spaceHighlights &&
-                                        spaceHighlights.TopSpaces &&
-                                        spaceHighlights.TopSpaces[0] &&
-                                        spaceHighlights.TopSpaces[0].flagImagePath
+                                        (spaceHighlights &&
+                                            spaceHighlights.TopSpaces &&
+                                            spaceHighlights.TopSpaces[0] &&
+                                            spaceHighlights.TopSpaces[0].flagImagePath) ||
+                                        null
                                     }
                                 />
                             </div>
@@ -141,10 +148,11 @@ const Homepage = (): JSX.Element => {
                                     size={45}
                                     outline
                                     imagePath={
-                                        spaceHighlights &&
-                                        spaceHighlights.TopSpaces &&
-                                        spaceHighlights.TopSpaces[1] &&
-                                        spaceHighlights.TopSpaces[1].flagImagePath
+                                        (spaceHighlights &&
+                                            spaceHighlights.TopSpaces &&
+                                            spaceHighlights.TopSpaces[1] &&
+                                            spaceHighlights.TopSpaces[1].flagImagePath) ||
+                                        null
                                     }
                                 />
                             </div>
@@ -154,10 +162,11 @@ const Homepage = (): JSX.Element => {
                                     size={45}
                                     outline
                                     imagePath={
-                                        spaceHighlights &&
-                                        spaceHighlights.TopSpaces &&
-                                        spaceHighlights.TopSpaces[2] &&
-                                        spaceHighlights.TopSpaces[2].flagImagePath
+                                        (spaceHighlights &&
+                                            spaceHighlights.TopSpaces &&
+                                            spaceHighlights.TopSpaces[2] &&
+                                            spaceHighlights.TopSpaces[2].flagImagePath) ||
+                                        null
                                     }
                                 />
                             </div>
@@ -172,10 +181,11 @@ const Homepage = (): JSX.Element => {
                                     size={45}
                                     outline
                                     imagePath={
-                                        spaceHighlights &&
-                                        spaceHighlights.TopUsers &&
-                                        spaceHighlights.TopUsers[0] &&
-                                        spaceHighlights.TopUsers[0].flagImagePath
+                                        (spaceHighlights &&
+                                            spaceHighlights.TopUsers &&
+                                            spaceHighlights.TopUsers[0] &&
+                                            spaceHighlights.TopUsers[0].flagImagePath) ||
+                                        null
                                     }
                                 />
                             </div>
@@ -185,10 +195,11 @@ const Homepage = (): JSX.Element => {
                                     size={45}
                                     outline
                                     imagePath={
-                                        spaceHighlights &&
-                                        spaceHighlights.TopUsers &&
-                                        spaceHighlights.TopUsers[1] &&
-                                        spaceHighlights.TopUsers[1].flagImagePath
+                                        (spaceHighlights &&
+                                            spaceHighlights.TopUsers &&
+                                            spaceHighlights.TopUsers[1] &&
+                                            spaceHighlights.TopUsers[1].flagImagePath) ||
+                                        null
                                     }
                                 />
                             </div>
@@ -198,10 +209,11 @@ const Homepage = (): JSX.Element => {
                                     size={45}
                                     outline
                                     imagePath={
-                                        spaceHighlights &&
-                                        spaceHighlights.TopUsers &&
-                                        spaceHighlights.TopUsers[2] &&
-                                        spaceHighlights.TopUsers[2].flagImagePath
+                                        (spaceHighlights &&
+                                            spaceHighlights.TopUsers &&
+                                            spaceHighlights.TopUsers[2] &&
+                                            spaceHighlights.TopUsers[2].flagImagePath) ||
+                                        null
                                     }
                                 />
                             </div>
@@ -212,7 +224,7 @@ const Homepage = (): JSX.Element => {
             <div className={styles.waves}>
                 <img
                     className={styles.backgroundWave}
-                    src='/images/wave.svg'
+                    src='/images/homepage-earth.svg'
                     alt='background wave svg'
                 />
             </div>

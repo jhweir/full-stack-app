@@ -11,6 +11,7 @@ import PostPagePollVote from '../components/PostPage/PostPagePollVote'
 import PostPagePollResults from '../components/PostPage/PostPagePollResults'
 import Prism from '../components/Prism'
 import PlotGraph from '../components/PlotGraph'
+import GlassBeadGame from '../components/GlassBeadGame'
 
 const PostPage = ({
     match,
@@ -42,6 +43,9 @@ const PostPage = ({
     }
     if (postData && postData.type === 'plot-graph') {
         return <PlotGraph />
+    }
+    if (postData && postData.type === 'glass-bead-game') {
+        return <GlassBeadGame />
     }
 
     return (

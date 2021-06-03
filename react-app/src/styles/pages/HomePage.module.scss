@@ -16,16 +16,26 @@
     // width: 150px;
     // height: 150px;
     margin-top: 100px;
+    margin-bottom: 20px;
 }
 .mainContent {
     display: flex;
     flex-direction: column;
     align-items: center;
 }
+.titleWrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 10px;
+    // span {
+    //     line-height: 40px;
+    // }
+}
 .title {
     font-size: 40px;
-    //color: rgb(1, 108, 170);
-    margin: 0 0 10px 0;
+    //line-height: 20px;
+    //color: rgb(1, 108, 170)
     &.grey {
         color: rgb(162, 167, 170)
     }
@@ -35,27 +45,32 @@
     //margin-bottom: 10px;
     color: rgb(133, 136, 138)
 }
+.preAlpha {
+    font-size: 20px;
+    margin-top: 40px;
+    color: #d0d0d0; //rgb(214, 216, 218)
+}
 .largeText {
     font-size: 24px;
 }
 .waves {
     width: 100%;
     position: relative;
-    margin-top: -160px;
+    margin-top: 20px;
     //height: 500px;
 }
 .backgroundWave {
-
+    width: 100%;
 }
 .underConstruction {
     width: 260px;
-    height: 150px;
+    //height: 150px;
     display: flex;
     flex-direction: row;
     //color: white;
     justify-content: center;
     align-items: center;
-    //margin: 60px 0 100px 0;
+    margin: 5px 0 60px 0;
     // position: absolute;
     // bottom: 20%;
     // left: calc(50% - 130px);
@@ -70,7 +85,7 @@
     display: flex;
     flex-direction: row;
     //margin-top: 100px;
-    margin-bottom: 100px;
+    //margin-bottom: 100px;
     width: 700px;
     justify-content: space-between;
     z-index: 3;
