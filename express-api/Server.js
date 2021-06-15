@@ -50,26 +50,52 @@ app.listen(port, () => console.log(`Listening on port ${port}`))
 
 app.get('/', (req, res) => res.send('INDEX'))
 
-// set up websocket for live connections
-const server = require('http').createServer();
-const io = require('socket.io')(server, {
-    cors: {
-        origin: ['http://localhost:3000']
-    }
-});
+// set up websockets for glass bead games
+const server = require('http').createServer()
+const io = require('socket.io')(server, { cors: { origin: whitelist } })
+
+const rooms = []
+const socketsToRooms = []
+const maxPlayers = 10
+
 io.on('connection', socket => {
-    console.log(socket.id)
-
-    socket.on('join-room', (room, callback) => {
-        socket.join(room)
-        callback(`joined room: ${room}`)
+    socket.on('join-room', data => {
+        const { roomId, userData } = data
+        const user = { socketId: socket.id, userData }
+        socket.join(roomId)
+        if (!rooms[roomId]) {
+            rooms[roomId] = [user]
+            socketsToRooms[socket.id] = roomId
+        } else {
+            if (rooms[roomId].length === maxPlayers) socket.emit('room-full')
+            else {
+                rooms[roomId].push(user)
+                const usersInRoom = rooms[roomId].filter(users => users.socketId !== socket.id)
+                socket.emit('users-in-room', usersInRoom)
+                socketsToRooms[socket.id] = roomId
+            }
+        }
     })
 
-    socket.on('send-message', (message, room) => {
-        console.log('room: ', room)
-        socket.to(room).emit('relay-message', message)
+    socket.on('sending-signal', payload => {
+        io.to(payload.userToSignal).emit('user-joined', { signal: payload.signal, userSignaling: payload.userSignaling })
     })
 
-    // client.on('disconnect', () => { /* … */ });
-});
+    socket.on('returning-signal', payload => {
+        io.to(payload.callerID).emit('receiving-returned-signal', { signal: payload.signal, id: socket.id })
+    })
+
+    socket.on('sending-comment', commentData => {
+        io.in(commentData.roomId).emit('returning-comment', commentData)
+    })
+
+    socket.on('disconnect', () => {
+        const roomId = socketsToRooms[socket.id]
+        if (rooms[roomId]) {
+            rooms[roomId] = rooms[roomId].filter(users => users.socketId !== socket.id)
+            io.in(roomId).emit('user-left', socket.id)
+        }
+    })
+})
+
 server.listen(5001);

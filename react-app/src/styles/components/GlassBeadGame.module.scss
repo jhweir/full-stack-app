@@ -12,7 +12,7 @@
     justify-content: space-between;
 }
 .leftPanel {
-    width: 500px;
+    width: 350px;
     height: 100%;
     border-right: 1px solid #ddd;
     background-color: white;
@@ -20,20 +20,110 @@
     flex-direction: column;
     justify-content: space-between;
 }
-.rightPanel {
-    width: 500px;
-    height: 100%;
-    border-left: 1px solid #ddd;
-    background-color: white;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
 .centerPanel {
-    width: 100%;
+    //width: calc(100% - 200px);
     display: flex;
     flex-direction: column;
     align-items: center;
+    // margin: 0;
+    // padding: 0;
+}
+.rightPanel {
+    width: 400px;
+    // height: 100%;
+    // border-left: 1px solid #ddd;
+    // background-color: white;
+    // display: flex;
+    // flex-direction: column;
+    // justify-content: space-between;
+
+    // Hide scroll bars on Firefox:
+    scrollbar-width: none;
+    // Hide scroll bars on Microsoft Edge:
+    -ms-overflow-style: none;
+    // Hide scroll bars on Chrome:
+    ::-webkit-scrollbar {
+        display: none;
+    }
+}
+$width: 1280;
+$height: 720;
+$padding: 10px;
+.videos {
+    position: absolute;
+    right: 0;
+    background-color: rgba(0,0,0,0.5);
+    margin: $padding;
+    padding: $padding;
+    border-radius: 5px;
+    max-height: calc(100% - 280px);
+    overflow-y: scroll;
+    display: flex;
+    flex-direction: column;
+}
+.videoWrapper {
+    display: flex;
+    margin-bottom: $padding;
+    &:last-child {
+        margin-bottom: 0;
+    }
+    > video {
+        // margin-bottom: $padding;
+        // &:last-child {
+        //     margin-bottom: 0;
+        // }
+        object-fit: cover;
+        
+    }
+    &.xl {
+        // 1 - 2
+        > video {
+            width: $width / 3 + px;
+            height: $height / 3 + px;
+        }
+    }
+    &.lg {
+        // 3
+        > video {
+            width: $width / 4 + px;
+            height: $height / 4 + px;
+        }
+    }
+    &.md {
+        // 4 - 6
+        > video {
+            width: $width / 5 + px;
+            height: $height / 5 + px;
+        }
+    }
+    &.sm {
+        // 7 - 8
+        > video {
+            width: $width / 6 + px;
+            height: $height / 6 + px;
+        }
+    }
+    &.xs {
+        // 9 +
+        > video {
+            width: $width / 8 + px;
+            height: $height / 8 + px;
+        }
+    }
+    > .userData {
+        position: absolute;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        margin: 7px;
+        padding: 7px 10px;
+        border-radius: 5px;
+        background-color: rgba(255, 255, 255, 0.5);
+        > p {
+            margin-left: 5px;
+            //color: white;
+        }
+    }
 }
 .giftIcon {
     width: 200px;
@@ -57,18 +147,27 @@
     width: 80px;
     height: 80px;
 }
-.user {
+.comments {
+    height: 100%;
+    overflow-y: scroll;
+}
+.commentWrapper {
     display: flex;
     flex-direction: row;
-    align-items: center;
-    padding: 30px;
-    > p {
-        margin-right: 20px;
-    }
+    //align-items: center;
+    margin: 10px;
 }
-
+.commentText {
+    margin-left: 10px;
+}
+.userName {
+    font-weight: 800;
+}
+.adminText {
+    color: rgb(163, 163, 163);
+}
 .textInputWrapper {
-    padding: 30px;
+    padding: 10px;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -96,6 +195,9 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
+    &:hover {
+        cursor: pointer;
+    }
 }
 .turns {
     padding: 0 40px;

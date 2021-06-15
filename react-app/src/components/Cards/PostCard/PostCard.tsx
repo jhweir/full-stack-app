@@ -5,6 +5,7 @@ import gfm from 'remark-gfm'
 import { AccountContext } from '../../../contexts/AccountContext'
 import { SpaceContext } from '../../../contexts/SpaceContext'
 import { UserContext } from '../../../contexts/UserContext'
+import { PostContext } from '../../../contexts/PostContext'
 import styles from '../../../styles/components/PostCard.module.scss'
 // import colors from '../../../styles/Colors.module.scss'
 import PostCardReactions from './PostCardReactions'
@@ -33,6 +34,7 @@ const PostCard = (props: {
     } = useContext(AccountContext)
     const { setSpaceHandle, getSpaceData, getSpacePosts } = useContext(SpaceContext)
     const { getCreatedPosts, getUserData } = useContext(UserContext)
+    const { setPostContextLoading } = useContext(PostContext)
     const history = useHistory()
 
     // console.log('postData: ', postData);
@@ -311,7 +313,10 @@ const PostCard = (props: {
                             <Link
                                 to={`/p/${id}`}
                                 className={styles.interactItem}
-                                onClick={() => setSelectedNavBarItem('')}
+                                onClick={() => {
+                                    setPostContextLoading(true)
+                                    setSelectedNavBarItem('')
+                                }}
                             >
                                 <img
                                     className={styles.icon}
