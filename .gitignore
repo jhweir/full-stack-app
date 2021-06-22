@@ -2,6 +2,8 @@
 
 /express-api/node_modules/
 
+/express-api/private/
+
 /react-app/node_modules/
 
 /react-app/build/
@@ -9,3 +11,5 @@
 .env
 
 *.pem
+
+access.log

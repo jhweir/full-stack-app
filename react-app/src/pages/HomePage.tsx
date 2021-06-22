@@ -78,53 +78,6 @@ const Homepage = (): JSX.Element => {
                 {spaceHighlights && (
                     <div className={styles.stats}>
                         <div className={styles.stat}>
-                            <Link className={styles.statText} to='/s/all/posts'>
-                                {`${spaceData && spaceData.total_posts} Posts`}
-                            </Link>
-                            <div style={{ zIndex: 3 }}>
-                                <SmallFlagImage
-                                    type='post'
-                                    size={45}
-                                    outline
-                                    imagePath={
-                                        (spaceHighlights &&
-                                            spaceHighlights.TopPosts &&
-                                            spaceHighlights.TopPosts[0] &&
-                                            spaceHighlights.TopPosts[0].urlImage) ||
-                                        null
-                                    }
-                                />
-                            </div>
-                            <div style={{ marginLeft: -10, zIndex: 2 }}>
-                                <SmallFlagImage
-                                    type='post'
-                                    size={45}
-                                    outline
-                                    imagePath={
-                                        (spaceHighlights &&
-                                            spaceHighlights.TopPosts &&
-                                            spaceHighlights.TopPosts[1] &&
-                                            spaceHighlights.TopPosts[1].urlImage) ||
-                                        null
-                                    }
-                                />
-                            </div>
-                            <div style={{ marginLeft: -10, zIndex: 1 }}>
-                                <SmallFlagImage
-                                    type='post'
-                                    size={45}
-                                    outline
-                                    imagePath={
-                                        (spaceHighlights &&
-                                            spaceHighlights.TopPosts &&
-                                            spaceHighlights.TopPosts[2] &&
-                                            spaceHighlights.TopPosts[2].urlImage) ||
-                                        null
-                                    }
-                                />
-                            </div>
-                        </div>
-                        <div className={styles.stat}>
                             <Link className={styles.statText} to='/s/all/spaces'>
                                 {`${spaceData && spaceData.total_spaces} Spaces`}
                             </Link>
@@ -166,6 +119,53 @@ const Homepage = (): JSX.Element => {
                                             spaceHighlights.TopSpaces &&
                                             spaceHighlights.TopSpaces[2] &&
                                             spaceHighlights.TopSpaces[2].flagImagePath) ||
+                                        null
+                                    }
+                                />
+                            </div>
+                        </div>
+                        <div className={styles.stat}>
+                            <Link className={styles.statText} to='/s/all/posts'>
+                                {`${spaceData && spaceData.total_posts} Posts`}
+                            </Link>
+                            <div style={{ zIndex: 3 }}>
+                                <SmallFlagImage
+                                    type='post'
+                                    size={45}
+                                    outline
+                                    imagePath={
+                                        (spaceHighlights &&
+                                            spaceHighlights.TopPosts &&
+                                            spaceHighlights.TopPosts[0] &&
+                                            spaceHighlights.TopPosts[0].urlImage) ||
+                                        null
+                                    }
+                                />
+                            </div>
+                            <div style={{ marginLeft: -10, zIndex: 2 }}>
+                                <SmallFlagImage
+                                    type='post'
+                                    size={45}
+                                    outline
+                                    imagePath={
+                                        (spaceHighlights &&
+                                            spaceHighlights.TopPosts &&
+                                            spaceHighlights.TopPosts[1] &&
+                                            spaceHighlights.TopPosts[1].urlImage) ||
+                                        null
+                                    }
+                                />
+                            </div>
+                            <div style={{ marginLeft: -10, zIndex: 1 }}>
+                                <SmallFlagImage
+                                    type='post'
+                                    size={45}
+                                    outline
+                                    imagePath={
+                                        (spaceHighlights &&
+                                            spaceHighlights.TopPosts &&
+                                            spaceHighlights.TopPosts[2] &&
+                                            spaceHighlights.TopPosts[2].urlImage) ||
                                         null
                                     }
                                 />
@@ -224,7 +224,7 @@ const Homepage = (): JSX.Element => {
             <div className={styles.waves}>
                 <img
                     className={styles.backgroundWave}
-                    src='/images/homepage-earth.svg'
+                    src='/images/earth.svg'
                     alt='background wave svg'
                 />
             </div>
@@ -300,7 +300,7 @@ const Homepage = (): JSX.Element => {
                     </ul>
                 </div>
                 <div className={styles.credits}>
-                    All icons created by FontAwesome https://fontawesome.com/license
+                    Some icons created by FontAwesome https://fontawesome.com/license
                 </div>
             </div>
         </div>

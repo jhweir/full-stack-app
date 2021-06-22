@@ -21,7 +21,7 @@ const HolonPageSideBarRight = (): JSX.Element => {
                     {spaceData.DirectParentHolons && spaceData.DirectParentHolons.length !== 0 && (
                         <>
                             <span className={styles.sideBarRightText}>Parent spaces:</span>
-                            <ul className={styles.sideBarRightHolons}>
+                            <ul className={`${styles.sideBarRightHolons} hide-scrollbars`}>
                                 {spaceData.DirectParentHolons.map(
                                     (holon) =>
                                         holon && (
@@ -58,7 +58,7 @@ const HolonPageSideBarRight = (): JSX.Element => {
                     {spaceData.DirectChildHolons && spaceData.DirectChildHolons.length !== 0 && (
                         <>
                             <span className={styles.sideBarRightText}>Child spaces:</span>
-                            <ul className={styles.sideBarRightHolons}>
+                            <ul className={`${styles.sideBarRightHolons} hide-scrollbars`}>
                                 {spaceData.DirectChildHolons.map(
                                     (holon) =>
                                         holon && (

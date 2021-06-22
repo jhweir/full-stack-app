@@ -36,15 +36,6 @@
     // display: flex;
     // flex-direction: column;
     // justify-content: space-between;
-
-    // Hide scroll bars on Firefox:
-    scrollbar-width: none;
-    // Hide scroll bars on Microsoft Edge:
-    -ms-overflow-style: none;
-    // Hide scroll bars on Chrome:
-    ::-webkit-scrollbar {
-        display: none;
-    }
 }
 $width: 1280;
 $height: 720;
@@ -126,7 +117,7 @@ $padding: 10px;
     }
 }
 .giftIcon {
-    width: 200px;
+    width: 100px;
 }
 .activeTurn {
     width: 400px;
@@ -185,7 +176,7 @@ $padding: 10px;
     align-items: center;
     margin-right: 10px;
 }
-.textButton {
+.button {
     background-color: #c0e0ff;
     // width: 80px;
     height: 40px;
@@ -237,4 +228,28 @@ $padding: 10px;
 .dividerConnector {
     height: 40px;
     width: 40px;
+}
+.gameControls {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    > div {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+}
+.numberInput {
+    border: none;
+    background-color: white;
+    width: 60px;
+    height: 40px;
+    border-radius: 5px;
+    font-size: 16px;
+    margin-right: 20px;
+    padding: 5px 10px;
 }

@@ -291,7 +291,7 @@ const PostCard = (props: {
                             <img className={styles.icon} src='/icons/comment-solid.svg' alt='' />
                             <span className='greyText'>{totalComments} Comments</span>
                         </div>
-                        {type === 'glass-bead' && (
+                        {/* {type === 'glass-bead' && (
                             <div
                                 className={styles.interactItem}
                                 role='button'
@@ -308,7 +308,7 @@ const PostCard = (props: {
                                 />
                                 <span className='greyText'>Add turn</span>
                             </div>
-                        )}
+                        )} */}
                         {type === 'glass-bead-game' && (
                             <Link
                                 to={`/p/${id}`}
@@ -324,6 +324,23 @@ const PostCard = (props: {
                                     alt=''
                                 />
                                 <span className='greyText'>Open game</span>
+                            </Link>
+                        )}
+                        {type === 'prism' && (
+                            <Link
+                                to={`/p/${id}`}
+                                className={styles.interactItem}
+                                onClick={() => {
+                                    // setPostContextLoading(true)
+                                    setSelectedNavBarItem('')
+                                }}
+                            >
+                                <img
+                                    className={styles.icon}
+                                    src='/icons/arrow-alt-circle-right-solid.svg'
+                                    alt=''
+                                />
+                                <span className='greyText'>Open prism</span>
                             </Link>
                         )}
                     </div>
