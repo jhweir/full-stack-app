@@ -191,7 +191,7 @@ const PostCard = (props: {
                                     to={`/s/${space.handle}`}
                                     onClick={() => setSpaceHandle(space.handle)}
                                     style={{ marginRight: 5 }}
-                                    key={space}
+                                    key={space.handle}
                                 >
                                     {space.handle}
                                 </Link>

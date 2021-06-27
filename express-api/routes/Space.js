@@ -7,7 +7,6 @@ const { v4: uuidv4 } = require('uuid')
 const sgMail = require('@sendgrid/mail')
 sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 const authenticateToken = require('../middleware/authenticateToken')
-const { postAttributes } = require('../GlobalConstants')
 const {
     Holon,
     VerticalHolonRelationship,
@@ -19,6 +18,189 @@ const {
     Notification,
     SpaceNotification,
 } = require('../models')
+const {
+    postAttributes,
+    totalSpaceFollowers,
+    totalSpaceComments,
+    totalSpaceReactions,
+    totalSpaceLikes,
+    totalSpaceRatings,
+    totalSpacePosts,
+    totalSpaceChildren,
+    totalUserPosts,
+    totalUserComments,
+    asyncForEach
+} = require('../GlobalConstants')
+
+const spaceAttributes = [
+    'id',
+    'handle',
+    'name',
+    'description',
+    'flagImagePath',
+    'coverImagePath',
+    'createdAt',
+    totalSpaceFollowers,
+    totalSpaceComments,
+    totalSpaceReactions,
+    totalSpaceLikes,
+    totalSpaceRatings,
+    totalSpacePosts,
+    totalSpaceChildren
+]
+
+const userAttributes = [
+    'id',
+    'handle',
+    'name',
+    'bio',
+    'flagImagePath',
+    'coverImagePath',
+    'createdAt',
+    totalUserPosts,
+    totalUserComments
+]
+
+const firstGenLimit = 7
+const secondGenLimit = 3
+const thirdGenLimit = 3
+const fourthGenLimit = 3
+
+function findStartDate(timeRange) {
+    let timeOffset = Date.now()
+    if (timeRange === 'Last Year') { timeOffset = (24*60*60*1000) * 365 }
+    if (timeRange === 'Last Month') { timeOffset = (24*60*60*1000) * 30 }
+    if (timeRange === 'Last Week') { timeOffset = (24*60*60*1000) * 7 }
+    if (timeRange === 'Last 24 Hours') { timeOffset = 24*60*60*1000 }
+    if (timeRange === 'Last Hour') { timeOffset = 60*60*1000 }
+    let startDate = new Date()
+    startDate.setTime(startDate.getTime() - timeOffset)
+    return startDate
+}
+
+function findOrder(sortOrder, sortBy) {
+    let direction, order
+    if (sortOrder === 'Ascending') { direction = 'ASC' } else { direction = 'DESC' }
+    if (sortBy === 'Date') { order = [['createdAt', direction]] }
+    else { order = [[sequelize.literal(`total_${sortBy.toLowerCase()}`), direction], ['createdAt', 'DESC']] }
+    return order
+}
+
+function findSpaceFirstAttributes(sortBy) {
+    let firstAttributes = ['id']
+    if (sortBy === 'Followers') firstAttributes.push(totalSpaceFollowers)
+    if (sortBy === 'Posts') firstAttributes.push(totalSpacePosts)
+    if (sortBy === 'Comments') firstAttributes.push(totalSpaceComments)
+    if (sortBy === 'Reactions') firstAttributes.push(totalSpaceReactions)
+    if (sortBy === 'Likes') firstAttributes.push(totalSpaceLikes)
+    if (sortBy === 'Ratings') firstAttributes.push(totalSpaceRatings)
+    return firstAttributes
+}
+
+function findSpaceWhere(spaceId, depth, timeRange, searchQuery) {
+    let where
+    if (depth === 'All Contained Spaces') { 
+        where =
+        { 
+            '$HolonHandles.id$': spaceId,
+            id: { [Op.ne]: [spaceId] },
+            createdAt: { [Op.between]: [findStartDate(timeRange), Date.now()] },
+            [Op.or]: [
+                { handle: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } },
+                { name: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } },
+                { description: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } }
+            ]
+        } 
+    }
+    if (depth === 'Only Direct Descendants') {
+        where =
+        { 
+            '$DirectParentHolons.id$': spaceId,
+            createdAt: { [Op.between]: [findStartDate(timeRange), Date.now()] },
+            [Op.or]: [
+                { handle: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } },
+                { name: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } },
+                { description: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } }
+            ]
+        }
+    }
+    return where
+}
+
+function findSpaceInclude(depth) {
+    let include
+    if (depth === 'All Contained Spaces') { 
+        include = [{ 
+            model: Holon,
+            as: 'HolonHandles',
+            attributes: [],
+            through: { attributes: [], where: { state: 'open' } }
+        }]
+    }
+    if (depth === 'Only Direct Descendants') { 
+        include = [{ 
+            model: Holon,
+            as: 'DirectParentHolons',
+            attributes: [],
+            through: { attributes: [], where: { state: 'open' } },
+        }]
+    }
+    return include
+}
+
+function findUserFirstAttributes(sortBy) {
+    let firstAttributes = ['id']
+    if (sortBy === 'Posts') firstAttributes.push(totalUserPosts)
+    if (sortBy === 'Comments') firstAttributes.push(totalUserComments)
+    return firstAttributes
+}
+
+function findTotalSpaceResults(depth, searchQuery, timeRange) {
+    function formatDate(date) {
+        const d = date.toISOString().split(/[-T:.]/)
+        return `${d[0]}-${d[1]}-${d[2]} ${d[3]}:${d[4]}:${d[5]}`
+    }
+    const startDate = formatDate(findStartDate(timeRange))
+    const now = formatDate(new Date)
+
+    if (depth === 'All Contained Spaces') {
+        return [sequelize.literal(`(
+            SELECT COUNT(*)
+                FROM Holons s
+                WHERE s.id != Holon.id
+                AND s.id IN (
+                    SELECT HolonHandles.holonAId
+                    FROM HolonHandles
+                    RIGHT JOIN Holons
+                    ON HolonHandles.holonAId = Holons.id
+                    WHERE HolonHandles.holonBId = Holon.id
+                    AND HolonHandles.state = 'open'
+                ) AND (
+                    s.handle LIKE '%${searchQuery}%'
+                    OR s.name LIKE '%${searchQuery}%'
+                    OR s.description LIKE '%${searchQuery}%'
+                ) AND s.createdAt BETWEEN '${startDate}' AND '${now}'
+            )`), 'total_results'
+        ]
+    } else {
+        return [sequelize.literal(`(
+            SELECT COUNT(*)
+                FROM Holons s
+                WHERE s.id IN (
+                    SELECT vhr.holonBId
+                    FROM VerticalHolonRelationships vhr
+                    RIGHT JOIN Holons
+                    ON vhr.holonAId = Holon.id
+                    WHERE vhr.state = 'open'
+                ) AND (
+                    s.handle LIKE '%${searchQuery}%'
+                    OR s.name LIKE '%${searchQuery}%'
+                    OR s.description LIKE '%${searchQuery}%'
+                ) AND s.createdAt BETWEEN '${startDate}' AND '${now}'
+            )`), 'total_results'
+        ]
+    }
+}
 
 // GET
 router.get('/holon-data', (req, res) => {
@@ -413,353 +595,59 @@ router.get('/holon-posts', (req, res) => {
 })
 
 router.get('/holon-spaces', (req, res) => {
-    const { accountId, handle, timeRange, spaceType, sortBy, sortOrder, depth, searchQuery, limit, offset } = req.query
-
-    function findStartDate() {
-        let offset = undefined
-        if (timeRange === 'Last Year') { offset = (24*60*60*1000) * 365 }
-        if (timeRange === 'Last Month') { offset = (24*60*60*1000) * 30 }
-        if (timeRange === 'Last Week') { offset = (24*60*60*1000) * 7 }
-        if (timeRange === 'Last 24 Hours') { offset = 24*60*60*1000 }
-        if (timeRange === 'Last Hour') { offset = 60*60*1000 }
-        let startDate = new Date()
-        startDate.setTime(startDate.getTime() - offset)
-        return startDate
-    }
-
-    function findOrder() {
-        let direction, order
-        if (sortOrder === 'Ascending') { direction = 'ASC' } else { direction = 'DESC' }
-        if (sortBy === 'Date') { order = [['createdAt', direction]] }
-        else { order = [[sequelize.literal(`total_${sortBy.toLowerCase()}`), direction]] }
-        return order
-    }
-
-    function findFirstAttributes() {
-        let firstAttributes = ['id']
-        if (sortBy === 'Followers') { firstAttributes.push([sequelize.literal(`(
-            SELECT COUNT(*)
-                FROM Users
-                WHERE Users.id IN (
-                    SELECT HolonUsers.userId
-                    FROM HolonUsers
-                    RIGHT JOIN Users
-                    ON HolonUsers.userId = Users.id
-                    WHERE HolonUsers.HolonId = Holon.id
-                    AND HolonUsers.relationship = 'follower'
-                    AND HolonUsers.state = 'active'
-                )
-            )`), 'total_followers'
-        ])}
-        if (sortBy === 'Posts') { firstAttributes.push([sequelize.literal(`(
-            SELECT COUNT(*)
-                FROM Posts
-                WHERE Posts.state = 'visible'
-                AND Posts.id IN (
-                    SELECT PostHolons.postId
-                    FROM PostHolons
-                    RIGHT JOIN Posts
-                    ON PostHolons.postId = Posts.id
-                    WHERE PostHolons.HolonId = Holon.id
-                )
-            )`), 'total_posts'
-        ])}
-        if (sortBy === 'Comments') { firstAttributes.push([sequelize.literal(`(
-            SELECT COUNT(*)
-                FROM Comments
-                WHERE Comments.state = 'visible'
-                AND Comments.postId IN (
-                    SELECT PostHolons.postId
-                    FROM PostHolons
-                    RIGHT JOIN Posts
-                    ON PostHolons.postId = Posts.id
-                    WHERE PostHolons.HolonId = Holon.id
-                )
-            )`), 'total_comments'
-        ])}
-        if (sortBy === 'Reactions') { firstAttributes.push([sequelize.literal(`(
-            SELECT COUNT(*)
-                FROM Reactions
-                WHERE Reactions.state = 'active'
-                AND Reactions.type != 'vote'
-                AND Reactions.postId IN (
-                    SELECT PostHolons.postId
-                    FROM PostHolons
-                    RIGHT JOIN Posts
-                    ON PostHolons.postId = Posts.id
-                    WHERE PostHolons.HolonId = Holon.id
-                )
-            )`), 'total_reactions'
-        ])}
-        if (sortBy === 'Likes') { firstAttributes.push([sequelize.literal(`(
-            SELECT COUNT(*)
-                FROM Reactions
-                WHERE Reactions.state = 'active'
-                AND Reactions.type = 'like'
-                AND Reactions.postId IN (
-                    SELECT PostHolons.postId
-                    FROM PostHolons
-                    RIGHT JOIN Posts
-                    ON PostHolons.postId = Posts.id
-                    WHERE PostHolons.HolonId = Holon.id
-                )
-            )`), 'total_likes'
-        ])}
-        if (sortBy === 'Hearts') { firstAttributes.push([sequelize.literal(`(
-            SELECT COUNT(*)
-                FROM Reactions
-                WHERE Reactions.state = 'active'
-                AND Reactions.type = 'heart'
-                AND Reactions.postId IN (
-                    SELECT PostHolons.postId
-                    FROM PostHolons
-                    RIGHT JOIN Posts
-                    ON PostHolons.postId = Posts.id
-                    WHERE PostHolons.HolonId = Holon.id
-                )
-            )`), 'total_hearts'
-        ])}
-        if (sortBy === 'Ratings') { firstAttributes.push([sequelize.literal(`(
-            SELECT COUNT(*)
-                FROM Reactions
-                WHERE Reactions.state = 'active'
-                AND Reactions.type = 'rating'
-                AND Reactions.postId IN (
-                    SELECT PostHolons.postId
-                    FROM PostHolons
-                    RIGHT JOIN Posts
-                    ON PostHolons.postId = Posts.id
-                    WHERE PostHolons.HolonId = Holon.id
-                )
-            )`), 'total_ratings'
-        ])}
-        return firstAttributes
-    }
-
-    function findWhere() {
-        let where
-        if (depth === 'All Contained Spaces') { 
-            where =
-            { 
-                '$HolonHandles.handle$': handle,
-                handle: { [Op.ne]: [handle] },
-                createdAt: { [Op.between]: [startDate, Date.now()] },
-                [Op.or]: [
-                    { handle: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } },
-                    { name: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } },
-                    { description: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } }
-                ]
-            } 
-        }
-        if (depth === 'Only Direct Descendants') {
-            where =
-            { 
-                '$DirectParentHolons.handle$': handle,
-                createdAt: { [Op.between]: [startDate, Date.now()] },
-                [Op.or]: [
-                    { handle: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } },
-                    { name: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } },
-                    { description: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } }
-                ]
-            }
-        }
-        return where
-    }
-
-    function findInclude() {
-        let include
-        if (depth === 'All Contained Spaces') { 
-            include = [{ 
-                model: Holon,
-                as: 'HolonHandles',
-                attributes: [],
-                through: { attributes: [] }
-            }]
-        }
-        if (depth === 'Only Direct Descendants') { 
-            include = [{ 
-                model: Holon,
-                as: 'DirectParentHolons',
-                attributes: [],
-                through: { attributes: [], where: { state: 'open' } },
-            }]
-        }
-        return include
-    }
-
-    let startDate = findStartDate()
-    let order = findOrder()
-    let firstAttributes = findFirstAttributes()
-    let where = findWhere()
-    let include = findInclude()
+    const {
+        accountId,
+        spaceId,
+        timeRange,
+        spaceType,
+        sortBy,
+        sortOrder,
+        depth,
+        searchQuery,
+        limit,
+        offset
+    } = req.query
 
     // Double query required to to prevent results and pagination being effected by top level where clause.
     // Intial query used to find correct posts with calculated stats and pagination applied.
     // Second query used to return related models.
     Holon.findAll({
-        where,
-        order,
+        where: findSpaceWhere(spaceId, depth, timeRange, searchQuery),
+        order: findOrder(sortOrder, sortBy),
+        attributes: findSpaceFirstAttributes(sortBy),
+        include: findSpaceInclude(depth),
         limit: Number(limit),
         offset: Number(offset),
-        attributes: firstAttributes,
         subQuery: false,
-        include
     })
     .then(holons => {
         Holon.findAll({ 
             where: { id: holons.map(holon => holon.id) },
-            attributes: [
-                'id', 'handle', 'name', 'description', 'flagImagePath', 'coverImagePath', 'createdAt',
-                [sequelize.literal(`(
-                    SELECT COUNT(*)
-                        FROM Users
-                        WHERE Users.id IN (
-                            SELECT HolonUsers.userId
-                            FROM HolonUsers
-                            RIGHT JOIN Users
-                            ON HolonUsers.userId = Users.id
-                            WHERE HolonUsers.HolonId = Holon.id
-                            AND HolonUsers.relationship = 'follower'
-                            AND HolonUsers.state = 'active'
-                        )
-                    )`), 'total_followers'
-                ],
-                [sequelize.literal(`(
-                    SELECT COUNT(*)
-                        FROM Comments
-                        WHERE Comments.state = 'visible'
-                        AND Comments.postId IN (
-                            SELECT PostHolons.postId
-                            FROM PostHolons
-                            RIGHT JOIN Posts
-                            ON PostHolons.postId = Posts.id
-                            WHERE PostHolons.HolonId = Holon.id
-                        )
-                    )`), 'total_comments'
-                ],
-                [sequelize.literal(`(
-                    SELECT COUNT(*)
-                        FROM Reactions
-                        WHERE Reactions.state = 'active'
-                        AND Reactions.type != 'vote'
-                        AND Reactions.postId IN (
-                            SELECT PostHolons.postId
-                            FROM PostHolons
-                            RIGHT JOIN Posts
-                            ON PostHolons.postId = Posts.id
-                            WHERE PostHolons.HolonId = Holon.id
-                        )
-                    )`), 'total_reactions'
-                ],
-                [sequelize.literal(`(
-                    SELECT COUNT(*)
-                        FROM Reactions
-                        WHERE Reactions.state = 'active'
-                        AND Reactions.type = 'like'
-                        AND Reactions.postId IN (
-                            SELECT PostHolons.postId
-                            FROM PostHolons
-                            RIGHT JOIN Posts
-                            ON PostHolons.postId = Posts.id
-                            WHERE PostHolons.HolonId = Holon.id
-                        )
-                    )`), 'total_likes'
-                ],
-                [sequelize.literal(`(
-                    SELECT COUNT(*)
-                        FROM Reactions
-                        WHERE Reactions.state = 'active'
-                        AND Reactions.type = 'rating'
-                        AND Reactions.postId IN (
-                            SELECT PostHolons.postId
-                            FROM PostHolons
-                            RIGHT JOIN Posts
-                            ON PostHolons.postId = Posts.id
-                            WHERE PostHolons.HolonId = Holon.id
-                        )
-                    )`), 'total_ratings'
-                ],
-                [sequelize.literal(`(
-                    SELECT COUNT(*)
-                        FROM Posts
-                        WHERE Posts.state = 'visible'
-                        AND Posts.id IN (
-                            SELECT PostHolons.postId
-                            FROM PostHolons
-                            RIGHT JOIN Posts
-                            ON PostHolons.postId = Posts.id
-                            WHERE PostHolons.HolonId = Holon.id
-                        )
-                    )`), 'total_posts'
-                ]
-            ],
-            order,
-            // include: []
+            order: findOrder(sortOrder, sortBy),
+            attributes: spaceAttributes,
         }).then(data => { res.json(data) })
     })
     .catch(err => console.log(err))
 })
 
 router.get('/holon-users', (req, res) => {
-    const { accountId, holonId, timeRange, userType, sortBy, sortOrder, searchQuery, limit, offset } = req.query
-
-    function findStartDate() {
-        let offset = undefined
-        if (timeRange === 'Last Year') { offset = (24*60*60*1000) * 365 }
-        if (timeRange === 'Last Month') { offset = (24*60*60*1000) * 30 }
-        if (timeRange === 'Last Week') { offset = (24*60*60*1000) * 7 }
-        if (timeRange === 'Last 24 Hours') { offset = 24*60*60*1000 }
-        if (timeRange === 'Last Hour') { offset = 60*60*1000 }
-        let startDate = new Date()
-        startDate.setTime(startDate.getTime() - offset)
-        return startDate
-    }
-
-    function findOrder() {
-        let direction, order
-        if (sortOrder === 'Ascending') { direction = 'ASC' } else { direction = 'DESC' }
-        if (sortBy === 'Date') { order = [['createdAt', direction]] }
-        else { order = [[sequelize.literal(`total_${sortBy.toLowerCase()}`), direction]] }
-        return order
-    }
-
-    function findFirstAttributes() {
-        let firstAttributes = ['id']
-        if (sortBy === 'Posts') { firstAttributes.push([sequelize.literal(`(
-            SELECT COUNT(*)
-                FROM Posts
-                WHERE Posts.state = 'visible'
-                AND Posts.creatorId = User.id
-            )`), 'total_posts'
-        ])}
-        if (sortBy === 'Comments') { firstAttributes.push([sequelize.literal(`(
-            SELECT COUNT(*)
-                FROM Comments
-                WHERE Comments.creatorId = User.id
-            )`), 'total_comments'
-        ])}
-        return firstAttributes
-    }
-
-    let startDate = findStartDate()
-    let order = findOrder()
-    let firstAttributes = findFirstAttributes()
+    const { accountId, spaceId, timeRange, userType, sortBy, sortOrder, searchQuery, limit, offset } = req.query
 
     User.findAll({
         where: { 
-            '$FollowedHolons.id$': holonId,
+            '$FollowedHolons.id$': spaceId,
             emailVerified: true,
-            createdAt: { [Op.between]: [startDate, Date.now()] },
+            createdAt: { [Op.between]: [findStartDate(timeRange), Date.now()] },
             [Op.or]: [
                 { handle: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } },
                 { name: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } },
                 { bio: { [Op.like]: `%${searchQuery ? searchQuery : ''}%` } }
             ]
         },
-        order,
+        order: findOrder(sortOrder, sortBy),
         limit: Number(limit),
         offset: Number(offset),
-        attributes: firstAttributes,
+        attributes: findUserFirstAttributes(sortBy),
         subQuery: false,
         include: [{ 
             model: Holon,
@@ -771,24 +659,8 @@ router.get('/holon-users', (req, res) => {
     .then(users => {
         User.findAll({ 
             where: { id: users.map(user => user.id) },
-            attributes: [
-                'id', 'handle', 'name', 'bio', 'flagImagePath', 'coverImagePath', 'createdAt',
-                [sequelize.literal(`(
-                    SELECT COUNT(*)
-                        FROM Posts
-                        WHERE Posts.state = 'visible'
-                        AND Posts.creatorId = User.id
-                    )`), 'total_posts'
-                ],
-                [sequelize.literal(`(
-                    SELECT COUNT(*)
-                        FROM Comments
-                        WHERE Comments.creatorId = User.id
-                    )`), 'total_comments'
-                ],
-            ],
-            order,
-            // include: []
+            order: findOrder(sortOrder, sortBy),
+            attributes: userAttributes,
         }).then(data => { res.json(data) })
     })
     .catch(err => console.log(err))
@@ -824,355 +696,54 @@ router.get('/holon-requests', (req, res) => {
 })
 
 router.get('/space-map-data', async (req, res) => {
-    const { spaceId, sortBy, sortOrder, timeRange } = req.query
+    const { spaceId, offset, sortBy, sortOrder, timeRange, depth, searchQuery } = req.query
 
-    const firstGenLimit = 7
-    const secondGenLimit = 3
-    const thirdGenLimit = 3
-    const fourthGenLimit = 3
-
-    function findOrder() {
-        let direction, order
-        if (sortOrder === 'Ascending') { direction = 'ASC' } else { direction = 'DESC' }
-        if (sortBy === 'Date') { order = [['createdAt', direction]] }
-        else { order = [[sequelize.literal(`total_${sortBy.toLowerCase()}`), direction]] }
-        return order
-    }
-
-    async function asyncForEach(array, callback) {
-        for (let index = 0; index < array.length; index++) {
-            await callback(array[index], index, array)
-        }
-    }
-
-    async function findNextGeneration(parent, limit) {
-        if (!parent.isExpander && parent.total_children > 0) {
-            const nextGeneration = await Holon.findAll({
-                where: { '$DirectParentHolons.id$': parent.id },
-                attributes: [
-                    'id', 'handle', 'name', 'description', 'flagImagePath', 'coverImagePath', 'createdAt',
-                    [sequelize.literal(`(
-                        SELECT COUNT(*)
-                            FROM VerticalHolonRelationships
-                            AS VHR
-                            WHERE VHR.holonAId = Holon.id
-                            AND VHR.state = 'open'
-                        )`), 'total_children'
-                    ],
-                    [sequelize.literal(`(
-                        SELECT COUNT(*)
-                            FROM Users
-                            WHERE Users.id IN (
-                                SELECT HolonUsers.userId
-                                FROM HolonUsers
-                                RIGHT JOIN Users
-                                ON HolonUsers.userId = Users.id
-                                WHERE HolonUsers.HolonId = Holon.id
-                                AND HolonUsers.relationship = 'follower'
-                                AND HolonUsers.state = 'active'
-                            )
-                        )`), 'total_followers'
-                    ],
-                    [sequelize.literal(`(
-                        SELECT COUNT(*)
-                            FROM Comments
-                            WHERE Comments.state = 'visible'
-                            AND Comments.postId IN (
-                                SELECT PostHolons.postId
-                                FROM PostHolons
-                                RIGHT JOIN Posts
-                                ON PostHolons.postId = Posts.id
-                                WHERE PostHolons.HolonId = Holon.id
-                            )
-                        )`), 'total_comments'
-                    ],
-                    [sequelize.literal(`(
-                        SELECT COUNT(*)
-                            FROM Reactions
-                            WHERE Reactions.state = 'active'
-                            AND Reactions.type != 'vote'
-                            AND Reactions.postId IN (
-                                SELECT PostHolons.postId
-                                FROM PostHolons
-                                RIGHT JOIN Posts
-                                ON PostHolons.postId = Posts.id
-                                WHERE PostHolons.HolonId = Holon.id
-                            )
-                        )`), 'total_reactions'
-                    ],
-                    [sequelize.literal(`(
-                        SELECT COUNT(*)
-                            FROM Reactions
-                            WHERE Reactions.state = 'active'
-                            AND Reactions.type = 'like'
-                            AND Reactions.postId IN (
-                                SELECT PostHolons.postId
-                                FROM PostHolons
-                                RIGHT JOIN Posts
-                                ON PostHolons.postId = Posts.id
-                                WHERE PostHolons.HolonId = Holon.id
-                            )
-                        )`), 'total_likes'
-                    ],
-                    [sequelize.literal(`(
-                        SELECT COUNT(*)
-                            FROM Reactions
-                            WHERE Reactions.state = 'active'
-                            AND Reactions.type = 'rating'
-                            AND Reactions.postId IN (
-                                SELECT PostHolons.postId
-                                FROM PostHolons
-                                RIGHT JOIN Posts
-                                ON PostHolons.postId = Posts.id
-                                WHERE PostHolons.HolonId = Holon.id
-                            )
-                        )`), 'total_ratings'
-                    ],
-                    [sequelize.literal(`(
-                        SELECT COUNT(*)
-                            FROM Posts
-                            WHERE Posts.state = 'visible'
-                            AND Posts.id IN (
-                                SELECT PostHolons.postId
-                                FROM PostHolons
-                                RIGHT JOIN Posts
-                                ON PostHolons.postId = Posts.id
-                                WHERE PostHolons.HolonId = Holon.id
-                            )
-                        )`), 'total_posts'
-                    ]
-                ],
-                limit,
-                order: findOrder(),
-                subQuery: false,
-                include: [{ 
-                    model: Holon,
-                    as: 'DirectParentHolons',
-                    attributes: [],
-                    through: { attributes: [], where: { state: 'open' } },
-                }]
-            })
-            parent.children = []
-            nextGeneration.forEach(child => {
-                parent.children.push(child.toJSON())
-            })
-        } else {
-            parent.children = []
-        }
-        // if hidden spaces, add expander
-        if (parent.children.length && parent.total_children > limit) {
-            parent.children.splice(-1, 1)
-            parent.children.push({ isExpander: true, id: uuidv4(), name: `${parent.total_children - limit + 1} more spaces` })
-        }
-    }
-
-    const findRoot = await Holon.findOne({ 
-        where: { id: spaceId },
-        attributes: [
-            'id', 'handle', 'name', 'flagImagePath',
-            [sequelize.literal(`(
-                SELECT COUNT(*)
-                    FROM VerticalHolonRelationships
-                    AS VHR
-                    WHERE VHR.holonAId = Holon.id
-                    AND VHR.state = 'open'
-                )`), 'total_children'
-            ]
+    async function findNextGeneration(generation, parent, limit, offsetAmount) {
+        const genOffset = Number(offsetAmount)
+        const childAttributes = [
+            ...spaceAttributes,
+            findTotalSpaceResults(depth, searchQuery, timeRange)
         ]
-    })
-    const root = findRoot.toJSON()
-    const findFirstGeneration = await findNextGeneration(root, firstGenLimit)
-    const findSecondGeneration = await asyncForEach(root.children, async(child) => {
-        await findNextGeneration(child, secondGenLimit)
-    })
-    const findThirdGeneration = await asyncForEach(root.children, async(child) => {
-        await asyncForEach(child.children, async(child2) => {
-            await findNextGeneration(child2, thirdGenLimit)
-        })
-    })
-    // const findFourthGeneration = await asyncForEach(root.children, async(child) => {
-    //     await asyncForEach(child.children, async(child2) => {
-    //         await asyncForEach(child2.children, async(child3) => {
-    //             await findNextGeneration(child3, fourthGenLimit)
-    //         })
-    //     })
-    // })
-
-    Promise
-        .all([findFirstGeneration, findSecondGeneration, findThirdGeneration])
-        .then(res.send(root))
-})
-
-router.get('/space-map-next-children', async (req, res) => {
-    const { spaceId, offset, sortBy, sortOrder, timeRange } = req.query
-
-    const firstGenLimit = 7
-    const secondGenLimit = 3
-    const thirdGenLimit = 3
-    const fourthGenLimit = 3
-
-    function findOrder() {
-        let direction, order
-        if (sortOrder === 'Ascending') { direction = 'ASC' } else { direction = 'DESC' }
-        if (sortBy === 'Date') { order = [['createdAt', direction]] }
-        else { order = [[sequelize.literal(`total_${sortBy.toLowerCase()}`), direction]] }
-        return order
-    }
-
-    async function asyncForEach(array, callback) {
-        for (let index = 0; index < array.length; index++) {
-            await callback(array[index], index, array)
-        }
-    }
-
-    async function findNextGeneration(generation, parent, limit, offset) {
         parent.children = []
         if (!parent.isExpander && parent.total_children > 0) {
             const nextGeneration = await Holon.findAll({
-                where: { '$DirectParentHolons.id$': parent.id },
-                attributes: [
-                    'id', 'handle', 'name', 'description', 'flagImagePath', 'coverImagePath', 'createdAt',
-                    [sequelize.literal(`(
-                        SELECT COUNT(*)
-                            FROM VerticalHolonRelationships
-                            AS VHR
-                            WHERE VHR.holonAId = Holon.id
-                            AND VHR.state = 'open'
-                        )`), 'total_children'
-                    ],
-                    [sequelize.literal(`(
-                        SELECT COUNT(*)
-                            FROM Users
-                            WHERE Users.id IN (
-                                SELECT HolonUsers.userId
-                                FROM HolonUsers
-                                RIGHT JOIN Users
-                                ON HolonUsers.userId = Users.id
-                                WHERE HolonUsers.HolonId = Holon.id
-                                AND HolonUsers.relationship = 'follower'
-                                AND HolonUsers.state = 'active'
-                            )
-                        )`), 'total_followers'
-                    ],
-                    [sequelize.literal(`(
-                        SELECT COUNT(*)
-                            FROM Comments
-                            WHERE Comments.state = 'visible'
-                            AND Comments.postId IN (
-                                SELECT PostHolons.postId
-                                FROM PostHolons
-                                RIGHT JOIN Posts
-                                ON PostHolons.postId = Posts.id
-                                WHERE PostHolons.HolonId = Holon.id
-                            )
-                        )`), 'total_comments'
-                    ],
-                    [sequelize.literal(`(
-                        SELECT COUNT(*)
-                            FROM Reactions
-                            WHERE Reactions.state = 'active'
-                            AND Reactions.type != 'vote'
-                            AND Reactions.postId IN (
-                                SELECT PostHolons.postId
-                                FROM PostHolons
-                                RIGHT JOIN Posts
-                                ON PostHolons.postId = Posts.id
-                                WHERE PostHolons.HolonId = Holon.id
-                            )
-                        )`), 'total_reactions'
-                    ],
-                    [sequelize.literal(`(
-                        SELECT COUNT(*)
-                            FROM Reactions
-                            WHERE Reactions.state = 'active'
-                            AND Reactions.type = 'like'
-                            AND Reactions.postId IN (
-                                SELECT PostHolons.postId
-                                FROM PostHolons
-                                RIGHT JOIN Posts
-                                ON PostHolons.postId = Posts.id
-                                WHERE PostHolons.HolonId = Holon.id
-                            )
-                        )`), 'total_likes'
-                    ],
-                    [sequelize.literal(`(
-                        SELECT COUNT(*)
-                            FROM Reactions
-                            WHERE Reactions.state = 'active'
-                            AND Reactions.type = 'rating'
-                            AND Reactions.postId IN (
-                                SELECT PostHolons.postId
-                                FROM PostHolons
-                                RIGHT JOIN Posts
-                                ON PostHolons.postId = Posts.id
-                                WHERE PostHolons.HolonId = Holon.id
-                            )
-                        )`), 'total_ratings'
-                    ],
-                    [sequelize.literal(`(
-                        SELECT COUNT(*)
-                            FROM Posts
-                            WHERE Posts.state = 'visible'
-                            AND Posts.id IN (
-                                SELECT PostHolons.postId
-                                FROM PostHolons
-                                RIGHT JOIN Posts
-                                ON PostHolons.postId = Posts.id
-                                WHERE PostHolons.HolonId = Holon.id
-                            )
-                        )`), 'total_posts'
-                    ]
-                ],
+                where: findSpaceWhere(parent.id, depth, timeRange, searchQuery),
+                attributes: childAttributes,
                 limit,
-                offset: Number(offset),
-                order: findOrder(),
-                subQuery: false,
-                include: [{ 
-                    model: Holon,
-                    as: 'DirectParentHolons',
-                    attributes: [],
-                    through: { attributes: [], where: { state: 'open' } },
-                }]
+                offset: genOffset > 0 ? genOffset : null,
+                order: findOrder(sortOrder, sortBy),
+                include: findSpaceInclude(depth),
+                subQuery: false
             })
             nextGeneration.forEach(child => {
                 parent.children.push(child.toJSON())
             })
         }
-
         // if hidden spaces, replace last space with expander
         if (parent.children.length) {
-            if (
-                generation === 1 &&
-                parent.total_children > Number(offset) + parent.children.length
-            ) {
-                parent.children.splice(-1, 1)
-                const remainingChildren = parent.total_children - parent.children.length - Number(offset)
-                parent.children.push({ isExpander: true, id: uuidv4(), name: `${remainingChildren} more spaces` })
-            }
-            if (
-                generation > 1 &&
-                parent.total_children > limit
-            ) {
-                parent.children.splice(-1, 1)
-                const remainingChildren = parent.total_children - parent.children.length
-                parent.children.push({ isExpander: true, id: uuidv4(), name: `${remainingChildren} more spaces` })
+            if (generation === 1) {
+                if (parent.total_results > genOffset + parent.children.length) {
+                    parent.children.splice(-1, 1)
+                    const remainingChildren = parent.total_results - parent.children.length - genOffset
+                    parent.children.push({ isExpander: true, id: uuidv4(), name: `${remainingChildren} more spaces` })
+                }
+            } else {
+                if (parent.total_results > limit) {
+                    parent.children.splice(-1, 1)
+                    const remainingChildren = parent.total_results - parent.children.length
+                    parent.children.push({ isExpander: true, id: uuidv4(), name: `${remainingChildren} more spaces` })
+                }
             }
         }
     }
 
+    const rootAttributes = [
+        ...spaceAttributes,
+        findTotalSpaceResults(depth, searchQuery, timeRange)
+    ]
     const findRoot = await Holon.findOne({ 
         where: { id: spaceId },
-        attributes: [
-            'id', 'handle', 'name', 'flagImagePath',
-            [sequelize.literal(`(
-                SELECT COUNT(*)
-                    FROM VerticalHolonRelationships
-                    AS VHR
-                    WHERE VHR.holonAId = Holon.id
-                    AND VHR.state = 'open'
-                )`), 'total_children'
-            ]
-        ]
+        attributes: rootAttributes
     })
     const root = findRoot.toJSON()
     const findFirstGeneration = await findNextGeneration(1, root, firstGenLimit, offset)
@@ -1184,17 +755,20 @@ router.get('/space-map-next-children', async (req, res) => {
             await findNextGeneration(3, child2, thirdGenLimit, 0)
         })
     })
-    // const findFourthGeneration = await asyncForEach(root.children, async(child) => {
-    //     await asyncForEach(child.children, async(child2) => {
-    //         await asyncForEach(child2.children, async(child3) => {
-    //             await findNextGeneration(child3, fourthGenLimit)
-    //         })
-    //     })
-    // })
+    const findFourthGeneration = await asyncForEach(root.children, async(child) => {
+        await asyncForEach(child.children, async(child2) => {
+            await asyncForEach(child2.children, async(child3) => {
+                await findNextGeneration(4, child3, fourthGenLimit, 0)
+            })
+        })
+    })
 
     Promise
-        .all([findFirstGeneration, findSecondGeneration, findThirdGeneration])
-        .then(res.send(root.children))
+        .all([findFirstGeneration, findSecondGeneration, findThirdGeneration, findFourthGeneration])
+        .then(() => {
+            if (offset > 0) res.send(root.children)
+            else res.send(root)
+        })
 })
 
 router.get('/suggested-space-handles', (req, res) => {

@@ -274,7 +274,7 @@ function SpaceContextProvider({ children }: { children: JSX.Element }): JSX.Elem
             .get(
                 /* prettier-ignore */
                 `${config.apiURL}/holon-spaces?accountId=${isLoggedIn ? accountData.id : null
-                }&handle=${spaceHandle
+                }&spaceId=${spaceData.id
                 }&timeRange=${spaceSpacesTimeRangeFilter
                 }&spaceType=${spaceSpacesTypeFilter
                 }&sortBy=${spaceSpacesSortByFilter
@@ -285,6 +285,7 @@ function SpaceContextProvider({ children }: { children: JSX.Element }): JSX.Elem
                 }&offset=0`
             )
             .then((res) => {
+                // console.log(res.data)
                 if (res.data.length < spaceSpacesPaginationLimit)
                     setSpaceSpacesPaginationHasMore(false)
                 setSpaceSpaces(res.data)
@@ -303,7 +304,7 @@ function SpaceContextProvider({ children }: { children: JSX.Element }): JSX.Elem
                 .get(
                     /* prettier-ignore */
                     `${config.apiURL}/holon-spaces?accountId=${isLoggedIn ? accountData.id : null
-                    }&handle=${spaceHandle
+                    }&spaceId=${spaceData.id
                     }&timeRange=${spaceSpacesTimeRangeFilter
                     }&postType=${spaceSpacesTypeFilter
                     }&sortBy=${spaceSpacesSortByFilter
@@ -338,7 +339,7 @@ function SpaceContextProvider({ children }: { children: JSX.Element }): JSX.Elem
             .get(
                 /* prettier-ignore */
                 `${config.apiURL}/${queryPath}?accountId=${isLoggedIn ? accountData.id : null
-                }&holonId=${spaceData.id
+                }&spaceId=${spaceData.id
                 }&timeRange=${spaceUsersTimeRangeFilter
                 }&spaceType=${spaceUsersTypeFilter
                 }&sortBy=${spaceUsersSortByFilter

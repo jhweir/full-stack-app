@@ -12,10 +12,12 @@ const HolonSpaceMap = (): JSX.Element => {
         spaceData,
         setSpaceHandle,
         fullScreen,
+        spaceSpacesTypeFilter,
         spaceSpacesSortByFilter,
         spaceSpacesSortOrderFilter,
         spaceSpacesTimeRangeFilter,
-        // spaceSpacesDepthFilter,
+        spaceSpacesDepthFilter,
+        spaceSpacesSearchFilter,
     } = useContext(SpaceContext)
     const [spaceMapData, setSpaceMapData] = useState<Partial<ISpaceMapData>>({})
     const [width, setWidth] = useState<number | string>(700)
@@ -34,11 +36,18 @@ const HolonSpaceMap = (): JSX.Element => {
             .get(
                 /* prettier-ignore */
                 `${config.apiURL}/space-map-data?spaceId=${spaceData.id
+                }&offset=${0
+                }&spaceType=${spaceSpacesTypeFilter
                 }&sortBy=${spaceSpacesSortByFilter
                 }&sortOrder=${spaceSpacesSortOrderFilter
-                }&timeRange=${spaceSpacesTimeRangeFilter}`
+                }&timeRange=${spaceSpacesTimeRangeFilter
+                }&depth=${spaceSpacesDepthFilter
+                }&searchQuery=${spaceSpacesSearchFilter}`
             )
-            .then((res) => setSpaceMapData(res.data))
+            .then((res) => {
+                console.log(res.data)
+                setSpaceMapData(res.data)
+            })
     }
 
     const findParent = (tree: Partial<ISpaceMapData>, itemId: number): any => {
@@ -160,16 +169,21 @@ const HolonSpaceMap = (): JSX.Element => {
         interruptRunningTransitions(data)
 
         function getChildren(node) {
+            console.log('HolonSpaceMap: getSpaceMapData')
             axios
                 .get(
                     /* prettier-ignore */
-                    `${config.apiURL}/space-map-next-children?spaceId=${node.data.id
+                    `${config.apiURL}/space-map-data?spaceId=${node.data.id
                     }&offset=${node.children.length - 1
+                    }&spaceType=${spaceSpacesTypeFilter
                     }&sortBy=${spaceSpacesSortByFilter
                     }&sortOrder=${spaceSpacesSortOrderFilter
-                    }&timeRange=${spaceSpacesTimeRangeFilter}`
+                    }&timeRange=${spaceSpacesTimeRangeFilter
+                    }&depth=${spaceSpacesDepthFilter
+                    }&searchQuery=${spaceSpacesSearchFilter}`
                 )
                 .then((res) => {
+                    console.log(res)
                     const match = findParent(spaceMapData, node.data.id)
                     match.children = match.children.filter((child) => !child.isExpander)
                     match.children.push(...res.data)
@@ -250,7 +264,7 @@ const HolonSpaceMap = (): JSX.Element => {
                                 .attr('fill', '#8ad1ff')
                                 .attr('r', circleRadius + 6)
                         })
-                        .on('mouseout', (d, i) => {
+                        .on('mouseout', (d) => {
                             d3.select(`#background-circle-${d.data.id}`)
                                 .transition()
                                 .duration(500)
@@ -456,9 +470,12 @@ const HolonSpaceMap = (): JSX.Element => {
         }
     }, [
         spaceData.id,
+        spaceSpacesTypeFilter,
         spaceSpacesSortByFilter,
         spaceSpacesSortOrderFilter,
         spaceSpacesTimeRangeFilter,
+        spaceSpacesDepthFilter,
+        spaceSpacesSearchFilter,
     ])
 
     useEffect(() => {
