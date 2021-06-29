@@ -21,6 +21,7 @@ const HolonSpaceMap = (): JSX.Element => {
     } = useContext(SpaceContext)
     const [spaceMapData, setSpaceMapData] = useState<Partial<ISpaceMapData>>({})
     const [width, setWidth] = useState<number | string>(700)
+    const [spaceTransitioning, setSpaceTransitioning] = useState<boolean>(true)
 
     const history = useHistory()
 
@@ -44,14 +45,11 @@ const HolonSpaceMap = (): JSX.Element => {
                 }&depth=${spaceSpacesDepthFilter
                 }&searchQuery=${spaceSpacesSearchFilter}`
             )
-            .then((res) => {
-                console.log(res.data)
-                setSpaceMapData(res.data)
-            })
+            .then((res) => setSpaceMapData(res.data))
     }
 
-    const findParent = (tree: Partial<ISpaceMapData>, itemId: number): any => {
-        if (tree.id === itemId) {
+    const findParent = (tree: any, itemId: string): any => {
+        if (tree.uuid === itemId) {
             return tree
         }
         if (tree.children) {
@@ -63,13 +61,15 @@ const HolonSpaceMap = (): JSX.Element => {
         return null
     }
 
-    // function collapseChildren(d) {
-    //     if (d.children) {
-    //         d._children = d.children
-    //         d._children.forEach(collapseChildren)
-    //         d.children = null
-    //     }
-    // }
+    function toggleChildren(d) {
+        if (d.children) {
+            d.hiddenChildren = d.children
+            d.children = null
+        } else {
+            d.children = d.hiddenChildren
+            d.hiddenChildren = null
+        }
+    }
 
     const zoom = d3
         .zoom()
@@ -183,8 +183,8 @@ const HolonSpaceMap = (): JSX.Element => {
                     }&searchQuery=${spaceSpacesSearchFilter}`
                 )
                 .then((res) => {
-                    console.log(res)
-                    const match = findParent(spaceMapData, node.data.id)
+                    // console.log(res)
+                    const match = findParent(spaceMapData, node.data.uuid)
                     match.children = match.children.filter((child) => !child.isExpander)
                     match.children.push(...res.data)
                     // setSpaceMapData(_.cloneDeep(spaceMapData))
@@ -192,10 +192,15 @@ const HolonSpaceMap = (): JSX.Element => {
                 })
         }
 
+        function findTransitonId(d) {
+            if (spaceTransitioning) return d.data.id
+            return d.data.uuid
+        }
+
         // create links
         d3.select('#link-group')
             .selectAll('.link')
-            .data(links, (d) => d.data.id)
+            .data(links, (d) => findTransitonId(d))
             .join(
                 (enter) =>
                     enter
@@ -241,7 +246,7 @@ const HolonSpaceMap = (): JSX.Element => {
         // create background circle
         d3.select('#node-group')
             .selectAll('.background-circle')
-            .data(nodes, (d) => d.data.id)
+            .data(nodes, (d) => findTransitonId(d))
             .join(
                 (enter) =>
                     enter
@@ -256,9 +261,9 @@ const HolonSpaceMap = (): JSX.Element => {
                         .attr('transform', (d) => {
                             return `translate(${d.x},${d.y})`
                         })
+                        .style('cursor', 'pointer')
                         .on('mouseover', (d) => {
                             d3.select(`#background-circle-${d.data.id}`)
-                                .style('cursor', 'pointer')
                                 .transition()
                                 .duration(200)
                                 .attr('fill', '#8ad1ff')
@@ -275,6 +280,7 @@ const HolonSpaceMap = (): JSX.Element => {
                             if (d.data.isExpander) {
                                 getChildren(d.parent)
                             } else {
+                                setSpaceTransitioning(true)
                                 history.push(`/s/${d.data.handle}/spaces`)
                                 setSpaceHandle(d.data.handle)
                             }
@@ -307,7 +313,7 @@ const HolonSpaceMap = (): JSX.Element => {
         // create image background for png images
         d3.select('#node-group')
             .selectAll('.image-background-circle')
-            .data(nodes, (d) => d.data.id)
+            .data(nodes, (d) => findTransitonId(d))
             .join(
                 (enter) =>
                     enter
@@ -352,7 +358,7 @@ const HolonSpaceMap = (): JSX.Element => {
         // create image circle
         d3.select('#node-group')
             .selectAll('.image-circle')
-            .data(nodes, (d) => d.data.id)
+            .data(nodes, (d) => findTransitonId(d))
             .join(
                 (enter) =>
                     enter
@@ -417,7 +423,7 @@ const HolonSpaceMap = (): JSX.Element => {
         // create node text
         d3.select('#node-group')
             .selectAll('.node-text')
-            .data(nodes, (d) => d.data.id)
+            .data(nodes, (d) => findTransitonId(d))
             .join(
                 (enter) =>
                     enter
@@ -457,6 +463,66 @@ const HolonSpaceMap = (): JSX.Element => {
                         node.transition('node-text-exit').duration(500).attr('opacity', 0).remove()
                     )
             )
+
+        // create node +/- buttons
+        d3.select('#node-group')
+            .selectAll('.node-button')
+            .data(nodes, (d) => d.data.uuid)
+            .join(
+                (enter) =>
+                    enter
+                        .filter((d) => {
+                            return d.data.total_results > 0 && d.depth > 0
+                        })
+                        .append('svg:image')
+                        .attr('xlink:href', (d) => {
+                            return d.data.collapsed === true
+                                ? '/icons/plus.svg'
+                                : '/icons/minus-solid.svg'
+                        })
+                        .classed('node-button', true)
+                        .attr('id', (d) => `node-button-${d.data.id}`)
+                        .attr('opacity', 0)
+                        .attr('width', 15)
+                        .attr('height', 15)
+                        .attr('y', -7)
+                        .attr('x', 32)
+                        .attr('transform', (d) => {
+                            return `translate(${d.x},${d.y})`
+                        })
+                        .style('cursor', 'pointer')
+                        .on('click', (d) => {
+                            const match = findParent(data, d.data.uuid)
+                            if (d.data.collapsed === true) match.collapsed = false
+                            else match.collapsed = true
+                            toggleChildren(match)
+                            updateTree(data)
+                        })
+                        .call((node) =>
+                            node
+                                .transition('node-button-enter')
+                                .duration(1000)
+                                .attr('opacity', 0.15)
+                        ),
+                (update) =>
+                    update.call((node) =>
+                        node
+                            .transition('node-text-update')
+                            .duration(1000)
+                            .attr('xlink:href', (d) => {
+                                return d.data.collapsed === true
+                                    ? '/icons/plus.svg'
+                                    : '/icons/minus-solid.svg'
+                            })
+                            .attr('transform', (d) => {
+                                return `translate(${d.x},${d.y})`
+                            })
+                    ),
+                (exit) =>
+                    exit.call((node) =>
+                        node.transition('node-text-exit').duration(500).attr('opacity', 0).remove()
+                    )
+            )
     }
 
     useEffect(() => {
@@ -465,6 +531,7 @@ const HolonSpaceMap = (): JSX.Element => {
 
     useEffect(() => {
         if (spaceData.id) {
+            setSpaceTransitioning(true)
             getSpaceMapData()
             resetTreePosition()
         }
@@ -489,6 +556,7 @@ const HolonSpaceMap = (): JSX.Element => {
     useEffect(() => {
         if (spaceMapData.id) {
             updateTree(spaceMapData)
+            if (spaceTransitioning) setSpaceTransitioning(false)
         }
     }, [spaceMapData])
 

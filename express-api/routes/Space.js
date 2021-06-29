@@ -698,6 +698,12 @@ router.get('/holon-requests', (req, res) => {
 router.get('/space-map-data', async (req, res) => {
     const { spaceId, offset, sortBy, sortOrder, timeRange, depth, searchQuery } = req.query
 
+    // todo:
+    // apply all filters only on first generation? at least not 'sort by' or 'sort order'
+    // apply depth 'all contained' spaces only on first generation?
+    // apply search only on first generation?
+    // apply time range only on first generation?
+
     async function findNextGeneration(generation, parent, limit, offsetAmount) {
         const genOffset = Number(offsetAmount)
         const childAttributes = [
@@ -705,7 +711,7 @@ router.get('/space-map-data', async (req, res) => {
             findTotalSpaceResults(depth, searchQuery, timeRange)
         ]
         parent.children = []
-        if (!parent.isExpander && parent.total_children > 0) {
+        if (!parent.isExpander && parent.total_results > 0) {
             const nextGeneration = await Holon.findAll({
                 where: findSpaceWhere(parent.id, depth, timeRange, searchQuery),
                 attributes: childAttributes,
@@ -715,8 +721,10 @@ router.get('/space-map-data', async (req, res) => {
                 include: findSpaceInclude(depth),
                 subQuery: false
             })
-            nextGeneration.forEach(child => {
-                parent.children.push(child.toJSON())
+            nextGeneration.forEach(rawChild => {
+                const child = rawChild.toJSON()
+                child.uuid = uuidv4()
+                parent.children.push(child)
             })
         }
         // if hidden spaces, replace last space with expander
@@ -725,13 +733,13 @@ router.get('/space-map-data', async (req, res) => {
                 if (parent.total_results > genOffset + parent.children.length) {
                     parent.children.splice(-1, 1)
                     const remainingChildren = parent.total_results - parent.children.length - genOffset
-                    parent.children.push({ isExpander: true, id: uuidv4(), name: `${remainingChildren} more spaces` })
+                    parent.children.push({ isExpander: true, id: uuidv4(), uuid: uuidv4(), name: `${remainingChildren} more spaces` })
                 }
             } else {
                 if (parent.total_results > limit) {
                     parent.children.splice(-1, 1)
                     const remainingChildren = parent.total_results - parent.children.length
-                    parent.children.push({ isExpander: true, id: uuidv4(), name: `${remainingChildren} more spaces` })
+                    parent.children.push({ isExpander: true, id: uuidv4(), uuid: uuidv4(), name: `${remainingChildren} more spaces` })
                 }
             }
         }
@@ -746,6 +754,7 @@ router.get('/space-map-data', async (req, res) => {
         attributes: rootAttributes
     })
     const root = findRoot.toJSON()
+    root.uuid = uuidv4()
     const findFirstGeneration = await findNextGeneration(1, root, firstGenLimit, offset)
     const findSecondGeneration = await asyncForEach(root.children, async(child) => {
         await findNextGeneration(2, child, secondGenLimit, 0)

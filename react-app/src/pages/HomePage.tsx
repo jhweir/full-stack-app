@@ -229,7 +229,7 @@ const Homepage = (): JSX.Element => {
                 />
             </div>
             <div className={styles.section2}>
-                <div className={styles.introText}>
+                {/* <div className={styles.introText}>
                     <h2>
                         <b>
                             we{'{'}collective{'} '}
@@ -264,8 +264,8 @@ const Homepage = (): JSX.Element => {
                     <p>
                         Read more about the framework, features, and mission of the project below.
                     </p>
-                </div>
-                {/* <div className={styles.list}>
+                </div> */}
+                <div className={styles.list}>
                     <span className={`${styles.largeText} mb-10`}>Working features</span>
                     <span>User accounts</span>
                     <ul className={styles.ul}>
@@ -334,7 +334,7 @@ const Homepage = (): JSX.Element => {
                         <li>Zoomable circle packing view for spaces</li>
                         <li>Responsive UI for small screens</li>
                     </ul> 
-                </div> */}
+                </div>
                 <div className={styles.credits}>
                     Some icons created by FontAwesome https://fontawesome.com/license
                 </div>

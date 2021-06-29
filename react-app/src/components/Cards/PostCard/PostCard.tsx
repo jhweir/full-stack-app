@@ -178,7 +178,7 @@ const PostCard = (props: {
                     >
                         <SmallFlagImage
                             type='user'
-                            size={30}
+                            size={35}
                             imagePath={(creator && creator.flagImagePath) || null}
                         />
                         <span className={styles.creatorName}>{creator && creator.name}</span>

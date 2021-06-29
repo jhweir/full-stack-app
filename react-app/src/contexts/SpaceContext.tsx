@@ -150,7 +150,7 @@ function SpaceContextProvider({ children }: { children: JSX.Element }): JSX.Elem
     const [spaceSpacesTypeFilter, setSpaceSpacesTypeFilter] = useState('All Types')
     const [spaceSpacesSortByFilter, setSpaceSpacesSortByFilter] = useState('Posts')
     const [spaceSpacesSortOrderFilter, setSpaceSpacesSortOrderFilter] = useState('Descending')
-    const [spaceSpacesDepthFilter, setSpaceSpacesDepthFilter] = useState('All Contained Spaces')
+    const [spaceSpacesDepthFilter, setSpaceSpacesDepthFilter] = useState('Only Direct Descendants') // 'All Contained Spaces'
     const [spaceSpacesSearchFilter, setSpaceSpacesSearchFilter] = useState('')
     const [spaceSpacesPaginationLimit, setSpaceSpacesPaginationLimit] = useState(10)
     const [spaceSpacesPaginationOffset, setSpaceSpacesPaginationOffset] = useState(0)
@@ -438,6 +438,12 @@ function SpaceContextProvider({ children }: { children: JSX.Element }): JSX.Elem
             getSpaceData()
         }
     }, [spaceHandle, accountData.id])
+
+    // useEffect(() => {
+    //     if (spaceSpacesSearchFilter.length) {
+    //         setSpaceSpacesDepthFilter('All Contained Spaces')
+    //     }
+    // }, [spaceSpacesSearchFilter])
 
     useEffect(() => {
         // TODO: work out why 'isModerator' not always updating after handle change in Settings
