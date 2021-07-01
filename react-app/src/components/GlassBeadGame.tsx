@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
 import React, { useState, useEffect, useContext, useRef } from 'react'
 import { io } from 'socket.io-client'
 import Peer from 'simple-peer'
@@ -41,14 +42,12 @@ const GlassBeadGame = (): JSX.Element => {
     const { accountData } = useContext(AccountContext)
     const { postContextLoading, getPostData, postData } = useContext(PostContext)
 
-    const [numberOfTurns, setNumberOfTurns] = useState<number | undefined>(5)
-    const [turnDuration, setTurnDuration] = useState<number | undefined>(5)
-    const [timeLeftInTurn, setTimeLeftInTurn] = useState<number | undefined>(0)
-    const [turnNumber, setTurnNumber] = useState<number | undefined>(0)
+    const [numberOfTurns, setNumberOfTurns] = useState<number | undefined>(6)
+    const [turnDuration, setTurnDuration] = useState<number | undefined>(10)
+    const [introDuration, setIntroDuration] = useState<number | undefined>(5)
+    const [intervalDuration, setIntervalDuration] = useState<number | undefined>(3)
     const [gameInProgress, setGameInProgress] = useState(false)
     const [turns, setTurns] = useState<any[]>([])
-
-    const timerWidth = 400
 
     const [peers, setPeers] = useState<any[]>([])
     const [comments, setComments] = useState<any[]>([])
@@ -59,7 +58,15 @@ const GlassBeadGame = (): JSX.Element => {
     const userRef = useRef<any>({})
     const userVideo = useRef<any>(null)
     const peersRef = useRef<any[]>([])
-    // const turns = []
+    const secondsTimerRef = useRef<any>(null)
+    const gameInProgressRef = useRef<boolean>(false)
+
+    const timerWidth = 400
+    const arc = d3
+        .arc()
+        .innerRadius(timerWidth / 2 - 30)
+        .outerRadius(timerWidth / 2)
+        .cornerRadius(5)
 
     // interface IUser {
     //     accountId: number | null
@@ -113,7 +120,7 @@ const GlassBeadGame = (): JSX.Element => {
         return videoSize
     }
 
-    function sendComment() {
+    function signalComment() {
         if (newComment.length) {
             const commentData = {
                 roomId: roomIdRef.current,
@@ -125,7 +132,109 @@ const GlassBeadGame = (): JSX.Element => {
         }
     }
 
-    // connect video and peers using socket.io and simple-peer
+    function signalStartGame() {
+        if (gameInProgress) {
+            const data = {
+                roomId: roomIdRef.current,
+                userData: userRef.current,
+            }
+            socketRef.current.emit('sending-stop-game', data)
+        } else {
+            const data = {
+                roomId: roomIdRef.current,
+                userData: userRef.current,
+                numberOfTurns,
+                turnDuration,
+                introDuration,
+                intervalDuration,
+            }
+            socketRef.current.emit('sending-start-game', data)
+        }
+    }
+
+    function startTimerPath(duration, colour) {
+        d3.selectAll('#timer-path').remove()
+        d3.select('#timer-group')
+            .append('path')
+            .datum({ startAngle: 0, endAngle: 2 * Math.PI })
+            .attr('id', 'timer-path')
+            .style('fill', colour)
+            .attr('d', arc)
+            .transition()
+            .ease(d3.easeLinear)
+            .duration(duration * 1000)
+            .attrTween('d', (d) => {
+                const interpolate = d3.interpolate(d.endAngle, 0)
+                return (t) => {
+                    d.endAngle = interpolate(t)
+                    return arc(d)
+                }
+            })
+    }
+
+    function startGame(data) {
+        setNumberOfTurns(data.numberOfTurns)
+        setTurnDuration(data.turnDuration)
+        setIntroDuration(data.introDuration)
+        setIntervalDuration(data.intervalDuration)
+
+        d3.select('#turn-text').text('Intro')
+        d3.select('#timer-seconds').text(data.introDuration)
+        startTimerPath(data.introDuration, '#1ee379')
+        let timeLeft = data.introDuration
+        secondsTimerRef.current = setInterval(() => {
+            timeLeft -= 1
+            d3.select('#timer-seconds').text(timeLeft)
+            if (timeLeft === 0) {
+                clearInterval(secondsTimerRef.current)
+                startTurn(1, data)
+            }
+        }, 1000)
+    }
+
+    function startTurn(number, data) {
+        startTimerPath(data.turnDuration, '#4493ff')
+        d3.select('#timer-seconds').text(data.turnDuration)
+        d3.select('#turn-text').text(`Turn ${number}`)
+        let timeLeft = data.turnDuration
+        secondsTimerRef.current = setInterval(() => {
+            timeLeft -= 1
+            d3.select('#timer-seconds').text(timeLeft)
+            if (timeLeft === 0) {
+                clearInterval(secondsTimerRef.current)
+                setTurns((t) => [...t, 1])
+                if (number < data.numberOfTurns) {
+                    startInterval(number, data)
+                } else {
+                    d3.select('#turn-text').text('')
+                    setGameInProgress(false)
+                    gameInProgressRef.current = false
+                    const adminComment = {
+                        userData: { name: 'admin' },
+                        text: 'The game ended',
+                    }
+                    setComments((Comments) => [...Comments, adminComment])
+                }
+            }
+        }, 1000)
+    }
+
+    function startInterval(number, data) {
+        d3.select('#turn-text').text('Interval')
+        d3.select('#timer-seconds').text(data.intervalDuration)
+        startTimerPath(data.intervalDuration, '#1ee379')
+        let timeLeft = data.intervalDuration
+        secondsTimerRef.current = setInterval(() => {
+            timeLeft -= 1
+            d3.select('#timer-seconds').text(timeLeft)
+            if (timeLeft === 0) {
+                clearInterval(secondsTimerRef.current)
+                startTurn(number + 1, data)
+            }
+        }, 1000)
+    }
+
+    // connect video and peers
     useEffect(() => {
         if (!postContextLoading && postData.id) {
             if (socketRef.current) socketRef.current.disconnect()
@@ -161,6 +270,7 @@ const GlassBeadGame = (): JSX.Element => {
                         })
                         setPeers(newPeers)
                     })
+
                     socketRef.current.on('user-joined', (payload) => {
                         const { signal, userSignaling } = payload
                         const { socketId, userData } = userSignaling
@@ -175,10 +285,12 @@ const GlassBeadGame = (): JSX.Element => {
                         }
                         setComments((Comments) => [...Comments, adminComment])
                     })
+
                     socketRef.current.on('receiving-returned-signal', (payload) => {
                         const item = peersRef.current.find((p) => p.socketId === payload.id)
                         item.peer.signal(payload.signal)
                     })
+
                     socketRef.current.on('user-left', (userId) => {
                         // add admin comment
                         const oldUser = peersRef.current.find((peer) => peer.socketId === userId)
@@ -197,74 +309,36 @@ const GlassBeadGame = (): JSX.Element => {
                     socketRef.current.on('returning-comment', (commentData) => {
                         setComments((Comments) => [...Comments, commentData])
                     })
+
+                    socketRef.current.on('returning-start-game', (data) => {
+                        const adminComment = {
+                            userData: { name: 'admin' },
+                            text: `${data.userData.name} started the game`,
+                        }
+                        setComments((Comments) => [...Comments, adminComment])
+                        setGameInProgress(true)
+                        gameInProgressRef.current = true
+                        setTurns([])
+                        startGame(data)
+                    })
+
+                    socketRef.current.on('returning-stop-game', (data) => {
+                        const adminComment = {
+                            userData: { name: 'admin' },
+                            text: `${data.userData.name} stopped the game`,
+                        }
+                        setComments((Comments) => [...Comments, adminComment])
+                        gameInProgressRef.current = false
+                        setGameInProgress(false)
+                        clearInterval(secondsTimerRef.current)
+                        d3.select('#timer-path').remove()
+                        d3.select('#timer-seconds').text(0)
+                        d3.select('#turn-text').text('')
+                    })
                 })
         }
         return () => (postContextLoading ? null : socketRef.current.disconnect())
     }, [postContextLoading, postData.id])
-
-    const arc = d3
-        .arc()
-        .innerRadius(timerWidth / 2 - 30)
-        .outerRadius(timerWidth / 2)
-        .cornerRadius(5)
-
-    // function startDelay() {
-    //     startTurn(1)
-    // }
-
-    function startTurn(turn) {
-        if (turnDuration && numberOfTurns) {
-            setTurnNumber(turn)
-            setTimeLeftInTurn(turnDuration)
-
-            // start seconds timer
-            let secondsLeft = turnDuration
-            const secondsTimer = setInterval(() => {
-                secondsLeft -= 1
-                setTimeLeftInTurn(secondsLeft)
-                if (secondsLeft === 0) {
-                    setTurns((t) => [...t, 1])
-                    // turns.push(1)
-                    clearInterval(secondsTimer)
-                    if (turn < numberOfTurns) startTurn(turn + 1)
-                    else {
-                        setTurnNumber(0)
-                        setGameInProgress(false)
-                    }
-                }
-            }, 1000)
-
-            // start timer path transition
-            d3.select('#timer-path').remove()
-            d3.select('#timer-group')
-                .append('path')
-                .datum({ startAngle: 0, endAngle: 2 * Math.PI })
-                .attr('id', 'timer-path')
-                // .style('fill', 'rgb(130, 130, 130)')
-                .attr('d', arc)
-
-            d3.select('#timer-path')
-                .transition()
-                .ease(d3.easeLinear)
-                .duration(turnDuration * 1000)
-                .attrTween('d', (d) => {
-                    const interpolate = d3.interpolate(d.endAngle, 0)
-                    return (t) => {
-                        d.endAngle = interpolate(t)
-                        return arc(d)
-                    }
-                })
-        }
-    }
-
-    function startGame() {
-        if (turnDuration && !gameInProgress) {
-            setGameInProgress(true)
-            setTurns([])
-            // startDelay()
-            startTurn(1)
-        }
-    }
 
     useEffect(() => {
         // create svg
@@ -310,6 +384,30 @@ const GlassBeadGame = (): JSX.Element => {
             .attr('id', 'timer-path-background')
             .style('fill', '#ddd')
             .attr('d', arc)
+
+        // create timer seconds
+        d3.select('#timer-svg')
+            .append('text')
+            .text(0)
+            .attr('id', 'timer-seconds')
+            .attr('font-size', 24)
+            .attr('opacity', 0.5)
+            .attr('text-anchor', 'middle')
+            .attr('y', -120)
+            .attr('x', 0)
+            .attr('transform', `translate(${timerWidth / 2},${timerWidth / 2})`)
+
+        // create turn text
+        d3.select('#timer-svg')
+            .append('text')
+            .text('')
+            .attr('id', 'turn-text')
+            .attr('font-size', 24)
+            .attr('opacity', 0.5)
+            .attr('text-anchor', 'middle')
+            .attr('y', -50)
+            .attr('x', 0)
+            .attr('transform', `translate(${timerWidth / 2},${timerWidth / 2})`)
     }, [])
 
     return (
@@ -353,15 +451,15 @@ const GlassBeadGame = (): JSX.Element => {
                                 setNewComment(e.target.value)
                             }}
                             onKeyDown={(e) => {
-                                if (e.key === 'Enter') sendComment()
+                                if (e.key === 'Enter') signalComment()
                             }}
                         />
                         <div
                             className={styles.button}
                             role='button'
                             tabIndex={0}
-                            onClick={sendComment}
-                            onKeyDown={sendComment}
+                            onClick={signalComment}
+                            onKeyDown={signalComment}
                         >
                             Send
                         </div>
@@ -379,7 +477,7 @@ const GlassBeadGame = (): JSX.Element => {
                                     setNumberOfTurns(+e.target.value)
                                 }}
                             />
-                            <p className='mr-10'>Turn duration (seconds)</p>
+                            <p className='mr-10'>Turn duration</p>
                             <input
                                 type='number'
                                 className={styles.numberInput}
@@ -388,32 +486,41 @@ const GlassBeadGame = (): JSX.Element => {
                                     setTurnDuration(+e.target.value)
                                 }}
                             />
-                            <div
-                                className={`${styles.button} mr-10`}
-                                role='button'
-                                tabIndex={0}
-                                onClick={startGame}
-                                onKeyDown={startGame}
-                            >
-                                Start game
+                            <p className='mr-10'>Intro duration</p>
+                            <input
+                                type='number'
+                                className={styles.numberInput}
+                                value={introDuration || undefined}
+                                onChange={(e) => {
+                                    setIntroDuration(+e.target.value)
+                                }}
+                            />
+                            <p className='mr-10'>Interval duration</p>
+                            <input
+                                type='number'
+                                className={styles.numberInput}
+                                value={intervalDuration || undefined}
+                                onChange={(e) => {
+                                    setIntervalDuration(+e.target.value)
+                                }}
+                            />
+                            <div style={{ width: 150 }}>
+                                <div
+                                    className={`${styles.button} ${
+                                        gameInProgress && styles.danger
+                                    } mr-10`}
+                                    role='button'
+                                    tabIndex={0}
+                                    onClick={signalStartGame}
+                                    onKeyDown={signalStartGame}
+                                >
+                                    {gameInProgress ? 'Stop game' : 'Start game'}
+                                </div>
                             </div>
-                        </div>
-                        <div>
-                            <p className='mr-20'>
-                                Turn: {turnNumber}/{numberOfTurns}
-                            </p>
-                            <p className='mr-10'>Time left in turn: {timeLeftInTurn} seconds</p>
                         </div>
                     </div>
                     <img src='/icons/gbg/gift.png' alt='gift' className={styles.giftIcon} />
                     <div id='timer' />
-                    {/* <div className={styles.activeTurn}>
-                        <img
-                            src='/icons/gbg/sound-wave.png'
-                            alt='sound-wave'
-                            className={styles.soundWaveIcon}
-                        />
-                    </div> */}
                 </div>
                 <div className={`${styles.rightPanel} hide-scrollbars`}>
                     <div className={`${styles.videos} hide-scrollbars`}>

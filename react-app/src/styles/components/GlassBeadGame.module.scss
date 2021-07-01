@@ -118,6 +118,7 @@ $padding: 10px;
 }
 .giftIcon {
     width: 100px;
+    margin: 30px 0 20px 0;
 }
 .activeTurn {
     width: 400px;
@@ -186,6 +187,9 @@ $padding: 10px;
     flex-direction: row;
     align-items: center;
     justify-content: center;
+    &.danger {
+        background-color: #ffc0c0;
+    }
     &:hover {
         cursor: pointer;
     }

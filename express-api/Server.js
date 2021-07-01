@@ -89,6 +89,14 @@ io.on('connection', socket => {
         io.in(commentData.roomId).emit('returning-comment', commentData)
     })
 
+    socket.on('sending-start-game', data => {
+        io.in(data.roomId).emit('returning-start-game', data)
+    })
+
+    socket.on('sending-stop-game', data => {
+        io.in(data.roomId).emit('returning-stop-game', data)
+    })
+
     socket.on('disconnect', () => {
         const roomId = socketsToRooms[socket.id]
         if (rooms[roomId]) {
