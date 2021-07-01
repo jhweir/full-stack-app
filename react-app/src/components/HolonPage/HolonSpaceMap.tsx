@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import React, { useState, useEffect, useContext } from 'react'
 import axios from 'axios'
 import * as d3 from 'd3'
@@ -17,10 +18,13 @@ const HolonSpaceMap = (): JSX.Element => {
         spaceSpacesSortOrderFilter,
         spaceSpacesTimeRangeFilter,
         spaceSpacesDepthFilter,
+        setSpaceSpacesDepthFilter,
         spaceSpacesSearchFilter,
+        setSpaceSpacesSearchFilter,
     } = useContext(SpaceContext)
     const [spaceMapData, setSpaceMapData] = useState<Partial<ISpaceMapData>>({})
     const [width, setWidth] = useState<number | string>(700)
+    const [firstRun, setFirstRun] = useState<boolean>(true)
     const [spaceTransitioning, setSpaceTransitioning] = useState<boolean>(true)
 
     const history = useHistory()
@@ -529,21 +533,50 @@ const HolonSpaceMap = (): JSX.Element => {
         createCanvas()
     }, [])
 
+    function getData() {
+        setSpaceTransitioning(true)
+        getSpaceMapData()
+        resetTreePosition()
+    }
+
+    // first run
     useEffect(() => {
         if (spaceData.id) {
-            setSpaceTransitioning(true)
-            getSpaceMapData()
-            resetTreePosition()
+            if (firstRun) setFirstRun(false)
+            if (spaceSpacesSearchFilter.length) {
+                setSpaceSpacesSearchFilter('')
+            } else {
+                getData()
+            }
         }
+    }, [spaceData.id])
+
+    // filter updates
+    useEffect(() => {
+        if (!firstRun) getData()
     }, [
-        spaceData.id,
         spaceSpacesTypeFilter,
         spaceSpacesSortByFilter,
         spaceSpacesSortOrderFilter,
-        spaceSpacesTimeRangeFilter,
         spaceSpacesDepthFilter,
-        spaceSpacesSearchFilter,
     ])
+
+    // if search or time range filter applied, set depth to 'All Contained Spaces'
+    useEffect(() => {
+        if (!firstRun) {
+            if (spaceSpacesSearchFilter || spaceSpacesTimeRangeFilter !== 'All Time') {
+                if (spaceSpacesDepthFilter === 'Only Direct Descendants') {
+                    setSpaceSpacesDepthFilter('All Contained Spaces')
+                } else {
+                    getData()
+                }
+            } else if (spaceSpacesDepthFilter === 'All Contained Spaces') {
+                setSpaceSpacesDepthFilter('Only Direct Descendants')
+            } else {
+                getData()
+            }
+        }
+    }, [spaceSpacesSearchFilter, spaceSpacesTimeRangeFilter])
 
     useEffect(() => {
         setWidth(fullScreen ? '100%' : 700)
@@ -554,7 +587,7 @@ const HolonSpaceMap = (): JSX.Element => {
     }, [width])
 
     useEffect(() => {
-        if (spaceMapData.id) {
+        if (spaceMapData.id && !firstRun) {
             updateTree(spaceMapData)
             if (spaceTransitioning) setSpaceTransitioning(false)
         }
