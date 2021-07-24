@@ -1,6 +1,8 @@
+/* eslint-disable no-param-reassign */
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import React, { useState, useEffect, useContext, useRef } from 'react'
 import { io } from 'socket.io-client'
+import axios from 'axios'
 import Peer from 'simple-peer'
 import * as d3 from 'd3'
 import { v4 as uuidv4 } from 'uuid'
@@ -11,7 +13,7 @@ import SmallFlagImage from './SmallFlagImage'
 import config from '../Config'
 
 const Video = (props) => {
-    const { peer, videoRef, mainUser, size } = props
+    const { peer, videoRef, mainUser, size, loop } = props
     const { accountData } = useContext(AccountContext)
     const ref = useRef<any>(null)
     useEffect(() => {
@@ -23,7 +25,13 @@ const Video = (props) => {
     }, [])
     return (
         <div className={`${styles.videoWrapper} ${size}`}>
-            <video autoPlay playsInline muted={mainUser} ref={mainUser ? videoRef : ref}>
+            <video
+                autoPlay
+                playsInline
+                muted={mainUser && !loop}
+                ref={mainUser ? videoRef : ref}
+                loop={loop}
+            >
                 <track kind='captions' />
             </video>
             <div className={styles.userData}>
@@ -43,9 +51,10 @@ const GlassBeadGame = (): JSX.Element => {
     const { postContextLoading, getPostData, postData } = useContext(PostContext)
 
     const [numberOfTurns, setNumberOfTurns] = useState<number | undefined>(6)
-    const [turnDuration, setTurnDuration] = useState<number | undefined>(10)
-    const [introDuration, setIntroDuration] = useState<number | undefined>(5)
+    const [turnDuration, setTurnDuration] = useState<number | undefined>(3)
+    const [introDuration, setIntroDuration] = useState<number | undefined>(3)
     const [intervalDuration, setIntervalDuration] = useState<number | undefined>(3)
+    const [numberOfPlayers, setNumberOfPlayers] = useState<number | undefined>(0)
     const [gameInProgress, setGameInProgress] = useState(false)
     const [turns, setTurns] = useState<any[]>([])
 
@@ -60,6 +69,8 @@ const GlassBeadGame = (): JSX.Element => {
     const peersRef = useRef<any[]>([])
     const secondsTimerRef = useRef<any>(null)
     const gameInProgressRef = useRef<boolean>(false)
+    const mediaRecorderRef = useRef<any>(null)
+    const chunksRef = useRef<any[]>([])
 
     const timerWidth = 400
     const arc = d3
@@ -67,19 +78,6 @@ const GlassBeadGame = (): JSX.Element => {
         .innerRadius(timerWidth / 2 - 30)
         .outerRadius(timerWidth / 2)
         .cornerRadius(5)
-
-    // interface IUser {
-    //     accountId: number | null
-    //     handle: string | null
-    //     name: string | null
-    //     flagImagePath: string | null
-    //     socketId: string | null
-    // }
-
-    // interface IComment {
-    //     text: string
-    //     user: IUser | null
-    // }
 
     function createPeer(userToSignal, stream) {
         const peer = new Peer({
@@ -172,14 +170,49 @@ const GlassBeadGame = (): JSX.Element => {
             })
     }
 
+    function startAudioRecording(turnNumber) {
+        navigator.mediaDevices.getUserMedia({ audio: true }).then((audio) => {
+            mediaRecorderRef.current = new MediaRecorder(audio)
+            mediaRecorderRef.current.ondataavailable = (e) => {
+                chunksRef.current.push(e.data)
+            }
+            mediaRecorderRef.current.onstop = () => {
+                const blob = new Blob(chunksRef.current, { type: 'audio/webm;codecs=opus' })
+                const formData = new FormData()
+                formData.append('file', blob)
+                axios
+                    .post(`${config.apiURL}/audio-upload`, formData, {
+                        headers: { 'Content-Type': 'multipart/form-data' },
+                    })
+                    .then((res) => {
+                        // send audio url to players
+                        const data = {
+                            roomId: roomIdRef.current,
+                            userData: userRef.current,
+                            audioPath: res.data,
+                            turnNumber,
+                        }
+                        socketRef.current.emit('sending-audio-bead', data)
+                    })
+            }
+            mediaRecorderRef.current.start()
+        })
+    }
+
     function startGame(data) {
         setNumberOfTurns(data.numberOfTurns)
         setTurnDuration(data.turnDuration)
         setIntroDuration(data.introDuration)
         setIntervalDuration(data.intervalDuration)
-
+        setNumberOfPlayers(data.players.length)
+        const firstPlayer = data.players[0].userData
+        const firstPlayerName = firstPlayer.id === userRef.current.id ? 'You' : firstPlayer.name
+        data.loopNumber = 1
+        // update canvas text
         d3.select('#turn-text').text('Intro')
+        d3.select('#player-text').text(`Next player: ${firstPlayerName}`)
         d3.select('#timer-seconds').text(data.introDuration)
+        // start timer
         startTimerPath(data.introDuration, '#1ee379')
         let timeLeft = data.introDuration
         secondsTimerRef.current = setInterval(() => {
@@ -187,26 +220,35 @@ const GlassBeadGame = (): JSX.Element => {
             d3.select('#timer-seconds').text(timeLeft)
             if (timeLeft === 0) {
                 clearInterval(secondsTimerRef.current)
-                startTurn(1, data)
+                startTurn(1, firstPlayer, data)
             }
         }, 1000)
     }
 
-    function startTurn(number, data) {
-        startTimerPath(data.turnDuration, '#4493ff')
+    function startTurn(number, player, data) {
+        const userIsActivePlayer = player.id === userRef.current.id
+        if (userIsActivePlayer) startAudioRecording(number)
+        // update canvas text
         d3.select('#timer-seconds').text(data.turnDuration)
         d3.select('#turn-text').text(`Turn ${number}`)
+        d3.select('#player-text').text(`Player: ${userIsActivePlayer ? 'You' : player.name}`)
+        // start timer
+        startTimerPath(data.turnDuration, '#4493ff')
         let timeLeft = data.turnDuration
         secondsTimerRef.current = setInterval(() => {
             timeLeft -= 1
             d3.select('#timer-seconds').text(timeLeft)
             if (timeLeft === 0) {
                 clearInterval(secondsTimerRef.current)
-                setTurns((t) => [...t, 1])
+                setTurns((t) => [...t, number])
                 if (number < data.numberOfTurns) {
-                    startInterval(number, data)
+                    // end turn
+                    if (userIsActivePlayer) mediaRecorderRef.current.stop()
+                    startInterval(number + 1, data)
                 } else {
+                    // end game
                     d3.select('#turn-text').text('')
+                    d3.select('#player-text').text('')
                     setGameInProgress(false)
                     gameInProgressRef.current = false
                     const adminComment = {
@@ -220,8 +262,18 @@ const GlassBeadGame = (): JSX.Element => {
     }
 
     function startInterval(number, data) {
+        // calculate next active player
+        if (number > data.players.length * data.loopNumber) data.loopNumber += 1
+        const turnsInPreviousLoops = (data.loopNumber - 1) * data.players.length
+        const playerIndex = number - turnsInPreviousLoops - 1
+        const nextActivePlayer = data.players[playerIndex].userData
+        const userIsNextActivePlayer = nextActivePlayer.id === userRef.current.id
+        const nextActivePlayerName = userIsNextActivePlayer ? 'You' : nextActivePlayer.name
+        // update canvas text
         d3.select('#turn-text').text('Interval')
+        d3.select('#player-text').text(`Next player: ${nextActivePlayerName}`)
         d3.select('#timer-seconds').text(data.intervalDuration)
+        // start timer
         startTimerPath(data.intervalDuration, '#1ee379')
         let timeLeft = data.intervalDuration
         secondsTimerRef.current = setInterval(() => {
@@ -229,7 +281,7 @@ const GlassBeadGame = (): JSX.Element => {
             d3.select('#timer-seconds').text(timeLeft)
             if (timeLeft === 0) {
                 clearInterval(secondsTimerRef.current)
-                startTurn(number + 1, data)
+                startTurn(number, nextActivePlayer, data)
             }
         }, 1000)
     }
@@ -241,7 +293,7 @@ const GlassBeadGame = (): JSX.Element => {
             socketRef.current = io(config.apiWebSocketURL || '')
             roomIdRef.current = postData.id
             userRef.current = {
-                id: accountData.id,
+                id: accountData.id || uuidv4(),
                 handle: accountData.handle,
                 name: accountData.name || 'Anonymous',
                 flagImagePath: accountData.flagImagePath,
@@ -334,6 +386,19 @@ const GlassBeadGame = (): JSX.Element => {
                         d3.select('#timer-path').remove()
                         d3.select('#timer-seconds').text(0)
                         d3.select('#turn-text').text('')
+                        d3.select('#player-text').text('')
+                        if (
+                            mediaRecorderRef.current &&
+                            mediaRecorderRef.current.state === 'recording'
+                        )
+                            mediaRecorderRef.current.stop()
+                    })
+
+                    socketRef.current.on('returning-audio-bead', (data) => {
+                        d3.select(`#bead-${data.turnNumber}`)
+                            .select('audio')
+                            .attr('src', data.audioPath)
+                        d3.select(`#bead-${data.turnNumber}`).select('p').text(data.userData.name)
                     })
                 })
         }
@@ -402,10 +467,22 @@ const GlassBeadGame = (): JSX.Element => {
             .append('text')
             .text('')
             .attr('id', 'turn-text')
-            .attr('font-size', 24)
+            .attr('font-size', 22)
             .attr('opacity', 0.5)
             .attr('text-anchor', 'middle')
-            .attr('y', -50)
+            .attr('y', -70)
+            .attr('x', 0)
+            .attr('transform', `translate(${timerWidth / 2},${timerWidth / 2})`)
+
+        // create player text
+        d3.select('#timer-svg')
+            .append('text')
+            .text('')
+            .attr('id', 'player-text')
+            .attr('font-size', 14)
+            .attr('opacity', 0.5)
+            .attr('text-anchor', 'middle')
+            .attr('y', -45)
             .attr('x', 0)
             .attr('transform', `translate(${timerWidth / 2},${timerWidth / 2})`)
     }, [])
@@ -518,6 +595,9 @@ const GlassBeadGame = (): JSX.Element => {
                                 </div>
                             </div>
                         </div>
+                        {numberOfPlayers && numberOfPlayers > 0 ? (
+                            <p className='mr-10'>Number of players: {numberOfPlayers}</p>
+                        ) : null}
                     </div>
                     <img src='/icons/gbg/gift.png' alt='gift' className={styles.giftIcon} />
                     <div id='timer' />
@@ -534,12 +614,16 @@ const GlassBeadGame = (): JSX.Element => {
             <div className={styles.turns}>
                 {turns.map((turn, index) => (
                     <div key={turn} className={styles.turnWrapper}>
-                        <div className={styles.turn}>
+                        <div className={styles.turn} id={`bead-${turn}`}>
+                            <p className={styles.turnText} />
                             <img
                                 src='/icons/gbg/sound-wave.png'
                                 alt='sound-wave'
                                 className={styles.soundWaveIconSmall}
                             />
+                            <audio controls>
+                                <track kind='captions' />
+                            </audio>
                         </div>
                         {turns.length > index + 1 && (
                             <div className={styles.turnDivider}>

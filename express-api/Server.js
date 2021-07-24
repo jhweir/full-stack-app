@@ -90,11 +90,16 @@ io.on('connection', socket => {
     })
 
     socket.on('sending-start-game', data => {
+        data.players = rooms[data.roomId]
         io.in(data.roomId).emit('returning-start-game', data)
     })
 
     socket.on('sending-stop-game', data => {
         io.in(data.roomId).emit('returning-stop-game', data)
+    })
+
+    socket.on('sending-audio-bead', data => {
+        io.in(data.roomId).emit('returning-audio-bead', data)
     })
 
     socket.on('disconnect', () => {
