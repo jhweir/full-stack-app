@@ -77,6 +77,7 @@ const CreatePostModal = (): JSX.Element => {
     }
 
     const scrapeURL = (urlString: string): void => {
+        // set up better url regex
         if (isValidUrl(urlString)) {
             setUrlLoading(true)
             axios
@@ -90,10 +91,10 @@ const CreatePostModal = (): JSX.Element => {
                         setUrlTitle(null)
                         // setUrlFlashMessage(res.data)
                     } else {
-                        const { description, domain, img, title } = res.data
+                        const { description, domain, image, title } = res.data
                         setUrlDescription(description)
                         setUrlDomain(domain)
-                        setUrlImage(img)
+                        setUrlImage(image)
                         setUrlTitle(title)
                     }
                 })
@@ -122,7 +123,7 @@ const CreatePostModal = (): JSX.Element => {
 
     function createPost() {
         console.log('create post!')
-        const invalidText = (!text || text.length > 2000) && !url
+        const invalidText = (!text || text.length > 5000) && !url
         const invalidUrl = postType === 'Url' && !url
         const invalidPollAnswers = postType === 'Poll' && pollAnswers.length < 2
         if (invalidText) {
@@ -260,10 +261,11 @@ const CreatePostModal = (): JSX.Element => {
                             options={[
                                 'Text',
                                 'Url',
-                                'Poll',
+                                // 'Poll',
                                 'Glass Bead Game',
-                                'Plot Graph',
-                                'Prism',
+                                // 'Decision Tree',
+                                // 'Plot Graph',
+                                // 'Prism',
                             ]}
                             selectedOption={postType}
                             setSelectedOption={setPostType}
@@ -396,18 +398,21 @@ const CreatePostModal = (): JSX.Element => {
                             }}
                         />
                         {(postType === 'Url' || postType === 'Glass Bead') && (
-                            <input
-                                className={`wecoInput white mb-10 ${urlError && 'error'}`}
-                                placeholder='Url'
-                                type='url'
-                                value={url || undefined}
-                                onChange={(e) => {
-                                    setUrlError(false)
-                                    // setUrlFlashMessage('')
-                                    setUrl(e.target.value)
-                                    scrapeURL(e.target.value)
-                                }}
-                            />
+                            <div className={styles.urlInput}>
+                                <input
+                                    className={`wecoInput white mb-10 ${urlError && 'error'}`}
+                                    placeholder='Url'
+                                    type='url'
+                                    value={url || undefined}
+                                    onChange={(e) => {
+                                        setUrlError(false)
+                                        // setUrlFlashMessage('')
+                                        setUrl(e.target.value)
+                                        scrapeURL(e.target.value)
+                                    }}
+                                />
+                                {urlLoading && <div className={styles.spinner} />}
+                            </div>
                         )}
                         {/* <UrlPreview
                             url={url}

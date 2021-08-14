@@ -4,6 +4,7 @@ import { AccountContext } from '../../contexts/AccountContext'
 import styles from '../../styles/components/UserCard.module.scss'
 import { IUser } from '../../Interfaces'
 import SmallFlagImage from '../SmallFlagImage'
+import { timeSinceCreated } from '../../Functions'
 
 const UserCard = (props: { index: number; user: IUser }): JSX.Element => {
     const { index, user } = props
@@ -20,8 +21,8 @@ const UserCard = (props: { index: number; user: IUser }): JSX.Element => {
 
     const { setSelectedNavBarItem } = useContext(AccountContext)
 
-    const d = new Date(createdAt)
-    const dateJoined = `${d.getDate()}-${d.getMonth()}-${d.getFullYear()}`
+    // const d = new Date(createdAt)
+    // const dateJoined = `${d.getDate()}-${d.getMonth() + 1}-${d.getFullYear()}`
 
     return (
         <div className={styles.userCard}>
@@ -49,7 +50,7 @@ const UserCard = (props: { index: number; user: IUser }): JSX.Element => {
                     {name}
                 </Link>
                 <span className={`${styles.text} ${styles.grey}`}>u/{handle}</span>
-                <span className={styles.text}>Joined: {dateJoined}</span>
+                <span className={styles.text}>Joined {timeSinceCreated(createdAt)}</span>
                 <span className={styles.text}>{bio}</span>
                 {/* <div className={styles.stat}>
                     <img className={styles.statIcon} src="/icons/users-solid.svg" alt=''/>

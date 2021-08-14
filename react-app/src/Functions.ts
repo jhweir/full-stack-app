@@ -1,8 +1,27 @@
-export const timeSinceCreated = (createdAt: string | undefined): string | undefined => {
+export function pluralise(value: number): string {
+    if (value < 1 || value > 1) return 's'
+    return ''
+}
+
+export function resizeTextArea(target: HTMLElement): void {
+    const t = target
+    t.style.height = ''
+    t.style.height = `${target.scrollHeight}px`
+}
+
+export function dateCreated(createdAt: string | undefined): string | undefined {
+    if (createdAt === undefined) return undefined
+    const sourceDate = new Date(createdAt)
+    const d = sourceDate.toString().split(/[ :]/)
+    const date = `${d[4]}:${d[5]} on ${d[2]} ${d[1]} ${d[3]}`
+    return date
+}
+
+export function timeSinceCreated(createdAt: string | undefined): string | undefined {
     if (createdAt === undefined) return undefined
     const now = Date.parse(new Date().toString())
-    const dateCreated = Date.parse(createdAt)
-    const difference = now - dateCreated
+    const createdAtDate = Date.parse(createdAt)
+    const difference = now - createdAtDate
     const second = 1000
     const minute = second * 60
     const hour = minute * 60
@@ -13,41 +32,27 @@ export const timeSinceCreated = (createdAt: string | undefined): string | undefi
     let time
     if (difference < minute) {
         const number = Number((difference / second).toFixed(0))
-        time = `${number} second${number > 1 ? 's' : ''} ago`
+        time = `${number} second${pluralise(number)} ago`
     }
     if (difference >= minute && difference < hour) {
         const number = Number((difference / minute).toFixed(0))
-        time = `${number} minute${number > 1 ? 's' : ''} ago`
+        time = `${number} minute${pluralise(number)} ago`
     }
     if (difference >= hour && difference < day) {
         const number = Number((difference / hour).toFixed(0))
-        time = `${number} hour${number > 1 ? 's' : ''} ago`
+        time = `${number} hour${pluralise(number)} ago`
     }
     if (difference >= day && difference < week) {
         const number = Number((difference / day).toFixed(0))
-        time = `${number} day${number > 1 ? 's' : ''} ago`
+        time = `${number} day${pluralise(number)} ago`
     }
     if (difference >= week && difference < year) {
         const number = Number((difference / week).toFixed(0))
-        time = `${number} week${number > 1 ? 's' : ''} ago`
+        time = `${number} week${pluralise(number)} ago`
     }
     if (difference >= year) {
         const number = Number((difference / year).toFixed(0))
-        time = `${number} year${number > 1 ? 's' : ''} ago`
+        time = `${number} year${pluralise(number)} ago`
     }
     return time
-}
-
-export const dateCreated = (createdAt: string | undefined): string | undefined => {
-    if (createdAt === undefined) return undefined
-    const sourceDate = new Date(createdAt)
-    const d = sourceDate.toString().split(/[ :]/)
-    const date = `${d[4]}:${d[5]} on ${d[2]} ${d[1]} ${d[3]}`
-    return date
-}
-
-export const resizeTextArea = (target: HTMLElement): void => {
-    const t = target
-    t.style.height = ''
-    t.style.height = `${target.scrollHeight}px`
 }

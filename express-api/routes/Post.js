@@ -5,7 +5,8 @@ const sequelize = require('sequelize')
 const Op = sequelize.Op
 const sgMail = require('@sendgrid/mail')
 sgMail.setApiKey(process.env.SENDGRID_API_KEY)
-const linkPreviewGenerator = require('link-preview-generator')
+// const linkPreviewGenerator = require('link-preview-generator')
+const puppeteer = require('puppeteer')
 const authenticateToken = require('../middleware/authenticateToken')
 const { postAttributes } = require('../GlobalConstants')
 const {
@@ -337,11 +338,50 @@ router.get('/plot-graph-data', (req, res) => {
 
 router.get('/scrape-url', async (req, res) => {
     const { url } = req.query
+
     try {
-        const previewData = await linkPreviewGenerator(url)
-        res.send(previewData)
-    } catch(err) {
-        res.send(err.toString())
+        // title, description, domain, image
+        const browser = await puppeteer.launch() //{ headless: false })
+        const page = await browser.newPage()
+        await page.goto(url, { waitUntil: 'networkidle0' }) // load, domcontentloaded, networkidle0, networkidle2
+        await page.evaluate(async() => {
+            const youtubeCookieConsent = await document.querySelector('base[href="https://consent.youtube.com/"]')
+            if (youtubeCookieConsent) {
+                const acceptButton = await document.querySelector('button[aria-label="Agree to the use of cookies and other data for the purposes described"]')
+                acceptButton.click()
+                return
+            } else {
+                return
+            }
+        })
+        await page.waitForSelector('title')
+        const data = await page.evaluate(async() => {
+            let title = await document.title
+            // let title = await document.querySelector('meta[property="og:title"]')
+            // if (!title) title = await document.querySelector('title').innerHTML
+            // else title = title.content
+
+            let description = await document.querySelector('meta[property="og:description"]')
+            if (description) description = description.content
+            // else description = await document.querySelector('p').innerHTML
+            const domain = await document.querySelector('meta[property="og:site_name"]') // site_name, url
+            const image = await document.querySelector('meta[property="og:image"]')
+            return {
+                title: title || null,
+                description: description || null,
+                domain: domain ? domain.content : null,
+                image: image ? image.content : null
+            }
+        })
+        res.send(data)
+        await browser.close()
+    } catch(e) {
+        res.send({
+            title: null,
+            description: null,
+            domain: null,
+            image: null
+        })
     }
 })
 

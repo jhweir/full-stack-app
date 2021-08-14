@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { UserContext } from '../../contexts/UserContext'
 import { AccountContext } from '../../contexts/AccountContext'
 import styles from '../../styles/components/UserPageSideBarLeft.module.scss'
-import LargeFlagImage from '../LargeFlagImage'
+import FlagImage from '../FlagImage'
 import SideBarButton from '../SideBarButton'
 // import HolonPageSideBarLeftPlaceholder from '../components/HolonPageSideBarLeftPlaceholder'
 
@@ -13,13 +13,16 @@ const UserPageSideBarLeft = (): JSX.Element => {
 
     return (
         <div className={styles.sideBarLeft}>
-            <LargeFlagImage
-                size={180}
-                imagePath={userData.flagImagePath}
-                type='user'
-                canEdit={isOwnAccount}
-                yOffset={-110}
-            />
+            <div className={styles.flagImageWrapper}>
+                <FlagImage
+                    size={180}
+                    type='user'
+                    imagePath={userData.flagImagePath}
+                    canEdit={isOwnAccount}
+                    outline
+                    shadow
+                />
+            </div>
             <div className={styles.userName}>{userData.name}</div>
             <div className={styles.navButtons}>
                 {/* TODO: replace SideBarButton with actual content */}

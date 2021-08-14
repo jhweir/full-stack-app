@@ -20,6 +20,22 @@ const HolonPagePostsFilters = (): JSX.Element => {
     return (
         <div className='wecoFilters'>
             <DropDownMenu
+                title='Post Type'
+                options={[
+                    'All Types',
+                    'Text',
+                    'Url',
+                    // 'Poll',
+                    'Glass Bead Game',
+                    // 'Decision Tree',
+                    // 'Plot Graph',
+                    'Prism',
+                ]}
+                selectedOption={spacePostsTypeFilter}
+                setSelectedOption={setSpacePostsTypeFilter}
+                orientation='vertical'
+            />
+            <DropDownMenu
                 title={spacePostsView === 'Map' ? 'Size By' : 'Sort By'}
                 options={['Reactions', 'Likes', 'Reposts', 'Ratings', 'Comments', 'Date']}
                 selectedOption={spacePostsSortByFilter}
@@ -47,21 +63,22 @@ const HolonPagePostsFilters = (): JSX.Element => {
                 setSelectedOption={setSpacePostsTimeRangeFilter}
                 orientation='vertical'
             />
-            <DropDownMenu
+            {/* <DropDownMenu
                 title='Post Type'
                 options={[
                     'All Types',
                     'Text',
                     'Url',
-                    'Poll',
+                    // 'Poll',
                     'Glass Bead Game',
-                    'Plot Graph',
+                    // 'Decision Tree',
+                    // 'Plot Graph',
                     'Prism',
                 ]}
                 selectedOption={spacePostsTypeFilter}
                 setSelectedOption={setSpacePostsTypeFilter}
                 orientation='vertical'
-            />
+            /> */}
             <DropDownMenu
                 title='Depth'
                 options={['All Contained Posts', 'Only Direct Posts']}

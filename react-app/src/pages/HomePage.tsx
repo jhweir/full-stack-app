@@ -65,7 +65,7 @@ const Homepage = (): JSX.Element => {
                     {`}`}
                 </span>
                 {/* </div> */}
-                <span className={styles.subTitle}>holonic social media</span>
+                <span className={styles.subTitle}>holonic social media coop</span>
                 <span className={styles.preAlpha}>PRE-ALPHA</span>
                 <div className={styles.underConstruction}>
                     <span className={styles.underConstructionText}>under construction...</span>

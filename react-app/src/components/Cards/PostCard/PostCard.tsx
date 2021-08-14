@@ -1,7 +1,5 @@
 import React, { useState, useContext, useEffect, useRef } from 'react'
 import { useHistory, Link } from 'react-router-dom'
-import ReactMarkdown from 'react-markdown'
-import gfm from 'remark-gfm'
 import { AccountContext } from '../../../contexts/AccountContext'
 import { SpaceContext } from '../../../contexts/SpaceContext'
 import { UserContext } from '../../../contexts/UserContext'
@@ -11,8 +9,10 @@ import styles from '../../../styles/components/PostCard.module.scss'
 import PostCardReactions from './PostCardReactions'
 import PostCardUrlPreview from './PostCardUrlPreview'
 import PostCardComments from './PostCardComments'
-import SmallFlagImage from '../../SmallFlagImage'
+import FlagImage from '../../FlagImage'
 import DeleteItemModal from '../../Modals/DeleteItemModal'
+import ShowMoreLess from '../../ShowMoreLess'
+import Markdown from '../../Markdown'
 import { timeSinceCreated, dateCreated } from '../../../Functions'
 import { IPost } from '../../../Interfaces'
 
@@ -86,16 +86,12 @@ const PostCard = (props: {
     const [commentsOpen, setCommentsOpen] = useState(false)
     const [deletePostModalOpen, setDeletePostModalOpen] = useState(false)
 
-    const [textOverflow, setTextOverflow] = useState(false)
-    const [showFullText, setShowFullText] = useState(false)
-
     const isOwnPost = accountData && creator && accountData.id === creator.id
     const showLinkPreview =
         urlImage !== null || urlDomain !== null || urlTitle !== null || urlDescription !== null
     const postSpaces = DirectSpaces && DirectSpaces.filter((space) => space.type === 'post')
 
     const postRef = useRef<HTMLDivElement>(null)
-    const textRef = useRef<HTMLDivElement>(null)
 
     function syncPostState() {
         setReactionsOpen(false)
@@ -136,29 +132,11 @@ const PostCard = (props: {
         }
     }
 
-    function handleShowFullText() {
-        const { current } = postRef
-        if (showFullText && current) {
-            const yOffset = window.screen.height / 2 - 300
-            const top = current.getBoundingClientRect().top + window.pageYOffset - yOffset
-            window.scrollTo({ top, behavior: 'smooth' })
-        }
-        setShowFullText(!showFullText)
-    }
-
     useEffect(() => {
         if (postData.id) {
             syncPostState()
         }
     }, [postData.id])
-
-    useEffect(() => {
-        if (textRef.current && textRef.current.scrollHeight > 200) {
-            setTextOverflow(true)
-        } else {
-            setTextOverflow(false)
-        }
-    }, [text])
 
     let locationStyle
     if (location === 'post-page') locationStyle = styles.postPage
@@ -176,10 +154,10 @@ const PostCard = (props: {
                         className={styles.creator}
                         onClick={() => setSelectedNavBarItem('')}
                     >
-                        <SmallFlagImage
-                            type='user'
+                        <FlagImage
                             size={35}
-                            imagePath={(creator && creator.flagImagePath) || null}
+                            type='user'
+                            imagePath={creator && creator.flagImagePath}
                         />
                         <span className={styles.creatorName}>{creator && creator.name}</span>
                     </Link>
@@ -232,23 +210,10 @@ const PostCard = (props: {
                 </div>
                 <div className={styles.content}>
                     {text && (
-                        <div
-                            className={`${styles.text} ${showFullText ? styles.showFullText : ''}`}
-                            ref={textRef}
-                        >
-                            <ReactMarkdown plugins={[gfm]}>{text}</ReactMarkdown>
-                            {textOverflow && !showFullText && <div className={styles.showMore} />}
-                        </div>
-                    )}
-                    {textOverflow && (
-                        <div
-                            className={styles.showMoreText}
-                            role='button'
-                            tabIndex={0}
-                            onClick={handleShowFullText}
-                            onKeyDown={handleShowFullText}
-                        >
-                            {showFullText ? 'show less' : 'show more'}
+                        <div className={styles.text}>
+                            <ShowMoreLess height={150}>
+                                <Markdown text={text} />
+                            </ShowMoreLess>
                         </div>
                     )}
                     {showLinkPreview && (
@@ -341,6 +306,23 @@ const PostCard = (props: {
                                     alt=''
                                 />
                                 <span className='greyText'>Open prism</span>
+                            </Link>
+                        )}
+                        {type === 'decision-tree' && (
+                            <Link
+                                to={`/p/${id}`}
+                                className={styles.interactItem}
+                                onClick={() => {
+                                    // setPostContextLoading(true)
+                                    setSelectedNavBarItem('')
+                                }}
+                            >
+                                <img
+                                    className={styles.icon}
+                                    src='/icons/arrow-alt-circle-right-solid.svg'
+                                    alt=''
+                                />
+                                <span className='greyText'>Open decision tree</span>
                             </Link>
                         )}
                     </div>

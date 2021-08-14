@@ -16,7 +16,8 @@ $darkGrey: #202129;
     z-index: 10;
 }
 .navBarContainer {
-    width: 1200px;
+    //width: 1200px;
+    width: 100%;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -29,13 +30,20 @@ $darkGrey: #202129;
     display: flex;
     flex-direction: row;
     align-items: center;
+    // position: relative;
 }
 .navBarLink {
+    position: relative;
     display: flex;
     flex-direction: row;
     align-items: center;
+    padding: 0 15px;
     //margin-left: 15px;
-    &:hover { .navBarIcon { opacity: 1 } }
+    &:hover {
+        .navBarText { opacity: 1 }
+        .exploreDropDownIcon { opacity: 1 }
+        // cursor: pointer;
+    }
     @media screen and (max-width: 600px) {
         margin-right: 15px;
     }
@@ -45,20 +53,45 @@ $darkGrey: #202129;
     font-size: 16px;
     font-weight: 400;
     text-decoration: none;
-    padding: 0 15px;
-    opacity: 0.8;
+    // padding: 0 15px;
+    opacity: 0.6;
+    transition: opacity 0.5s;
     &.selected {
-        font-weight: 800;
+        // font-weight: 800;
         opacity: 1;
     }
     @media screen and (max-width: 600px) {
         display: none;
     }
+    &:hover {
+        cursor: pointer;
+    }
+}
+.dropDownText {
+    color: #fff; //#9DA1A8; //rgb(218, 218, 218);
+    font-size: 16px;
+    font-weight: 400;
+    text-decoration: none;
+    // padding: 0 15px;
+    opacity: 0.6;
+    transition: opacity 0.5s;
+    &.selected {
+        // font-weight: 800;
+        opacity: 1;
+    }
+    @media screen and (max-width: 600px) {
+        display: none;
+    }
+    &:hover {
+        cursor: pointer;
+    }
 }
 .navBarIcon {
-    width: 28px;
-    height: 28px;
-    // margin-left: 15px;
+    width: 20px;
+    height: 20px;
+    // width: 28px;
+    // height: 28px;
+    margin-right: 10px;
     opacity: 0.4;
     filter: invert(100%);
     transition: opacity 0.5s;
@@ -112,4 +145,34 @@ $darkGrey: #202129;
     &:hover {
         cursor: pointer;
     }
+}
+.exploreDropDown {
+    position: absolute;
+    left: 0;
+    top: 22px;
+    background-color: $darkGrey;
+    padding: 15px 20px 0 15px;
+    border-radius: 5px;
+}
+.exploreDropDownItem {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    &:hover {
+        .dropDownText {
+            opacity: 1;
+        }
+        .navBarIcon {
+            opacity: 1;
+        }
+    }
+}
+.exploreDropDownIcon {
+    width: 15px;
+    height: 15px;
+    margin-left: 10px;
+    opacity: 0.4;
+    filter: invert(100%);
+    transition: opacity 0.5s;
+    cursor: pointer;
 }

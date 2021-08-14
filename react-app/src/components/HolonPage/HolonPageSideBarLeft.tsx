@@ -5,7 +5,7 @@ import { AccountContext } from '../../contexts/AccountContext'
 import { SpaceContext } from '../../contexts/SpaceContext'
 import styles from '../../styles/components/HolonPageSideBarLeft.module.scss'
 // import HolonPageSideBarLeftPlaceholder from './HolonPageSideBarLeftPlaceholder'
-import LargeFlagImage from '../LargeFlagImage'
+import FlagImage from '../FlagImage'
 import SideBarButton from '../SideBarButton'
 
 const HolonPageSideBarLeft = (): JSX.Element => {
@@ -64,13 +64,16 @@ const HolonPageSideBarLeft = (): JSX.Element => {
     // if (spaceData) {
     return (
         <div className={styles.sideBarLeft}>
-            <LargeFlagImage
-                size={180}
-                imagePath={spaceData.flagImagePath}
-                type='space'
-                canEdit={isModerator}
-                yOffset={-110}
-            />
+            <div className={styles.flagImageWrapper}>
+                <FlagImage
+                    size={180}
+                    type='space'
+                    imagePath={spaceData.flagImagePath}
+                    canEdit={isModerator}
+                    outline
+                    shadow
+                />
+            </div>
             <div className={styles.name}>{spaceData.name}</div>
             <div className={styles.navButtons}>
                 {/* TODO: replace side bar button component with actual content */}
@@ -79,6 +82,15 @@ const HolonPageSideBarLeft = (): JSX.Element => {
                         icon={isFollowing ? 'eye-solid.svg' : 'eye-slash-solid.svg'}
                         text={isFollowing ? 'Following' : 'Not Following'}
                         onClickFunction={followSpace}
+                        marginBottom={5}
+                    />
+                )}
+                {isModerator && (
+                    <SideBarButton
+                        icon='cog-solid.svg'
+                        text='Settings'
+                        url='settings'
+                        selected={selectedSpaceSubPage === 'settings'}
                         marginBottom={5}
                     />
                 )}
@@ -136,7 +148,7 @@ const HolonPageSideBarLeft = (): JSX.Element => {
                         />
                     </>
                 )}
-                {isModerator && (
+                {/* {isModerator && (
                     <SideBarButton
                         icon='cog-solid.svg'
                         text='Settings'
@@ -144,7 +156,7 @@ const HolonPageSideBarLeft = (): JSX.Element => {
                         selected={selectedSpaceSubPage === 'settings'}
                         marginBottom={5}
                     />
-                )}
+                )} */}
             </div>
             {/* <div className={styles.description}>{spaceData.description}</div> */}
         </div>

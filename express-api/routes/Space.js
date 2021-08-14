@@ -360,7 +360,7 @@ router.get('/holon-posts', (req, res) => {
     function findType() {
         let type
         if (postType === 'All Types') {
-            type = ['text', 'poll', 'url', 'glass-bead-game', 'prism', 'plot-graph']
+            type = ['text', 'url', 'glass-bead-game', 'prism', 'decision-tree'] //'poll', 'prism', 'plot-graph']
         } else { 
             type = postType.replace(/\s+/g, '-').toLowerCase()
         }
@@ -371,8 +371,8 @@ router.get('/holon-posts', (req, res) => {
         let direction, order
         if (sortOrder === 'Ascending') { direction = 'ASC' } else { direction = 'DESC' }
         if (sortBy === 'Date') { order = [['createdAt', direction]] }
-        if (sortBy === 'Reactions') { order = [[sequelize.literal(`total_reactions`), direction]] }
-        if (sortBy !== 'Reactions' && sortBy !== 'Date') { order = [[sequelize.literal(`total_${sortBy.toLowerCase()}`), direction]] }
+        if (sortBy === 'Reactions') { order = [[sequelize.literal(`total_reactions`), direction], ['createdAt', 'DESC']] }
+        if (sortBy !== 'Reactions' && sortBy !== 'Date') { order = [[sequelize.literal(`total_${sortBy.toLowerCase()}`), direction], ['createdAt', 'DESC']] }
         return order
     }
 
@@ -751,7 +751,13 @@ router.get('/space-map-data', async (req, res) => {
     ]
     const findRoot = await Holon.findOne({ 
         where: { id: spaceId },
-        attributes: rootAttributes
+        attributes: rootAttributes,
+        include: [{
+            model: Holon,
+            as: 'DirectParentHolons',
+            attributes: spaceAttributes,
+            through: { attributes: [], where: { state: 'open' } },
+        }]
     })
     const root = findRoot.toJSON()
     root.uuid = uuidv4()

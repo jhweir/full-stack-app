@@ -1,0 +1,28 @@
+@import '../Colors.scss';
+
+.wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-shrink: 0;
+    margin: 0 10px 10px 10px;
+    > p {
+        color: $grey4;
+        margin-right: 5px;
+        &:last-child {
+            margin-right: 0;
+        }
+    }
+}
+.icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+    > svg {
+        width: 20px;
+        height: 20px;
+        > path {
+            fill: $grey4;
+        }
+    }
+}

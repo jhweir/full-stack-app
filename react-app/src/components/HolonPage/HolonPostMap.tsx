@@ -25,7 +25,8 @@ const HolonPostMap = (): JSX.Element => {
 
     const [postMapData, setPostMapData] = useState([])
     const [selectedPost, setSelectedPost] = useState(null)
-    const [gravity, setGravity] = useState(50)
+    const defaultGravity = 30
+    const [gravity, setGravity] = useState(defaultGravity)
     const [showKey, setShowKey] = useState(false)
     // const [postMapPaginationLimit, setPostMapPaginationLimit] = useState(50)
     const postMapPaginationLimit = 50
@@ -322,7 +323,7 @@ const HolonPostMap = (): JSX.Element => {
         // calculate required viewport scale from total area
         let scale
         if (totalArea === 0) scale = 1
-        else scale = 30000 / totalArea + 0.5
+        else scale = 30000 / totalArea + 0.4 // + 0.5
         // return map to default position at required scale
         const svgWidth = parseInt(d3.select('#post-map-svg').style('width'), 10)
         d3.select('#post-map-svg')
@@ -350,7 +351,7 @@ const HolonPostMap = (): JSX.Element => {
     }
 
     function updateMap(data) {
-        setGravity(50)
+        setGravity(defaultGravity)
         repositionMap(data)
 
         const textLinkData = createLinkData(data, 'text')
@@ -395,8 +396,8 @@ const HolonPostMap = (): JSX.Element => {
                 'charge',
                 d3.forceManyBody().strength((d) => -findRadius(d) * 8)
             )
-            .force('x', d3.forceX(0).strength(0.1)) // (50 / 500 = 0.1)
-            .force('y', d3.forceY(0).strength(0.1))
+            .force('x', d3.forceX(0).strength(gravity / 500)) // (50 / 500 = 0.1)
+            .force('y', d3.forceY(0).strength(gravity / 500))
             .force('textLinks', d3.forceLink().links(textLinkData).strength(0.05))
             .force('turnLinks', d3.forceLink().links(turnLinkData).strength(0.09))
             .alpha(1)

@@ -163,7 +163,8 @@ router.post('/audio-upload', (req, res) => {
                                 Bucket: bucket,
                                 ACL: 'public-read',
                                 Key: `${req.file.filename}.mp3`,
-                                Body: data
+                                Body: data,
+                                Metadata: { 'type': 'mp3', 'user': '...' }
                             }, (err) => {
                                 if (err) console.log(err)
                                 else {

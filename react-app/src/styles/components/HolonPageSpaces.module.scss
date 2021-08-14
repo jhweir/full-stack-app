@@ -1,16 +1,19 @@
 @import '../Transitions.scss';
 // TODO: change to importing a variables file including transition speeds etc.
 
-.childHolonsWrapper {
+.wrapper {
     width: 100%;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    //align-items: center;
 }
-.childHolons {
-    width: 700px;
+.spaces {
+    width: 100%; // 700px;
     display: flex;
-    flex-direction: column;
+    flex-direction: row; //column;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: center;
     opacity: 1;
     transition: opacity $transitionSpeed;
     &.hidden {
@@ -23,7 +26,7 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: space-between;
+    // justify-content: space-between;
     flex-wrap: wrap;
 }
 .headerRowSection {
@@ -42,6 +45,7 @@
     display: flex;
     flex-direction: row;
     align-items: center;
+    flex-shrink: 0;
     transition-property: background-color, color;
     transition-duration: 0.3s, 0.3s;
     &:hover {
@@ -64,4 +68,12 @@
     &:hover {
         cursor: pointer;
     }
+}
+.stats {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    flex-shrink: 0;
+    flex-wrap: wrap;
 }

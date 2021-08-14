@@ -4,7 +4,9 @@ import { SpaceContext } from '../../contexts/SpaceContext'
 import styles from '../../styles/components/HolonPageUsers.module.scss'
 import SearchBar from '../SearchBar'
 import HolonPageUsersFilters from './HolonPageUsersFilters'
-import UserCard from '../Cards/UserCard'
+import VerticalCard from '../Cards/VerticalCard'
+import Stat from '../Stat'
+import { pluralise } from '../../Functions'
 
 const HolonPageUsers = (): JSX.Element => {
     const { pageBottomReached } = useContext(AccountContext)
@@ -79,8 +81,30 @@ const HolonPageUsers = (): JSX.Element => {
             {/* <HolonPageSpacesPlaceholder/> */}
             {spaceUsers.length > 0 && (
                 <ul className={styles.users}>
-                    {spaceUsers.map((user, index) => (
-                        <UserCard index={index} user={user} />
+                    {spaceUsers.map((user) => (
+                        <VerticalCard
+                            key={user.id}
+                            path={`/u/${user.handle}`}
+                            coverImagePath={user.coverImagePath}
+                            flagImagePath={user.flagImagePath}
+                            title={user.name}
+                            subTitle={`u/${user.handle}`}
+                            text={user.bio}
+                            footer={
+                                <div className={styles.stats}>
+                                    <Stat
+                                        type='post'
+                                        value={user.total_posts}
+                                        title={`Post${pluralise(user.total_posts)}`}
+                                    />
+                                    <Stat
+                                        type='comment'
+                                        value={user.total_comments}
+                                        title={`Comment${pluralise(user.total_comments)}`}
+                                    />
+                                </div>
+                            }
+                        />
                     ))}
                 </ul>
             )}

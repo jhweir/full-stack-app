@@ -24,6 +24,7 @@ const HolonPage = ({
     const { setSpaceHandle, spaceData, isModerator, fullScreen } = useContext(SpaceContext)
 
     useEffect(() => {
+        // include set space loading
         if (!accountContextLoading) setSpaceHandle(spaceHandle)
     }, [accountContextLoading, spaceHandle])
 
@@ -49,7 +50,9 @@ const HolonPage = ({
                         {/* <Route component={ EmptyPage }/> TODO: Check if this needs to be doubled up on the App.js component */}
                     </Switch>
                 </div>
-                <HolonPageSideBarRight />
+                <Route path={`${url}/posts`} component={HolonPageSideBarRight} exact />
+                <Route path={`${url}/about`} component={HolonPageSideBarRight} exact />
+                {/* <HolonPageSideBarRight /> */}
             </div>
         </div>
     )

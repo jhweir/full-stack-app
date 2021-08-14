@@ -2,12 +2,15 @@ import React, { useContext, useEffect } from 'react'
 import { AccountContext } from '../../contexts/AccountContext'
 import { SpaceContext } from '../../contexts/SpaceContext'
 import styles from '../../styles/components/HolonPageSpaces.module.scss'
-import HolonCard from '../Cards/HolonCard'
+// import HolonCard from '../Cards/HolonCard'
+import VerticalCard from '../Cards/VerticalCard'
 import SearchBar from '../SearchBar'
 import Toggle from '../Toggle'
 import HolonPageSpacesFilters from './HolonPageSpacesFilters'
 // import HolonPageSpacesPlaceholder from './HolonPageSpacesPlaceholder'
 import HolonSpaceMap from './HolonSpaceMap'
+import Stat from '../Stat'
+import { pluralise } from '../../Functions'
 
 const HolonPageSpaces = (): JSX.Element => {
     const {
@@ -35,6 +38,7 @@ const HolonPageSpaces = (): JSX.Element => {
         spaceSpacesView,
         setSpaceSpacesView,
         setSpaceSpacesSearchFilter,
+        setSpaceHandle,
     } = useContext(SpaceContext)
 
     function openCreateSpaceModal() {
@@ -57,6 +61,7 @@ const HolonPageSpaces = (): JSX.Element => {
 
     useEffect(() => {
         if (!spaceContextLoading && spaceData && spaceData.id) {
+            console.log('test')
             getSpaceSpaces()
         }
     }, [
@@ -76,7 +81,7 @@ const HolonPageSpaces = (): JSX.Element => {
     }, [pageBottomReached])
 
     return (
-        <div className={styles.childHolonsWrapper}>
+        <div className={styles.wrapper}>
             <div className='wecoPageHeader'>
                 <div className={styles.headerRow}>
                     <div className={styles.headerRowSection}>
@@ -84,6 +89,7 @@ const HolonPageSpaces = (): JSX.Element => {
                             setSearchFilter={setSpaceSpacesSearchFilter}
                             placeholder='Search spaces...'
                         />
+                        {/* <HolonPageSpacesFilters /> */}
                         <div
                             className={styles.filterButton}
                             role='button'
@@ -97,6 +103,12 @@ const HolonPageSpaces = (): JSX.Element => {
                                 aria-label='filters'
                             />
                         </div>
+                        {/* <Toggle
+                            leftText='List'
+                            rightText='Map'
+                            onClickFunction={toggleView}
+                            positionLeft={spaceSpacesView === 'List'}
+                        /> */}
                         <div
                             className={styles.filterButton}
                             role='button'
@@ -120,9 +132,46 @@ const HolonPageSpaces = (): JSX.Element => {
             </div>
             {/* <HolonPageSpacesPlaceholder/> */}
             {spaceSpacesView === 'List' && spaceSpaces.length > 0 && (
-                <ul className={`${styles.childHolons} ${spaceContextLoading && styles.hidden}`}>
+                <ul className={`${styles.spaces} ${spaceContextLoading && styles.hidden}`}>
                     {spaceSpaces.map((holon) => (
-                        <HolonCard holon={holon} key={holon.id} />
+                        <VerticalCard
+                            key={holon.id}
+                            path={`/s/${holon.handle}`}
+                            onClick={() => setSpaceHandle(holon.handle)}
+                            coverImagePath={holon.coverImagePath}
+                            flagImagePath={holon.flagImagePath}
+                            title={holon.name}
+                            subTitle={`s/${holon.handle}`}
+                            text={holon.description}
+                            footer={
+                                <div className={styles.stats}>
+                                    <Stat
+                                        type='user'
+                                        value={holon.total_followers}
+                                        title={`Follower${pluralise(holon.total_followers)}`}
+                                        small
+                                    />
+                                    <Stat
+                                        type='post'
+                                        value={holon.total_posts}
+                                        title={`Post${pluralise(holon.total_posts)}`}
+                                        small
+                                    />
+                                    <Stat
+                                        type='comment'
+                                        value={holon.total_comments}
+                                        title={`Comment${pluralise(holon.total_comments)}`}
+                                        small
+                                    />
+                                    <Stat
+                                        type='reaction'
+                                        value={holon.total_reactions}
+                                        title={`Reaction${pluralise(holon.total_reactions)}`}
+                                        small
+                                    />
+                                </div>
+                            }
+                        />
                     ))}
                 </ul>
             )}

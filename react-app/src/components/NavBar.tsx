@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { SpaceContext } from '../contexts/SpaceContext'
 import { AccountContext } from '../contexts/AccountContext'
@@ -19,18 +19,15 @@ const NavBar = (): JSX.Element => {
     } = useContext(AccountContext)
     const { setSpaceHandle, fullScreen, setFullScreen } = useContext(SpaceContext)
 
+    const [exploreDropDownOpen, setExploreDropDownOpen] = useState(false)
+
     useEffect(() => {
-        if (
-            window.location.href === `${config.appURL}/` ||
-            window.location.href.includes(`${config.appURL}?alert`)
-        )
+        const url = window.location.href
+        if (url === `${config.appURL}/` || url.includes(`${config.appURL}?alert`))
             setSelectedNavBarItem('home')
-        else if (window.location.href === `${config.appURL}/s/all/posts`)
-            setSelectedNavBarItem('posts')
-        else if (window.location.href === `${config.appURL}/s/all/spaces`)
-            setSelectedNavBarItem('spaces')
-        else if (window.location.href === `${config.appURL}/s/all/users`)
-            setSelectedNavBarItem('users')
+        else if (url === `${config.appURL}/s/all/posts`) setSelectedNavBarItem('posts')
+        else if (url === `${config.appURL}/s/all/spaces`) setSelectedNavBarItem('spaces')
+        else if (url === `${config.appURL}/s/all/users`) setSelectedNavBarItem('users')
         else setSelectedNavBarItem('')
     }, [window.location.pathname])
 
@@ -52,57 +49,68 @@ const NavBar = (): JSX.Element => {
                             Home
                         </div>
                     </Link>
-                    <Link
-                        to='/s/all/spaces'
-                        className={styles.navBarLink}
-                        onClick={() => {
-                            setSelectedNavBarItem('spaces')
-                            setSpaceHandle('all')
-                        }}
-                    >
-                        {/* <img className={styles.navBarIcon} src="/icons/overlapping-circles-thick.svg" alt=''/> */}
-                        <div
-                            className={`${styles.navBarText} ${
-                                selectedNavBarItem === 'spaces' && styles.selected
-                            }`}
-                        >
-                            Spaces
-                        </div>
+
+                    <Link to='/features' className={styles.navBarLink}>
+                        <div className={styles.navBarText}>Features</div>
                     </Link>
-                    <Link
-                        to='/s/all'
-                        className={styles.navBarLink}
-                        onClick={() => {
-                            setSelectedNavBarItem('posts')
-                            setSpaceHandle('all')
-                        }}
-                    >
-                        {/* <img className={styles.navBarIcon} src="/icons/edit-solid.svg" alt=''/> */}
-                        <div
-                            className={`${styles.navBarText} ${
-                                selectedNavBarItem === 'posts' && styles.selected
-                            }`}
-                        >
-                            Posts
-                        </div>
+                    <Link to='/coop' className={styles.navBarLink}>
+                        <div className={styles.navBarText}>Coop</div>
                     </Link>
-                    <Link
-                        to='/s/all/users'
+
+                    {/* <Link to='/s/all/spaces' className={styles.navBarLink}> */}
+                    <div
                         className={styles.navBarLink}
-                        onClick={() => {
-                            setSelectedNavBarItem('users')
-                            setSpaceHandle('all')
-                        }}
+                        onMouseEnter={() => setExploreDropDownOpen(true)}
+                        onMouseLeave={() => setExploreDropDownOpen(false)}
                     >
-                        {/* <img className={styles.navBarIcon} src="/icons/users-solid.svg" alt=''/> */}
-                        <div
-                            className={`${styles.navBarText} ${
-                                selectedNavBarItem === 'users' && styles.selected
-                            }`}
-                        >
-                            Users
-                        </div>
-                    </Link>
+                        <div className={styles.navBarText}>Explore</div>
+                        <img
+                            className={styles.exploreDropDownIcon}
+                            src='/icons/chevron-down-solid.svg'
+                            alt=''
+                        />
+                        {exploreDropDownOpen && (
+                            <div className={styles.exploreDropDown}>
+                                <Link
+                                    to='/s/all/spaces'
+                                    className={styles.exploreDropDownItem}
+                                    onClick={() => setSpaceHandle('all')}
+                                >
+                                    <img
+                                        className={styles.navBarIcon}
+                                        src='/icons/overlapping-circles-thick.svg'
+                                        alt=''
+                                    />
+                                    <div className={styles.dropDownText}>Spaces</div>
+                                </Link>
+                                <Link
+                                    to='/s/all'
+                                    className={styles.exploreDropDownItem}
+                                    onClick={() => setSpaceHandle('all')}
+                                >
+                                    <img
+                                        className={styles.navBarIcon}
+                                        src='/icons/edit-solid.svg'
+                                        alt=''
+                                    />
+                                    <div className={styles.dropDownText}>Posts</div>
+                                </Link>
+                                <Link
+                                    to='/s/all/users'
+                                    className={styles.exploreDropDownItem}
+                                    onClick={() => setSpaceHandle('all')}
+                                >
+                                    <img
+                                        className={styles.navBarIcon}
+                                        src='/icons/users-solid.svg'
+                                        alt=''
+                                    />
+                                    <div className={styles.dropDownText}>Users</div>
+                                </Link>
+                            </div>
+                        )}
+                    </div>
+                    {/* </Link> */}
                 </div>
                 {!accountContextLoading && !isLoggedIn && (
                     <div className={styles.authButtons}>

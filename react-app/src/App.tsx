@@ -8,6 +8,8 @@ import UserContextProvider from './contexts/UserContext'
 import PostContextProvider from './contexts/PostContext'
 import config from './Config'
 import HomePage from './pages/HomePage'
+import FeaturesPage from './pages/FeaturesPage'
+import CoopPage from './pages/CoopPage'
 import HolonPage from './pages/HolonPage'
 import PostPage from './pages/PostPage'
 import UserPage from './pages/UserPage'
@@ -41,6 +43,8 @@ const App = (): JSX.Element => {
                                     <Modals />
                                     <Switch>
                                         <Route path='/' exact component={HomePage} />
+                                        <Route path='/features' exact component={FeaturesPage} />
+                                        <Route path='/coop' exact component={CoopPage} />
                                         <Route path='/s/:spaceHandle' component={HolonPage} />
                                         <Route path='/p/:postId' component={PostPage} />
                                         <Route path='/u/:userHandle' component={UserPage} />

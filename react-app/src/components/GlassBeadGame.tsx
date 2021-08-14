@@ -185,6 +185,7 @@ const GlassBeadGame = (): JSX.Element => {
                         headers: { 'Content-Type': 'multipart/form-data' },
                     })
                     .then((res) => {
+                        chunksRef.current = []
                         // send audio url to players
                         const data = {
                             roomId: roomIdRef.current,

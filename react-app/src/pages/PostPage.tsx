@@ -12,6 +12,7 @@ import PostPagePollResults from '../components/PostPage/PostPagePollResults'
 import Prism from '../components/Prism'
 import PlotGraph from '../components/PlotGraph'
 import GlassBeadGame from '../components/GlassBeadGame'
+import DecisionTree from '../components/DecisionTree'
 
 const PostPage = ({
     match,
@@ -46,6 +47,9 @@ const PostPage = ({
     }
     if (postData && postData.type === 'glass-bead-game') {
         return <GlassBeadGame />
+    }
+    if (postData && postData.type === 'decision-tree') {
+        return <DecisionTree />
     }
 
     return (
