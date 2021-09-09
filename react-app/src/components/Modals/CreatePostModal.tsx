@@ -47,7 +47,9 @@ const CreatePostModal = (): JSX.Element => {
     const [prismDuration, setPrismDuration] = useState('1 Month')
     const [prismPrivacy, setPrismPrivacy] = useState('Private')
 
-    const [numberOfGBGPlayers, setNumberOfGBGPlayers] = useState(2)
+    const [GBGTopic, setGBGTopic] = useState('Other')
+    const [GBGCustomTopic, setGBGCustomTopic] = useState('')
+    const [GBGCustomTopicError, setGBGCustomTopicError] = useState(false)
 
     const [numberOfPlotGraphAxes, setNumberOfPlotGraphAxes] = useState(0)
     const [axis1Left, setAxis1Left] = useState('')
@@ -126,16 +128,20 @@ const CreatePostModal = (): JSX.Element => {
         const invalidText = (!text || text.length > 5000) && !url
         const invalidUrl = postType === 'Url' && !url
         const invalidPollAnswers = postType === 'Poll' && pollAnswers.length < 2
-        if (invalidText) {
-            setTextError(true)
-        }
-        if (invalidUrl) {
-            setUrlError(true)
-        }
-        if (invalidPollAnswers) {
-            setNewPollAnswerError(true)
-        }
-        if (!invalidText && !invalidUrl && !invalidPollAnswers && !urlLoading && accessToken) {
+        const invalidGBGCustomTopic =
+            postType === 'Glass Bead Game' && GBGTopic === 'Other' && GBGCustomTopic === ''
+        if (invalidText) setTextError(true)
+        if (invalidUrl) setUrlError(true)
+        if (invalidPollAnswers) setNewPollAnswerError(true)
+        if (invalidGBGCustomTopic) setGBGCustomTopicError(true)
+        if (
+            !invalidText &&
+            !invalidUrl &&
+            !invalidPollAnswers &&
+            !invalidGBGCustomTopic &&
+            !urlLoading &&
+            accessToken
+        ) {
             const post = {
                 type: postType.replace(/\s+/g, '-').toLowerCase(),
                 subType,
@@ -159,6 +165,8 @@ const CreatePostModal = (): JSX.Element => {
                 axis2Top,
                 axis2Bottom,
                 createPostFromTurnData,
+                GBGTopic,
+                GBGCustomTopic,
             }
             axios
                 .post(
@@ -205,7 +213,7 @@ const CreatePostModal = (): JSX.Element => {
                     <div className={styles.title}>
                         Create a new{' '}
                         {postType !== 'Url' && postType !== 'Text'
-                            ? postType.toLowerCase()
+                            ? postType // .toLowerCase()
                             : 'post'}{' '}
                         in
                         <Link
@@ -307,13 +315,59 @@ const CreatePostModal = (): JSX.Element => {
                         )}
                         {postType === 'Glass Bead Game' && (
                             <>
-                                <DropDownMenu
+                                {/* <DropDownMenu
                                     title='Number Of Players'
                                     options={[2]}
                                     selectedOption={numberOfGBGPlayers}
                                     setSelectedOption={setNumberOfGBGPlayers}
                                     orientation='horizontal'
+                                /> */}
+                                <DropDownMenu
+                                    title='Topic'
+                                    options={[
+                                        'Other',
+                                        'Addiction',
+                                        'Art',
+                                        'Attention',
+                                        'Beauty',
+                                        'Beginning',
+                                        'Birth',
+                                        'Cosmos',
+                                        'Death',
+                                        'Ego',
+                                        'Empathy',
+                                        'End',
+                                        'Eutopia',
+                                        'Future',
+                                        'Game',
+                                        'Gift',
+                                        'History',
+                                        'Human',
+                                        'Life',
+                                        'Paradox',
+                                        'Shadow',
+                                        'Society',
+                                        'Time',
+                                        'Truth',
+                                    ]}
+                                    selectedOption={GBGTopic}
+                                    setSelectedOption={setGBGTopic}
+                                    orientation='horizontal'
                                 />
+                                {GBGTopic === 'Other' && (
+                                    <textarea
+                                        className={`wecoInput textArea white mb-10 ${
+                                            GBGCustomTopicError && 'error'
+                                        }`}
+                                        style={{ height: 30, width: 250 }}
+                                        placeholder='title...'
+                                        value={GBGCustomTopic}
+                                        onChange={(e) => {
+                                            setGBGCustomTopic(e.target.value)
+                                            setGBGCustomTopicError(false)
+                                        }}
+                                    />
+                                )}
                             </>
                         )}
                         {postType === 'Plot Graph' && (

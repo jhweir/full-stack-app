@@ -92,6 +92,15 @@ type: post-post, post-space, post-user, space-post, space-space, space-user, use
 relationship: turn, text
 `npx sequelize-cli model:generate --name Link --attributes creatorId:integer,type:string,relationship:string,description:text,itemAId:integer,itemBId:integer`
 
+### GlassBeadGames
+`npx sequelize-cli model:generate --name GlassBeadGame --attributes postId:integer,topic:string,numberOfTurns:integer,turnDuration:integer,introDuration:integer,intervalDuration:integer,saved:boolean`
+
+### GlassBead
+`npx sequelize-cli model:generate --name GlassBead --attributes postId:integer,index:integer,userId:integer,beadUrl:string`
+
+### GlassBeadGameComment
+`npx sequelize-cli model:generate --name GlassBeadGameComment --attributes postId:integer,index:integer,userId:integer,text:text`
+
 ## Generate Seeders
 `npx sequelize-cli seed:generate --name demo-holons`
 `npx sequelize-cli seed:generate --name demo-holon-tags`

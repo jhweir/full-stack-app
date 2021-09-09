@@ -6,7 +6,7 @@ import SearchBar from '../SearchBar'
 import HolonPageUsersFilters from './HolonPageUsersFilters'
 import VerticalCard from '../Cards/VerticalCard'
 import Stat from '../Stat'
-import { pluralise } from '../../Functions'
+import { isPlural } from '../../Functions'
 
 const HolonPageUsers = (): JSX.Element => {
     const { pageBottomReached } = useContext(AccountContext)
@@ -95,12 +95,12 @@ const HolonPageUsers = (): JSX.Element => {
                                     <Stat
                                         type='post'
                                         value={user.total_posts}
-                                        title={`Post${pluralise(user.total_posts)}`}
+                                        title={`Post${isPlural(user.total_posts) ? 's' : ''}`}
                                     />
                                     <Stat
                                         type='comment'
                                         value={user.total_comments}
-                                        title={`Comment${pluralise(user.total_comments)}`}
+                                        title={`Comment${isPlural(user.total_comments) ? 's' : ''}`}
                                     />
                                 </div>
                             }

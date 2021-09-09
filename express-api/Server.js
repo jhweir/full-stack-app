@@ -8,6 +8,7 @@ var morgan = require('morgan')
 const express = require('express')
 const bodyParser = require('body-parser')
 const app = express()
+const axios = require('axios')
 
 // set up cors with url whitelist
 const cors = require('cors')
@@ -15,7 +16,7 @@ const whitelist = [config.appURL]
 if (process.env.APP_ENV === 'prod') whitelist.push(config.appURL2)
 app.use(cors({
     origin: function (origin, callback) {
-        if (whitelist.indexOf(origin) !== -1) {
+        if (whitelist.indexOf(origin) !== -1 || !origin) {
             callback(null, true)
         } else {
             callback(new Error('Not allowed by CORS'))
@@ -61,32 +62,36 @@ const maxPlayers = 10
 io.on('connection', socket => {
     socket.on('join-room', data => {
         const { roomId, userData } = data
+        // create user object
         const user = { socketId: socket.id, userData }
+        // if no room, create room
+        if (!rooms[roomId]) rooms[roomId] = []
+        // add user object to room
+        rooms[roomId].push(user)
+        // create socketToRoom record for use when user leaves room (is there a way to avoid this?)
+        socketsToRooms[socket.id] = roomId
+        // connect to room
         socket.join(roomId)
-        if (!rooms[roomId]) {
-            rooms[roomId] = [user]
-            socketsToRooms[socket.id] = roomId
-        } else {
-            if (rooms[roomId].length === maxPlayers) socket.emit('room-full')
-            else {
-                rooms[roomId].push(user)
-                const usersInRoom = rooms[roomId].filter(users => users.socketId !== socket.id)
-                socket.emit('users-in-room', usersInRoom)
-                socketsToRooms[socket.id] = roomId
-            }
-        }
+        //send user object to other users in room
+        socket.to(roomId).emit('user-joined', user)
+        // send room data back to joining user
+        const usersInRoom = rooms[roomId] //.filter(users => users.socketId !== socket.id)
+        socket.emit('room-joined', { socketId: socket.id, usersInRoom })
     })
 
     socket.on('sending-signal', payload => {
-        io.to(payload.userToSignal).emit('user-joined', { signal: payload.signal, userSignaling: payload.userSignaling })
+        io.to(payload.userToSignal).emit('signal-request', { signal: payload.signal, userSignaling: payload.userSignaling })
     })
 
     socket.on('returning-signal', payload => {
-        io.to(payload.callerID).emit('receiving-returned-signal', { signal: payload.signal, id: socket.id })
+        io.to(payload.callerID).emit('signal-returned', { signal: payload.signal, id: socket.id })
     })
 
     socket.on('sending-comment', commentData => {
         io.in(commentData.roomId).emit('returning-comment', commentData)
+        axios
+            .post(`${config.apiUrl}/glass-bead-game-comment`, commentData)
+            .catch((error) => console.log('error: ', error))
     })
 
     socket.on('sending-start-game', data => {
@@ -102,11 +107,17 @@ io.on('connection', socket => {
         io.in(data.roomId).emit('returning-audio-bead', data)
     })
 
-    socket.on('disconnect', () => {
+    socket.on('disconnecting', () => {
+        console.log('socket.rooms', socket.rooms)
+    })
+
+    socket.on('disconnect', (data) => {
+        console.log(data)
         const roomId = socketsToRooms[socket.id]
         if (rooms[roomId]) {
+            const user = rooms[roomId].find(users => users.socketId === socket.id)
+            io.in(roomId).emit('user-left', user)
             rooms[roomId] = rooms[roomId].filter(users => users.socketId !== socket.id)
-            io.in(roomId).emit('user-left', socket.id)
         }
     })
 })

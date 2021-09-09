@@ -6,9 +6,9 @@ const basename = path.basename(__filename)
 const config = require('../Config.js')
 const db = {}
 
-const sequelize = new Sequelize(config.dbName, config.dbUser, config.dbPassword, {
-    host: config.dbHost,
-    dialect: config.dbDialect
+const sequelize = new Sequelize(config.database, config.username, config.password, {
+    host: config.host,
+    dialect: config.dialect
 })
 
 fs.readdirSync(__dirname)

@@ -10,7 +10,7 @@ import HolonPageSpacesFilters from './HolonPageSpacesFilters'
 // import HolonPageSpacesPlaceholder from './HolonPageSpacesPlaceholder'
 import HolonSpaceMap from './HolonSpaceMap'
 import Stat from '../Stat'
-import { pluralise } from '../../Functions'
+import { isPlural } from '../../Functions'
 
 const HolonPageSpaces = (): JSX.Element => {
     const {
@@ -148,25 +148,31 @@ const HolonPageSpaces = (): JSX.Element => {
                                     <Stat
                                         type='user'
                                         value={holon.total_followers}
-                                        title={`Follower${pluralise(holon.total_followers)}`}
+                                        title={`Follower${
+                                            isPlural(holon.total_followers) ? 's' : ''
+                                        }`}
                                         small
                                     />
                                     <Stat
                                         type='post'
                                         value={holon.total_posts}
-                                        title={`Post${pluralise(holon.total_posts)}`}
+                                        title={`Post${isPlural(holon.total_posts) ? 's' : ''}`}
                                         small
                                     />
                                     <Stat
                                         type='comment'
                                         value={holon.total_comments}
-                                        title={`Comment${pluralise(holon.total_comments)}`}
+                                        title={`Comment${
+                                            isPlural(holon.total_comments) ? 's' : ''
+                                        }`}
                                         small
                                     />
                                     <Stat
                                         type='reaction'
                                         value={holon.total_reactions}
-                                        title={`Reaction${pluralise(holon.total_reactions)}`}
+                                        title={`Reaction${
+                                            isPlural(holon.total_reactions) ? 's' : ''
+                                        }`}
                                         small
                                     />
                                 </div>

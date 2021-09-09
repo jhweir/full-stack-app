@@ -22,6 +22,9 @@ const {
     PlotGraph,
     Link,
     Notification,
+    GlassBeadGame,
+    GlassBeadGameComment,
+    GlassBead
 } = require('../models')
 
 // GET
@@ -385,6 +388,39 @@ router.get('/scrape-url', async (req, res) => {
     }
 })
 
+router.get('/glass-bead-game-data', (req, res) => {
+    const { postId } = req.query
+    GlassBeadGame.findOne({ 
+        where: { postId },
+        include: [
+            { 
+                model: GlassBead,
+                order: [['index', 'ASC']],
+                separate: true,
+                include: [
+                    {
+                        model: User,
+                        attributes: ['handle', 'name', 'flagImagePath']
+                    }
+                ]
+            },
+            {
+                model: GlassBeadGameComment,
+                include: [
+                    {
+                        model: User,
+                        as: 'userData',
+                        attributes: ['handle', 'name', 'flagImagePath']
+                    }
+                ]
+            },
+
+        ]
+    })
+    .then(post => res.json(post))
+    .catch(err => console.log(err))
+})
+
 // POST
 // todo: add authenticateToken to all endpoints below
 router.post('/create-post', authenticateToken, (req, res) => {
@@ -409,12 +445,15 @@ router.post('/create-post', authenticateToken, (req, res) => {
         axis1Right,
         axis2Top,
         axis2Bottom,
-        createPostFromTurnData
+        // createPostFromTurnData,
+        GBGTopic,
+        GBGCustomTopic,
     } = req.body.post
 
     let directHandleIds = []
     let indirectHandleIds = []
 
+    // todo: pull in from global constants
     async function asyncForEach(array, callback) {
         for (let index = 0; index < array.length; index++) {
             await callback(array[index], index, array)
@@ -503,14 +542,26 @@ router.post('/create-post', authenticateToken, (req, res) => {
         })
     }
 
-    function createTurnLink(post) {
-        Link.create({
-            state: 'visible',
-            creatorId: accountId,
-            type: 'post-post',
-            relationship: 'turn',
-            itemAId: createPostFromTurnData.postId,
-            itemBId: post.id
+    // function createTurnLink(post) {
+    //     Link.create({
+    //         state: 'visible',
+    //         creatorId: accountId,
+    //         type: 'post-post',
+    //         relationship: 'turn',
+    //         itemAId: createPostFromTurnData.postId,
+    //         itemBId: post.id
+    //     })
+    // }
+
+    function createGlassBeadGame(post) {
+        GlassBeadGame.create({
+            postId: post.id,
+            topic: GBGTopic === 'Other' ? GBGCustomTopic : GBGTopic,
+            numberOfTurns: null,
+            turnDuration: null,
+            introDuration: null,
+            intervalDuration: null,
+            saved: false
         })
     }
 
@@ -539,7 +590,8 @@ router.post('/create-post', authenticateToken, (req, res) => {
                 if (type === 'poll') createNewPollAnswers(post)
                 if (type === 'prism') createPrism(post)
                 if (type === 'plot-graph') createPlotGraph(post)
-                if (type === 'glass-bead' && createPostFromTurnData.postId) createTurnLink(post)
+                if (type === 'glass-bead-game') createGlassBeadGame(post)
+                // if (type === 'glass-bead' && createPostFromTurnData.postId) createTurnLink(post)
             })
             .then(res.send('success'))
         })
@@ -1069,6 +1121,50 @@ router.post('/remove-link', (req, res) => {
     Link.update({ state: 'hidden' }, { where: { id: linkId } })
         .then(res.send('success'))
         .catch(err => console.log(err))
+})
+
+router.post('/save-glass-bead-game', (req, res) => {
+    const {
+        gameId,
+        numberOfTurns,
+        turnDuration,
+        introDuration,
+        intervalDuration,
+        numberOfPlayers,
+        beads
+    } = req.body
+
+    // save game
+    GlassBeadGame.update({
+        numberOfTurns,
+        turnDuration,
+        introDuration,
+        intervalDuration,
+        numberOfPlayers,
+        locked: true
+    }, { where: { id: gameId }})
+    // save beads
+    beads.forEach((bead) => {
+        GlassBead.create({
+            gameId,
+            index: bead.index,
+            // check handle to see if user is annonymous
+            userId: bead.userData.handle ? bead.userData.id : null,
+            beadUrl: bead.beadUrl,
+            // state: 'active'
+        })
+    })
+
+    res.send('game-saved')
+})
+
+router.post('/glass-bead-game-comment', (req, res) => {
+    const { gameId, userData, text } = req.body
+    GlassBeadGameComment.create({
+        gameId,
+        userId: userData.handle ? userData.id : null,
+        text
+    })
 })
 
 // DELETE

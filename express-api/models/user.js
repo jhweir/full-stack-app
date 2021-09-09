@@ -28,6 +28,12 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'creatorId',
       //as: 'createdComments'
     })
+    User.hasMany(models.GlassBead, {
+        foreignKey: 'userId',
+    })
+    User.hasMany(models.GlassBeadGameComment, {
+        foreignKey: 'userId',
+    })
     User.belongsToMany(models.Holon, { 
       through: models.HolonUser,
       as: 'FollowedHolons',
