@@ -1,10 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react'
 import axios from 'axios'
-import config from '../../Config'
-import { AccountContext } from '../../contexts/AccountContext'
-import { SpaceContext } from '../../contexts/SpaceContext'
-import styles from '../../styles/components/HolonPageSettings.module.scss'
-import SpaceNotificationCard from '../Cards/SpaceNotificationCard'
+import { AccountContext } from '@contexts/AccountContext'
+import { SpaceContext } from '@contexts/SpaceContext'
+import config from '@src/Config'
+import styles from '@styles/components/HolonPageSettings.module.scss'
+import SpaceNotificationCard from '@components/Cards/SpaceNotificationCard'
 
 const HolonPageSettings = (): JSX.Element => {
     const { setSettingModalType, setSettingModalOpen } = useContext(AccountContext)
