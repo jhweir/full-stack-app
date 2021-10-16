@@ -1,4 +1,4 @@
-.coverImageWrapper {
+.wrapper {
     margin-top: 60px;
     position: relative;
     width: 100%;
@@ -7,12 +7,67 @@
         height: 70px;
     }
 }
-.coverImage {
-    background-size: cover;
-    background-position: center;
-    width: 100%;
-    height: 100%;
-}
+// .imageWrapper {
+//     width: 100%;
+//     height: 100%;
+//     // object-fit: cover; 
+// }
+// // image transition
+// @keyframes imageTransition {
+//     from { opacity: 0 }
+//     to   { opacity: 1 }
+// }
+// /* Firefox < 16 */
+// @-moz-keyframes imageTransition {
+//     from { opacity: 0 }
+//     to   { opacity: 1 }
+// }
+// /* Safari, Chrome and Opera > 12.1 */
+// @-webkit-keyframes imageTransition {
+//     from { opacity: 0 }
+//     to   { opacity: 1 }
+// }
+// /* Internet Explorer */
+// @-ms-keyframes imageTransition {
+//     from { opacity: 0 }
+//     to   { opacity: 1 }
+// }
+// .bottomImage, .topImage {
+//     background-size: cover;
+//     background-position: center;
+//     width: 100%;
+//     height: 100%;
+//     display: flex;
+//     // opacity: 1;
+//     // transition-property: opacity;
+//     // transition-duration: 5s;
+//     // $speed: 3s;
+//     // -webkit-animation: imageTransition $speed; /* Safari, Chrome and Opera > 12.1 */
+//     // -moz-animation: imageTransition $speed; /* Firefox < 16 */
+//     // -ms-animation: imageTransition $speed; /* Internet Explorer */
+//     // -o-animation: imageTransition $speed; /* Opera < 12.1 */
+//     // animation: imageTransition $speed;
+
+//     // &.hidden {
+//     //     display: none;
+//     // }
+//     // &.opacity {
+//     //     opacity: 0;
+//     // }
+// }
+// .topImage {
+//     position: absolute;
+//     top: 0;
+//     left: 0;
+// }
+// .coverImage {
+//     background-size: cover;
+//     background-position: center;
+//     width: 100%;
+//     height: 100%;
+//     transition-property: background-image;
+//     transition-duration: 1s;
+// }
 .placeholder {
     width: 100%;
     height: 100%;
@@ -25,8 +80,10 @@
     left: 0;
     width: 100%;
     height: 150px;
+    font-size: 16px;
     background-color: rgba(0,0,0,0);
     color: transparent;
+    border: none;
     display: flex;
     flex-direction: row;
     align-items: center;

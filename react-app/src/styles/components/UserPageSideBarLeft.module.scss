@@ -18,9 +18,16 @@
     //margin: 70px 0 20px 0;
     margin: 20px 0 20px 12px;
 }
+.header {
+    font-size: 14px;
+    margin-left: 12px;
+    color: #6d6d6d;
+    margin-bottom: 5px;
+}
 .navButtons {
     display: flex;
     flex-direction: column;
+    margin-bottom: 15px;
 }
 .button {
     position: relative;

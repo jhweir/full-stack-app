@@ -1,3 +1,9 @@
+// function updateValueInStoreObject(object, setObject, key, payload) {
+//     setObject({ ...object, [key]: payload })
+// }
+
+import Cookies from 'universal-cookie'
+
 export function isPlural(value: number): boolean {
     if (value < 1 || value > 1) return true
     return false
@@ -55,4 +61,11 @@ export function timeSinceCreated(createdAt: string | undefined): string | undefi
         time = `${number} year${isPlural(number) ? 's' : ''} ago`
     }
     return time
+}
+
+export function onPageBottomReached(set: (payload: boolean) => void): void {
+    const offset = 150
+    const d = document.documentElement
+    if (d.scrollHeight - d.scrollTop - offset < d.clientHeight) set(true)
+    else set(false)
 }

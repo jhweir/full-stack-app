@@ -1,53 +1,52 @@
 import React, { useContext, useEffect, useState } from 'react'
 import axios from 'axios'
 import Cookies from 'universal-cookie'
-import { AccountContext } from '../../contexts/AccountContext'
-import { UserContext } from '../../contexts/UserContext'
-import styles from '../../styles/components/UserPageNotifications.module.scss'
-import NotificationCard from '../Cards/NotificationCard'
-import config from '../../Config'
+import { AccountContext } from '@contexts/AccountContext'
+import { UserContext } from '@contexts/UserContext'
+import styles from '@styles/components/UserPageNotifications.module.scss'
+import NotificationCard from '@components/Cards/NotificationCard'
+import config from '@src/Config'
 
 const UserPageNotifications = (): JSX.Element => {
     const {
-        getAccountData,
+        // getAccountData,
+        updateAccountData,
         getNotifications,
+        setNotifications,
         // getNextNotifications,
         notifications,
     } = useContext(AccountContext)
-    const { userData, userContextLoading, setSelectedUserSubPage, isOwnAccount } = useContext(
-        UserContext
-    )
-
+    const { userData, setSelectedUserSubPage, isOwnAccount } = useContext(UserContext)
     const [renderKey, setRenderKey] = useState(0)
-
     const cookies = new Cookies()
-    const accessToken = cookies.get('accessToken')
+
+    useEffect(() => setSelectedUserSubPage('notifications'), [])
 
     useEffect(() => {
-        setSelectedUserSubPage('notifications')
-        if (!userContextLoading && userData.id && isOwnAccount) {
-            getNotifications()
-        }
-    }, [userContextLoading]) // add search and filters when set up
+        if (userData.id && isOwnAccount) getNotifications()
+    }, [userData.id])
 
-    useEffect(() => {
-        setRenderKey(renderKey + 1)
-    }, [notifications])
+    // todo: add search and filters when set up
 
     function markAllNotificationsSeen() {
+        const accessToken = cookies.get('accessToken')
+        const authHeader = { headers: { Authorization: `Bearer ${accessToken}` } }
         if (accessToken) {
             axios
-                .post(`${config.apiURL}/mark-all-notifications-seen`, null, {
-                    headers: { Authorization: `Bearer ${accessToken}` },
-                })
+                .post(`${config.apiURL}/mark-all-notifications-seen`, null, authHeader)
                 .then((res) => {
                     if (res.data === 'success') {
-                        setTimeout(() => {
-                            getAccountData()
-                            getNotifications()
-                        }, 500)
+                        updateAccountData('unseen_notifications', 0)
+                        setNotifications(
+                            notifications.map((n) => {
+                                return { ...n, seen: true }
+                            })
+                        )
+                        setRenderKey(renderKey + 1)
                     }
                 })
+        } else {
+            // todo: open alert modal, tell user to log in
         }
     }
 
@@ -68,13 +67,17 @@ const UserPageNotifications = (): JSX.Element => {
                 />
             </div>
             <ul className={styles.notifications} key={renderKey}>
-                {notifications.map((notification) => (
-                    <NotificationCard
-                        notification={notification}
-                        // index={index}
-                        key={notification.id}
-                    />
-                ))}
+                {notifications ? (
+                    notifications.map((notification) => (
+                        <NotificationCard
+                            key={notification.id}
+                            notification={notification}
+                            location='account'
+                        />
+                    ))
+                ) : (
+                    <p>No notifications yet</p>
+                )}
             </ul>
         </div>
     )

@@ -1,24 +1,14 @@
 import React from 'react'
-import styles from '../styles/components/Stat.module.scss'
-import { ReactComponent as UsersIconSVG } from '../svgs/users-solid.svg'
-import { ReactComponent as PostIconSVG } from '../svgs/edit-solid.svg'
-import { ReactComponent as CommentIconSVG } from '../svgs/comment-solid.svg'
-import { ReactComponent as ReactionIconSVG } from '../svgs/fire-alt-solid.svg'
+import styles from '@styles/components/Stat.module.scss'
 
 const Stat = (props: {
-    type: string
+    icon: any
     value: number
     title: string
     small?: boolean
     onClick?: () => void
 }): JSX.Element => {
-    const { type, value, title, small, onClick } = props
-
-    let iconSVG
-    if (type === 'user') iconSVG = <UsersIconSVG />
-    if (type === 'post') iconSVG = <PostIconSVG />
-    if (type === 'comment') iconSVG = <CommentIconSVG />
-    if (type === 'reaction') iconSVG = <ReactionIconSVG />
+    const { icon, value, title, small, onClick } = props
 
     return (
         <div
@@ -29,7 +19,7 @@ const Stat = (props: {
             onKeyDown={onClick}
             title={`${value} ${title}`}
         >
-            <div className={styles.icon}>{iconSVG}</div>
+            <div className={styles.icon}>{icon}</div>
             <p>{value}</p>
             {!small && <p>{title}</p>}
         </div>
@@ -37,8 +27,8 @@ const Stat = (props: {
 }
 
 Stat.defaultProps = {
-    onClick: null,
     small: false,
+    onClick: null,
 }
 
 export default Stat

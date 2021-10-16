@@ -1,0 +1,19 @@
+.wrapper, .bottomImage, .topImage, .placeholder {
+    width: 100%;
+    height: 100%;
+}
+.wrapper {
+    position: relative;
+    > img { object-fit: cover }
+}
+.topImage, .placeholder {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+.bottomImage {
+    position: relative;
+}
+.topImage, .bottomImage {
+    opacity: 0;
+}

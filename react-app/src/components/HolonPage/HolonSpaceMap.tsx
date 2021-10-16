@@ -3,25 +3,31 @@ import React, { useState, useEffect, useContext, useRef } from 'react'
 import axios from 'axios'
 import * as d3 from 'd3'
 import { useHistory } from 'react-router-dom'
-import config from '../../Config'
+import config from '@src/Config'
 // import styles from '../../styles/components/HolonSpaceMap.module.scss'
-import { SpaceContext } from '../../contexts/SpaceContext'
-import { ISpaceMapData } from '../../Interfaces'
+import { SpaceContext } from '@contexts/SpaceContext'
+import { ISpaceMapData } from '@src/Interfaces'
 
 const HolonSpaceMap = (): JSX.Element => {
     const {
         spaceData,
-        setSpaceHandle,
+        // setSpaceHandle,
         // fullScreen,
-        spaceSpacesTypeFilter,
-        spaceSpacesSortByFilter,
-        spaceSpacesSortOrderFilter,
-        spaceSpacesTimeRangeFilter,
-        spaceSpacesDepthFilter,
-        setSpaceSpacesDepthFilter,
-        spaceSpacesSearchFilter,
-        setSpaceSpacesSearchFilter,
+        spaceSpacesFilters,
+        updateSpaceSpacesFilter,
+        // spaceSpacesTypeFilter,
+        // spaceSpacesSortByFilter,
+        // spaceSpacesSortOrderFilter,
+        // spaceSpacesTimeRangeFilter,
+        // spaceSpacesDepthFilter,
+        // setSpaceSpacesDepthFilter,
+        // spaceSpacesSearchFilter,
+        // setSpaceSpacesSearchFilter,
     } = useContext(SpaceContext)
+
+    const { type, sortBy, sortOrder, timeRange, depth, searchQuery } = spaceSpacesFilters
+    // console.log('spaceSpacesFilters: ', spaceSpacesFilters)
+
     const [spaceMapData, setSpaceMapData] = useState<Partial<ISpaceMapData>>({})
     // const [width, setWidth] = useState<number | string>(700)
     const [firstRun, setFirstRun] = useState<boolean>(true)
@@ -39,21 +45,24 @@ const HolonSpaceMap = (): JSX.Element => {
     const duration = 1000
 
     const getSpaceMapData = (): void => {
-        console.log('HolonSpaceMap: getSpaceMapData')
+        console.log('HolonSpaceMap: getSpaceMapData 1')
+        // console.log('searchQuery: ', searchQuery)
         axios
             .get(
                 /* prettier-ignore */
                 `${config.apiURL}/space-map-data?spaceId=${spaceData.id
                 }&offset=${0
-                }&spaceType=${spaceSpacesTypeFilter
-                }&sortBy=${spaceSpacesSortByFilter
-                }&sortOrder=${spaceSpacesSortOrderFilter
-                }&timeRange=${spaceSpacesTimeRangeFilter
-                }&depth=${spaceSpacesDepthFilter
-                }&searchQuery=${spaceSpacesSearchFilter}`
+                }&spaceType=${type
+                }&sortBy=${sortBy
+                }&sortOrder=${sortOrder
+                }&timeRange=${timeRange
+                }&depth=${depth
+                }&searchQuery=${searchQuery}`
             )
             .then((res) => {
-                setSpaceMapData(res.data)
+                // if res.data.id
+                updateTree(res.data)
+                // setSpaceMapData(res.data)
                 // console.log('res.data: ', res.data)
             })
     }
@@ -141,10 +150,11 @@ const HolonSpaceMap = (): JSX.Element => {
         )
 
     function resetTreePosition() {
+        console.log('resetTreePosition')
         const svg = d3.select('#space-map-svg')
         const svgWidth = parseInt(svg.style('width'), 10)
         const svgHeight = parseInt(svg.style('height'), 10)
-       //  const yOffset = spaceData.DirectParentHolons!.length ? 180 : 80
+        const yOffset = spaceData.DirectParentHolons!.length ? 180 : 80
         // d3.select('#post-map-svg')
         //     .transition()
         //     .duration(2000)
@@ -153,69 +163,69 @@ const HolonSpaceMap = (): JSX.Element => {
         //         d3.zoomIdentity.scale(scale).translate(svgWidth / scale / 2, height / scale / 2)
         // )
         // // reset tree position
-        // d3.select('#space-map-svg')
-        //     .transition()
-        //     .duration(duration)
-        //     .call(zoom.transform, d3.zoomIdentity.scale(1).translate(svgWidth / 2, yOffset))
+        d3.select('#space-map-svg')
+            .transition()
+            .duration(duration)
+            .call(zoom.transform, d3.zoomIdentity.scale(1).translate(svgWidth / 2, yOffset))
 
-        // when transition complete, calculate new scale and adjust zoom to fit tree in canvas
-        setTimeout(() => {
-            // const svg = d3.select('#space-map-svg')
-            // const svgWidth = parseInt(svg.style('width'), 10)
-            // const svgHeight = parseInt(svg.style('height'), 10)
-            const treeBBox = d3.select('#space-map-master-group').node().getBBox()
-            console.log('svg width: ', svgWidth)
-            console.log('svg height: ', svgHeight)
-            console.log('treeBBox: ', treeBBox)
-            // if tree width or height greater than svg width or height sclae
-            // if both tree width and tree height greater than svg pick the one that has more difference
-            const widthRatio = svgWidth / treeBBox.width
-            const heightRatio = svgHeight / treeBBox.height
-            console.log('widthRatio: ', widthRatio)
-            console.log('heightRatio: ', heightRatio)
-            console.log('spacedata: ', spaceData)
-            const yOffset = spaceData.DirectParentHolons!.length ? 180 : 80
-            // if (widthRatio < 1 || heightRatio < 1) {
-            if (widthRatio < heightRatio) {
-                console.log('scale to width')
-                const ratioOffset = 0.1 // widthRatio < 1 ? 0.1 : 0.3
-                const xOffset = svgWidth / 2 / (widthRatio - ratioOffset)
-                d3.select('#space-map-svg')
-                    .transition()
-                    .duration(duration)
-                    .call(
-                        zoom.transform,
-                        d3.zoomIdentity.scale(widthRatio - ratioOffset).translate(xOffset, yOffset)
-                    )
-            } else {
-                console.log('scale to height')
-                const ratioOffset = 0.1 // heightRatio < 1 ? 0.1 : 0.3
-                const xOffset = svgWidth / 2 / (heightRatio - ratioOffset)
-                d3.select('#space-map-svg')
-                    .transition()
-                    .duration(duration)
-                    .call(
-                        zoom.transform,
-                        d3.zoomIdentity.scale(heightRatio - ratioOffset).translate(xOffset, yOffset)
-                    )
-            }
-        }, duration + 500)
+        // // when transition complete, calculate new scale and adjust zoom to fit tree in canvas
+        // setTimeout(() => {
+        //     // const svg = d3.select('#space-map-svg')
+        //     // const svgWidth = parseInt(svg.style('width'), 10)
+        //     // const svgHeight = parseInt(svg.style('height'), 10)
+        //     const treeBBox = d3.select('#space-map-master-group').node().getBBox()
+        //     // console.log('svg width: ', svgWidth)
+        //     // console.log('svg height: ', svgHeight)
+        //     // console.log('treeBBox: ', treeBBox)
+        //     // if tree width or height greater than svg width or height sclae
+        //     // if both tree width and tree height greater than svg pick the one that has more difference
+        //     const widthRatio = svgWidth / treeBBox.width
+        //     const heightRatio = svgHeight / treeBBox.height
+        //     // console.log('widthRatio: ', widthRatio)
+        //     // console.log('heightRatio: ', heightRatio)
+        //     // console.log('spacedata: ', spaceData)
+        //     const yOffset = spaceData.DirectParentHolons.length ? 180 : 80
+        //     // if (widthRatio < 1 || heightRatio < 1) {
+        //     if (widthRatio < heightRatio) {
+        //         // console.log('scale to width')
+        //         const ratioOffset = 0.1 // widthRatio < 1 ? 0.1 : 0.3
+        //         const xOffset = svgWidth / 2 / (widthRatio - ratioOffset)
+        //         d3.select('#space-map-svg')
+        //             .transition()
+        //             .duration(duration)
+        //             .call(
+        //                 zoom.transform,
+        //                 d3.zoomIdentity.scale(widthRatio - ratioOffset).translate(xOffset, yOffset)
+        //             )
+        //     } else {
+        //         // console.log('scale to height')
+        //         const ratioOffset = 0.1 // heightRatio < 1 ? 0.1 : 0.3
+        //         const xOffset = svgWidth / 2 / (heightRatio - ratioOffset)
+        //         d3.select('#space-map-svg')
+        //             .transition()
+        //             .duration(duration)
+        //             .call(
+        //                 zoom.transform,
+        //                 d3.zoomIdentity.scale(heightRatio - ratioOffset).translate(xOffset, yOffset)
+        //             )
+        //     }
+        // }, duration + 500)
     }
 
     function createCanvas() {
         const width = '100%'
         const height = window.innerHeight - 300
-        const yOffset = spaceData.DirectParentHolons!.length ? 180 : 80
+        const yOffset = spaceData.DirectParentHolons.length ? 180 : 80
         d3.select('#canvas')
             .append('svg')
             .attr('id', 'space-map-svg')
             .attr('width', width)
             .attr('height', height)
-            // .attr('transform', () => {
-            //     const newWidth = parseInt(d3.select('#space-map-svg').style('width'), 10)
-            //     return `translate(${newWidth / 2},${yOffset})`
-            // })
-        
+        // .attr('transform', () => {
+        //     const newWidth = parseInt(d3.select('#space-map-svg').style('width'), 10)
+        //     return `translate(${newWidth / 2},${yOffset})`
+        // })
+
         const newWidth = parseInt(d3.select('#space-map-svg').style('width'), 10)
 
         d3.select('#space-map-svg').append('defs').attr('id', 'imgdefs')
@@ -286,6 +296,8 @@ const HolonSpaceMap = (): JSX.Element => {
     function updateTree(data) {
         console.log('updateTree')
 
+        resetTreePosition()
+
         setTimeout(() => {
             d3.selectAll('.background-circle').classed('transitioning', false)
             spaceTransitioning.current = false
@@ -324,26 +336,26 @@ const HolonSpaceMap = (): JSX.Element => {
 
         // move out of update tree function ?
         function getChildren(node) {
-            console.log('HolonSpaceMap: getSpaceMapData')
+            console.log('HolonSpaceMap: getSpaceMapData 2')
             axios
                 .get(
                     /* prettier-ignore */
                     `${config.apiURL}/space-map-data?spaceId=${node.data.id
                     }&offset=${node.children.length - 1
-                    }&spaceType=${spaceSpacesTypeFilter
-                    }&sortBy=${spaceSpacesSortByFilter
-                    }&sortOrder=${spaceSpacesSortOrderFilter
-                    }&timeRange=${spaceSpacesTimeRangeFilter
-                    }&depth=${spaceSpacesDepthFilter
-                    }&searchQuery=${spaceSpacesSearchFilter}`
+                    }&spaceType=${type
+                    }&sortBy=${sortBy
+                    }&sortOrder=${sortOrder
+                    }&timeRange=${timeRange
+                    }&depth=${depth
+                    }&searchQuery=${searchQuery}`
                 )
                 .then((res) => {
                     // console.log(res)
-                    const match = findParent(spaceMapData, node.data.uuid)
+                    const match = findParent(data, node.data.uuid)
                     match.children = match.children.filter((child) => !child.isExpander)
                     match.children.push(...res.data)
                     // setSpaceMapData(_.cloneDeep(spaceMapData))
-                    updateTree(spaceMapData)
+                    updateTree(data)
                 })
         }
 
@@ -519,7 +531,7 @@ const HolonSpaceMap = (): JSX.Element => {
                                     } else {
                                         spaceTransitioning.current = true
                                         history.push(`/s/${d.data.handle}/spaces`)
-                                        setSpaceHandle(d.data.handle)
+                                        // setSpaceHandle(d.data.handle)
                                     }
                                     // mark all background circles with transitioning class to prevent animations
                                     d3.selectAll('.background-circle').classed(
@@ -875,50 +887,36 @@ const HolonSpaceMap = (): JSX.Element => {
         createCanvas()
     }, [])
 
-    function getData() {
-        console.log('get data')
-        getSpaceMapData()
-        resetTreePosition()
-    }
-
     // first run
     useEffect(() => {
         if (spaceData.id) {
             if (firstRun) setFirstRun(false)
-            if (spaceSpacesSearchFilter) {
-                setSpaceSpacesSearchFilter('')
-            } else {
-                getData()
-            }
+            // if (searchQuery) updateSpaceSpacesFilter('searchQuery', '')
+            // else getData()
+            getSpaceMapData()
         }
     }, [spaceData.id])
 
     // filter updates
     useEffect(() => {
-        if (!firstRun) getData()
-    }, [
-        spaceSpacesTypeFilter,
-        spaceSpacesSortByFilter,
-        spaceSpacesSortOrderFilter,
-        spaceSpacesDepthFilter,
-    ])
-
-    // if search or time range filter applied, set depth to 'All Contained Spaces'
-    useEffect(() => {
         if (!firstRun) {
-            if (spaceSpacesSearchFilter || spaceSpacesTimeRangeFilter !== 'All Time') {
-                if (spaceSpacesDepthFilter === 'Only Direct Descendants') {
-                    setSpaceSpacesDepthFilter('All Contained Spaces')
-                } else {
-                    getData()
-                }
-            } else if (spaceSpacesDepthFilter === 'All Contained Spaces') {
-                setSpaceSpacesDepthFilter('Only Direct Descendants')
-            } else {
-                getData()
-            }
+            spaceTransitioning.current = true
+            getSpaceMapData()
         }
-    }, [spaceSpacesSearchFilter, spaceSpacesTimeRangeFilter])
+    }, [type, sortBy, sortOrder, depth])
+
+    // // if search or time range filter applied, set depth to 'All Contained Spaces'
+    // useEffect(() => {
+    //     if (!firstRun) {
+    //         if (searchQuery || timeRange !== 'All Time') {
+    //             if (depth === 'Only Direct Descendants') {
+    //                 updateSpaceSpacesFilter('depth', 'All Contained Spaces')
+    //             } else getSpaceMapData()
+    //         } else if (depth === 'All Contained Spaces') {
+    //             updateSpaceSpacesFilter('depth', 'Only Direct Descendants')
+    //         } else getSpaceMapData()
+    //     }
+    // }, [searchQuery, timeRange])
 
     // useEffect(() => {
     //     setWidth(fullScreen ? '100%' : 700)
@@ -928,11 +926,11 @@ const HolonSpaceMap = (): JSX.Element => {
     //     updateCanvasSize()
     // }, [width])
 
-    useEffect(() => {
-        if (spaceMapData.id && !firstRun) {
-            updateTree(spaceMapData)
-        }
-    }, [spaceMapData])
+    // useEffect(() => {
+    //     if (spaceMapData.id && !firstRun) {
+    //         updateTree(spaceMapData)
+    //     }
+    // }, [spaceMapData])
 
     return <div id='canvas' />
     // style={{ width: '100%', height: '100%' }}

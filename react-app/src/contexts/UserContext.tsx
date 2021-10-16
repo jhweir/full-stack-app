@@ -1,210 +1,132 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import axios from 'axios'
-import { useHistory } from 'react-router-dom'
-import config from '../Config'
-import { AccountContext } from './AccountContext'
-import { IUserContext, IUser, IPost } from '../Interfaces'
+import config from '@src/Config'
+import { AccountContext } from '@contexts/AccountContext'
+import { IUserContext, IPost } from '@src/Interfaces'
 
-export const UserContext = createContext<IUserContext>({
-    userContextLoading: true,
-    userHandle: '',
-    userData: {},
-    selectedUserSubPage: '',
-    isOwnAccount: false,
-    createdPosts: [],
-    createdPostPaginationLimit: 0,
-    createdPostPaginationOffset: 0,
-    createdPostPaginationHasMore: false,
-    createdPostFiltersOpen: false,
-    createdPostSearchFilter: '',
-    createdPostTimeRangeFilter: '',
-    createdPostTypeFilter: '',
-    createdPostSortByFilter: '',
-    createdPostSortOrderFilter: '',
-    setUserContextLoading: () => null,
-    setUserHandle: () => null,
-    setUserData: () => null,
-    setSelectedUserSubPage: () => null,
-    setIsOwnAccount: () => null,
-    setCreatedPosts: () => null,
-    setCreatedPostPaginationLimit: () => null,
-    setCreatedPostPaginationOffset: () => null,
-    setCreatedPostPaginationHasMore: () => null,
-    setCreatedPostFiltersOpen: () => null,
-    setCreatedPostSearchFilter: () => null,
-    setCreatedPostTimeRangeFilter: () => null,
-    setCreatedPostTypeFilter: () => null,
-    setCreatedPostSortByFilter: () => null,
-    setCreatedPostSortOrderFilter: () => null,
-    getUserData: () => null,
-    getCreatedPosts: () => null,
-    getNextCreatedPosts: () => null,
-})
+export const UserContext = createContext<IUserContext>({} as IUserContext)
+
+const defaults = {
+    userData: {
+        id: null,
+        handle: null,
+        name: null,
+        bio: null,
+        flagImagePath: null,
+        coverImagePath: null,
+        createdAt: null,
+        followedHolons: [],
+        moderatedHolons: [],
+    },
+    postFilters: {
+        type: 'All Types',
+        sortBy: 'Date',
+        sortOrder: 'Descending',
+        timeRange: 'All Time',
+        searchQuery: '',
+    },
+}
 
 function UserContextProvider({ children }: { children: JSX.Element }): JSX.Element {
-    const { accountContextLoading, isLoggedIn, accountData } = useContext(AccountContext)
-    const [userContextLoading, setUserContextLoading] = useState(true)
-    const [userHandle, setUserHandle] = useState('')
-    const [userData, setUserData] = useState<Partial<IUser>>({
-        FollowedHolons: [],
-        ModeratedHolons: [],
-    })
-    const [selectedUserSubPage, setSelectedUserSubPage] = useState('')
+    const { isLoggedIn, accountData } = useContext(AccountContext)
+
     const [isOwnAccount, setIsOwnAccount] = useState(false)
+    const [selectedUserSubPage, setSelectedUserSubPage] = useState('')
+    const [userData, setUserData] = useState(defaults.userData)
+    const [userDataLoading, setUserDataLoading] = useState(true)
+    const [userPosts, setUserPosts] = useState<IPost[]>([])
+    const [userPostsLoading, setUserPostsLoading] = useState(true)
+    const [nextUserPostsLoading, setNextUserPostsLoading] = useState(false)
+    const [userPostsFilters, setUserPostsFilters] = useState(defaults.postFilters)
+    const [userPostsFiltersOpen, setUserPostsFiltersOpen] = useState(false)
+    const [userPostsPaginationLimit, setUserPostsPaginationLimit] = useState(10)
+    const [userPostsPaginationOffset, setUserPostsPaginationOffset] = useState(0)
+    const [userPostsPaginationHasMore, setUserPostsPaginationHasMore] = useState(false)
 
-    const [createdPosts, setCreatedPosts] = useState<IPost[]>([])
-    const [createdPostFiltersOpen, setCreatedPostFiltersOpen] = useState(false)
-    const [createdPostTimeRangeFilter, setCreatedPostTimeRangeFilter] = useState('All Time')
-    const [createdPostTypeFilter, setCreatedPostTypeFilter] = useState('All Types')
-    const [createdPostSortByFilter, setCreatedPostSortByFilter] = useState('Date')
-    const [createdPostSortOrderFilter, setCreatedPostSortOrderFilter] = useState('Descending')
-    const [createdPostSearchFilter, setCreatedPostSearchFilter] = useState('')
-    const [createdPostPaginationLimit, setCreatedPostPaginationLimit] = useState(10)
-    const [createdPostPaginationOffset, setCreatedPostPaginationOffset] = useState(0)
-    const [createdPostPaginationHasMore, setCreatedPostPaginationHasMore] = useState(true)
-
-    function getUserData() {
+    function getUserData(userHandle) {
         console.log('UserContext: getUserData')
-        setUserContextLoading(true)
-        axios.get(`${config.apiURL}/user-data?userHandle=${userHandle}`).then((res) => {
-            setUserData(res.data)
-            setUserContextLoading(false)
-        })
+        setUserDataLoading(true)
+        axios
+            .get(`${config.apiURL}/user-data?userHandle=${userHandle}`)
+            .then((res) => {
+                setUserData(res.data || defaults.userData)
+                setUserDataLoading(false)
+            })
+            .catch((error) => console.log('GET user-data error: ', error))
     }
 
-    function getCreatedPosts() {
-        console.log(`UserContext: getCreatedPosts (0 to ${createdPostPaginationLimit})`)
+    function getUserPosts(offset) {
+        console.log(`UserContext: getUserPosts (${offset} to ${offset + userPostsPaginationLimit})`)
+        const firstLoad = offset === 0
+        if (firstLoad) setUserPostsLoading(true)
+        else setNextUserPostsLoading(true)
         axios
             .get(
                 // prettier-ignore
-                `${config.apiURL}/user-posts?accountId=${isLoggedIn ? accountData.id : null
-                }&userId=${userData.id ? userData.id : null
-                }&timeRange=${createdPostTimeRangeFilter
-                }&postType=${createdPostTypeFilter
-                }&sortBy=${createdPostSortByFilter
-                }&sortOrder=${createdPostSortOrderFilter
-                }&searchQuery=${createdPostSearchFilter
-                }&limit=${createdPostPaginationLimit
-                }&offset=0`
+                `${config.apiURL}/user-posts?accountId=${accountData.id
+                }&userId=${userData.id
+                }&postType=${userPostsFilters.type
+                }&sortBy=${userPostsFilters.sortBy
+                }&sortOrder=${userPostsFilters.sortOrder
+                }&timeRange=${userPostsFilters.timeRange
+                }&searchQuery=${userPostsFilters.searchQuery
+                }&limit=${userPostsPaginationLimit
+                }&offset=${offset}`
             )
             .then((res) => {
-                if (res.data.length < createdPostPaginationLimit) {
-                    setCreatedPostPaginationHasMore(false)
-                }
-                setCreatedPosts(res.data)
-                setCreatedPostPaginationOffset(createdPostPaginationLimit)
-                setUserContextLoading(false)
+                setUserPosts(firstLoad ? res.data : [...userPosts, ...res.data])
+                setUserPostsPaginationHasMore(res.data.length === userPostsPaginationLimit)
+                setUserPostsPaginationOffset(offset + userPostsPaginationLimit)
+                if (firstLoad) setUserPostsLoading(false)
+                else setNextUserPostsLoading(false)
             })
+            .catch((error) => console.log('GET user-posts error: ', error))
     }
 
-    function getNextCreatedPosts() {
-        if (createdPostPaginationHasMore) {
-            console.log(
-                `UserContext: getNextCreatedPosts (${createdPostPaginationOffset} to ${
-                    createdPostPaginationOffset + createdPostPaginationLimit
-                })`
-            )
-            axios
-                .get(
-                    // prettier-ignore
-                    `${config.apiURL}/user-posts?accountId=${isLoggedIn ? accountData.id : null
-                    }&userId=${userData.id ? userData.id : null
-                    }&timeRange=${createdPostTimeRangeFilter
-                    }&postType=${createdPostTypeFilter
-                    }&sortBy=${createdPostSortByFilter
-                    }&sortOrder=${createdPostSortOrderFilter
-                    }&searchQuery=${createdPostSearchFilter
-                    }&limit=${createdPostPaginationLimit
-                    }&offset=${createdPostPaginationOffset}`
-                )
-                .then((res) => {
-                    if (res.data.length < createdPostPaginationLimit) {
-                        setCreatedPostPaginationHasMore(false)
-                    }
-                    setCreatedPosts([...createdPosts, ...res.data])
-                    setCreatedPostPaginationOffset(
-                        createdPostPaginationOffset + createdPostPaginationLimit
-                    )
-                })
-        }
+    function updateUserPostsFilter(key, payload) {
+        console.log(`UserContext: updateUserPostsFilter (${key}: ${payload})`)
+        setUserPostsFilters({ ...userPostsFilters, [key]: payload })
     }
 
-    function resetCreatedPostFilters() {
-        setCreatedPostFiltersOpen(false)
-        setCreatedPostTimeRangeFilter('All Time')
-        setCreatedPostTypeFilter('All Types')
-        setCreatedPostSortByFilter('Date')
-        setCreatedPostSortOrderFilter('Descending')
-        setCreatedPostSearchFilter('')
-        setCreatedPostPaginationLimit(10)
-        setCreatedPostPaginationOffset(0)
-        setCreatedPostPaginationHasMore(true)
+    function resetUserContext() {
+        console.log('UserContext: resetUserContext')
+        setUserData(defaults.userData)
+        setUserPosts([])
+        setUserPostsFilters(defaults.postFilters)
+        setUserPostsFiltersOpen(false)
+        setUserPostsPaginationLimit(10)
+        setUserPostsPaginationOffset(0)
+        setUserPostsPaginationHasMore(false)
     }
 
+    // determine if user is owned by account
     useEffect(() => {
-        resetCreatedPostFilters()
-    }, [userHandle])
-
-    useEffect(() => {
-        if (!accountContextLoading) {
-            getUserData()
-        }
-    }, [userHandle, accountData.id])
-
-    useEffect(() => {
-        if (isLoggedIn && userData && userData.id === accountData.id) {
-            setIsOwnAccount(true)
-        } else {
-            setIsOwnAccount(false)
-        }
-    }, [isLoggedIn, userData])
-
-    // back button fix
-    const history = useHistory()
-    useEffect(() => {
-        history.listen(() => {
-            if (history.action === 'POP') {
-                history.go(history.location.pathname)
-            }
-        })
-    }, [])
+        if (isLoggedIn && userData.id === accountData.id) setIsOwnAccount(true)
+        else setIsOwnAccount(false)
+    }, [userData.id, isLoggedIn])
 
     return (
         <UserContext.Provider
             value={{
-                userContextLoading,
-                userHandle,
-                userData,
-                selectedUserSubPage,
                 isOwnAccount,
-                createdPosts,
-                createdPostPaginationLimit,
-                createdPostPaginationOffset,
-                createdPostPaginationHasMore,
-                createdPostFiltersOpen,
-                createdPostSearchFilter,
-                createdPostTimeRangeFilter,
-                createdPostTypeFilter,
-                createdPostSortByFilter,
-                createdPostSortOrderFilter,
-                setUserContextLoading,
-                setUserHandle,
-                setUserData,
+                selectedUserSubPage,
                 setSelectedUserSubPage,
-                setIsOwnAccount,
-                setCreatedPosts,
-                setCreatedPostPaginationLimit,
-                setCreatedPostPaginationOffset,
-                setCreatedPostPaginationHasMore,
-                setCreatedPostFiltersOpen,
-                setCreatedPostSearchFilter,
-                setCreatedPostTimeRangeFilter,
-                setCreatedPostTypeFilter,
-                setCreatedPostSortByFilter,
-                setCreatedPostSortOrderFilter,
+                userData,
+                userDataLoading,
+                userPosts,
+                userPostsLoading,
+                nextUserPostsLoading,
+                userPostsFilters,
+                userPostsFiltersOpen,
+                setUserPostsFiltersOpen,
+                userPostsPaginationLimit,
+                userPostsPaginationOffset,
+                userPostsPaginationHasMore,
+                // functions
                 getUserData,
-                getCreatedPosts,
-                getNextCreatedPosts,
+                getUserPosts,
+                updateUserPostsFilter,
+                resetUserContext,
             }}
         >
             {children}

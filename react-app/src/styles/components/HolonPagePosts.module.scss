@@ -1,27 +1,16 @@
 @import '../Transitions.scss';
 // TODO: change to importing a variables file including transition speeds etc.
 
-.wall {
+.wrapper {
     width: 100%;
-    //height: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
-    //overflow: hidden;
 }
-.posts {
-    width: 700px;
+.header {
     display: flex;
     flex-direction: column;
-    opacity: 1;
-    transition: opacity $transitionSpeed;
-    &.hidden {
-        opacity: 0;
-    }
-}
-.pinnedPosts {
-    padding: 0;
-    width: 100%;
+    width: 700px;
 }
 .headerRow {
     width: 100%;
@@ -31,43 +20,21 @@
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
-}
-.headerRowSection {
-    display: flex;
-    flex-direction: row;
-}
-.filterButton {
-    height: 40px;
-    border-radius: 5px;
-    padding: 0 15px;
-    background-color: rgba(0,0,0,0.04);
-    margin-right: 10px;
-    font-size: 14px;
-    font-weight: 800;
-    color: rgba(0,0,0,0.6);
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    transition-property: background-color, color;
-    transition-duration: 0.3s, 0.3s;
-    &:hover {
-        cursor: pointer;
-        background-color: rgba(0,0,0,0.08);// rgba(255, 255, 255, 1);
-        color: rgba(0,0,0,0.8);
-        .filterButtonIcon { opacity: 0.6; }
+    > div {
+        display: flex;
+        flex-direction: row;
+        > form,button {
+            margin-right: 10px;
+        }
     }
 }
-.filterButtonIcon {
-    width: 20px;
-    opacity: 0.4;
-    transition-property: opacity;
-    transition-duration: 0.5s;
-}
-.expandButton {
-    margin-left: 15px;
-    width: 23px;
-    opacity: 0.3;
-    &:hover {
-        cursor: pointer;
+.posts {
+    width: 700px;
+    display: flex;
+    flex-direction: column;
+    opacity: 1;
+    transition: opacity $transitionSpeed;
+    &.hidden {
+        opacity: 0;
     }
 }

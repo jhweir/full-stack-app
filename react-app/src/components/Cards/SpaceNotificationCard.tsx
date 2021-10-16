@@ -17,8 +17,7 @@ const SpaceNotificationCard = (props: {
     const { notification, getRequestsData } = props
 
     const { accountData } = useContext(AccountContext)
-    const { spaceData, getSpaceData, setSpaceHandle } = useContext(SpaceContext)
-    const { setUserHandle } = useContext(UserContext)
+    const { spaceData, getSpaceData } = useContext(SpaceContext)
 
     const [seen, setSeen] = useState(true)
 
@@ -37,9 +36,10 @@ const SpaceNotificationCard = (props: {
             })
             .then((res) => {
                 if (res.data === 'success') {
-                    setTimeout(() => {
-                        getSpaceData()
-                    }, 300)
+                    // todo: update context directly
+                    // setTimeout(() => {
+                    //     getSpaceData()
+                    // }, 300)
                 }
             })
     }
@@ -88,7 +88,6 @@ const SpaceNotificationCard = (props: {
                         <Link
                             className={styles.imageTextLink}
                             to={`/u/${notification.triggerUser.handle}`}
-                            onClick={() => setUserHandle(notification.triggerUser.handle)}
                         >
                             <SmallFlagImage
                                 type='user'
@@ -105,7 +104,6 @@ const SpaceNotificationCard = (props: {
                         <Link
                             className={styles.imageTextLink}
                             to={`/s/${notification.triggerSpace.handle}`}
-                            onClick={() => setSpaceHandle(notification.triggerSpace.handle)}
                         >
                             <SmallFlagImage
                                 type='space'
@@ -115,13 +113,7 @@ const SpaceNotificationCard = (props: {
                             <span>{notification.triggerSpace.name}</span>
                         </Link>
                         <div className={`${styles.text} mr-10`}>become a child space of</div>
-                        <Link
-                            className={styles.imageTextLink}
-                            to={`/s/${spaceData.handle}`}
-                            onClick={() => {
-                                if (spaceData.handle) setSpaceHandle(spaceData.handle)
-                            }}
-                        >
+                        <Link className={styles.imageTextLink} to={`/s/${spaceData.handle}`}>
                             <SmallFlagImage
                                 type='space'
                                 size={30}

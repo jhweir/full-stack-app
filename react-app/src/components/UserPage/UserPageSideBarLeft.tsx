@@ -24,30 +24,20 @@ const UserPageSideBarLeft = (): JSX.Element => {
                 />
             </div>
             <div className={styles.userName}>{userData.name}</div>
+            {isOwnAccount && <p className={styles.header}>Private</p>}
             <div className={styles.navButtons}>
                 {/* TODO: replace SideBarButton with actual content */}
                 {isOwnAccount && (
-                    <SideBarButton
-                        icon='cog-solid.svg'
-                        text='Settings'
-                        url='settings'
-                        selected={selectedUserSubPage === 'settings'}
-                        marginBottom={5}
-                        onClickFunction={() => null}
-                        total={null}
-                    />
-                )}
-                <SideBarButton
-                    icon='book-open-solid.svg'
-                    text='About'
-                    url='about'
-                    selected={selectedUserSubPage === 'about'}
-                    marginBottom={5}
-                    onClickFunction={() => null}
-                    total={null}
-                />
-                {isOwnAccount && (
                     <>
+                        <SideBarButton
+                            icon='cog-solid.svg'
+                            text='Settings'
+                            url='settings'
+                            selected={selectedUserSubPage === 'settings'}
+                            marginBottom={5}
+                            onClickFunction={() => null}
+                            total={null}
+                        />
                         <Link
                             to='notifications'
                             className={`${styles.button} ${
@@ -69,7 +59,7 @@ const UserPageSideBarLeft = (): JSX.Element => {
                                 </div>
                             )}
                         </Link>
-                        <SideBarButton
+                        {/* <SideBarButton
                             icon='envelope-solid.svg'
                             text='Messages'
                             url='messages'
@@ -77,9 +67,21 @@ const UserPageSideBarLeft = (): JSX.Element => {
                             marginBottom={5}
                             onClickFunction={() => null}
                             total={null}
-                        />
+                        /> */}
                     </>
                 )}
+            </div>
+            {isOwnAccount && <p className={styles.header}>Public</p>}
+            <div className={styles.navButtons}>
+                <SideBarButton
+                    icon='book-open-solid.svg'
+                    text='About'
+                    url='about'
+                    selected={selectedUserSubPage === 'about'}
+                    marginBottom={5}
+                    onClickFunction={() => null}
+                    total={null}
+                />
                 <SideBarButton
                     icon='edit-solid.svg'
                     text='Posts'

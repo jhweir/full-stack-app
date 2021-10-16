@@ -1,15 +1,24 @@
 import React, { useContext, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { SpaceContext } from '../../contexts/SpaceContext'
-import styles from '../../styles/components/HolonPageAbout.module.scss'
-import { timeSinceCreated, dateCreated } from '../../Functions'
+import ShowMoreLess from '@components/ShowMoreLess'
+import Markdown from '@components/Markdown'
+import { AccountContext } from '@contexts/AccountContext'
+import { SpaceContext } from '@contexts/SpaceContext'
+import styles from '@styles/components/HolonPageAbout.module.scss'
+import { timeSinceCreated, dateCreated } from '@src/Functions'
 
-const HolonPageAbout = (): JSX.Element => {
-    const { spaceData, setSelectedSpaceSubPage } = useContext(SpaceContext)
+const HolonPageAbout = ({ match }: { match: { params: { spaceHandle: string } } }): JSX.Element => {
+    const { params } = match
+    const { spaceHandle } = params
+    const { accountDataLoading } = useContext(AccountContext)
+    const { spaceData, getSpaceData, setSelectedSpaceSubPage } = useContext(SpaceContext)
 
     useEffect(() => {
         setSelectedSpaceSubPage('about')
-    }, [])
+        if (!accountDataLoading && spaceHandle !== spaceData.handle) {
+            getSpaceData(spaceHandle, false)
+        }
+    }, [accountDataLoading, spaceHandle])
 
     return (
         <div className={styles.wrapper}>
@@ -48,7 +57,9 @@ const HolonPageAbout = (): JSX.Element => {
                         </Link>
                     )}
                 </div>
-                <div className={styles.text}>{spaceData.description}</div>
+                <ShowMoreLess height={250}>
+                    <Markdown text={spaceData.description || ''} />
+                </ShowMoreLess>
             </div>
         </div>
     )

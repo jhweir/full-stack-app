@@ -1,19 +1,21 @@
 import React, { useContext } from 'react'
-import { AccountContext } from '../contexts/AccountContext'
-import styles from '../styles/components/FlagImage.module.scss'
-import { ReactComponent as UserIconSVG } from '../svgs/user-solid.svg'
-import { ReactComponent as UsersIconSVG } from '../svgs/users-solid.svg'
-import { ReactComponent as PostIconSVG } from '../svgs/edit-solid.svg'
+import ImageFade from '@components/ImageFade'
+import { AccountContext } from '@contexts/AccountContext'
+import styles from '@styles/components/FlagImage.module.scss'
+import { ReactComponent as UserIconSVG } from '@svgs/user-solid.svg'
+import { ReactComponent as UsersIconSVG } from '@svgs/users-solid.svg'
+import { ReactComponent as PostIconSVG } from '@svgs/edit-solid.svg'
 
 const FlagImage = (props: {
+    type: 'space' | 'user' | 'post'
     size: number
-    type: string
-    imagePath: string | undefined
+    imagePath: string | null
     outline?: boolean
     shadow?: boolean
+    fade?: boolean
     canEdit?: boolean
 }): JSX.Element => {
-    const { size, type, imagePath, outline, shadow, canEdit } = props
+    const { size, type, imagePath, outline, shadow, fade, canEdit } = props
     const { setImageUploadType, setImageUploadModalOpen } = useContext(AccountContext)
 
     let iconSVG
@@ -31,38 +33,45 @@ const FlagImage = (props: {
         iconWidth = '50%'
     }
 
-    function openImageUploadModal() {
+    function handleClick() {
         setImageUploadType(type === 'space' ? 'holon-flag-image' : 'user-flag-image')
         setImageUploadModalOpen(true)
     }
 
+    const Placeholder = (): JSX.Element => {
+        return (
+            <div className={styles.placeholderWrapper}>
+                <div className={styles.placeholderIcon} style={{ width: iconWidth }}>
+                    {iconSVG}
+                </div>
+            </div>
+        )
+    }
+
     return (
         <div
-            className={`${styles.wrapper} ${outline && styles.outline} ${shadow && styles.shadow}`}
+            className={`${styles.wrapper} ${shadow && styles.shadow} ${outline && styles.outline} ${
+                size < 50 && styles.small
+            }`}
             style={{ width: size, height: size }}
         >
-            {imagePath ? (
-                <div
-                    className={styles.flagImage}
-                    style={{ backgroundImage: `url(${imagePath})` }}
-                />
+            {fade ? (
+                <ImageFade imagePath={imagePath} speed={1000}>
+                    <Placeholder />
+                </ImageFade>
             ) : (
-                <div className={styles.placeholderWrapper}>
-                    <div className={styles.placeholderIcon} style={{ width: iconWidth }}>
-                        {iconSVG}
-                    </div>
-                </div>
+                <>
+                    {imagePath ? (
+                        <img className={styles.flagImage} src={imagePath} alt='' />
+                    ) : (
+                        <Placeholder />
+                    )}
+                </>
             )}
             {canEdit && (
-                <div
-                    className={styles.uploadButton}
-                    role='button'
-                    tabIndex={0}
-                    onClick={openImageUploadModal}
-                    onKeyDown={openImageUploadModal}
-                >
+                <button className={styles.uploadButton} type='button' onClick={handleClick}>
                     Upload new flag image
-                </div>
+                </button>
             )}
         </div>
     )
@@ -71,6 +80,7 @@ const FlagImage = (props: {
 FlagImage.defaultProps = {
     outline: false,
     shadow: false,
+    fade: false,
     canEdit: false,
 }
 

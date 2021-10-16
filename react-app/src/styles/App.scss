@@ -55,12 +55,23 @@ body {
 
 a {
     text-decoration: none;
-    color: black;
+    color: black; // $blue1;
     &:hover { cursor: pointer }
 }
 
 ul {
     padding: 0;
+}
+.roboto {
+    font-family: 'Roboto', sans-serif;
+}
+
+.success {
+    color: $green;
+}
+
+.danger {
+    color: $red;
 }
 
 .uploadPictureContainer {

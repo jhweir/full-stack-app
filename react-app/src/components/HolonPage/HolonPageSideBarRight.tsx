@@ -1,23 +1,18 @@
 import React, { useContext } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useHistory } from 'react-router-dom'
 import { SpaceContext } from '../../contexts/SpaceContext'
 import styles from '../../styles/components/HolonPageSideBarRight.module.scss'
 import HolonPageSideBarRightPlaceholder from './HolonPageSideBarRightPlaceholder'
 
 const HolonPageSideBarRight = (): JSX.Element => {
-    const { spaceData, setSpaceHandle, spaceContextLoading, selectedSpaceSubPage } = useContext(
-        SpaceContext
-    )
+    const { spaceData, selectedSpaceSubPage } = useContext(SpaceContext)
+    const history = useHistory()
 
     return (
         <div className={styles.sideBarRight}>
             <HolonPageSideBarRightPlaceholder />
             {spaceData && (
-                <div
-                    className={`${styles.sideBarRightContent} ${
-                        !spaceContextLoading && styles.visible
-                    }`}
-                >
+                <div className={styles.sideBarRightContent}>
                     {spaceData.DirectParentHolons && spaceData.DirectParentHolons.length !== 0 && (
                         <>
                             <span className={styles.sideBarRightText}>Parent spaces:</span>
@@ -29,9 +24,6 @@ const HolonPageSideBarRight = (): JSX.Element => {
                                                 className={styles.sideBarRightHolon}
                                                 to={`/s/${holon.handle}/${selectedSpaceSubPage}`}
                                                 key={holon.handle}
-                                                onClick={() => {
-                                                    setSpaceHandle(holon.handle)
-                                                }}
                                             >
                                                 {holon.flagImagePath === null ? (
                                                     <div className={styles.placeholderWrapper}>
@@ -62,13 +54,36 @@ const HolonPageSideBarRight = (): JSX.Element => {
                                 {spaceData.DirectChildHolons.map(
                                     (holon) =>
                                         holon && (
+                                            //     <button
+                                            //         className={styles.sideBarRightHolon}
+                                            //         type='button'
+                                            //         onClick={() =>
+                                            //             history.push(
+                                            //                 `/s/${holon.handle}/${selectedSpaceSubPage}`
+                                            //             )
+                                            //         }
+                                            //     >
+                                            //         {holon.flagImagePath === null ? (
+                                            //         <div className={styles.placeholderWrapper}>
+                                            //             <img
+                                            //                 className={styles.placeholder}
+                                            //                 src='/icons/users-solid.svg'
+                                            //                 aria-label='space placeholder'
+                                            //             />
+                                            //         </div>
+                                            //     ) : (
+                                            //         <img
+                                            //             className={styles.image}
+                                            //             src={holon.flagImagePath}
+                                            //             aria-label='space flag image'
+                                            //         />
+                                            //     )}
+                                            //     {holon.name}
+                                            // </button>
                                             <Link
                                                 className={styles.sideBarRightHolon}
                                                 to={`/s/${holon.handle}/${selectedSpaceSubPage}`}
                                                 key={holon.handle}
-                                                onClick={() => {
-                                                    setSpaceHandle(holon.handle)
-                                                }}
                                             >
                                                 {holon.flagImagePath === null ? (
                                                     <div className={styles.placeholderWrapper}>

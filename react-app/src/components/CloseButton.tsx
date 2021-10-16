@@ -1,13 +1,19 @@
 import React from 'react'
-import styles from '../styles/components/CloseButton.module.scss'
+import styles from '@styles/components/CloseButton.module.scss'
+import { ReactComponent as TimesIconSVG } from '@svgs/times-solid.svg'
 
-const CloseButton = (props: { onClick: () => void }): JSX.Element => {
-    const { onClick } = props
+const CloseButton = (props: { size: number; onClick: () => void }): JSX.Element => {
+    const { size, onClick } = props
 
     return (
-        <div role='button' tabIndex={0} onClick={onClick} onKeyDown={onClick}>
-            <img className={styles.closeButton} src='/icons/close-01.svg' aria-label='test' />
-        </div>
+        <button
+            className={styles.closeButton}
+            type='button'
+            onClick={onClick}
+            style={{ width: size, height: size }}
+        >
+            <TimesIconSVG width={size} height={size} />
+        </button>
     )
 }
 

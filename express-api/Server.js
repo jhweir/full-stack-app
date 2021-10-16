@@ -6,7 +6,6 @@ const fs = require('fs')
 const path = require('path')
 var morgan = require('morgan')
 const express = require('express')
-const bodyParser = require('body-parser')
 const app = express()
 const axios = require('axios')
 
@@ -34,9 +33,9 @@ const accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'),
 const settings = ':id :remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent"'
 app.use(morgan(settings, { stream: accessLogStream }))
 
-// use bodyparser middleware
-app.use(bodyParser.urlencoded({ extended: true }))
-app.use(bodyParser.json())
+// use express bodyparser middleware
+app.use(express.urlencoded({ extended: true }))
+app.use(express.json())
 
 // import routes
 app.use('/', require('./routes/Auth'))
@@ -48,8 +47,6 @@ app.use('/', require('./routes/Upload'))
 
 const port = 5000
 app.listen(port, () => console.log(`Listening on port ${port}`))
-
-app.get('/', (req, res) => res.send('INDEX'))
 
 // set up websockets for glass bead games
 const server = require('http').createServer()

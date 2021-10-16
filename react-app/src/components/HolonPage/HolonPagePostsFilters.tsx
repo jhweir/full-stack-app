@@ -3,19 +3,7 @@ import { SpaceContext } from '../../contexts/SpaceContext'
 import DropDownMenu from '../DropDownMenu'
 
 const HolonPagePostsFilters = (): JSX.Element => {
-    const {
-        spacePostsTimeRangeFilter,
-        setSpacePostsTimeRangeFilter,
-        spacePostsTypeFilter,
-        setSpacePostsTypeFilter,
-        spacePostsSortByFilter,
-        setSpacePostsSortByFilter,
-        spacePostsSortOrderFilter,
-        setSpacePostsSortOrderFilter,
-        spacePostsDepthFilter,
-        setSpacePostsDepthFilter,
-        spacePostsView,
-    } = useContext(SpaceContext)
+    const { spacePostsFilters, updateSpacePostsFilter } = useContext(SpaceContext)
 
     return (
         <div className='wecoFilters'>
@@ -31,22 +19,22 @@ const HolonPagePostsFilters = (): JSX.Element => {
                     // 'Plot Graph',
                     'Prism',
                 ]}
-                selectedOption={spacePostsTypeFilter}
-                setSelectedOption={setSpacePostsTypeFilter}
+                selectedOption={spacePostsFilters.type}
+                setSelectedOption={(payload) => updateSpacePostsFilter('type', payload)}
                 orientation='vertical'
             />
             <DropDownMenu
-                title={spacePostsView === 'Map' ? 'Size By' : 'Sort By'}
+                title={spacePostsFilters.view === 'Map' ? 'Size By' : 'Sort By'}
                 options={['Reactions', 'Likes', 'Reposts', 'Ratings', 'Comments', 'Date']}
-                selectedOption={spacePostsSortByFilter}
-                setSelectedOption={setSpacePostsSortByFilter}
+                selectedOption={spacePostsFilters.sortBy}
+                setSelectedOption={(payload) => updateSpacePostsFilter('sortBy', payload)}
                 orientation='vertical'
             />
             <DropDownMenu
-                title={spacePostsView === 'Map' ? 'Size Order' : 'Sort Order'}
+                title={spacePostsFilters.view === 'Map' ? 'Size Order' : 'Sort Order'}
                 options={['Descending', 'Ascending']}
-                selectedOption={spacePostsSortOrderFilter}
-                setSelectedOption={setSpacePostsSortOrderFilter}
+                selectedOption={spacePostsFilters.sortOrder}
+                setSelectedOption={(payload) => updateSpacePostsFilter('sortOrder', payload)}
                 orientation='vertical'
             />
             <DropDownMenu
@@ -59,8 +47,8 @@ const HolonPagePostsFilters = (): JSX.Element => {
                     'Last 24 Hours',
                     'Last Hour',
                 ]}
-                selectedOption={spacePostsTimeRangeFilter}
-                setSelectedOption={setSpacePostsTimeRangeFilter}
+                selectedOption={spacePostsFilters.timeRange}
+                setSelectedOption={(payload) => updateSpacePostsFilter('timeRange', payload)}
                 orientation='vertical'
             />
             {/* <DropDownMenu
@@ -82,8 +70,8 @@ const HolonPagePostsFilters = (): JSX.Element => {
             <DropDownMenu
                 title='Depth'
                 options={['All Contained Posts', 'Only Direct Posts']}
-                selectedOption={spacePostsDepthFilter}
-                setSelectedOption={setSpacePostsDepthFilter}
+                selectedOption={spacePostsFilters.depth}
+                setSelectedOption={(payload) => updateSpacePostsFilter('depth', payload)}
                 orientation='vertical'
             />
         </div>

@@ -1,0 +1,57 @@
+@import './../Colors.scss';
+
+.button {
+    // font-size: 14px;
+    // height: 40px;
+    border-radius: 20px;
+    padding: 0px 20px;
+    border: none;
+    outline: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition-property: background-color, filter, color;
+    transition-duration: 0.3s;
+    &:hover { // &:focus
+        &:not(.disabled) {
+            cursor: pointer;
+            filter: brightness(110%);
+            &.grey { filter: brightness(96%) }
+        }
+    }
+    // colours
+    &.blue {
+        background-color: $blue5; //#51a6dc; //#3a88f0;
+        color: white;
+    }
+    &.green {
+        background-color: $aqua;//#00b178; //#17b35d;
+        color: white;
+    }
+    &.red {
+        background-color: $red2;//#00b178; //#17b35d;
+        color: white;
+    }
+    &.grey {
+        background-color: $grey2;//#00b178; //#17b35d;
+        color: $black2;
+        > svg > path { fill: $grey6 }
+    }
+    // sizes
+    &.small {
+        font-size: 14px;
+        height: 30px;
+    }
+    &.medium {
+        font-size: 14px;
+        height: 40px;
+    }
+    // disabled
+    &.disabled {
+        opacity: 0.3;
+    }
+    > svg {
+        width: 20px;
+        height: 20px;
+    }
+}

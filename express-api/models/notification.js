@@ -4,6 +4,7 @@ module.exports = (sequelize, DataTypes) => {
     ownerId: DataTypes.INTEGER,
     seen: DataTypes.BOOLEAN,
     type: DataTypes.STRING,
+    state: DataTypes.STRING,
     holonAId: DataTypes.INTEGER,
     holonBId: DataTypes.INTEGER,
     userId: DataTypes.INTEGER,

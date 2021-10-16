@@ -36,7 +36,7 @@ const Video = (props) => {
 
 const GlassBeadGame = (): JSX.Element => {
     const { accountData } = useContext(AccountContext)
-    const { postContextLoading, postData } = useContext(PostContext)
+    const { postDataLoading, postData } = useContext(PostContext)
 
     const defaults = {
         numberOfTurns: 6,
@@ -317,7 +317,7 @@ const GlassBeadGame = (): JSX.Element => {
     }
 
     useEffect(() => {
-        if (!postContextLoading && postData.id) {
+        if (!postDataLoading && postData.id) {
             getGameData()
             // set roomIdRef and userRef
             roomIdRef.current = postData.id
@@ -460,8 +460,8 @@ const GlassBeadGame = (): JSX.Element => {
                 d3.select(`#bead-${data.index}`).select('p').text(data.userData.name)
             })
         }
-        return () => (postContextLoading ? null : socketRef.current.disconnect())
-    }, [postContextLoading, postData.id])
+        return () => (postDataLoading ? null : socketRef.current.disconnect())
+    }, [postDataLoading, postData.id])
 
     useEffect(() => {
         // create svg

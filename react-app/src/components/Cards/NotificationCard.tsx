@@ -1,727 +1,406 @@
-import React, { useContext, useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import React, { useContext, useState } from 'react'
 import axios from 'axios'
 import Cookies from 'universal-cookie'
-import { AccountContext } from '../../contexts/AccountContext'
-import { PostContext } from '../../contexts/PostContext'
-import { UserContext } from '../../contexts/UserContext'
-import styles from '../../styles/components/NotificationCard.module.scss'
-import SmallFlagImage from '../SmallFlagImage'
-import config from '../../Config'
-import { timeSinceCreated, dateCreated } from '../../Functions'
+import { AccountContext } from '@contexts/AccountContext'
+import { SpaceContext } from '@contexts/SpaceContext'
+import styles from '@styles/components/NotificationCard.module.scss'
+import ImageNameLink from '@components/ImageNameLink'
+import TextLink from '@components/TextLink'
+import Button from '@components/Button'
+import config from '@src/Config'
+import { timeSinceCreated, dateCreated } from '@src/Functions'
+import { ReactComponent as EyeOpenIconSVG } from '@svgs/eye-solid.svg'
+import { ReactComponent as EyeClosedIconSVG } from '@svgs/eye-slash-solid.svg'
+import { ReactComponent as SuccessIconSVG } from '@svgs/check-circle-solid.svg'
+import { ReactComponent as FailIconSVG } from '@svgs/times-circle-regular.svg'
+import { ReactComponent as OverlappingCirclesIconSVG } from '@svgs/overlapping-circles-thick.svg'
+import { ReactComponent as CommentIconSVG } from '@svgs/comment-solid.svg'
+import { ReactComponent as LinkIconSVG } from '@svgs/link-solid.svg'
+import { ReactComponent as StarIconSVG } from '@svgs/star-solid.svg'
+import { ReactComponent as BabyIconSVG } from '@svgs/baby-solid.svg'
+import { ReactComponent as EnvelopeIconSVG } from '@svgs/envelope-solid.svg'
+import { ReactComponent as ThumbsUpIconSVG } from '@svgs/thumbs-up-solid.svg'
+import { ReactComponent as RetweetIconSVG } from '@svgs/retweet-solid.svg'
 
-const NotificationCard = (props: { notification: any }): JSX.Element => {
-    const { notification } = props
+const Content = (props: { typeIcon: JSX.Element; children: any }): JSX.Element => {
+    const { typeIcon, children } = props
+    return (
+        <>
+            <div className={styles.typeIcon}>{typeIcon}</div>
+            <div className={styles.content}>{children}</div>
+        </>
+    )
+}
 
-    const { setUserHandle } = useContext(UserContext)
-    const { accountData, getAccountData } = useContext(AccountContext)
-    const { setPostId } = useContext(PostContext)
+const CreatedAt = (props: { date: string }): JSX.Element => {
+    const { date } = props
+    return <p title={dateCreated(date)}>• {timeSinceCreated(date)}</p>
+}
 
-    const [seen, setSeen] = useState(true)
+const SuccessIcon = (): JSX.Element => {
+    return (
+        <div className={`${styles.inlineIcon} ${styles.green}`}>
+            <SuccessIconSVG />
+        </div>
+    )
+}
+
+const FailIcon = (): JSX.Element => {
+    return (
+        <div className={`${styles.inlineIcon} ${styles.red}`}>
+            <FailIconSVG />
+        </div>
+    )
+}
+
+const State = (props: {
+    state: 'pending' | 'accepted' | 'rejected'
+    respond: (response: 'accepted' | 'rejected') => void
+}): JSX.Element => {
+    const { state, respond } = props
+
+    return (
+        <div className={styles.state}>
+            {state === 'pending' && (
+                <>
+                    <Button
+                        text='Accept'
+                        colour='blue'
+                        size='small'
+                        margin='0 5px 0 0'
+                        onClick={() => respond('accepted')}
+                    />
+                    <Button
+                        text='Reject'
+                        colour='green'
+                        size='small'
+                        margin='0 5px 0 0'
+                        onClick={() => respond('rejected')}
+                    />
+                </>
+            )}
+            {state === 'accepted' && (
+                <>
+                    <p>•</p>
+                    <p className={styles.green}>Accepted</p>
+                    <SuccessIcon />
+                </>
+            )}
+            {state === 'rejected' && (
+                <>
+                    <p>•</p>
+                    <p className={styles.red}>Rejected</p>
+                    <FailIcon />
+                </>
+            )}
+        </div>
+    )
+}
+
+const NotificationCard = (props: {
+    notification: any
+    location: 'account' | 'space'
+}): JSX.Element => {
+    // todo: add location prop: 'account' | 'space'
+    const { notification, location } = props
+    const {
+        id,
+        type,
+        state,
+        postId,
+        // commentId,
+        triggerUser,
+        triggerSpace,
+        secondarySpace,
+        createdAt,
+    } = notification
+
+    console.log(notification)
+
+    const { accountData, updateAccountData, updateAccountNotification } = useContext(AccountContext)
+    const { spaceData } = useContext(SpaceContext)
+
+    const [seen, setSeen] = useState(notification.seen)
 
     const cookies = new Cookies()
     const accessToken = cookies.get('accessToken')
-
-    useEffect(() => {
-        if (notification.id) {
-            setSeen(notification.seen)
-        }
-    }, [notification.id])
+    const you = triggerUser && accountData.id === triggerUser.id
 
     function toggleSeen() {
-        if (accessToken) {
-            setSeen(!seen)
+        const data = { notificationId: id, seen: !seen }
+        const authHeader = { headers: { Authorization: `Bearer ${accessToken}` } }
+        setSeen(!seen)
+        axios
+            .post(`${config.apiURL}/toggle-notification-seen`, data, authHeader)
+            .then((res) => {
+                if (res.data === 'success') {
+                    updateAccountData(
+                        'unseen_notifications',
+                        accountData.unseen_notifications + (data.seen ? -1 : 1)
+                    )
+                }
+            })
+            .catch((error) => {
+                console.log('POST toggle-notification-seen error: ', error)
+            })
+    }
+
+    function respondToModInvite(response) {
+        if (!accessToken) {
+            // todo: open alert modal, tell user to log in
+        } else {
+            const data = {
+                notificationId: id,
+                userId: triggerUser.id,
+                spaceId: triggerSpace.id,
+                response,
+            }
+            const authHeader = { headers: { Authorization: `Bearer ${accessToken}` } }
             axios
-                .post(
-                    `${config.apiURL}/toggle-notification-seen`,
-                    { notificationId: notification.id, seen: !seen },
-                    { headers: { Authorization: `Bearer ${accessToken}` } }
-                )
+                .post(`${config.apiURL}/respond-to-mod-invite`, data, authHeader)
                 .then((res) => {
-                    if (res.data === 'success') {
-                        setTimeout(() => {
-                            getAccountData()
-                        }, 300)
+                    if (res.status === 200) {
+                        // update account context
+                        updateAccountNotification(id, 'state', response)
+                        if (response === 'accepted') {
+                            const newModeratedSpaces = [
+                                ...accountData.ModeratedHolons,
+                                {
+                                    handle: triggerSpace.handle,
+                                    name: triggerSpace.name,
+                                    flagImagePath: triggerSpace.flagImagePath,
+                                },
+                            ]
+                            updateAccountData('ModeratedHolons', newModeratedSpaces)
+                        }
+                        if (!seen) {
+                            setSeen(true)
+                            // todo: remove updateAccountNotification function when notifications fetched on component mount
+                            updateAccountNotification(id, 'seen', true)
+                            updateAccountData(
+                                'unseen_notifications',
+                                accountData.unseen_notifications - 1
+                            )
+                        }
+                    } else {
+                        // handle errors
+                        console.log(res.data.message)
                     }
                 })
+                .catch((res) => console.log('res: ', res))
+        }
+    }
+
+    function respondToParentSpaceRequest(response) {
+        if (!accessToken) {
+            // todo: open alert modal, tell user to log in
+        } else {
+            const data = {
+                notificationId: id,
+                notificationType: 'account',
+                accountHandle: accountData.handle,
+                accountName: accountData.name,
+                triggerUser,
+                childSpace: triggerSpace,
+                parentSpace: secondarySpace,
+                response,
+            }
+            const authHeader = { headers: { Authorization: `Bearer ${accessToken}` } }
+            axios
+                .post(`${config.apiURL}/respond-to-parent-space-request`, data, authHeader)
+                .then((res) => {
+                    if (res.data === 'success') {
+                        updateAccountNotification(id, 'state', response)
+                        if (!seen) {
+                            setSeen(true)
+                            updateAccountNotification(id, 'seen', true)
+                            updateAccountData(
+                                'unseen_notifications',
+                                accountData.unseen_notifications - 1
+                            )
+                        }
+                    } else {
+                        // handle errors
+                        console.log(res.data)
+                    }
+                })
+                .catch((res) => console.log('res: ', res))
         }
     }
 
     return (
         <div className={`${styles.wrapper} ${seen && styles.seen}`}>
-            {/* <div className={styles.index}>{ index + 1 }</div> */}
+            {location === 'account' && (
+                <>
+                    {type === 'welcome-message' && (
+                        <Content typeIcon={<BabyIconSVG />}>
+                            <p>Account created</p>
+                            <SuccessIcon />
+                            <CreatedAt date={createdAt} />
+                        </Content>
+                    )}
 
-            {notification.type === 'welcome-message' && (
-                <div className={styles.content}>
-                    <div className={styles.iconWrapper}>
-                        <img className={styles.iconLarge} src='/icons/baby-solid.svg' alt='' />
-                    </div>
-                    <div className={styles.info}>
-                        <div className={`${styles.text} mr-10`}>Account created</div>
-                        <img
-                            className={styles.checkIcon}
-                            src='/icons/check-circle-regular.svg'
-                            alt=''
-                        />
-                        <div className={styles.text} title={dateCreated(notification.createdAt)}>
-                            | {timeSinceCreated(notification.createdAt)}
-                        </div>
-                    </div>
-                    <div
-                        role='button'
-                        tabIndex={0}
+                    {type === 'email-verified' && (
+                        <Content typeIcon={<EnvelopeIconSVG />}>
+                            <p>Email verified</p>
+                            <SuccessIcon />
+                            <CreatedAt date={createdAt} />
+                        </Content>
+                    )}
+
+                    {type === 'post-like' && (
+                        <Content typeIcon={<ThumbsUpIconSVG />}>
+                            {you ? <p>You</p> : <ImageNameLink type='user' data={triggerUser} />}
+                            <p>liked your</p>
+                            <TextLink text='post' link={`/p/${postId}`} />
+                            {triggerSpace && <p>in</p>}
+                            {triggerSpace && <ImageNameLink type='space' data={triggerSpace} />}
+                            <CreatedAt date={createdAt} />
+                        </Content>
+                    )}
+
+                    {type === 'post-comment' && (
+                        <Content typeIcon={<CommentIconSVG />}>
+                            {you ? <p>You</p> : <ImageNameLink type='user' data={triggerUser} />}
+                            <p>commented on your</p>
+                            <TextLink text='post' link={`/p/${postId}`} />
+                            {triggerSpace && <p>in</p>}
+                            {triggerSpace && <ImageNameLink type='space' data={triggerSpace} />}
+                            <CreatedAt date={createdAt} />
+                        </Content>
+                    )}
+
+                    {type === 'post-repost' && (
+                        <Content typeIcon={<RetweetIconSVG />}>
+                            {you ? <p>You</p> : <ImageNameLink type='user' data={triggerUser} />}
+                            <p>reposted your</p>
+                            <TextLink text='post' link={`/p/${postId}`} />
+                            {triggerSpace && <p>in</p>}
+                            {triggerSpace && <ImageNameLink type='space' data={triggerSpace} />}
+                            <CreatedAt date={createdAt} />
+                        </Content>
+                    )}
+
+                    {type === 'post-rating' && (
+                        <Content typeIcon={<StarIconSVG />}>
+                            {you ? <p>You</p> : <ImageNameLink type='user' data={triggerUser} />}
+                            <p>rated your</p>
+                            <TextLink text='post' link={`/p/${postId}`} />
+                            {triggerSpace && <p>in</p>}
+                            {triggerSpace && <ImageNameLink type='space' data={triggerSpace} />}
+                            <CreatedAt date={createdAt} />
+                        </Content>
+                    )}
+
+                    {type === 'post-link' && (
+                        <Content typeIcon={<LinkIconSVG />}>
+                            {you ? <p>You</p> : <ImageNameLink type='user' data={triggerUser} />}
+                            <p>linked your</p>
+                            <TextLink text='post' link={`/p/${postId}`} />
+                            {/* todo: add postAId and postBId columns in the database so secondary post can be linked */}
+                            <p>to another post</p>
+                            {triggerSpace && <p>in</p>}
+                            {triggerSpace && <ImageNameLink type='space' data={triggerSpace} />}
+                            <CreatedAt date={createdAt} />
+                        </Content>
+                    )}
+
+                    {type === 'comment-reply' && (
+                        <Content typeIcon={<CommentIconSVG />}>
+                            {you ? <p>You</p> : <ImageNameLink type='user' data={triggerUser} />}
+                            <p>replied to your</p>
+                            <TextLink text='comment' link={`/p/${postId}`} />
+                            {triggerSpace && <p>in</p>}
+                            {triggerSpace && <ImageNameLink type='space' data={triggerSpace} />}
+                            <CreatedAt date={createdAt} />
+                        </Content>
+                    )}
+
+                    {type === 'parent-space-request' && (
+                        <Content typeIcon={<OverlappingCirclesIconSVG />}>
+                            <ImageNameLink type='user' data={triggerUser} />
+                            <p>wants to make</p>
+                            <ImageNameLink type='space' data={triggerSpace} />
+                            <p>a child space of</p>
+                            <ImageNameLink type='space' data={secondarySpace} />
+                            <CreatedAt date={createdAt} />
+                            <State
+                                state={state}
+                                respond={(response) => respondToParentSpaceRequest(response)}
+                            />
+                        </Content>
+                    )}
+
+                    {type === 'parent-space-request-response' && (
+                        <Content typeIcon={<OverlappingCirclesIconSVG />}>
+                            <ImageNameLink type='user' data={triggerUser} />
+                            <p>{state} your request to make</p>
+                            <ImageNameLink type='space' data={triggerSpace} />
+                            <p>a child space of</p>
+                            <ImageNameLink type='space' data={secondarySpace} />
+                            {/* {state === 'accepted' ? <SuccessIcon /> : <FailIcon />} */}
+                            <CreatedAt date={createdAt} />
+                        </Content>
+                    )}
+
+                    {type === 'mod-invite' && (
+                        <Content typeIcon={<OverlappingCirclesIconSVG />}>
+                            <ImageNameLink type='user' data={triggerUser} />
+                            <p>invited you to moderate</p>
+                            <ImageNameLink type='space' data={triggerSpace} />
+                            <CreatedAt date={createdAt} />
+                            <State
+                                state={state}
+                                respond={(response) => respondToModInvite(response)}
+                            />
+                        </Content>
+                    )}
+
+                    {type === 'mod-invite-response' && (
+                        <Content typeIcon={<OverlappingCirclesIconSVG />}>
+                            <ImageNameLink type='user' data={triggerUser} />
+                            <p>{state} your invitation to moderate</p>
+                            <ImageNameLink type='space' data={triggerSpace} />
+                            <CreatedAt date={createdAt} />
+                        </Content>
+                    )}
+
+                    {type === 'mod-removed' && (
+                        <Content typeIcon={<OverlappingCirclesIconSVG />}>
+                            {you ? <p>You</p> : <ImageNameLink type='user' data={triggerUser} />}
+                            <p>just removed you from moderating</p>
+                            <ImageNameLink type='space' data={triggerSpace} />
+                            <CreatedAt date={createdAt} />
+                        </Content>
+                    )}
+
+                    <button
+                        className={styles.seenButton}
+                        type='button'
                         onClick={() => toggleSeen()}
-                        onKeyDown={() => toggleSeen()}
                     >
-                        <img
-                            className={styles.seenIcon}
-                            src={`/icons/${seen ? 'eye-solid.svg' : 'eye-slash-solid.svg'}`}
-                            aria-label='seen'
-                        />
-                    </div>
-                </div>
+                        {seen ? <EyeOpenIconSVG /> : <EyeClosedIconSVG />}
+                    </button>
+                </>
             )}
 
-            {notification.type === 'email-verified' && (
-                <div className={styles.content}>
-                    <div className={styles.iconWrapper}>
-                        <img className={styles.icon} src='/icons/envelope-solid.svg' alt='' />
-                    </div>
-                    <div className={styles.info}>
-                        <div className={`${styles.text} mr-10`}>Email verified</div>
-                        <img
-                            className={styles.checkIcon}
-                            src='/icons/check-circle-regular.svg'
-                            alt=''
-                        />
-                        <div className={styles.text} title={dateCreated(notification.createdAt)}>
-                            | {timeSinceCreated(notification.createdAt)}
-                        </div>
-                    </div>
-                    <div
-                        role='button'
-                        tabIndex={0}
-                        onClick={() => toggleSeen()}
-                        onKeyDown={() => toggleSeen()}
-                    >
-                        <img
-                            className={styles.seenIcon}
-                            src={`/icons/${seen ? 'eye-solid.svg' : 'eye-slash-solid.svg'}`}
-                            aria-label='seen'
-                        />
-                    </div>
-                </div>
-            )}
-
-            {notification.type === 'post-like' && (
-                <div className={styles.content}>
-                    <div className={styles.iconWrapper}>
-                        <img className={styles.icon} src='/icons/thumbs-up-solid.svg' alt='' />
-                    </div>
-                    <div className={styles.info}>
-                        <Link
-                            className={styles.imageTextLink}
-                            to={`/u/${notification.triggerUser.handle}`}
-                            onClick={() => setUserHandle(notification.triggerUser.handle)}
-                        >
-                            <SmallFlagImage
-                                type='user'
-                                size={30}
-                                imagePath={notification.triggerUser.flagImagePath}
+            {location === 'space' && (
+                <>
+                    {type === 'parent-space-request' && (
+                        <Content typeIcon={<OverlappingCirclesIconSVG />}>
+                            <ImageNameLink type='user' data={triggerUser} />
+                            <p>wants to make</p>
+                            <ImageNameLink type='space' data={triggerSpace} />
+                            <p>a child space of</p>
+                            <ImageNameLink type='space' data={spaceData} />
+                            <CreatedAt date={createdAt} />
+                            <State
+                                state={state}
+                                respond={(response) => respondToParentSpaceRequest(response)}
                             />
-                            <span>
-                                {accountData.id === notification.triggerUser.id
-                                    ? 'You'
-                                    : notification.triggerUser.name}
-                            </span>
-                        </Link>
-                        <div className={styles.text}>liked your</div>
-                        <Link
-                            className={styles.imageTextLink}
-                            to={`/p/${notification.postId}`}
-                            onClick={() => setPostId(notification.postId)}
-                        >
-                            <span className='blueText'>post</span>
-                        </Link>
-                        {notification.triggerSpace && (
-                            <>
-                                <div className={`${styles.text} mr-10`}>in</div>
-                                <Link
-                                    className={styles.imageTextLink}
-                                    to={`/s/${notification.triggerSpace.handle}`}
-                                >
-                                    <SmallFlagImage
-                                        type='space'
-                                        size={30}
-                                        imagePath={notification.triggerSpace.flagImagePath}
-                                    />
-                                    <span>{notification.triggerSpace.name}</span>
-                                </Link>
-                            </>
-                        )}
-                        <div className={styles.text} title={dateCreated(notification.createdAt)}>
-                            | {timeSinceCreated(notification.createdAt)}
-                        </div>
-                    </div>
-                    <div
-                        role='button'
-                        tabIndex={0}
-                        onClick={() => toggleSeen()}
-                        onKeyDown={() => toggleSeen()}
-                    >
-                        <img
-                            className={styles.seenIcon}
-                            src={`/icons/${seen ? 'eye-solid.svg' : 'eye-slash-solid.svg'}`}
-                            aria-label='seen'
-                        />
-                    </div>
-                </div>
-            )}
-
-            {notification.type === 'post-comment' && (
-                <div className={styles.content}>
-                    <div className={styles.iconWrapper}>
-                        <img className={styles.icon} src='/icons/comment-solid.svg' alt='' />
-                    </div>
-                    <div className={styles.info}>
-                        <Link
-                            className={styles.imageTextLink}
-                            to={`/u/${notification.triggerUser.handle}`}
-                            onClick={() => setUserHandle(notification.triggerUser.handle)}
-                        >
-                            <SmallFlagImage
-                                type='user'
-                                size={30}
-                                imagePath={notification.triggerUser.flagImagePath}
-                            />
-                            <span>
-                                {accountData.id === notification.triggerUser.id
-                                    ? 'You'
-                                    : notification.triggerUser.name}
-                            </span>
-                        </Link>
-                        <div className={styles.text}>commented on your</div>
-                        <Link
-                            className={styles.imageTextLink}
-                            to={`/p/${notification.postId}`}
-                            onClick={() => setPostId(notification.postId)}
-                        >
-                            <span className='blueText'>post</span>
-                        </Link>
-                        {notification.triggerSpace && (
-                            <>
-                                <div className={`${styles.text} mr-10`}>in</div>
-                                <Link
-                                    className={styles.imageTextLink}
-                                    to={`/s/${notification.triggerSpace.handle}`}
-                                >
-                                    <SmallFlagImage
-                                        type='space'
-                                        size={30}
-                                        imagePath={notification.triggerSpace.flagImagePath}
-                                    />
-                                    <span>{notification.triggerSpace.name}</span>
-                                </Link>
-                            </>
-                        )}
-                        <div className={styles.text} title={dateCreated(notification.createdAt)}>
-                            | {timeSinceCreated(notification.createdAt)}
-                        </div>
-                    </div>
-                    <div
-                        role='button'
-                        tabIndex={0}
-                        onClick={() => toggleSeen()}
-                        onKeyDown={() => toggleSeen()}
-                    >
-                        <img
-                            className={styles.seenIcon}
-                            src={`/icons/${seen ? 'eye-solid.svg' : 'eye-slash-solid.svg'}`}
-                            aria-label='seen'
-                        />
-                    </div>
-                </div>
-            )}
-
-            {notification.type === 'post-repost' && (
-                <div className={styles.content}>
-                    <div className={styles.iconWrapper}>
-                        <img className={styles.iconLarge} src='/icons/retweet-solid.svg' alt='' />
-                    </div>
-                    <div className={styles.info}>
-                        <Link
-                            className={styles.imageTextLink}
-                            to={`/u/${notification.triggerUser.handle}`}
-                            onClick={() => setUserHandle(notification.triggerUser.handle)}
-                        >
-                            <SmallFlagImage
-                                type='user'
-                                size={30}
-                                imagePath={notification.triggerUser.flagImagePath}
-                            />
-                            <span>
-                                {accountData.id === notification.triggerUser.id
-                                    ? 'You'
-                                    : notification.triggerUser.name}
-                            </span>
-                        </Link>
-                        <div className={styles.text}>reposted your</div>
-                        <Link
-                            className={styles.imageTextLink}
-                            to={`/p/${notification.postId}`}
-                            onClick={() => setPostId(notification.postId)}
-                        >
-                            <span className='blueText'>post</span>
-                        </Link>
-                        {notification.triggerSpace && (
-                            <>
-                                <div className={`${styles.text} mr-10`}>in</div>
-                                <Link
-                                    className={styles.imageTextLink}
-                                    to={`/s/${notification.triggerSpace.handle}`}
-                                >
-                                    <SmallFlagImage
-                                        type='space'
-                                        size={30}
-                                        imagePath={notification.triggerSpace.flagImagePath}
-                                    />
-                                    <span>{notification.triggerSpace.name}</span>
-                                </Link>
-                            </>
-                        )}
-                        <div className={styles.text} title={dateCreated(notification.createdAt)}>
-                            | {timeSinceCreated(notification.createdAt)}
-                        </div>
-                    </div>
-                    <div
-                        role='button'
-                        tabIndex={0}
-                        onClick={() => toggleSeen()}
-                        onKeyDown={() => toggleSeen()}
-                    >
-                        <img
-                            className={styles.seenIcon}
-                            src={`/icons/${seen ? 'eye-solid.svg' : 'eye-slash-solid.svg'}`}
-                            aria-label='seen'
-                        />
-                    </div>
-                </div>
-            )}
-
-            {notification.type === 'post-rating' && (
-                <div className={styles.content}>
-                    <div className={styles.iconWrapper}>
-                        <img className={styles.icon} src='/icons/star-solid.svg' alt='' />
-                    </div>
-                    <div className={styles.info}>
-                        <Link
-                            className={styles.imageTextLink}
-                            to={`/u/${notification.triggerUser.handle}`}
-                            onClick={() => setUserHandle(notification.triggerUser.handle)}
-                        >
-                            <SmallFlagImage
-                                type='user'
-                                size={30}
-                                imagePath={notification.triggerUser.flagImagePath}
-                            />
-                            <span>
-                                {accountData.id === notification.triggerUser.id
-                                    ? 'You'
-                                    : notification.triggerUser.name}
-                            </span>
-                        </Link>
-                        <div className={styles.text}>rated your</div>
-                        <Link
-                            className={styles.imageTextLink}
-                            to={`/p/${notification.postId}`}
-                            onClick={() => setPostId(notification.postId)}
-                        >
-                            <span className='blueText'>post</span>
-                        </Link>
-                        {notification.triggerSpace && (
-                            <>
-                                <div className={`${styles.text} mr-10`}>in</div>
-                                <Link
-                                    className={styles.imageTextLink}
-                                    to={`/s/${notification.triggerSpace.handle}`}
-                                >
-                                    <SmallFlagImage
-                                        type='space'
-                                        size={30}
-                                        imagePath={notification.triggerSpace.flagImagePath}
-                                    />
-                                    <span>{notification.triggerSpace.name}</span>
-                                </Link>
-                            </>
-                        )}
-                        <div className={styles.text} title={dateCreated(notification.createdAt)}>
-                            | {timeSinceCreated(notification.createdAt)}
-                        </div>
-                    </div>
-                    <div
-                        role='button'
-                        tabIndex={0}
-                        onClick={() => toggleSeen()}
-                        onKeyDown={() => toggleSeen()}
-                    >
-                        <img
-                            className={styles.seenIcon}
-                            src={`/icons/${seen ? 'eye-solid.svg' : 'eye-slash-solid.svg'}`}
-                            aria-label='seen'
-                        />
-                    </div>
-                </div>
-            )}
-
-            {notification.type === 'post-link' && (
-                <div className={styles.content}>
-                    <div className={styles.iconWrapper}>
-                        <img className={styles.icon} src='/icons/link-solid.svg' alt='' />
-                    </div>
-                    <div className={styles.info}>
-                        <Link
-                            className={styles.imageTextLink}
-                            to={`/u/${notification.triggerUser.handle}`}
-                            onClick={() => setUserHandle(notification.triggerUser.handle)}
-                        >
-                            <SmallFlagImage
-                                type='user'
-                                size={30}
-                                imagePath={notification.triggerUser.flagImagePath}
-                            />
-                            <span>
-                                {accountData.id === notification.triggerUser.id
-                                    ? 'You'
-                                    : notification.triggerUser.name}
-                            </span>
-                        </Link>
-                        <div className={styles.text}>linked your</div>
-                        <Link
-                            className={styles.imageTextLink}
-                            to={`/p/${notification.postId}`}
-                            onClick={() => setPostId(notification.postId)}
-                        >
-                            <span className='blueText'>post</span>
-                        </Link>
-                        <div className={`${styles.text} mr-10`}>to another post</div>
-                        {notification.triggerSpace && (
-                            <>
-                                <div className={`${styles.text} mr-10`}>in</div>
-                                <Link
-                                    className={styles.imageTextLink}
-                                    to={`/s/${notification.triggerSpace.handle}`}
-                                >
-                                    <SmallFlagImage
-                                        type='space'
-                                        size={30}
-                                        imagePath={notification.triggerSpace.flagImagePath}
-                                    />
-                                    <span>{notification.triggerSpace.name}</span>
-                                </Link>
-                            </>
-                        )}
-                        <div className={styles.text} title={dateCreated(notification.createdAt)}>
-                            | {timeSinceCreated(notification.createdAt)}
-                        </div>
-                    </div>
-                    <div
-                        role='button'
-                        tabIndex={0}
-                        onClick={() => toggleSeen()}
-                        onKeyDown={() => toggleSeen()}
-                    >
-                        <img
-                            className={styles.seenIcon}
-                            src={`/icons/${seen ? 'eye-solid.svg' : 'eye-slash-solid.svg'}`}
-                            aria-label='seen'
-                        />
-                    </div>
-                </div>
-            )}
-
-            {notification.type === 'comment-reply' && (
-                <div className={styles.content}>
-                    <div className={styles.iconWrapper}>
-                        <img
-                            className={`${styles.icon} ${styles.rotated}`}
-                            src='/icons/reply-solid.svg'
-                            alt=''
-                        />
-                    </div>
-                    <div className={styles.info}>
-                        <Link
-                            className={styles.imageTextLink}
-                            to={`/u/${notification.triggerUser.handle}`}
-                            onClick={() => setUserHandle(notification.triggerUser.handle)}
-                        >
-                            <SmallFlagImage
-                                type='user'
-                                size={30}
-                                imagePath={notification.triggerUser.flagImagePath}
-                            />
-                            <span>
-                                {accountData.id === notification.triggerUser.id
-                                    ? 'You'
-                                    : notification.triggerUser.name}
-                            </span>
-                        </Link>
-                        <div className={styles.text}>replied to your</div>
-                        <Link
-                            className={styles.imageTextLink}
-                            to={`/p/${notification.postId}`}
-                            onClick={() => setPostId(notification.postId)}
-                        >
-                            <span className='blueText'>comment</span>
-                        </Link>
-                        {notification.triggerSpace && (
-                            <>
-                                <div className={`${styles.text} mr-10`}>in</div>
-                                <Link
-                                    className={styles.imageTextLink}
-                                    to={`/s/${notification.triggerSpace.handle}`}
-                                >
-                                    <SmallFlagImage
-                                        type='space'
-                                        size={30}
-                                        imagePath={notification.triggerSpace.flagImagePath}
-                                    />
-                                    <span>{notification.triggerSpace.name}</span>
-                                </Link>
-                            </>
-                        )}
-                        <div className={styles.text} title={dateCreated(notification.createdAt)}>
-                            | {timeSinceCreated(notification.createdAt)}
-                        </div>
-                    </div>
-                    <div
-                        role='button'
-                        tabIndex={0}
-                        onClick={() => toggleSeen()}
-                        onKeyDown={() => toggleSeen()}
-                    >
-                        <img
-                            className={styles.seenIcon}
-                            src={`/icons/${seen ? 'eye-solid.svg' : 'eye-slash-solid.svg'}`}
-                            aria-label='seen'
-                        />
-                    </div>
-                </div>
-            )}
-
-            {notification.type === 'parent-space-request' && (
-                <div className={styles.content}>
-                    <div className={styles.iconWrapper}>
-                        <img
-                            className={styles.iconLarge}
-                            src='/icons/overlapping-circles-thick.svg'
-                            alt=''
-                        />
-                    </div>
-                    <div className={styles.info}>
-                        <Link
-                            className={styles.imageTextLink}
-                            to={`/u/${notification.triggerUser.handle}`}
-                            onClick={() => setUserHandle(notification.triggerUser.handle)}
-                        >
-                            <SmallFlagImage
-                                type='user'
-                                size={30}
-                                imagePath={notification.triggerUser.flagImagePath}
-                            />
-                            <span>
-                                {accountData.id === notification.triggerUser.id
-                                    ? 'You'
-                                    : notification.triggerUser.name}
-                            </span>
-                        </Link>
-                        <div className={`${styles.text} mr-10`}>requested</div>
-                        <Link
-                            className={styles.imageTextLink}
-                            to={`/s/${notification.triggerSpace.handle}`}
-                        >
-                            <SmallFlagImage
-                                type='space'
-                                size={30}
-                                imagePath={notification.triggerSpace.flagImagePath}
-                            />
-                            <span>{notification.triggerSpace.name}</span>
-                        </Link>
-                        <div className={`${styles.text} mr-10`}>become a child space of</div>
-                        <Link
-                            className={styles.imageTextLink}
-                            to={`/s/${notification.secondarySpace.handle}`}
-                        >
-                            <SmallFlagImage
-                                type='space'
-                                size={30}
-                                imagePath={notification.secondarySpace.flagImagePath}
-                            />
-                            <span>{notification.secondarySpace.name}</span>
-                        </Link>
-                        <div className={styles.text} title={dateCreated(notification.createdAt)}>
-                            | {timeSinceCreated(notification.createdAt)}
-                        </div>
-                        {/* <div className={}>
-                            Accept
-                        </div> */}
-                    </div>
-                    <div
-                        role='button'
-                        tabIndex={0}
-                        onClick={() => toggleSeen()}
-                        onKeyDown={() => toggleSeen()}
-                    >
-                        <img
-                            className={styles.seenIcon}
-                            src={`/icons/${seen ? 'eye-solid.svg' : 'eye-slash-solid.svg'}`}
-                            aria-label='seen'
-                        />
-                    </div>
-                </div>
-            )}
-
-            {notification.type === 'parent-space-request-accepted' && (
-                <div className={styles.content}>
-                    <div className={styles.iconWrapper}>
-                        <img
-                            className={styles.iconLarge}
-                            src='/icons/overlapping-circles-thick.svg'
-                            alt=''
-                        />
-                    </div>
-                    <div className={styles.info}>
-                        <Link
-                            className={styles.imageTextLink}
-                            to={`/u/${accountData.handle}`}
-                            onClick={() => setUserHandle(accountData.handle)}
-                        >
-                            <SmallFlagImage
-                                type='user'
-                                size={30}
-                                imagePath={accountData.flagImagePath}
-                            />
-                            <span>Your</span>
-                        </Link>
-                        <div className={`${styles.text} mr-10`}>request for</div>
-                        <Link
-                            className={styles.imageTextLink}
-                            to={`/s/${notification.triggerSpace.handle}`}
-                        >
-                            <SmallFlagImage
-                                type='space'
-                                size={30}
-                                imagePath={notification.triggerSpace.flagImagePath}
-                            />
-                            <span>{notification.triggerSpace.name}</span>
-                        </Link>
-                        <div className={`${styles.text} mr-10`}>to become a child space of</div>
-                        <Link
-                            className={styles.imageTextLink}
-                            to={`/s/${notification.secondarySpace.handle}`}
-                        >
-                            <SmallFlagImage
-                                type='space'
-                                size={30}
-                                imagePath={notification.secondarySpace.flagImagePath}
-                            />
-                            <span>{notification.secondarySpace.name}</span>
-                        </Link>
-                        <div className={`${styles.text} mr-10`}>has been accepted</div>
-                        <img
-                            className={styles.checkIcon}
-                            src='/icons/check-circle-regular.svg'
-                            alt=''
-                        />
-                        <div className={`${styles.text} ml-10 mr-10`}>•</div>
-                        <div className={styles.text} title={dateCreated(notification.createdAt)}>
-                            {timeSinceCreated(notification.createdAt)}
-                        </div>
-                    </div>
-                    <div
-                        role='button'
-                        tabIndex={0}
-                        onClick={() => toggleSeen()}
-                        onKeyDown={() => toggleSeen()}
-                    >
-                        <img
-                            className={styles.seenIcon}
-                            src={`/icons/${seen ? 'eye-solid.svg' : 'eye-slash-solid.svg'}`}
-                            aria-label='seen'
-                        />
-                    </div>
-                </div>
-            )}
-
-            {notification.type === 'parent-space-request-rejected' && (
-                <div className={styles.content}>
-                    <div className={styles.iconWrapper}>
-                        <img
-                            className={styles.iconLarge}
-                            src='/icons/overlapping-circles-thick.svg'
-                            alt=''
-                        />
-                    </div>
-                    <div className={styles.info}>
-                        <Link
-                            className={styles.imageTextLink}
-                            to={`/u/${accountData.handle}`}
-                            onClick={() => setUserHandle(accountData.handle)}
-                        >
-                            <SmallFlagImage
-                                type='user'
-                                size={30}
-                                imagePath={accountData.flagImagePath}
-                            />
-                            <span>Your</span>
-                        </Link>
-                        <div className={`${styles.text} mr-10`}>request for</div>
-                        <Link
-                            className={styles.imageTextLink}
-                            to={`/s/${notification.triggerSpace.handle}`}
-                        >
-                            <SmallFlagImage
-                                type='space'
-                                size={30}
-                                imagePath={notification.triggerSpace.flagImagePath}
-                            />
-                            <span>{notification.triggerSpace.name}</span>
-                        </Link>
-                        <div className={`${styles.text} mr-10`}>to become a child space of</div>
-                        <Link
-                            className={styles.imageTextLink}
-                            to={`/s/${notification.secondarySpace.handle}`}
-                        >
-                            <SmallFlagImage
-                                type='space'
-                                size={30}
-                                imagePath={notification.secondarySpace.flagImagePath}
-                            />
-                            <span>{notification.secondarySpace.name}</span>
-                        </Link>
-                        <div className={`${styles.text} mr-10`}>has been rejected</div>
-                        <img
-                            className={styles.timesIcon}
-                            src='/icons/times-circle-regular.svg'
-                            alt=''
-                        />
-                        <div className={`${styles.text} ml-10 mr-10`}>•</div>
-                        <div className={styles.text} title={dateCreated(notification.createdAt)}>
-                            {timeSinceCreated(notification.createdAt)}
-                        </div>
-                    </div>
-                    <div
-                        role='button'
-                        tabIndex={0}
-                        onClick={() => toggleSeen()}
-                        onKeyDown={() => toggleSeen()}
-                    >
-                        <img
-                            className={styles.seenIcon}
-                            src={`/icons/${seen ? 'eye-solid.svg' : 'eye-slash-solid.svg'}`}
-                            aria-label='seen'
-                        />
-                    </div>
-                </div>
+                        </Content>
+                    )}
+                </>
             )}
         </div>
     )

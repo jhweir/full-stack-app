@@ -1,0 +1,29 @@
+@import '@styles/Colors';
+.wrapper {
+    width: 80px;
+    height: 100%;
+    margin-top: 60px;
+    background-color: $black3;
+    padding: 10px;
+    position: fixed;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 5;
+    > p {
+        font-size: 10px;
+        margin-bottom: 10px;
+        color: $grey5;
+        text-align: center;
+    }
+    
+}
+.section {
+    max-height: 480px;
+    //overflow: scroll;
+    > a > div {
+        margin-bottom: 10px;
+        
+    }
+}

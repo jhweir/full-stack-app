@@ -5,6 +5,10 @@
     flex-direction: column;
     align-items: center;
     //position: relative;
+    &.showAccountSideBar {
+        width: calc(100% - 80px);
+        margin-right: 80px;
+    }
 }
 .holonPageContent {
     width: 1200px;

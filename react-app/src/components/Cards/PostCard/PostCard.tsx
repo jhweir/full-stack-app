@@ -1,20 +1,20 @@
 import React, { useState, useContext, useEffect, useRef } from 'react'
 import { useHistory, Link } from 'react-router-dom'
-import { AccountContext } from '../../../contexts/AccountContext'
-import { SpaceContext } from '../../../contexts/SpaceContext'
-import { UserContext } from '../../../contexts/UserContext'
-import { PostContext } from '../../../contexts/PostContext'
-import styles from '../../../styles/components/PostCard.module.scss'
-// import colors from '../../../styles/Colors.module.scss'
-import PostCardReactions from './PostCardReactions'
-import PostCardUrlPreview from './PostCardUrlPreview'
-import PostCardComments from './PostCardComments'
-import FlagImage from '../../FlagImage'
-import DeleteItemModal from '../../Modals/DeleteItemModal'
-import ShowMoreLess from '../../ShowMoreLess'
-import Markdown from '../../Markdown'
-import { timeSinceCreated, dateCreated } from '../../../Functions'
-import { IPost } from '../../../Interfaces'
+import { AccountContext } from '@contexts/AccountContext'
+import { SpaceContext } from '@contexts/SpaceContext'
+import { UserContext } from '@contexts/UserContext'
+import { PostContext } from '@contexts/PostContext'
+import styles from '@styles/components/PostCard.module.scss'
+// import colors from '@styles/Colors.module.scss'
+import PostCardReactions from '@components/Cards/PostCard/PostCardReactions'
+import PostCardUrlPreview from '@components/Cards/PostCard/PostCardUrlPreview'
+import PostCardComments from '@components/Cards/PostCard/PostCardComments'
+import FlagImage from '@components/FlagImage'
+import DeleteItemModal from '@components/Modals/DeleteItemModal'
+import ShowMoreLess from '@components/ShowMoreLess'
+import Markdown from '@components/Markdown'
+import { timeSinceCreated, dateCreated } from '@src/Functions'
+import { IPost } from '@src/Interfaces'
 
 const PostCard = (props: {
     postData: Partial<IPost>
@@ -28,13 +28,12 @@ const PostCard = (props: {
         setAlertMessage,
         setAlertModalOpen,
         setCreatePostModalOpen,
-        setCreatePostFromTurn,
-        setCreatePostFromTurnData,
-        setSelectedNavBarItem,
+        // setCreatePostFromTurn,
+        // setCreatePostFromTurnData,
     } = useContext(AccountContext)
-    const { setSpaceHandle, getSpaceData, getSpacePosts } = useContext(SpaceContext)
-    const { getCreatedPosts, getUserData } = useContext(UserContext)
-    const { setPostContextLoading } = useContext(PostContext)
+    // const { getSpaceData, getSpacePosts } = useContext(SpaceContext)
+    // const { getUserPosts, getUserData } = useContext(UserContext)
+    // const { setPostDataLoading } = useContext(PostContext)
     const history = useHistory()
 
     // console.log('postData: ', postData);
@@ -79,7 +78,7 @@ const PostCard = (props: {
     const [accountRating, setAccountRating] = useState<number | undefined>(0)
     const [accountRepost, setAccountRepost] = useState<number | undefined>(0)
     const [accountLink, setAccountLink] = useState<number | undefined>(0)
-    let accountTurn // set up account turn
+    // let accountTurn // set up account turn
 
     const [blockedSpaces, setBlockedSpaces] = useState([]) as any[]
     const [reactionsOpen, setReactionsOpen] = useState(false)
@@ -89,6 +88,7 @@ const PostCard = (props: {
     const isOwnPost = accountData && creator && accountData.id === creator.id
     const showLinkPreview =
         urlImage !== null || urlDomain !== null || urlTitle !== null || urlDescription !== null
+    // todo: look into why type: 'post' is used...
     const postSpaces = DirectSpaces && DirectSpaces.filter((space) => space.type === 'post')
 
     const postRef = useRef<HTMLDivElement>(null)
@@ -115,22 +115,22 @@ const PostCard = (props: {
         }
     }
 
-    function createPostFromTurn() {
-        if (isLoggedIn && creator) {
-            const data = {
-                creatorName: creator.name,
-                creatorHandle: creator.handle,
-                creatorFlagImagePath: creator.flagImagePath,
-                postId: id,
-            }
-            setCreatePostFromTurn(true)
-            setCreatePostFromTurnData(data)
-            setCreatePostModalOpen(true)
-        } else {
-            setAlertMessage('Log in to add a turn')
-            setAlertModalOpen(true)
-        }
-    }
+    // function createPostFromTurn() {
+    //     if (isLoggedIn && creator) {
+    //         const data = {
+    //             creatorName: creator.name,
+    //             creatorHandle: creator.handle,
+    //             creatorFlagImagePath: creator.flagImagePath,
+    //             postId: id,
+    //         }
+    //         setCreatePostFromTurn(true)
+    //         setCreatePostFromTurnData(data)
+    //         setCreatePostModalOpen(true)
+    //     } else {
+    //         setAlertMessage('Log in to add a turn')
+    //         setAlertModalOpen(true)
+    //     }
+    // }
 
     useEffect(() => {
         if (postData.id) {
@@ -149,15 +149,11 @@ const PostCard = (props: {
             } */}
             <div className={styles.body}>
                 <div className={styles.tags}>
-                    <Link
-                        to={`/u/${creator && creator.handle}`}
-                        className={styles.creator}
-                        onClick={() => setSelectedNavBarItem('')}
-                    >
+                    <Link to={`/u/${creator && creator.handle}`} className={styles.creator}>
                         <FlagImage
                             size={35}
                             type='user'
-                            imagePath={creator && creator.flagImagePath}
+                            imagePath={(creator && creator.flagImagePath) || null}
                         />
                         <span className={styles.creatorName}>{creator && creator.name}</span>
                     </Link>
@@ -165,27 +161,22 @@ const PostCard = (props: {
                     <div className={styles.postSpaces}>
                         {postSpaces && postSpaces.length > 0 ? (
                             postSpaces.map((space) => (
-                                <Link
-                                    to={`/s/${space.handle}`}
-                                    onClick={() => setSpaceHandle(space.handle)}
-                                    style={{ marginRight: 5 }}
-                                    key={space.handle}
-                                >
-                                    {space.handle}
-                                </Link>
+                                <>
+                                    {space.state === 'active' ? (
+                                        <Link to={`/s/${space.handle}`} key={space.handle}>
+                                            {space.handle}
+                                        </Link>
+                                    ) : (
+                                        <p>{space.handle} (removed)</p>
+                                    )}
+                                </>
                             ))
                         ) : (
-                            <Link to='/s/all' onClick={() => setSpaceHandle('all')}>
-                                all
-                            </Link>
+                            <Link to='/s/all'>all</Link>
                         )}
                     </div>
                     <span className={styles.subText}>•</span>
-                    <Link
-                        to={`/p/${id}`}
-                        className={styles.link}
-                        onClick={() => setSelectedNavBarItem('')}
-                    >
+                    <Link to={`/p/${id}`} className={styles.link}>
                         <img className={styles.linkIcon} src='/icons/link-solid.svg' alt='' />
                         <span className={styles.subText} title={dateCreated(createdAt)}>
                             {timeSinceCreated(createdAt)}
@@ -278,10 +269,9 @@ const PostCard = (props: {
                             <Link
                                 to={`/p/${id}`}
                                 className={styles.interactItem}
-                                onClick={() => {
-                                    setPostContextLoading(true)
-                                    setSelectedNavBarItem('')
-                                }}
+                                // onClick={() => {
+                                //     setPostDataLoading(true)
+                                // }}
                             >
                                 <img
                                     className={styles.icon}
@@ -295,10 +285,9 @@ const PostCard = (props: {
                             <Link
                                 to={`/p/${id}`}
                                 className={styles.interactItem}
-                                onClick={() => {
-                                    // setPostContextLoading(true)
-                                    setSelectedNavBarItem('')
-                                }}
+                                // onClick={() => {
+                                //     // setPostDataLoading(true)
+                                // }}
                             >
                                 <img
                                     className={styles.icon}
@@ -312,10 +301,9 @@ const PostCard = (props: {
                             <Link
                                 to={`/p/${id}`}
                                 className={styles.interactItem}
-                                onClick={() => {
-                                    // setPostContextLoading(true)
-                                    setSelectedNavBarItem('')
-                                }}
+                                // onClick={() => {
+                                //     // setPostDataLoading(true)
+                                // }}
                             >
                                 <img
                                     className={styles.icon}
@@ -366,16 +354,20 @@ const PostCard = (props: {
                             endpoint='delete-post'
                             itemId={postData.id}
                             getItems1={() => {
-                                if (location === 'holon-posts') return getSpacePosts()
-                                if (location === 'user-created-posts') return getCreatedPosts()
-                                if (location === 'post-page') return history.push('/s/all')
-                                return null
+                                // if (location === 'holon-posts') return getSpacePosts()
+                                // if (location === 'user-created-posts') return getUserPosts(0)
+                                // if (location === 'post-page') return history.push('/s/all')
+                                // return null
                             }}
                             getItems2={() => {
-                                if (location === 'holon-posts') return getSpaceData()
-                                if (location === 'user-created-posts') return getUserData()
-                                if (location === 'post-page') return history.push('/s/all')
-                                return null
+                                // if (location === 'holon-posts') return getSpaceData()
+                                // if (location === 'user-created-posts')
+                                //     return getUserData(
+                                //         (postData && postData.creator && postData.creator.handle) ||
+                                //             ''
+                                //     )
+                                // if (location === 'post-page') return history.push('/s/all')
+                                // return null
                             }}
                             setDeleteItemModalOpen={setDeletePostModalOpen}
                         />

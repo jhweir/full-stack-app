@@ -40,7 +40,7 @@ const PostCardLinkModal = (props: {
 
     const { accountData } = useContext(AccountContext)
     const { spaceData } = useContext(SpaceContext)
-    const { setPostId } = useContext(PostContext)
+    // const { setPostId } = useContext(PostContext)
 
     const [linkTo, setLinkTo] = useState('Post')
     const [linkType, setLinkType] = useState('Text')
@@ -132,7 +132,7 @@ const PostCardLinkModal = (props: {
         <div className={styles.modalWrapper}>
             <CloseOnClickOutside onClick={() => setLinkModalOpen(false)}>
                 <div className={styles.modal}>
-                    <CloseButton onClick={() => setLinkModalOpen(false)} />
+                    <CloseButton size={20} onClick={() => setLinkModalOpen(false)} />
                     <span className={styles.title}>Links</span>
                     {!links.outgoingLinks.length && !links.incomingLinks.length && (
                         <span className={`${styles.text} mb-20`}>
@@ -180,7 +180,7 @@ const PostCardLinkModal = (props: {
                                     <Link
                                         className={styles.imageTextLink}
                                         to={`/p/${link.postA.id}`}
-                                        onClick={() => setPostId(link.postA.id)}
+                                        // onClick={() => setPostId(link.postA.id)}
                                     >
                                         <span className='blueText m-0'>post</span>
                                     </Link>
@@ -243,7 +243,7 @@ const PostCardLinkModal = (props: {
                                     <Link
                                         className={styles.imageTextLink}
                                         to={`/p/${link.postB.id}`}
-                                        onClick={() => setPostId(link.postB.id)}
+                                        // onClick={() => setPostId(link.postB.id)}
                                     >
                                         <span className='blueText m-0'>post</span>
                                     </Link>

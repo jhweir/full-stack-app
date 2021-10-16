@@ -20,10 +20,10 @@ Seed all demo content into the database
 Remove all seeded demo content from the database
 `npx sequelize-cli db:seed:undo:all`
 
-Drop datatbase ('weco-dev-db')
+Drop datatbase
 `npx sequelize-cli db:drop`
 
-Create datatbase ('weco-dev-db')
+Create datatbase
 `npx sequelize-cli db:create`
 
 ## Generate Models/Tables

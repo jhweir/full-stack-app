@@ -9,6 +9,8 @@ module.exports = {
         'react-hooks/exhaustive-deps': 'off',
         // disable alias import errors
         'import/no-unresolved': 'off',
+        // // disable no console
+        // 'no-console': 'off',
     },
     parserOptions: {
         project: 'tsconfig.json',

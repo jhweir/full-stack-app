@@ -3,12 +3,12 @@ import { SpaceContext } from '../../contexts/SpaceContext'
 import styles from '../../styles/components/HolonPageSideBarLeftPlaceholder.module.scss'
 
 const HolonPageSideBarLeftPlaceholder = (): JSX.Element => {
-    const { spaceContextLoading } = useContext(SpaceContext)
+    // const { spaceContextLoading } = useContext(SpaceContext)
 
     return (
-        <div className={`${styles.PHSideBarLeft} ${spaceContextLoading && styles.visible}`}>
+        <div className={styles.PHSideBarLeft}>
             <div className='PHSideBarShine' />
-            <div className={styles.PHSideBarLeftHolonName} />
+            {/* <div className={styles.PHSideBarLeftHolonName} /> */}
             <div className={styles.PHSideBarLeftFlagImage} />
             {/* <img className="ph-side-bar-left-flag-image" src="/images/holon-flag-image-00.jpg"/> */}
             <div className={styles.PHSideBarLeftNavButtons}>

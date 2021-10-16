@@ -21,6 +21,7 @@ async function verifyRecaptch(reCaptchaToken, res) {
 // POST
 router.post('/log-in', async (req, res) => {
     const { reCaptchaToken, emailOrHandle, password } = req.body
+    // todo: sanitise email and handle to avoid sql injection attacks
     // verify recaptcha
     const recaptchaValid = await verifyRecaptch(reCaptchaToken, res)
     if (recaptchaValid) {
@@ -33,7 +34,7 @@ router.post('/log-in', async (req, res) => {
         else {
             // check password is correct
             bcrypt.compare(password, matchingUser.password, function(error, success) {
-                if (!success) res.status(404).send({ message: 'Incorrect password' })
+                if (!success) res.status(403).send({ message: 'Incorrect password' })
                 else {
                     // check email is verified
                     if (!matchingUser.emailVerified) res.status(403).send({ message: 'Email not yet verified', userId: matchingUser.id })

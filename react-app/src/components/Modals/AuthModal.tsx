@@ -1,11 +1,10 @@
 import React, { useContext, useState, useEffect } from 'react'
 import axios from 'axios'
 import { useGoogleReCaptcha } from 'react-google-recaptcha-v3'
-import config from '../../Config'
-import styles from '../../styles/components/AuthModal.module.scss'
-import { AccountContext } from '../../contexts/AccountContext'
-import CloseOnClickOutside from '../CloseOnClickOutside'
-import CloseButton from '../CloseButton'
+import Modal from '@components/Modal'
+import config from '@src/Config'
+import styles from '@styles/components/AuthModal.module.scss'
+import { AccountContext } from '@contexts/AccountContext'
 
 const AuthModal = (): JSX.Element => {
     const { executeRecaptcha } = useGoogleReCaptcha()
@@ -187,196 +186,187 @@ const AuthModal = (): JSX.Element => {
     })
 
     return (
-        <div className={styles.authModalWrapper}>
-            <CloseOnClickOutside onClick={() => setAuthModalOpen(false)}>
-                <div className={styles.authModal}>
-                    <CloseButton onClick={() => setAuthModalOpen(false)} />
-                    {display === 'log-in' && (
-                        <div className={styles.authModalColumn}>
-                            <span className={styles.authModalTitle}>Log in</span>
-                            <span className={styles.authModalFlashMessage}>
-                                {logInFlashMessage}
-                            </span>
-                            {displayResendVerificationEmailLink && (
-                                <span
-                                    className='blueText mt-10 mb-10'
-                                    role='button'
-                                    tabIndex={0}
-                                    onClick={() => resendVerificationEmail()}
-                                    onKeyDown={() => resendVerificationEmail()}
-                                >
-                                    Resend verification email
-                                </span>
-                            )}
-                            <form className={styles.authModalForm} onSubmit={logIn}>
-                                <input
-                                    className={`wecoInput mb-10 ${emailOrHandleError && 'error'}`}
-                                    placeholder='Email or Handle'
-                                    type='text'
-                                    value={emailOrHandle}
-                                    onChange={(e) => {
-                                        setEmailOrHandle(e.target.value)
-                                        setEmailOrHandleError(false)
-                                        setDisplayResendVerificationEmailLink(false)
-                                        setLogInFlashMessage('')
-                                    }}
-                                />
-                                <input
-                                    className={`wecoInput mb-10 ${passwordError && 'error'}`}
-                                    placeholder='Password'
-                                    type='password'
-                                    value={password}
-                                    onChange={(e) => {
-                                        setPassword(e.target.value)
-                                        setPasswordError(false)
-                                        setDisplayResendVerificationEmailLink(false)
-                                        setLogInFlashMessage('')
-                                    }}
-                                />
-                                <button type='submit' className='wecoButton w-100 mt-10 mb-20'>
-                                    Log in
-                                </button>
-                                <span className='mb-10'>
-                                    New?{' '}
-                                    <button
-                                        className={styles.blueText}
-                                        type='button'
-                                        tabIndex={0}
-                                        onClick={() => setDisplay('create-new-account')}
-                                        onKeyDown={() => setDisplay('create-new-account')}
-                                    >
-                                        Create a new account
-                                    </button>
-                                </span>
-                                <button
-                                    className={styles.blueText}
-                                    type='button'
-                                    tabIndex={0}
-                                    onClick={() => setDisplay('forgot-password')}
-                                    onKeyDown={() => setDisplay('forgot-password')}
-                                >
-                                    Forgot your password?
-                                </button>
-                            </form>
-                        </div>
+        <Modal close={() => setAuthModalOpen(false)}>
+            {display === 'log-in' && (
+                <div className={styles.authModalColumn}>
+                    <span className={styles.authModalTitle}>Log in</span>
+                    <span className={styles.authModalFlashMessage}>{logInFlashMessage}</span>
+                    {displayResendVerificationEmailLink && (
+                        <span
+                            className='blueText mt-10 mb-10'
+                            role='button'
+                            tabIndex={0}
+                            onClick={() => resendVerificationEmail()}
+                            onKeyDown={() => resendVerificationEmail()}
+                        >
+                            Resend verification email
+                        </span>
                     )}
-
-                    {display === 'create-new-account' && (
-                        <div className={styles.authModalColumn}>
-                            <span className={styles.authModalTitle}>Create new account</span>
-                            <span className={styles.authModalFlashMessage}>
-                                {registerFlashMessage}
-                            </span>
-                            <form className={styles.authModalForm} onSubmit={register}>
-                                <input
-                                    className={`wecoInput mb-10 ${newHandleError && 'error'}`}
-                                    placeholder='Handle (must be unique)'
-                                    type='text'
-                                    value={newHandle}
-                                    onChange={(e) => {
-                                        setNewHandle(
-                                            e.target.value.toLowerCase().replace(/[^a-z0-9]/g, '-')
-                                        )
-                                        setNewHandleError(false)
-                                    }}
-                                />
-                                <input
-                                    className={`wecoInput mb-10 ${newNameError && 'error'}`}
-                                    placeholder='Name'
-                                    type='text'
-                                    value={newName}
-                                    onChange={(e) => {
-                                        setNewName(e.target.value)
-                                        setNewNameError(false)
-                                    }}
-                                />
-                                <input
-                                    className={`wecoInput mb-10 ${newEmailError && 'error'}`}
-                                    placeholder='Email'
-                                    type='email'
-                                    value={newEmail}
-                                    onChange={(e) => {
-                                        setNewEmail(e.target.value)
-                                        setNewEmailError(false)
-                                    }}
-                                />
-                                <input
-                                    className={`wecoInput mb-10 ${newPasswordError && 'error'}`}
-                                    placeholder='Password'
-                                    type='password'
-                                    value={newPassword}
-                                    onChange={(e) => {
-                                        setNewPassword(e.target.value)
-                                        setNewPasswordError(false)
-                                    }}
-                                />
-                                <input
-                                    className={`wecoInput mb-10 ${newPasswordTwoError && 'error'}`}
-                                    placeholder='Confirm password'
-                                    type='password'
-                                    value={newPasswordTwo}
-                                    onChange={(e) => {
-                                        setNewPasswordTwo(e.target.value)
-                                        setNewPasswordTwoError(false)
-                                    }}
-                                />
-                                <button type='submit' className='wecoButton w-100 mt-10 mb-20'>
-                                    Register
-                                </button>
-                                <span>
-                                    Already registered?{' '}
-                                    <button
-                                        className={styles.blueText}
-                                        type='button'
-                                        tabIndex={0}
-                                        onClick={() => setDisplay('log-in')}
-                                        onKeyDown={() => setDisplay('log-in')}
-                                    >
-                                        Log in
-                                    </button>
-                                </span>
-                            </form>
-                        </div>
-                    )}
-
-                    {display === 'forgot-password' && (
-                        <div className={styles.authModalColumn}>
-                            <span className={styles.authModalTitle}>Reset password</span>
-                            <span className={styles.authModalFlashMessage}>
-                                {forgotPasswordFlashMessage}
-                            </span>
-                            <form className={styles.authModalForm} onSubmit={sendResetLink}>
-                                <input
-                                    className={`wecoInput mb-10 ${resetEmailError && 'error'}`}
-                                    placeholder='Account email'
-                                    type='email'
-                                    value={resetEmail}
-                                    onChange={(e) => {
-                                        setResetEmail(e.target.value)
-                                        setResetEmailError(false)
-                                        setForgotPasswordFlashMessage('')
-                                    }}
-                                />
-                                <button type='submit' className='wecoButton w-100 mt-10 mb-20'>
-                                    Send reset link
-                                </button>
-                                <span className='mb-10'>
-                                    <button
-                                        className={styles.blueText}
-                                        type='button'
-                                        tabIndex={0}
-                                        onClick={() => setDisplay('log-in')}
-                                        onKeyDown={() => setDisplay('log-in')}
-                                    >
-                                        Return to log in
-                                    </button>
-                                </span>
-                            </form>
-                        </div>
-                    )}
+                    <form className={styles.authModalForm} onSubmit={logIn}>
+                        <input
+                            className={`wecoInput mb-10 ${emailOrHandleError && 'error'}`}
+                            placeholder='Email or Handle'
+                            type='text'
+                            value={emailOrHandle}
+                            onChange={(e) => {
+                                setEmailOrHandle(e.target.value)
+                                setEmailOrHandleError(false)
+                                setDisplayResendVerificationEmailLink(false)
+                                setLogInFlashMessage('')
+                            }}
+                        />
+                        <input
+                            className={`wecoInput mb-10 ${passwordError && 'error'}`}
+                            placeholder='Password'
+                            type='password'
+                            value={password}
+                            onChange={(e) => {
+                                setPassword(e.target.value)
+                                setPasswordError(false)
+                                setDisplayResendVerificationEmailLink(false)
+                                setLogInFlashMessage('')
+                            }}
+                        />
+                        <button type='submit' className='wecoButton w-100 mt-10 mb-20'>
+                            Log in
+                        </button>
+                        <span className='mb-10'>
+                            New?{' '}
+                            <button
+                                className={styles.blueText}
+                                type='button'
+                                tabIndex={0}
+                                onClick={() => setDisplay('create-new-account')}
+                                onKeyDown={() => setDisplay('create-new-account')}
+                            >
+                                Create a new account
+                            </button>
+                        </span>
+                        <button
+                            className={styles.blueText}
+                            type='button'
+                            tabIndex={0}
+                            onClick={() => setDisplay('forgot-password')}
+                            onKeyDown={() => setDisplay('forgot-password')}
+                        >
+                            Forgot your password?
+                        </button>
+                    </form>
                 </div>
-            </CloseOnClickOutside>
-        </div>
+            )}
+
+            {display === 'create-new-account' && (
+                <div className={styles.authModalColumn}>
+                    <span className={styles.authModalTitle}>Create new account</span>
+                    <span className={styles.authModalFlashMessage}>{registerFlashMessage}</span>
+                    <form className={styles.authModalForm} onSubmit={register}>
+                        <input
+                            className={`wecoInput mb-10 ${newHandleError && 'error'}`}
+                            placeholder='Handle (must be unique)'
+                            type='text'
+                            value={newHandle}
+                            onChange={(e) => {
+                                setNewHandle(
+                                    e.target.value.toLowerCase().replace(/[^a-z0-9]/g, '-')
+                                )
+                                setNewHandleError(false)
+                            }}
+                        />
+                        <input
+                            className={`wecoInput mb-10 ${newNameError && 'error'}`}
+                            placeholder='Name'
+                            type='text'
+                            value={newName}
+                            onChange={(e) => {
+                                setNewName(e.target.value)
+                                setNewNameError(false)
+                            }}
+                        />
+                        <input
+                            className={`wecoInput mb-10 ${newEmailError && 'error'}`}
+                            placeholder='Email'
+                            type='email'
+                            value={newEmail}
+                            onChange={(e) => {
+                                setNewEmail(e.target.value)
+                                setNewEmailError(false)
+                            }}
+                        />
+                        <input
+                            className={`wecoInput mb-10 ${newPasswordError && 'error'}`}
+                            placeholder='Password'
+                            type='password'
+                            value={newPassword}
+                            onChange={(e) => {
+                                setNewPassword(e.target.value)
+                                setNewPasswordError(false)
+                            }}
+                        />
+                        <input
+                            className={`wecoInput mb-10 ${newPasswordTwoError && 'error'}`}
+                            placeholder='Confirm password'
+                            type='password'
+                            value={newPasswordTwo}
+                            onChange={(e) => {
+                                setNewPasswordTwo(e.target.value)
+                                setNewPasswordTwoError(false)
+                            }}
+                        />
+                        <button type='submit' className='wecoButton w-100 mt-10 mb-20'>
+                            Register
+                        </button>
+                        <span>
+                            Already registered?{' '}
+                            <button
+                                className={styles.blueText}
+                                type='button'
+                                tabIndex={0}
+                                onClick={() => setDisplay('log-in')}
+                                onKeyDown={() => setDisplay('log-in')}
+                            >
+                                Log in
+                            </button>
+                        </span>
+                    </form>
+                </div>
+            )}
+
+            {display === 'forgot-password' && (
+                <div className={styles.authModalColumn}>
+                    <span className={styles.authModalTitle}>Reset password</span>
+                    <span className={styles.authModalFlashMessage}>
+                        {forgotPasswordFlashMessage}
+                    </span>
+                    <form className={styles.authModalForm} onSubmit={sendResetLink}>
+                        <input
+                            className={`wecoInput mb-10 ${resetEmailError && 'error'}`}
+                            placeholder='Account email'
+                            type='email'
+                            value={resetEmail}
+                            onChange={(e) => {
+                                setResetEmail(e.target.value)
+                                setResetEmailError(false)
+                                setForgotPasswordFlashMessage('')
+                            }}
+                        />
+                        <button type='submit' className='wecoButton w-100 mt-10 mb-20'>
+                            Send reset link
+                        </button>
+                        <span className='mb-10'>
+                            <button
+                                className={styles.blueText}
+                                type='button'
+                                tabIndex={0}
+                                onClick={() => setDisplay('log-in')}
+                                onKeyDown={() => setDisplay('log-in')}
+                            >
+                                Return to log in
+                            </button>
+                        </span>
+                    </form>
+                </div>
+            )}
+        </Modal>
     )
 }
 

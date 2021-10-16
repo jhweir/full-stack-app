@@ -89,7 +89,7 @@ const PostCardLikeModal = (props: {
         <div className={styles.modalWrapper}>
             <CloseOnClickOutside onClick={() => setLikeModalOpen(false)}>
                 <div className={styles.modal}>
-                    <CloseButton onClick={() => setLikeModalOpen(false)} />
+                    <CloseButton size={20} onClick={() => setLikeModalOpen(false)} />
                     <span className={styles.title}>Likes</span>
                     {likes.length === 0 ? (
                         <span className={`${styles.text} mb-20`}>

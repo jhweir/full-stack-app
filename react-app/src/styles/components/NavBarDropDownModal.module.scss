@@ -12,12 +12,12 @@ $darkGrey: #202129;
     align-items: center;
     z-index: 5;
 }
-.modalPositioner {
-    width: 1200px;
-    height: 100%;
-    display: flex;
-    position: relative;
-}
+// .modalPositioner {
+//     width: 1200px;
+//     height: 100%;
+//     display: flex;
+//     position: relative;
+// }
 .modal {
     width: 200px;
     //height: 400px;
@@ -26,7 +26,7 @@ $darkGrey: #202129;
     color: black;
     padding: 20px;
     top: 70px;
-    right: 0;
+    right: 10px;
     position: absolute;
     display: flex;
     flex-direction: column;

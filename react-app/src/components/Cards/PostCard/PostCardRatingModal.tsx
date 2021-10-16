@@ -117,7 +117,7 @@ const PostCardRatingModal = (props: {
         <div className={styles.modalWrapper}>
             <CloseOnClickOutside onClick={() => setRatingModalOpen(false)}>
                 <div className={styles.modal}>
-                    <CloseButton onClick={() => setRatingModalOpen(false)} />
+                    <CloseButton size={20} onClick={() => setRatingModalOpen(false)} />
                     <span className={styles.title}>Ratings</span>
                     {!ratings ? (
                         <span className={`${styles.text} mb-20`}>

@@ -7,12 +7,11 @@ import styles from '../../styles/components/UserPageSideBarRight.module.scss'
 
 const UserPageSideBarRight = (): JSX.Element => {
     const { userData } = useContext(UserContext)
-    const { setSpaceHandle } = useContext(SpaceContext)
 
     return (
         <div className={styles.sideBarRight}>
             {/* <SideBarRightPlaceholder/> */}
-            {userData && userData.ModeratedHolons && userData.ModeratedHolons.length > 0 && (
+            {userData.ModeratedHolons.length > 0 && (
                 <div className={`${styles.sideBarRightContent} ${styles.visible}`}>
                     <span className={styles.sideBarRightText}>Moderated spaces:</span>
                     <ul className={styles.sideBarRightHolons}>
@@ -21,9 +20,6 @@ const UserPageSideBarRight = (): JSX.Element => {
                                 className={styles.sideBarRightHolon}
                                 to={`/s/${holon && holon.handle}`}
                                 key={holon && holon.handle}
-                                onClick={() => {
-                                    if (holon) setSpaceHandle(holon.handle)
-                                }}
                             >
                                 {holon && holon.flagImagePath === null ? (
                                     <div className={styles.placeholderWrapper}>
@@ -49,7 +45,7 @@ const UserPageSideBarRight = (): JSX.Element => {
                     </ul>
                 </div>
             )}
-            {userData && userData.FollowedHolons && userData.FollowedHolons.length > 0 && (
+            {userData.FollowedHolons.length > 0 && (
                 <div className={`${styles.sideBarRightContent} ${styles.visible}`}>
                     <span className={styles.sideBarRightText}>Followed spaces:</span>
                     <ul className={styles.sideBarRightHolons}>
@@ -58,9 +54,6 @@ const UserPageSideBarRight = (): JSX.Element => {
                                 className={styles.sideBarRightHolon}
                                 to={`/s/${holon && holon.handle}`}
                                 key={holon && holon.handle}
-                                onClick={() => {
-                                    if (holon) setSpaceHandle(holon.handle)
-                                }}
                             >
                                 {holon && holon.flagImagePath === null ? (
                                     <div className={styles.placeholderWrapper}>

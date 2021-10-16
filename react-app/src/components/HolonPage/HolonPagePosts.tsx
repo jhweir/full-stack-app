@@ -1,158 +1,147 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { AccountContext } from '../../contexts/AccountContext'
-import { SpaceContext } from '../../contexts/SpaceContext'
-import styles from '../../styles/components/HolonPagePosts.module.scss'
-import PostCard from '../Cards/PostCard/PostCard'
-import HolonPagePostsFilters from './HolonPagePostsFilters'
-import SearchBar from '../SearchBar'
-import Toggle from '../Toggle'
-import HolonPostMap from './HolonPostMap'
+import { useLocation } from 'react-router-dom'
+import { AccountContext } from '@contexts/AccountContext'
+import { SpaceContext } from '@contexts/SpaceContext'
+import styles from '@styles/components/HolonPagePosts.module.scss'
+import PostCard from '@components/Cards/PostCard/PostCard'
+import HolonPagePostsPlaceholder from '@components/HolonPage/HolonPagePostsPlaceholder'
+import HolonPagePostsFilters from '@components/HolonPage/HolonPagePostsFilters'
+import SearchBar from '@components/SearchBar'
+import Toggle from '@components/Toggle'
+import Button from '@components/Button'
+import HolonPostMap from '@components/HolonPage/HolonPostMap'
+import { onPageBottomReached } from '@src/Functions'
+import { ReactComponent as SlidersIconSVG } from '@svgs/sliders-h-solid.svg'
 
-const HolonPagePosts = (): JSX.Element => {
+const HolonPagePosts = ({ match }: { match: { params: { spaceHandle: string } } }): JSX.Element => {
+    const { params } = match
+    const { spaceHandle } = params
     const {
-        setCreatePostModalOpen,
-        pageBottomReached,
+        accountDataLoading,
         isLoggedIn,
+        setCreatePostModalOpen,
         setAlertModalOpen,
         setAlertMessage,
     } = useContext(AccountContext)
-
     const {
-        spaceContextLoading,
         spaceData,
+        getSpaceData,
+        spaceDataLoading,
         spacePosts,
         getSpacePosts,
-        getNextSpacePosts,
+        resetSpacePosts,
+        spacePostsLoading,
         setSelectedSpaceSubPage,
         spacePostsPaginationOffset,
-        spacePostsSearchFilter,
+        spacePostsPaginationLimit,
+        spacePostsFilters,
+        updateSpacePostsFilter,
         spacePostsFiltersOpen,
         setSpacePostsFiltersOpen,
-        spacePostsView,
-        setSpacePostsView,
-        spacePostsTimeRangeFilter,
-        spacePostsTypeFilter,
-        spacePostsSortByFilter,
-        spacePostsSortOrderFilter,
-        spacePostsDepthFilter,
-        setSpacePostsSearchFilter,
+        spacePostsPaginationHasMore,
     } = useContext(SpaceContext)
-
-    const [renderKey, setRenderKey] = useState(0)
+    const { view } = spacePostsFilters
+    const [pageBottomReached, setPageBottomReached] = useState(false)
 
     function openCreatePostModal() {
-        if (isLoggedIn) {
-            setCreatePostModalOpen(true)
-        } else {
+        if (isLoggedIn) setCreatePostModalOpen(true)
+        else {
             setAlertModalOpen(true)
             setAlertMessage('Log in to create a post')
         }
     }
 
     function toggleView() {
-        if (spacePostsView === 'List') {
-            setSpacePostsView('Map')
-        } else {
-            setSpacePostsView('List')
-        }
+        updateSpacePostsFilter('view', view === 'List' ? 'Map' : 'List')
     }
 
     useEffect(() => {
         setSelectedSpaceSubPage('posts')
+        const scrollHandler = () => onPageBottomReached(setPageBottomReached)
+        window.addEventListener('scroll', scrollHandler)
+        return () => window.removeEventListener('scroll', scrollHandler)
     }, [])
 
+    const location = useLocation()
+    const getFirstPosts = (spaceId) => getSpacePosts(spaceId, 0, spacePostsPaginationLimit)
     useEffect(() => {
-        if (!spaceContextLoading && spaceData) {
-            getSpacePosts()
-            setRenderKey(renderKey + 1)
+        if (!accountDataLoading) {
+            if (spaceHandle !== spaceData.handle) {
+                getSpaceData(spaceHandle, view === 'List' ? getFirstPosts : null)
+            } else if (view === 'List') {
+                getFirstPosts(spaceData.id)
+            }
         }
-    }, [
-        spaceContextLoading,
-        spacePostsSearchFilter,
-        spacePostsTimeRangeFilter,
-        spacePostsTypeFilter,
-        spacePostsSortByFilter,
-        spacePostsSortOrderFilter,
-        spacePostsDepthFilter,
-    ])
+    }, [accountDataLoading, location, spacePostsFilters])
 
     useEffect(() => {
-        if (
-            spacePostsView === 'List' &&
-            pageBottomReached &&
-            !spaceContextLoading &&
-            spaceData.id
-        ) {
-            getNextSpacePosts()
+        if (pageBottomReached && spacePostsPaginationHasMore && view === 'List') {
+            getSpacePosts(spaceData.id, spacePostsPaginationOffset, spacePostsPaginationLimit)
         }
     }, [pageBottomReached])
 
+    useEffect(() => () => resetSpacePosts(), [])
+
     return (
-        <div className={styles.wall}>
-            <div className='wecoPageHeader'>
+        <div className={styles.wrapper}>
+            <div className={styles.header}>
                 <div className={styles.headerRow}>
-                    <div className={styles.headerRowSection}>
+                    <div>
                         <SearchBar
-                            setSearchFilter={setSpacePostsSearchFilter}
+                            setSearchFilter={(payload) =>
+                                updateSpacePostsFilter('searchQuery', payload)
+                            }
                             placeholder='Search posts...'
                         />
-                        <div
-                            className={styles.filterButton}
-                            role='button'
-                            tabIndex={0}
+                        <Button
+                            icon={<SlidersIconSVG />}
+                            colour='grey'
+                            size='medium'
+                            margin='0 10px 0 0'
                             onClick={() => setSpacePostsFiltersOpen(!spacePostsFiltersOpen)}
-                            onKeyDown={() => setSpacePostsFiltersOpen(!spacePostsFiltersOpen)}
-                        >
-                            <img
-                                className={styles.filterButtonIcon}
-                                src='/icons/sliders-h-solid.svg'
-                                aria-label='filters'
-                            />
-                        </div>
-                        <div
-                            className={styles.filterButton}
-                            role='button'
-                            tabIndex={0}
+                        />
+                        <Button
+                            text='New post'
+                            colour='grey'
+                            size='medium'
                             onClick={() => openCreatePostModal()}
-                            onKeyDown={() => openCreatePostModal()}
-                        >
-                            New Post
-                        </div>
-                    </div>
-                    <div className={styles.headerRowSection}>
-                        <Toggle
-                            leftText='List'
-                            rightText='Map'
-                            onClickFunction={toggleView}
-                            positionLeft={spacePostsView === 'List'}
                         />
                     </div>
+                    <Toggle
+                        leftText='List'
+                        rightText='Map'
+                        onClickFunction={toggleView}
+                        positionLeft={view === 'List'}
+                    />
                 </div>
                 {spacePostsFiltersOpen && <HolonPagePostsFilters />}
             </div>
-            {spacePostsView === 'List' && spacePosts.length > 0 && (
-                <ul
-                    className={`${styles.posts} ${spaceContextLoading && styles.hidden}`}
-                    key={renderKey}
-                >
-                    {spacePosts.map((post, index) => (
-                        <PostCard
-                            postData={post}
-                            key={post.id}
-                            index={index}
-                            location='holon-posts'
-                        />
-                    ))}
-                </ul>
+            {view === 'List' ? (
+                <div className={styles.posts}>
+                    {accountDataLoading || spaceDataLoading || spacePostsLoading ? (
+                        <HolonPagePostsPlaceholder />
+                    ) : (
+                        <>
+                            {spacePosts.length ? (
+                                spacePosts.map((post, index) => (
+                                    <PostCard
+                                        postData={post}
+                                        key={post.id}
+                                        index={index}
+                                        location='holon-posts'
+                                    />
+                                ))
+                            ) : (
+                                <div className='wecoNoContentPlaceholder'>
+                                    No posts yet that match those settings...
+                                </div>
+                            )}
+                        </>
+                    )}
+                </div>
+            ) : (
+                <HolonPostMap />
             )}
-            {spacePostsView === 'List' &&
-                spacePosts.length < 1 &&
-                spacePostsPaginationOffset > 0 && (
-                    <div className='wecoNoContentPlaceholder'>
-                        No posts yet that match those settings...
-                    </div>
-                )}
-            {spacePostsView === 'Map' && <HolonPostMap />}
         </div>
     )
 }
@@ -177,46 +166,3 @@ export default HolonPagePosts
         /> 
     )}
 </ul> */
-
-// Apply search filter to posts
-// const filteredPosts = spacePosts.filter(post => {
-//     return post.title.toUpperCase().includes(spacePostsSearchFilter.toUpperCase()) && post.state === 'visible'
-//     //&& post.pins == null
-// })
-
-// TODO: Move the filters below into switch statement or better format?
-// Sort by Reactions
-// if (spacePostsSortByFilter === 'reactions') {
-//     filteredPosts.sort((a, b) => b.total_reactions - a.total_reactions)
-// }
-
-// // Sort by Likes
-// if (spacePostsSortByFilter === 'likes') {
-//     filteredPosts.sort((a, b) => b.total_likes - a.total_likes)
-// }
-
-// // Sort by Hearts
-// if (spacePostsSortByFilter === 'hearts') {
-//     filteredPosts.sort((a, b) => b.total_hearts - a.total_hearts)
-// }
-
-// // Sort by Date
-// if (spacePostsSortByFilter === 'date') {
-//     function formatDate(post) { return new Date(post.createdAt) }
-//     filteredPosts.sort((a, b) => formatDate(b) - formatDate(a))
-// }
-
-// // Sort by Comments
-// if (spacePostsSortByFilter === 'comments') {
-//     filteredPosts.sort((a, b) => b.total_comments - a.total_comments)
-// }
-
-// // below props only if you need pull down functionality
-// refreshFunction={this.refresh}
-// pullDownToRefresh
-// pullDownToRefreshContent={
-//     <h3 style={{textAlign: 'center'}}>&#8595; Pull down to refresh</h3>
-// }
-// releaseToRefreshContent={
-//     <h3 style={{textAlign: 'center'}}>&#8593; Release to refresh</h3>
-// }>

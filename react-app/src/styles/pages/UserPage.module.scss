@@ -46,21 +46,23 @@
     }
 }
 .userPageContainer {
-    width: 1200px;
+    // width: 1200px;
+    width: calc(100% - 80px);
     padding-top: 20px;
+    margin-right: 80px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: flex-start;
-    @media screen and (max-width: 1200px) {
-        width: 100%;
-    }
-    &.fullScreen {
-        width: 100%;
-        .holonPageCenterPanel {
-            width: 100%;
-        }
-    }
+    // @media screen and (max-width: 1200px) {
+    //     width: 100%;
+    // }
+    // &.fullScreen {
+    //     width: 100%;
+    //     .holonPageCenterPanel {
+    //         width: 100%;
+    //     }
+    // }
 }
 
 .userPageCenterPanel {
@@ -72,3 +74,12 @@
         width: 100%;
     }
 }
+
+// .accountSpaces {
+//     width: 80px;
+//     height: 100%;
+//     margin-top: -20px;
+//     background-color: red;
+//     position: absolute;
+//     right: 0;
+// }

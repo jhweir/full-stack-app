@@ -40,7 +40,7 @@ const ResetPasswordModal = (): JSX.Element => {
         <div className={styles.modalWrapper}>
             <CloseOnClickOutside onClick={() => setResetPasswordModalOpen(false)}>
                 <div className={styles.modal}>
-                    <CloseButton onClick={() => setResetPasswordModalOpen(false)} />
+                    <CloseButton size={20} onClick={() => setResetPasswordModalOpen(false)} />
                     <span className={styles.title}>Reset your password</span>
                     {flashMessage.length > 0 && (
                         <span className={styles.flashMessage}>{flashMessage}</span>

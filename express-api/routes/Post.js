@@ -462,7 +462,7 @@ router.post('/create-post', authenticateToken, (req, res) => {
 
     function findDirectHandleIds() {
         Holon.findAll({
-            where: { handle: spaceHandles },
+            where: { handle: spaceHandles, state: 'active' },
             attributes: ['id']
         })
         .then(holons => {
@@ -472,8 +472,13 @@ router.post('/create-post', authenticateToken, (req, res) => {
 
     async function findIndirectHandleIds(handle) {
         await Holon.findOne({
-            where: { handle: handle },
-            include: [{ model: Holon, as: 'HolonHandles', attributes: ['id'], through: { attributes: [] } }]
+            where: { handle: handle, state: 'active' },
+            include: [{
+                model: Holon,
+                as: 'HolonHandles',
+                attributes: ['id'],
+                through: { where: { state: 'open' }, attributes: [] }
+            }]
         })
         .then(holon => {
             indirectHandleIds.push(...holon.HolonHandles.map(holon => holon.id))

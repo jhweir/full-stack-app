@@ -17,10 +17,10 @@ const SettingModal = (): JSX.Element => {
         setSettingModalOpen,
         accountData,
         getAccountData,
-        setAccountContextLoading,
+        // setaccountDataLoading,
     } = useContext(AccountContext)
-    const { getUserData } = useContext(UserContext)
-    const { spaceData, getSpaceData, setSpaceHandle } = useContext(SpaceContext)
+    // const { getUserData } = useContext(UserContext)
+    const { spaceData } = useContext(SpaceContext)
     const [newValue, setNewValue] = useState('')
     const [error, setError] = useState(false)
     // const [errorMessage, setErrorMessage] = useState('')
@@ -113,26 +113,29 @@ const SettingModal = (): JSX.Element => {
                         if (res.data === 'success') {
                             if (settingModalType === 'change-holon-handle') {
                                 history.push(`/s/${newValue}/settings`)
-                                setTimeout(() => {
-                                    setSpaceHandle(newValue)
-                                    setAccountContextLoading(false)
-                                    getAccountData()
-                                }, 500)
+                                // todo: update context directly
+                                // setTimeout(() => {
+                                //     setSpaceHandle(newValue)
+                                //     // setaccountDataLoading(false)
+                                //     getAccountData()
+                                // }, 500)
                                 setSettingModalOpen(false)
                             } else {
                                 setSettingModalOpen(false)
-                                setTimeout(() => {
-                                    getSpaceData()
-                                }, 500)
+                                // todo: update context directly
+                                // setTimeout(() => {
+                                //     getSpaceData()
+                                // }, 500)
                             }
                         }
                         if (res.data === 'attached-by-mod') {
                             setSuccessMessage(
                                 `Success! Your new space has been created and attached to '${newValue}'`
                             )
-                            setTimeout(() => {
-                                getSpaceData()
-                            }, 500)
+                            // todo: update context directly
+                            // setTimeout(() => {
+                            //     getSpaceData()
+                            // }, 500)
                         }
                         if (res.data === 'pending-acceptance') {
                             setSuccessMessage(
@@ -153,7 +156,7 @@ const SettingModal = (): JSX.Element => {
                             setSettingModalOpen(false)
                             setTimeout(() => {
                                 getAccountData()
-                                getUserData()
+                                // getUserData()
                             }, 500)
                         }
                     })
@@ -166,7 +169,7 @@ const SettingModal = (): JSX.Element => {
             {/* TODO: split into sections for each setting type then remove conditionals from above */}
             <CloseOnClickOutside onClick={() => setSettingModalOpen(false)}>
                 <div className={styles.modal}>
-                    <CloseButton onClick={() => setSettingModalOpen(false)} />
+                    <CloseButton size={20} onClick={() => setSettingModalOpen(false)} />
                     {successMessage.length < 1 && (
                         <>
                             <span className={styles.title}>{title}</span>
@@ -245,7 +248,7 @@ export default SettingModal
 
 /* <span className={styles.flashMessage}>[flashMessage]</span> */
 
-// const { accountData, getAccountData, setCreateHolonModalOpen } = useContext(AccountContext)
+// const { accountData, getAccountData, setCreateSpaceModalOpen } = useContext(AccountContext)
 // const { spaceData, getSpaceData, getSpaceSpaces } = useContext(SpaceContext)
 
 // const [name, setName] = useState('')
@@ -270,10 +273,10 @@ export default SettingModal
 //             .then(res => {
 //                 if (res.data === 'holon-handle-taken') { setHandleError(true); setFlashMessage('Holon handle already taken') }
 //                 if (res.data === 'success') { // TODO: work out why getAccountData() is not recieving new ModeratedHolons
-//                     setCreateHolonModalOpen(false)
+//                     setCreateSpaceModalOpen(false)
 //                     getAccountData()
 //                     setTimeout(() => { getSpaceSpaces() }, 900)
-//                     // const a = setCreateHolonModalOpen(false)
+//                     // const a = setCreateSpaceModalOpen(false)
 //                     // Promise.all([a]).then(() => setTimeout(() => { getAccountData() }, 200)).then(() => getSpaceData())
 //                 }
 //             })

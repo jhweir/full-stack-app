@@ -41,7 +41,7 @@ const DeleteCommentModal = (props: {
         <div className={styles.modalWrapper}>
             <CloseOnClickOutside onClick={() => setDeleteCommentModalOpen(false)}>
                 <div className={styles.modal}>
-                    <CloseButton onClick={() => setDeleteCommentModalOpen(false)} />
+                    <CloseButton size={20} onClick={() => setDeleteCommentModalOpen(false)} />
                     <span className={styles.text}>
                         Are you sure you want to delete your comment?
                     </span>

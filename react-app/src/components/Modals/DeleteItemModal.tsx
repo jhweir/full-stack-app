@@ -55,7 +55,7 @@ const DeleteItemModal = (props: {
         <div className={styles.modalWrapper}>
             <CloseOnClickOutside onClick={() => setDeleteItemModalOpen(false)}>
                 <div className={styles.modal}>
-                    <CloseButton onClick={() => setDeleteItemModalOpen(false)} />
+                    <CloseButton size={20} onClick={() => setDeleteItemModalOpen(false)} />
                     <span className={styles.text}>{text}</span>
                     <div
                         className='wecoButton'

@@ -1,17 +1,18 @@
 import React, { useContext, useEffect } from 'react'
 import { Route, Switch, Redirect } from 'react-router-dom'
-import { AccountContext } from '../contexts/AccountContext'
-import { SpaceContext } from '../contexts/SpaceContext'
-import { UserContext } from '../contexts/UserContext'
-import styles from '../styles/pages/UserPage.module.scss'
-import CoverImage from '../components/CoverImage'
-import UserPageAbout from '../components/UserPage/UserPageAbout'
-import UserPageSettings from '../components/UserPage/UserPageSettings'
-import UserPageNotifications from '../components/UserPage/UserPageNotifications'
-import UserPageMessages from '../components/UserPage/UserPageMessages'
-import UserPagePosts from '../components/UserPage/UserPagePosts'
-import UserPageSideBarLeft from '../components/UserPage/UserPageSideBarLeft'
-import UserPageSideBarRight from '../components/UserPage/UserPageSideBarRight'
+import { SpaceContext } from '@contexts/SpaceContext'
+import { UserContext } from '@contexts/UserContext'
+import styles from '@styles/pages/UserPage.module.scss'
+import CoverImage from '@components/CoverImage'
+import UserPageAbout from '@components/UserPage/UserPageAbout'
+import UserPageSettings from '@components/UserPage/UserPageSettings'
+import UserPageNotifications from '@components/UserPage/UserPageNotifications'
+import UserPageMessages from '@components/UserPage/UserPageMessages'
+import UserPagePosts from '@components/UserPage/UserPagePosts'
+import UserPageSideBarLeft from '@components/UserPage/UserPageSideBarLeft'
+import UserPageSideBarRight from '@components/UserPage/UserPageSideBarRight'
+import AccountSideBar from '@components/AccountSideBar'
+// import AccountSpaces from '@components/AccountSpaces'
 
 const UserPage = ({
     match,
@@ -20,25 +21,26 @@ const UserPage = ({
 }): JSX.Element => {
     const { url } = match
     const { userHandle } = match.params
-    const { accountContextLoading } = useContext(AccountContext)
     const { fullScreen } = useContext(SpaceContext)
-    const { userData, setUserHandle, isOwnAccount } = useContext(UserContext)
+    const { userDataLoading, resetUserContext, userData, getUserData, isOwnAccount } = useContext(
+        UserContext
+    )
 
     useEffect(() => {
-        if (!accountContextLoading) {
-            setUserHandle(userHandle)
-        }
-    }, [accountContextLoading])
+        if (userData.id) resetUserContext()
+        getUserData(userHandle)
+    }, [userHandle])
 
     return (
         <div className={styles.userPage}>
             <CoverImage
-                coverImagePath={userData ? userData.coverImagePath : null}
+                coverImagePath={userData.coverImagePath || null}
                 imageUploadType='user-cover-image'
                 canEdit={isOwnAccount}
             />
-            {!userData && <span style={{ padding: 20 }}>No user with that name!</span>}
-            {userData && (
+            {userDataLoading && <p>Loading...</p>}
+            {!userDataLoading && !userData.id && <p>No user with that handle.</p>}
+            {!userDataLoading && userData.id && (
                 <div
                     className={`${styles.userPageContainer} ${fullScreen ? styles.fullScreen : ''}`}
                 >
@@ -71,9 +73,11 @@ const UserPage = ({
                             <Route path={`${url}/posts`} component={UserPagePosts} exact />
                         </Switch>
                     </div>
-                    <UserPageSideBarRight />
+                    <div />
+                    {/* <UserPageSideBarRight /> */}
                 </div>
             )}
+            <AccountSideBar />
         </div>
     )
 }

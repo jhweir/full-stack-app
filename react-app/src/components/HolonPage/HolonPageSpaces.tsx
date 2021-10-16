@@ -1,194 +1,213 @@
-import React, { useContext, useEffect } from 'react'
-import { AccountContext } from '../../contexts/AccountContext'
-import { SpaceContext } from '../../contexts/SpaceContext'
-import styles from '../../styles/components/HolonPageSpaces.module.scss'
-// import HolonCard from '../Cards/HolonCard'
-import VerticalCard from '../Cards/VerticalCard'
-import SearchBar from '../SearchBar'
-import Toggle from '../Toggle'
-import HolonPageSpacesFilters from './HolonPageSpacesFilters'
-// import HolonPageSpacesPlaceholder from './HolonPageSpacesPlaceholder'
-import HolonSpaceMap from './HolonSpaceMap'
-import Stat from '../Stat'
-import { isPlural } from '../../Functions'
+import React, { useContext, useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom'
+import { AccountContext } from '@contexts/AccountContext'
+import { SpaceContext } from '@contexts/SpaceContext'
+import styles from '@styles/components/HolonPageSpaces.module.scss'
+// import HolonCard from '@components/Cards/HolonCard'
+import { ReactComponent as UsersIconSVG } from '@svgs/users-solid.svg'
+import { ReactComponent as PostIconSVG } from '@svgs/edit-solid.svg'
+import { ReactComponent as CommentIconSVG } from '@svgs/comment-solid.svg'
+import { ReactComponent as ReactionIconSVG } from '@svgs/fire-alt-solid.svg'
+import VerticalCard from '@components/Cards/VerticalCard'
+import SearchBar from '@components/SearchBar'
+import Button from '@components/Button'
+import Toggle from '@components/Toggle'
+import Stat from '@components/Stat'
+import { isPlural, onPageBottomReached } from '@src/Functions'
+import HolonPageSpacesFilters from '@components/HolonPage/HolonPageSpacesFilters'
+import HolonPageSpacesPlaceholder from '@components/HolonPage/HolonPageSpacesPlaceholder'
+import HolonSpaceMap from '@components/HolonPage/HolonSpaceMap'
+import CreateSpaceModal from '@components/Modals/CreateSpaceModal'
+import { ReactComponent as SlidersIconSVG } from '@svgs/sliders-h-solid.svg'
 
-const HolonPageSpaces = (): JSX.Element => {
+const HolonPageSpaces = ({
+    match,
+}: {
+    match: { params: { spaceHandle: string } }
+}): JSX.Element => {
+    const { params } = match
+    const { spaceHandle } = params
+
     const {
-        setCreateHolonModalOpen,
-        pageBottomReached,
+        accountDataLoading,
+        // setCreateSpaceModalOpen,
         isLoggedIn,
         setAlertModalOpen,
         setAlertMessage,
     } = useContext(AccountContext)
     const {
-        spaceContextLoading,
         spaceData,
+        getSpaceData,
+        spaceDataLoading,
         spaceSpaces,
         getSpaceSpaces,
-        getNextSpaceSpaces,
+        resetSpaceSpaces,
+        spaceSpacesLoading,
+        spaceSpacesFilters,
+        updateSpaceSpacesFilter,
         spaceSpacesFiltersOpen,
         setSpaceSpacesFiltersOpen,
-        spaceSpacesSearchFilter,
-        spaceSpacesTimeRangeFilter,
-        spaceSpacesSortByFilter,
-        spaceSpacesSortOrderFilter,
-        spaceSpacesDepthFilter,
         setSelectedSpaceSubPage,
         spaceSpacesPaginationOffset,
-        spaceSpacesView,
-        setSpaceSpacesView,
-        setSpaceSpacesSearchFilter,
-        setSpaceHandle,
+        spaceSpacesPaginationHasMore,
+        spaceSpacesPaginationLimit,
     } = useContext(SpaceContext)
+    const { view } = spaceSpacesFilters
+
+    const [pageBottomReached, setPageBottomReached] = useState(false)
+    const [createSpaceModalOpen, setCreateSpaceModalOpen] = useState(false)
 
     function openCreateSpaceModal() {
-        if (!isLoggedIn) {
+        if (isLoggedIn) setCreateSpaceModalOpen(true)
+        else {
             setAlertModalOpen(true)
             setAlertMessage('Log in to create a space')
-        } else {
-            setCreateHolonModalOpen(true)
         }
     }
 
     function toggleView() {
-        if (spaceSpacesView === 'List') setSpaceSpacesView('Map')
-        else setSpaceSpacesView('List')
+        updateSpaceSpacesFilter('view', view === 'List' ? 'Map' : 'List')
     }
 
     useEffect(() => {
         setSelectedSpaceSubPage('spaces')
+        const scrollHandler = () => onPageBottomReached(setPageBottomReached)
+        window.addEventListener('scroll', scrollHandler)
+        return () => window.removeEventListener('scroll', scrollHandler)
     }, [])
 
+    const location = useLocation()
+    const getFirstSpaces = (spaceId) => getSpaceSpaces(spaceId, 0, spaceSpacesPaginationLimit)
     useEffect(() => {
-        if (!spaceContextLoading && spaceData && spaceData.id) {
-            console.log('test')
-            getSpaceSpaces()
+        if (!accountDataLoading) {
+            if (spaceData.handle !== spaceHandle) {
+                getSpaceData(spaceHandle, view === 'List' ? getFirstSpaces : null)
+            } else if (view === 'List') {
+                getFirstSpaces(spaceData.id)
+            }
         }
-    }, [
-        spaceContextLoading,
-        spaceSpacesSearchFilter,
-        spaceSpacesTimeRangeFilter,
-        spaceSpacesSortByFilter,
-        spaceSpacesSortOrderFilter,
-        spaceSpacesDepthFilter,
-    ])
+    }, [accountDataLoading, location, spaceSpacesFilters])
 
     useEffect(() => {
-        if (pageBottomReached && !spaceContextLoading && spaceData.id) {
-            console.log('HolonPageSpaces: pageBottomReached')
-            getNextSpaceSpaces()
+        if (pageBottomReached && spaceSpacesPaginationHasMore && view === 'List') {
+            getSpaceSpaces(spaceData.id, spaceSpacesPaginationOffset, spaceSpacesPaginationLimit)
         }
     }, [pageBottomReached])
 
+    useEffect(() => () => resetSpaceSpaces(), [])
+
     return (
         <div className={styles.wrapper}>
-            <div className='wecoPageHeader'>
+            <div className={styles.header}>
                 <div className={styles.headerRow}>
-                    <div className={styles.headerRowSection}>
+                    <div>
                         <SearchBar
-                            setSearchFilter={setSpaceSpacesSearchFilter}
+                            setSearchFilter={(payload) =>
+                                updateSpaceSpacesFilter('searchQuery', payload)
+                            }
                             placeholder='Search spaces...'
                         />
-                        {/* <HolonPageSpacesFilters /> */}
-                        <div
-                            className={styles.filterButton}
-                            role='button'
-                            tabIndex={0}
+                        <Button
+                            icon={<SlidersIconSVG />}
+                            colour='grey'
+                            size='medium'
+                            margin='0 10px 0 0'
                             onClick={() => setSpaceSpacesFiltersOpen(!spaceSpacesFiltersOpen)}
-                            onKeyDown={() => setSpaceSpacesFiltersOpen(!spaceSpacesFiltersOpen)}
-                        >
-                            <img
-                                className={styles.filterButtonIcon}
-                                src='/icons/sliders-h-solid.svg'
-                                aria-label='filters'
-                            />
-                        </div>
-                        {/* <Toggle
-                            leftText='List'
-                            rightText='Map'
-                            onClickFunction={toggleView}
-                            positionLeft={spaceSpacesView === 'List'}
-                        /> */}
-                        <div
-                            className={styles.filterButton}
-                            role='button'
-                            tabIndex={0}
+                        />
+                        <Button
+                            text='New space'
+                            colour='grey'
+                            size='medium'
+                            margin='0 10px 0 0'
                             onClick={() => openCreateSpaceModal()}
-                            onKeyDown={() => openCreateSpaceModal()}
-                        >
-                            New Space
-                        </div>
+                        />
+                        {createSpaceModalOpen && (
+                            <CreateSpaceModal close={() => setCreateSpaceModalOpen(false)} />
+                        )}
                     </div>
                     <div className={styles.headerRowSection}>
                         <Toggle
                             leftText='List'
                             rightText='Map'
                             onClickFunction={toggleView}
-                            positionLeft={spaceSpacesView === 'List'}
+                            positionLeft={view === 'List'}
                         />
                     </div>
                 </div>
                 {spaceSpacesFiltersOpen && <HolonPageSpacesFilters />}
             </div>
-            {/* <HolonPageSpacesPlaceholder/> */}
-            {spaceSpacesView === 'List' && spaceSpaces.length > 0 && (
-                <ul className={`${styles.spaces} ${spaceContextLoading && styles.hidden}`}>
-                    {spaceSpaces.map((holon) => (
-                        <VerticalCard
-                            key={holon.id}
-                            path={`/s/${holon.handle}`}
-                            onClick={() => setSpaceHandle(holon.handle)}
-                            coverImagePath={holon.coverImagePath}
-                            flagImagePath={holon.flagImagePath}
-                            title={holon.name}
-                            subTitle={`s/${holon.handle}`}
-                            text={holon.description}
-                            footer={
-                                <div className={styles.stats}>
-                                    <Stat
-                                        type='user'
-                                        value={holon.total_followers}
-                                        title={`Follower${
-                                            isPlural(holon.total_followers) ? 's' : ''
-                                        }`}
-                                        small
+            {view === 'List' ? (
+                <ul className={styles.spaces}>
+                    {accountDataLoading || spaceDataLoading || spaceSpacesLoading ? (
+                        <HolonPageSpacesPlaceholder />
+                    ) : (
+                        <>
+                            {spaceSpaces.length ? (
+                                spaceSpaces.map((holon) => (
+                                    <VerticalCard
+                                        key={holon.id}
+                                        type='space'
+                                        route={`/s/${holon.handle}/spaces`}
+                                        coverImagePath={holon.coverImagePath}
+                                        flagImagePath={holon.flagImagePath}
+                                        title={holon.name}
+                                        subTitle={`s/${holon.handle}`}
+                                        text={holon.description}
+                                        footer={
+                                            <div className={styles.stats}>
+                                                <Stat
+                                                    icon={<UsersIconSVG />}
+                                                    value={holon.total_followers}
+                                                    title={`Follower${
+                                                        isPlural(holon.total_followers) ? 's' : ''
+                                                    }`}
+                                                    small
+                                                />
+                                                <Stat
+                                                    icon={<PostIconSVG />}
+                                                    value={holon.total_posts}
+                                                    title={`Post${
+                                                        isPlural(holon.total_posts) ? 's' : ''
+                                                    }`}
+                                                    small
+                                                />
+                                                <Stat
+                                                    icon={<CommentIconSVG />}
+                                                    value={holon.total_comments}
+                                                    title={`Comment${
+                                                        isPlural(holon.total_comments) ? 's' : ''
+                                                    }`}
+                                                    small
+                                                />
+                                                <Stat
+                                                    icon={<ReactionIconSVG />}
+                                                    value={holon.total_reactions}
+                                                    title={`Reaction${
+                                                        isPlural(holon.total_reactions) ? 's' : ''
+                                                    }`}
+                                                    small
+                                                />
+                                            </div>
+                                        }
                                     />
-                                    <Stat
-                                        type='post'
-                                        value={holon.total_posts}
-                                        title={`Post${isPlural(holon.total_posts) ? 's' : ''}`}
-                                        small
-                                    />
-                                    <Stat
-                                        type='comment'
-                                        value={holon.total_comments}
-                                        title={`Comment${
-                                            isPlural(holon.total_comments) ? 's' : ''
-                                        }`}
-                                        small
-                                    />
-                                    <Stat
-                                        type='reaction'
-                                        value={holon.total_reactions}
-                                        title={`Reaction${
-                                            isPlural(holon.total_reactions) ? 's' : ''
-                                        }`}
-                                        small
-                                    />
+                                ))
+                            ) : (
+                                <div className='wecoNoContentPlaceholder'>
+                                    No spaces yet that match those settings...
                                 </div>
-                            }
-                        />
-                    ))}
+                            )}
+                        </>
+                    )}
                 </ul>
+            ) : (
+                <HolonSpaceMap />
             )}
-            {spaceSpacesView === 'List' &&
-                spaceSpacesPaginationOffset > 0 &&
-                spaceSpaces.length < 1 && (
-                    <div className='wecoNoContentPlaceholder'>
-                        No spaces yet that match those settings...
-                    </div>
-                )}
-            {spaceSpacesView === 'Map' && <HolonSpaceMap />}
+            {/* {view === 'List' && spaceSpacesPaginationOffset > 0 && spaceSpaces.length < 1 && (
+                <div className='wecoNoContentPlaceholder'>
+                    No spaces yet that match those settings...
+                </div>
+            )}
+            {view === 'Map' && <HolonSpaceMap />} */}
         </div>
     )
 }

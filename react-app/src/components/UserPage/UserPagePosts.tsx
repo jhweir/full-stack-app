@@ -1,52 +1,44 @@
-import React, { useContext, useEffect } from 'react'
-import { AccountContext } from '../../contexts/AccountContext'
-import { UserContext } from '../../contexts/UserContext'
-import styles from '../../styles/components/UserPagePosts.module.scss'
-import SearchBar from '../SearchBar'
-import UserPagePostFilters from './UserPagePostFilters'
-import PostCard from '../Cards/PostCard/PostCard'
+import React, { useContext, useEffect, useState } from 'react'
+import { UserContext } from '@contexts/UserContext'
+import styles from '@styles/components/UserPagePosts.module.scss'
+import SearchBar from '@components/SearchBar'
+import UserPagePostFilters from '@components/UserPage/UserPagePostFilters'
+import PostCard from '@components/Cards/PostCard/PostCard'
+import { onPageBottomReached } from '@src/Functions'
 
 const UserPagePosts = (): JSX.Element => {
-    const { pageBottomReached } = useContext(AccountContext)
     const {
-        userContextLoading,
         userData,
+        userPosts,
+        userPostsLoading,
+        userPostsFilters,
+        userPostsFiltersOpen,
+        userPostsPaginationOffset,
+        userPostsPaginationHasMore,
         setSelectedUserSubPage,
-        createdPostPaginationOffset,
-        getCreatedPosts,
-        getNextCreatedPosts,
-        createdPosts,
-        createdPostFiltersOpen,
-        setCreatedPostFiltersOpen,
-        createdPostSearchFilter,
-        createdPostTimeRangeFilter,
-        createdPostTypeFilter,
-        createdPostSortByFilter,
-        createdPostSortOrderFilter,
-        setCreatedPostSearchFilter,
+        setUserPostsFiltersOpen,
+        getUserPosts,
+        updateUserPostsFilter,
     } = useContext(UserContext)
 
+    const [pageBottomReached, setPageBottomReached] = useState(false)
+
+    // set selected sub page and add scroll listener
     useEffect(() => {
         setSelectedUserSubPage('posts')
+        const scrollHandler = () => onPageBottomReached(setPageBottomReached)
+        window.addEventListener('scroll', scrollHandler)
+        return () => window.removeEventListener('scroll', scrollHandler)
     }, [])
 
+    // get user posts
     useEffect(() => {
-        if (!userContextLoading && userData.id) {
-            getCreatedPosts()
-        }
-    }, [
-        userContextLoading,
-        createdPostSearchFilter,
-        createdPostTimeRangeFilter,
-        createdPostTypeFilter,
-        createdPostSortByFilter,
-        createdPostSortOrderFilter,
-    ])
+        if (userData.id) getUserPosts(0)
+    }, [userData.id, userPostsFilters])
 
+    // get next user posts
     useEffect(() => {
-        if (pageBottomReached && !userContextLoading && userData.id) {
-            getNextCreatedPosts()
-        }
+        if (pageBottomReached && userPostsPaginationHasMore) getUserPosts(userPostsPaginationOffset)
     }, [pageBottomReached])
 
     return (
@@ -55,15 +47,15 @@ const UserPagePosts = (): JSX.Element => {
             <div className='wecoPageHeader'>
                 <div className='wecoPageHeaderRow'>
                     <SearchBar
-                        setSearchFilter={setCreatedPostSearchFilter}
+                        setSearchFilter={(payload) => updateUserPostsFilter('searchQuery', payload)}
                         placeholder='Search posts...'
                     />
                     <div
                         className={styles.filterButton}
                         role='button'
                         tabIndex={0}
-                        onClick={() => setCreatedPostFiltersOpen(!createdPostFiltersOpen)}
-                        onKeyDown={() => setCreatedPostFiltersOpen(!createdPostFiltersOpen)}
+                        onClick={() => setUserPostsFiltersOpen(!userPostsFiltersOpen)}
+                        onKeyDown={() => setUserPostsFiltersOpen(!userPostsFiltersOpen)}
                     >
                         <img
                             className={styles.filterButtonIcon}
@@ -72,24 +64,27 @@ const UserPagePosts = (): JSX.Element => {
                         />
                     </div>
                 </div>
-                {createdPostFiltersOpen && <UserPagePostFilters />}
+                {userPostsFiltersOpen && <UserPagePostFilters />}
             </div>
-            {createdPosts.length > 0 && (
-                <ul className={styles.createdPosts}>
-                    {createdPosts.map((post, index) => (
-                        <PostCard
-                            postData={post}
-                            key={post.id}
-                            index={index}
-                            location='user-created-posts'
-                        />
-                    ))}
+            {userPostsLoading ? (
+                <p>Loading...</p>
+            ) : (
+                <ul className={styles.userPosts}>
+                    {userPosts.length > 0 &&
+                        userPosts.map((post, index) => (
+                            <PostCard
+                                postData={post}
+                                key={post.id}
+                                index={index}
+                                location='user-created-posts'
+                            />
+                        ))}
+                    {userPostsPaginationOffset > 0 && userPosts.length < 1 && (
+                        <div className='wecoNoContentPlaceholder'>
+                            No posts yet that match those settings...
+                        </div>
+                    )}
                 </ul>
-            )}
-            {createdPostPaginationOffset > 0 && createdPosts.length < 1 && (
-                <div className='wecoNoContentPlaceholder'>
-                    No posts yet that match those settings...
-                </div>
             )}
         </div>
     )

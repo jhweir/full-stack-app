@@ -1,12 +1,15 @@
+@import '@styles/Colors';
+
 .wrapper {
     margin-bottom: 10px;
-    padding: 20px 50px 10px 30px;
+    padding: 20px 30px;
     width: 100%;
     border-radius: 5px;
     background-color: #f7fbff; //transparent; #ededf5;
     //box-shadow: 0 1px 10px 0 rgba(10, 8, 72, 0.02);
     display: flex;
     flex-direction: row;
+    align-items: center;
     transition-property: background-color;
     transition-duration: 0.5s;
     position: relative;
@@ -14,97 +17,68 @@
         background-color: white;
     }
 }
-.index {
+.typeIcon {
+    width: 50px;
+    height: 50px;
     margin-right: 20px;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    flex-shrink: 0;
-    color: rgba(0, 0, 0, 0.15);
-    @media screen and (max-width: 700px) {
-        display: none;
-    }
-}
-.content {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    //justify-content: center;
-}
-.iconWrapper {
-    width: 40px;
-    height: 40px;
-    margin-right: 20px;
-    margin-bottom: 10px;
     border-radius: 50%;
-    background-color: #eee;
+    background-color: $grey1;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-}
-.icon {
-    width: 20px;
-    height: 20px;
-    opacity: 0.2;
-    &.rotated {
-        transform: rotate(180deg);
+    svg {
+        width: 30px;
+        height: 30px;
+        path { fill: $grey5 }
     }
 }
-.iconLarge {
-    width: 25px;
-    height: 25px;
-    opacity: 0.2;
-}
-.checkIcon {
-    width: 25px;
-    height: 25px;
-    filter: invert(50%) sepia(51%) saturate(500%) hue-rotate(100deg) brightness(120%) contrast(100%);
-    opacity: 0.6;
-    margin-right: 5px;
-    margin-bottom: 10px;
-}
-.timesIcon {
-    width: 25px;
-    height: 25px;
-    filter: invert(50%) sepia(51%) saturate(500%) hue-rotate(300deg) brightness(120%) contrast(100%);
-    opacity: 0.6;
-    margin-right: 5px;
-    margin-bottom: 10px;
-}
-.info {
+
+.content {
+    width: 100%;
+    $contentMargin: 5px;
+    font-size: 14px;
+    color: $grey5;
+    margin-bottom: -$contentMargin;
+    margin-right: 10px;
     display: flex;
     flex-direction: row;
     align-items: center;
     flex-wrap: wrap;
+    > a, > p, > div, > button {
+        flex-shrink: 0;
+        margin: 0 $contentMargin $contentMargin 0;
+    }
+    .inlineIcon {
+        width: 25px;
+        height: 25px;
+        &.green > svg > path { fill: $green2 }
+        &.red > svg > path { fill: $red }
+    }
+    > p {
+        &.green { color: $green2 }
+        &.red { color: $red }
+    }
 }
-.imageTextLink {
+.seenButton {
+    width: 30px;
+    height: 30px;
+    border: none;
+    padding: 0;
+    background-color: transparent;
+    cursor: pointer;
+    flex-shrink: 0;
+    svg {
+        width: 30px;
+        height: 30px;
+        path { fill: $grey3 }
+    }
+}
+.state {
     display: flex;
-    flex-direction: row;
     align-items: center;
-    margin-bottom: 10px;
-    span {
-        margin: 0 8px;
+    > p {
+        flex-shrink: 0;
+        margin-right: 5px;
     }
-}
-.seenIcon {
-    width: 20px;
-    height: 20px;
-    opacity: 0.1;
-    position: absolute;
-    right: 20px;
-    top: calc(50% - 10px);
-    transition-property: opacity;
-    transition-duration: 0.5s;
-    &:hover {
-        cursor: pointer;
-        opacity: 0.15;
-    }
-}
-.text {
-    opacity: 0.6;
-    //height: 30px;
-    line-height: 30px;
-    margin-bottom: 10px;
 }

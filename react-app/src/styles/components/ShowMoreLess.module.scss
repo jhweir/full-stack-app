@@ -4,11 +4,13 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    width: 100%;
 }
 .content {
     overflow: hidden;
     position: relative;
     transition: max-height 0.25s;
+    width: 100%;
 }
 .gradient {
     position: absolute; 

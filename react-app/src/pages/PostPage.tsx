@@ -1,7 +1,7 @@
 import React, { useEffect, useContext } from 'react'
 import { Route, Switch } from 'react-router-dom' // Redirect
+import AccountSideBar from '@components/AccountSideBar'
 import styles from '../styles/pages/PostPage.module.scss'
-import { AccountContext } from '../contexts/AccountContext'
 import { PostContext } from '../contexts/PostContext'
 // import EmptyPage from './EmptyPage'
 import PostCard from '../components/Cards/PostCard/PostCard'
@@ -24,47 +24,48 @@ const PostPage = ({
     const { url } = match
     const { postId } = match.params
     const { pathname } = location
-    const { accountContextLoading } = useContext(AccountContext)
-    const { postData, setPostId } = useContext(PostContext)
+    const { getPostData, postData, resetPostContext } = useContext(PostContext)
 
     useEffect(() => {
-        if (!accountContextLoading) {
-            setPostId(postId)
-        }
-    }, [accountContextLoading])
+        if (postData.id) resetPostContext()
+        getPostData(postId)
+    }, [postId])
 
     // useEffect(() => {
     //     if (pathname.includes('comments')) { setPageSectionSelected('comments') }
     //     if (pathname.includes('vote')) { setPageSectionSelected('vote') }
     //     if (pathname.includes('results')) { setPageSectionSelected('results') }
-    // }, [accountContextLoading])
+    // }, [accountDataLoading])
 
-    if (postData && postData.type === 'prism') {
+    if (postData.type === 'prism') {
         return <Prism />
     }
-    if (postData && postData.type === 'plot-graph') {
+    if (postData.type === 'plot-graph') {
         return <PlotGraph />
     }
-    if (postData && postData.type === 'glass-bead-game') {
+    if (postData.type === 'glass-bead-game') {
         return <GlassBeadGame />
     }
-    if (postData && postData.type === 'decision-tree') {
+    if (postData.type === 'decision-tree') {
         return <DecisionTree />
     }
 
     return (
         <div className={styles.wrapper}>
-            {postData.id && <PostCard postData={postData} location='post-page' />}
-            {postData.type === 'poll' && <PageSectionSelector url={url} pathname={pathname} />}
-            <Switch>
-                {/* {!postContextLoading && postData.type !== 'prism' && */}
-                {/* <Redirect from={`${url}`} to={`${url}/comments`} exact/> */}
-                {/* } */}
-                {/* <Route path={`${url}/comments`} render={() => <PostPageComments/>} exact/> */}
-                <Route path={`${url}/vote`} render={() => <PostPagePollVote />} exact />
-                <Route path={`${url}/results`} render={() => <PostPagePollResults />} exact />
-                {/* <Route component={ EmptyPage }/> */}
-            </Switch>
+            <div className={styles.postCardWrapper}>
+                {postData.id && <PostCard postData={postData} location='post-page' />}
+                {postData.type === 'poll' && <PageSectionSelector url={url} pathname={pathname} />}
+                <Switch>
+                    {/* {!postDataLoading && postData.type !== 'prism' && */}
+                    {/* <Redirect from={`${url}`} to={`${url}/comments`} exact/> */}
+                    {/* } */}
+                    {/* <Route path={`${url}/comments`} render={() => <PostPageComments/>} exact/> */}
+                    <Route path={`${url}/vote`} render={() => <PostPagePollVote />} exact />
+                    <Route path={`${url}/results`} render={() => <PostPagePollResults />} exact />
+                    {/* <Route component={ EmptyPage }/> */}
+                </Switch>
+            </div>
+            <AccountSideBar />
         </div>
     )
 }
@@ -101,11 +102,11 @@ export default PostPage
 } */
 
 // useEffect(() => {
-//     if (!accountContextLoading) {
+//     if (!accountDataLoading) {
 //         getPost()
 //         console.log('getPost run on PostPage')
 //     }
-// }, [accountContextLoading])
+// }, [accountDataLoading])
 
 /* {alertModalOpen && 
     <AlertModal message={alertMessage} setAlertModalOpen={setAlertModalOpen}>

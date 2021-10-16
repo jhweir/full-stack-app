@@ -2,26 +2,29 @@
 import React, { useContext, useState, useEffect, useRef } from 'react'
 import * as d3 from 'd3'
 import axios from 'axios'
-import { SpaceContext } from '../../contexts/SpaceContext'
-import { AccountContext } from '../../contexts/AccountContext'
-import styles from '../../styles/components/HolonPostMap.module.scss'
-import colors from '../../styles/Colors.module.scss'
-import PostCard from '../Cards/PostCard/PostCard'
-import config from '../../Config'
-import { IPost } from '../../Interfaces'
+import { SpaceContext } from '@contexts/SpaceContext'
+import { AccountContext } from '@contexts/AccountContext'
+import styles from '@styles/components/HolonPostMap.module.scss'
+import colors from '@styles/Colors.module.scss'
+import PostCard from '@components/Cards/PostCard/PostCard'
+import config from '@src/Config'
+import { IPost } from '@src/Interfaces'
 
 const HolonPostMap = (): JSX.Element => {
     const { accountData, isLoggedIn } = useContext(AccountContext)
     const {
         spaceData,
-        spacePostsSortByFilter,
-        spacePostsSortOrderFilter,
-        spacePostsTimeRangeFilter,
-        spacePostsTypeFilter,
-        spacePostsDepthFilter,
-        spacePostsSearchFilter,
+        spacePostsFilters,
+        // spacePostsSortByFilter,
+        // spacePostsSortOrderFilter,
+        // spacePostsTimeRangeFilter,
+        // spacePostsTypeFilter,
+        // spacePostsDepthFilter,
+        // spacePostsSearchFilter,
         fullScreen,
     } = useContext(SpaceContext)
+
+    const { sortBy, sortOrder, timeRange, type, depth, searchQuery } = spacePostsFilters
 
     const [postMapData, setPostMapData] = useState([])
     const [selectedPost, setSelectedPost] = useState(null)
@@ -42,14 +45,14 @@ const HolonPostMap = (): JSX.Element => {
         axios
             .get(
                 /* prettier-ignore */
-                `${config.apiURL}/holon-posts?accountId=${isLoggedIn ? accountData.id : null
-                }&handle=${spaceData.handle
-                }&sortBy=${spacePostsSortByFilter
-                }&sortOrder=${spacePostsSortOrderFilter
-                }&timeRange=${spacePostsTimeRangeFilter
-                }&postType=${spacePostsTypeFilter
-                }&depth=${spacePostsDepthFilter
-                }&searchQuery=${spacePostsSearchFilter
+                `${config.apiURL}/space-posts?accountId=${isLoggedIn ? accountData.id : null
+                }&spaceId=${spaceData.id
+                }&sortBy=${sortBy
+                }&sortOrder=${sortOrder
+                }&timeRange=${timeRange
+                }&postType=${type
+                }&depth=${depth
+                }&searchQuery=${searchQuery
                 }&limit=${limit
                 }&offset=0`
             )
@@ -96,27 +99,26 @@ const HolonPostMap = (): JSX.Element => {
     function findDomain() {
         let dMin = 0
         let dMax
-        if (spacePostsSortByFilter === 'Reactions')
+        if (sortBy === 'Reactions')
             dMax = d3.max(postMapData.map((post: IPost) => post.total_reactions))
-        if (spacePostsSortByFilter === 'Likes')
-            dMax = d3.max(postMapData.map((post: IPost) => post.total_likes))
-        if (spacePostsSortByFilter === 'Reposts')
+        if (sortBy === 'Likes') dMax = d3.max(postMapData.map((post: IPost) => post.total_likes))
+        if (sortBy === 'Reposts')
             dMax = d3.max(postMapData.map((post: IPost) => post.total_reposts))
-        if (spacePostsSortByFilter === 'Ratings')
+        if (sortBy === 'Ratings')
             dMax = d3.max(postMapData.map((post: IPost) => post.total_ratings))
-        if (spacePostsSortByFilter === 'Comments')
+        if (sortBy === 'Comments')
             dMax = d3.max(postMapData.map((post: IPost) => post.total_comments))
-        if (spacePostsSortByFilter === 'Date') {
+        if (sortBy === 'Date') {
             dMin = d3.min(postMapData.map((post: IPost) => Date.parse(post.createdAt)))
             dMax = d3.max(postMapData.map((post: IPost) => Date.parse(post.createdAt)))
         }
         let domainMin
         let domainMax
-        if (spacePostsSortOrderFilter === 'Descending') {
+        if (sortOrder === 'Descending') {
             domainMin = dMin
             domainMax = dMax
         }
-        if (spacePostsSortOrderFilter === 'Ascending') {
+        if (sortOrder === 'Ascending') {
             domainMin = dMax
             domainMax = dMin
         }
@@ -130,12 +132,12 @@ const HolonPostMap = (): JSX.Element => {
             .range([20, 60]) // radius size spread
 
         let radius
-        if (spacePostsSortByFilter === 'Reactions') radius = d.total_reactions
-        if (spacePostsSortByFilter === 'Likes') radius = d.total_likes
-        if (spacePostsSortByFilter === 'Reposts') radius = d.total_reposts
-        if (spacePostsSortByFilter === 'Ratings') radius = d.total_ratings
-        if (spacePostsSortByFilter === 'Comments') radius = d.total_comments
-        if (spacePostsSortByFilter === 'Date') radius = Date.parse(d.createdAt)
+        if (sortBy === 'Reactions') radius = d.total_reactions
+        if (sortBy === 'Likes') radius = d.total_likes
+        if (sortBy === 'Reposts') radius = d.total_reposts
+        if (sortBy === 'Ratings') radius = d.total_ratings
+        if (sortBy === 'Comments') radius = d.total_comments
+        if (sortBy === 'Date') radius = Date.parse(d.createdAt)
 
         return radiusScale(radius)
     }
@@ -600,15 +602,7 @@ const HolonPostMap = (): JSX.Element => {
 
     useEffect(() => {
         getPostMapData(postMapPaginationLimit)
-    }, [
-        spaceData.id,
-        spacePostsSortByFilter,
-        spacePostsSortOrderFilter,
-        spacePostsTimeRangeFilter,
-        spacePostsTypeFilter,
-        spacePostsDepthFilter,
-        spacePostsSearchFilter,
-    ])
+    }, [spaceData.id, spacePostsFilters])
 
     useEffect(() => {
         if (postMapData) updateMap(postMapData)

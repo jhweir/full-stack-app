@@ -13,6 +13,8 @@ const { Holon, User, Post } = require('../models')
 router.get('/all-users', (req, res) => {
     const { accountId, timeRange, userType, sortBy, sortOrder, searchQuery, limit, offset } = req.query
 
+    console.log('req.query: ', req.query)
+
     function findStartDate() {
         let offset = undefined
         if (timeRange === 'Last Year') { offset = (24*60*60*1000) * 365 }
@@ -72,6 +74,7 @@ router.get('/all-users', (req, res) => {
         subQuery: false
     })
     .then(users => {
+        console.log('users: ', users)
         User.findAll({ 
             where: { id: users.map(user => user.id) },
             attributes: [
@@ -144,8 +147,8 @@ router.get('/user-posts', (req, res) => {
 
     function findType() {
         let type
-        if (postType === 'All Types') { type = ['text', 'poll', 'url', 'glass-bead', 'prism', 'plot-graph'] }
-        if (postType !== 'All Types') { type = postType.toLowerCase() }
+        if (postType === 'All Types') { type = ['text', 'url', 'glass-bead-game', 'prism'] } //'poll','decision-tree',  'prism', 'plot-graph']
+        if (postType !== 'All Types') { type = postType.replace(/\s+/g, '-').toLowerCase() }
         return type
     }
 
@@ -288,6 +291,22 @@ router.get('/user-posts', (req, res) => {
     })
     .then(data => { res.json(data) })
     .catch(err => console.log(err))
+})
+
+// POST
+router.post('/find-user', (req, res) => {
+    const { query, blacklist } = req.body
+    User.findAll({
+        where: {
+            [Op.or]: [
+                { handle: { [Op.like]: `%${query}%` } },
+                { name: { [Op.like]: `%${query}%` } },
+            ],
+            [Op.not]: [
+                { handle: blacklist.map(user => user.handle) },
+            ]
+        }
+    }).then(users => res.send(users))
 })
 
 module.exports = router

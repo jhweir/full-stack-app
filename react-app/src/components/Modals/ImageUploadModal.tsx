@@ -11,7 +11,7 @@ import CloseButton from '../CloseButton'
 import CloseOnClickOutside from '../CloseOnClickOutside'
 
 const ImageUploadModal = (): JSX.Element => {
-    const { setImageUploadModalOpen, imageUploadType, getAccountData } = useContext(AccountContext)
+    const { accountData, setImageUploadModalOpen, imageUploadType, getAccountData } = useContext(AccountContext)
     const { spaceData, getSpaceData } = useContext(SpaceContext)
     const { getUserData } = useContext(UserContext)
     const [image, setImage] = useState<File[]>([])
@@ -40,16 +40,17 @@ const ImageUploadModal = (): JSX.Element => {
             .then((res) => {
                 if (res.data === 'success') {
                     setImageUploadModalOpen(false)
-                    setTimeout(() => {
-                        if (imageUploadType.includes('holon')) {
-                            getSpaceData()
-                            getAccountData()
-                        }
-                        if (imageUploadType.includes('user')) {
-                            getUserData()
-                            getAccountData()
-                        }
-                    }, 200)
+                    // todo: update context directly
+                    // setTimeout(() => {
+                    //     if (imageUploadType.includes('holon')) {
+                    //         getSpaceData()
+                    //         getAccountData()
+                    //     }
+                    //     if (imageUploadType.includes('user')) {
+                    //         getUserData(accountData.id)
+                    //         getAccountData()
+                    //     }
+                    // }, 200)
                 }
             })
     }
@@ -58,14 +59,14 @@ const ImageUploadModal = (): JSX.Element => {
         <div className={styles.imageUploadModalWrapper}>
             <CloseOnClickOutside onClick={() => setImageUploadModalOpen(false)}>
                 <div className={styles.imageUploadModal}>
-                    <CloseButton onClick={() => setImageUploadModalOpen(false)} />
+                    <CloseButton size={20} onClick={() => setImageUploadModalOpen(false)} />
                     <ImageUploader
                         withIcon
                         withPreview
                         buttonText='Choose images'
                         onChange={(imageFile) => setImage(imageFile)}
                         imgExtension={['.jpg', '.jpeg', '.gif', '.png']}
-                        maxFileSize={5242880}
+                        maxFileSize={1 * 1024 * 1024}
                         singleImage
                     />
                     <div

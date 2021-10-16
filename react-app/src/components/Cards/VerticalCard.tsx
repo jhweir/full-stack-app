@@ -1,12 +1,13 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import FlagImage from '../FlagImage'
-import ShowMoreLess from '../ShowMoreLess'
-import Markdown from '../Markdown'
-import styles from '../../styles/components/VerticalCard.module.scss'
+import styles from '@styles/components/VerticalCard.module.scss'
+import FlagImage from '@components/FlagImage'
+import ShowMoreLess from '@components/ShowMoreLess'
+import Markdown from '@components/Markdown'
 
 const VerticalCard = (props: {
-    path: string
+    type: 'user' | 'space'
+    route: string
     onClick?: () => void
     coverImagePath: string
     flagImagePath: string
@@ -15,7 +16,17 @@ const VerticalCard = (props: {
     text: string
     footer?: any
 }): JSX.Element => {
-    const { path, onClick, coverImagePath, flagImagePath, title, subTitle, text, footer } = props
+    const {
+        type,
+        route,
+        onClick,
+        coverImagePath,
+        flagImagePath,
+        title,
+        subTitle,
+        text,
+        footer,
+    } = props
 
     const backgroundImage = coverImagePath
         ? `url(${coverImagePath})`
@@ -25,11 +36,11 @@ const VerticalCard = (props: {
         <div className={styles.wrapper}>
             <div className={styles.content}>
                 <div className={styles.coverImage} style={{ backgroundImage }} />
-                <Link to={path} onClick={onClick}>
+                <Link to={route} onClick={onClick}>
                     <div className={styles.flagImageWrapper}>
                         <FlagImage
-                            size={150}
-                            type='user'
+                            size={130}
+                            type={type}
                             imagePath={flagImagePath}
                             outline
                             shadow
@@ -37,7 +48,7 @@ const VerticalCard = (props: {
                     </div>
                 </Link>
                 <div className={styles.text}>
-                    <Link to={path} onClick={onClick}>
+                    <Link to={route} onClick={onClick}>
                         <p className={styles.title}>{title}</p>
                         <p className={styles.subTitle}>{subTitle}</p>
                     </Link>

@@ -1,118 +1,149 @@
-import React, { useContext, useEffect } from 'react'
-import { AccountContext } from '../../contexts/AccountContext'
-import { SpaceContext } from '../../contexts/SpaceContext'
-import styles from '../../styles/components/HolonPageUsers.module.scss'
-import SearchBar from '../SearchBar'
-import HolonPageUsersFilters from './HolonPageUsersFilters'
-import VerticalCard from '../Cards/VerticalCard'
-import Stat from '../Stat'
-import { isPlural } from '../../Functions'
+import React, { useContext, useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom'
+import { ReactComponent as PostIconSVG } from '@svgs/edit-solid.svg'
+import { ReactComponent as CommentIconSVG } from '@svgs/comment-solid.svg'
+import styles from '@styles/components/HolonPageUsers.module.scss'
+import { AccountContext } from '@contexts/AccountContext'
+import { SpaceContext } from '@contexts/SpaceContext'
+import SearchBar from '@components/SearchBar'
+import Stat from '@components/Stat'
+import Button from '@components/Button'
+import VerticalCard from '@components/Cards/VerticalCard'
+import HolonPageUsersFilters from '@components/HolonPage/HolonPageUsersFilters'
+import HolonPageSpacesPlaceholder from '@components/HolonPage/HolonPageSpacesPlaceholder'
+import { isPlural, onPageBottomReached } from '@src/Functions'
+import { ReactComponent as SlidersIconSVG } from '@svgs/sliders-h-solid.svg'
 
-const HolonPageUsers = (): JSX.Element => {
-    const { pageBottomReached } = useContext(AccountContext)
+const HolonPageUsers = ({ match }: { match: { params: { spaceHandle: string } } }): JSX.Element => {
+    const { params } = match
+    const { spaceHandle } = params
+    const { accountDataLoading } = useContext(AccountContext)
     const {
-        spaceContextLoading,
         spaceData,
+        getSpaceData,
         spaceUsers,
         getSpaceUsers,
-        getNextSpaceUsers,
-        setSpaceUsersFiltersOpen,
+        spaceUsersFilters,
         spaceUsersFiltersOpen,
-        spaceUsersSearchFilter,
-        spaceUsersTimeRangeFilter,
-        spaceUsersSortByFilter,
-        spaceUsersSortOrderFilter,
+        setSpaceUsersFiltersOpen,
         setSelectedSpaceSubPage,
         spaceUsersPaginationOffset,
-        setSpaceUsersSearchFilter,
+        spaceUsersPaginationLimit,
+        spaceDataLoading,
+        spaceUsersLoading,
+        resetSpaceUsers,
+        spaceUsersPaginationHasMore,
         // fullScreen,
         // setFullScreen,
     } = useContext(SpaceContext)
 
+    const [pageBottomReached, setPageBottomReached] = useState(false)
+
+    // set selected sub page, add scroll listener
     useEffect(() => {
         setSelectedSpaceSubPage('users')
+        const scrollHandler = () => onPageBottomReached(setPageBottomReached)
+        window.addEventListener('scroll', scrollHandler)
+        return () => window.removeEventListener('scroll', scrollHandler)
     }, [])
 
+    const location = useLocation()
+    const getFirstUsers = (spaceId) => getSpaceUsers(spaceId, 0, spaceUsersPaginationLimit)
     useEffect(() => {
-        if (!spaceContextLoading && spaceData) {
-            getSpaceUsers()
+        if (!accountDataLoading) {
+            if (spaceHandle !== spaceData.handle) {
+                getSpaceData(spaceHandle, getFirstUsers)
+            } else {
+                getFirstUsers(spaceData.id)
+            }
         }
-    }, [
-        spaceContextLoading,
-        spaceUsersSearchFilter,
-        spaceUsersTimeRangeFilter,
-        spaceUsersSortByFilter,
-        spaceUsersSortOrderFilter,
-    ])
+    }, [accountDataLoading, location, spaceUsersFilters])
 
     useEffect(() => {
-        if (pageBottomReached && !spaceContextLoading && spaceData.id) {
-            getNextSpaceUsers()
+        if (pageBottomReached && spaceUsersPaginationHasMore) {
+            getSpaceUsers(spaceData.id, spaceUsersPaginationOffset, spaceUsersPaginationLimit)
         }
     }, [pageBottomReached])
 
+    useEffect(() => () => resetSpaceUsers(), [])
+
+    // useEffect(() => {
+    //     if (spaceData.id) getSpaceUsers()
+    // }, [spaceData.id, spaceUsersFilters])
+
+    // useEffect(() => {
+    //     if (pageBottomReached && spaceData.id) {
+    //         // getNextSpaceUsers()
+    //     }
+    // }, [pageBottomReached])
+
     return (
-        <div className={styles.usersWrapper}>
-            <div className='wecoPageHeader'>
+        <div className={styles.wrapper}>
+            <div className={styles.header}>
                 <div className={styles.headerRow}>
-                    <div className={styles.headerRowSection}>
+                    <div>
                         <SearchBar
-                            setSearchFilter={setSpaceUsersSearchFilter}
+                            setSearchFilter={spaceUsersFilters.searchQuery}
                             placeholder='Search users...'
                         />
-                        <div
-                            className={styles.filterButton}
-                            role='button'
-                            tabIndex={0}
+                        <Button
+                            icon={<SlidersIconSVG />}
+                            colour='grey'
+                            size='medium'
                             onClick={() => setSpaceUsersFiltersOpen(!spaceUsersFiltersOpen)}
-                            onKeyDown={() => setSpaceUsersFiltersOpen(!spaceUsersFiltersOpen)}
-                        >
-                            <img
-                                className={styles.filterButtonIcon}
-                                src='/icons/sliders-h-solid.svg'
-                                aria-label='filters'
-                            />
-                        </div>
+                        />
                     </div>
-                    {/* <div className={styles.headerRowSection}></div> */}
                 </div>
                 {spaceUsersFiltersOpen && <HolonPageUsersFilters />}
             </div>
-            {/* <HolonPageSpacesPlaceholder/> */}
-            {spaceUsers.length > 0 && (
-                <ul className={styles.users}>
-                    {spaceUsers.map((user) => (
-                        <VerticalCard
-                            key={user.id}
-                            path={`/u/${user.handle}`}
-                            coverImagePath={user.coverImagePath}
-                            flagImagePath={user.flagImagePath}
-                            title={user.name}
-                            subTitle={`u/${user.handle}`}
-                            text={user.bio}
-                            footer={
-                                <div className={styles.stats}>
-                                    <Stat
-                                        type='post'
-                                        value={user.total_posts}
-                                        title={`Post${isPlural(user.total_posts) ? 's' : ''}`}
-                                    />
-                                    <Stat
-                                        type='comment'
-                                        value={user.total_comments}
-                                        title={`Comment${isPlural(user.total_comments) ? 's' : ''}`}
-                                    />
-                                </div>
-                            }
-                        />
-                    ))}
-                </ul>
-            )}
-            {spaceUsersPaginationOffset > 0 && spaceUsers.length < 1 && (
-                <div className='wecoNoContentPlaceholder'>
-                    No users yet that match those settings...
-                </div>
-            )}
+            {/* {view === 'List' ? ( */}
+            <div className={styles.users}>
+                {accountDataLoading || spaceDataLoading || spaceUsersLoading ? (
+                    <HolonPageSpacesPlaceholder />
+                ) : (
+                    <>
+                        {spaceUsers.length ? (
+                            spaceUsers.map((user) => (
+                                <VerticalCard
+                                    key={user.id}
+                                    type='user'
+                                    route={`/u/${user.handle}`}
+                                    coverImagePath={user.coverImagePath}
+                                    flagImagePath={user.flagImagePath}
+                                    title={user.name}
+                                    subTitle={`u/${user.handle}`}
+                                    text={user.bio}
+                                    footer={
+                                        <div className={styles.stats}>
+                                            <Stat
+                                                icon={<PostIconSVG />}
+                                                value={user.total_posts}
+                                                title={`Post${
+                                                    isPlural(user.total_posts) ? 's' : ''
+                                                }`}
+                                            />
+                                            <Stat
+                                                icon={<CommentIconSVG />}
+                                                value={user.total_comments}
+                                                title={`Comment${
+                                                    isPlural(user.total_comments) ? 's' : ''
+                                                }`}
+                                            />
+                                        </div>
+                                    }
+                                />
+                            ))
+                        ) : (
+                            <div className='wecoNoContentPlaceholder'>
+                                No users yet that match those settings...
+                            </div>
+                        )}
+                    </>
+                )}
+            </div>
+            {/* ) : (
+                <HolonUserMap />
+            )} */}
         </div>
     )
 }

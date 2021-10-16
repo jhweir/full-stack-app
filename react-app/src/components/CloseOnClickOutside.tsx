@@ -6,19 +6,16 @@ const CloseOnClickOutside = (props: {
 }): JSX.Element => {
     const { onClick, children } = props
     const ref = useRef<HTMLDivElement>(null)
-
     function handleClickOutside(e) {
         const { current } = ref
         if (current && !current.contains(e.target)) {
             onClick()
         }
     }
-
     useEffect(() => {
         document.addEventListener('mousedown', handleClickOutside)
         return () => document.removeEventListener('mousedown', handleClickOutside)
     })
-
     return <div ref={ref}>{children}</div>
 }
 

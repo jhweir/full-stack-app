@@ -3,10 +3,10 @@ import { SpaceContext } from '../../contexts/SpaceContext'
 import styles from '../../styles/components/HolonPageSideBarRightPlaceholder.module.scss'
 
 const HolonPageSideBarRightPlaceholder = (): JSX.Element => {
-    const { spaceContextLoading } = useContext(SpaceContext)
+    // const { spaceContextLoading } = useContext(SpaceContext)
 
     return (
-        <div className={`${styles.PHSideBarRight} ${spaceContextLoading && styles.visible}`}>
+        <div className={styles.PHSideBarRight}>
             <div className='PHSideBarShine' />
             <ul className={styles.PHSideBarRightHolons}>
                 <div className={styles.PHSideBarRightHolonsTitle} />

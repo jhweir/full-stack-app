@@ -1,25 +1,27 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { SpaceContext } from '../contexts/SpaceContext'
-import { AccountContext } from '../contexts/AccountContext'
-import styles from '../styles/components/NavBar.module.scss'
-import config from '../Config'
-import SmallFlagImage from './SmallFlagImage'
+import { AccountContext } from '@contexts/AccountContext'
+import styles from '@styles/components/NavBar.module.scss'
+import config from '@src/Config'
+import FlagImage from '@components/SmallFlagImage'
+import ImageTitle from '@components/ImageTitle'
+import Button from '@components/Button'
+import { ReactComponent as NotificationIconSVG } from '@svgs/bell-solid.svg'
+import { ReactComponent as MessageIconSVG } from '@svgs/envelope-solid.svg'
+import { ReactComponent as SettingsIconSVG } from '@svgs/cog-solid.svg'
 
 const NavBar = (): JSX.Element => {
     const {
-        accountContextLoading,
         isLoggedIn,
         accountData,
         setAuthModalOpen,
         navBarDropDownModalOpen,
         setNavBarDropDownModalOpen,
-        selectedNavBarItem,
-        setSelectedNavBarItem,
     } = useContext(AccountContext)
-    const { setSpaceHandle, fullScreen, setFullScreen } = useContext(SpaceContext)
+    // const { fullScreen, setFullScreen } = useContext(SpaceContext)
 
     const [exploreDropDownOpen, setExploreDropDownOpen] = useState(false)
+    const [selectedNavBarItem, setSelectedNavBarItem] = useState('')
 
     useEffect(() => {
         const url = window.location.href
@@ -32,135 +34,107 @@ const NavBar = (): JSX.Element => {
     }, [window.location.pathname])
 
     return (
-        <div className={styles.navBar}>
-            <div className={styles.navBarContainer}>
-                <div className={styles.navBarLinks}>
-                    <Link
-                        to='/'
-                        className={styles.navBarLink}
-                        onClick={() => setSelectedNavBarItem('home')}
-                    >
-                        {/* <img className={styles.navBarIcon} src="/icons/home-solid.svg" alt=''/> */}
-                        <div
-                            className={`${styles.navBarText} ${
-                                selectedNavBarItem === 'home' && styles.selected
-                            }`}
-                        >
-                            Home
-                        </div>
-                    </Link>
-
-                    <Link to='/features' className={styles.navBarLink}>
-                        <div className={styles.navBarText}>Features</div>
-                    </Link>
-                    <Link to='/coop' className={styles.navBarLink}>
-                        <div className={styles.navBarText}>Coop</div>
-                    </Link>
-
-                    {/* <Link to='/s/all/spaces' className={styles.navBarLink}> */}
+        <div className={styles.wrapper}>
+            <div className={styles.navBarLinks}>
+                {/* <HamburgerIconSVG width={40} height={40} color='red'/> */}
+                <Link to='/' className={styles.navBarLink}>
+                    {/* <img className={styles.navBarIcon} src='/icons/home-solid.svg' alt='' /> */}
                     <div
-                        className={styles.navBarLink}
-                        onMouseEnter={() => setExploreDropDownOpen(true)}
-                        onMouseLeave={() => setExploreDropDownOpen(false)}
+                        className={`${styles.navBarText} ${
+                            selectedNavBarItem === 'home' && styles.selected
+                        }`}
                     >
-                        <div className={styles.navBarText}>Explore</div>
-                        <img
-                            className={styles.exploreDropDownIcon}
-                            src='/icons/chevron-down-solid.svg'
-                            alt=''
-                        />
-                        {exploreDropDownOpen && (
-                            <div className={styles.exploreDropDown}>
-                                <Link
-                                    to='/s/all/spaces'
-                                    className={styles.exploreDropDownItem}
-                                    onClick={() => setSpaceHandle('all')}
-                                >
-                                    <img
-                                        className={styles.navBarIcon}
-                                        src='/icons/overlapping-circles-thick.svg'
-                                        alt=''
-                                    />
-                                    <div className={styles.dropDownText}>Spaces</div>
-                                </Link>
-                                <Link
-                                    to='/s/all'
-                                    className={styles.exploreDropDownItem}
-                                    onClick={() => setSpaceHandle('all')}
-                                >
-                                    <img
-                                        className={styles.navBarIcon}
-                                        src='/icons/edit-solid.svg'
-                                        alt=''
-                                    />
-                                    <div className={styles.dropDownText}>Posts</div>
-                                </Link>
-                                <Link
-                                    to='/s/all/users'
-                                    className={styles.exploreDropDownItem}
-                                    onClick={() => setSpaceHandle('all')}
-                                >
-                                    <img
-                                        className={styles.navBarIcon}
-                                        src='/icons/users-solid.svg'
-                                        alt=''
-                                    />
-                                    <div className={styles.dropDownText}>Users</div>
-                                </Link>
-                            </div>
-                        )}
+                        Home
                     </div>
-                    {/* </Link> */}
+                </Link>
+
+                <Link to='/features' className={styles.navBarLink}>
+                    <div className={styles.navBarText}>Features</div>
+                </Link>
+                <Link to='/coop' className={styles.navBarLink}>
+                    <div className={styles.navBarText}>Coop</div>
+                </Link>
+                <div
+                    className={styles.navBarLink}
+                    onMouseEnter={() => setExploreDropDownOpen(true)}
+                    onMouseLeave={() => setExploreDropDownOpen(false)}
+                >
+                    <div className={styles.navBarText}>Explore</div>
+                    <img
+                        className={styles.exploreDropDownIcon}
+                        src='/icons/chevron-down-solid.svg'
+                        alt=''
+                    />
+                    {exploreDropDownOpen && (
+                        <div className={styles.exploreDropDown}>
+                            <Link to='/s/all/posts' className={styles.exploreDropDownItem}>
+                                <img
+                                    className={styles.navBarIcon}
+                                    src='/icons/edit-solid.svg'
+                                    alt=''
+                                />
+                                <div className={styles.dropDownText}>Posts</div>
+                            </Link>
+                            <Link to='/s/all/spaces' className={styles.exploreDropDownItem}>
+                                <img
+                                    className={styles.navBarIcon}
+                                    src='/icons/overlapping-circles-thick.svg'
+                                    alt=''
+                                />
+                                <div className={styles.dropDownText}>Spaces</div>
+                            </Link>
+                            <Link to='/s/all/users' className={styles.exploreDropDownItem}>
+                                <img
+                                    className={styles.navBarIcon}
+                                    src='/icons/users-solid.svg'
+                                    alt=''
+                                />
+                                <div className={styles.dropDownText}>Users</div>
+                            </Link>
+                        </div>
+                    )}
                 </div>
-                {!accountContextLoading && !isLoggedIn && (
-                    <div className={styles.authButtons}>
-                        <div
-                            className='button'
-                            role='button'
-                            tabIndex={0}
-                            onClick={() => setAuthModalOpen(true)}
-                            onKeyDown={() => setAuthModalOpen(true)}
-                        >
-                            Log in
-                        </div>
-                    </div>
-                )}
-                {!accountContextLoading && isLoggedIn && (
-                    <div
-                        className={styles.userControls}
-                        onClick={() => setNavBarDropDownModalOpen(!navBarDropDownModalOpen)}
-                        onKeyDown={() => setNavBarDropDownModalOpen(!navBarDropDownModalOpen)}
-                        role='button'
-                        tabIndex={0}
+            </div>
+            {/* <div className={styles.searchBarWrapper}>Search bar</div> */}
+            {isLoggedIn ? (
+                <div className={styles.accountButtons}>
+                    {/* <Link to={`/u/${accountData.handle}/messages`} className={styles.accountButton}>
+                        <MessageIconSVG />
+                        {accountData.unseen_messages > 0 && (
+                            <div className={styles.unseenItems}>{accountData.unseen_messages}</div>
+                        )}
+                    </Link> */}
+                    <Link
+                        to={`/u/${accountData.handle}/notifications`}
+                        className={styles.accountButton}
                     >
-                        <span className={styles.userName}>{accountData.name}</span>
-                        <SmallFlagImage
-                            type='user'
-                            size={40}
-                            imagePath={accountData.flagImagePath}
-                        />
+                        <NotificationIconSVG />
                         {accountData.unseen_notifications > 0 && (
-                            <div className={styles.notification}>
+                            <div className={styles.unseenItems}>
                                 {accountData.unseen_notifications}
                             </div>
                         )}
-                    </div>
-                )}
-                <div
-                    className={styles.expandButtonWrapper}
-                    role='button'
-                    tabIndex={0}
-                    onClick={() => setFullScreen(!fullScreen)}
-                    onKeyDown={() => setFullScreen(!fullScreen)}
-                >
-                    <img
-                        className={styles.expandButton}
-                        title='Toggle full screen'
-                        src={fullScreen ? '/icons/compress-solid.svg' : '/icons/expand-solid.svg'}
-                        aria-label='test'
-                    />
+                    </Link>
+                    <Link to={`/u/${accountData.handle}/settings`} className={styles.accountButton}>
+                        <SettingsIconSVG />
+                    </Link>
+                    <button
+                        type='button'
+                        className={styles.profileButton}
+                        onClick={() => setNavBarDropDownModalOpen(!navBarDropDownModalOpen)}
+                    >
+                        <FlagImage type='user' size={40} imagePath={accountData.flagImagePath} />
+                        {/* <span className={styles.userName}>{accountData.name}</span> */}
+                    </button>
                 </div>
-            </div>
+            ) : (
+                <Button
+                    text='Log in'
+                    colour='blue'
+                    size='medium'
+                    onClick={() => setAuthModalOpen(true)}
+                />
+            )}
         </div>
     )
 }
@@ -223,3 +197,18 @@ export default NavBar
 // const delay = new Promise((resolve, reject) => {
 //     setTimeout(resolve, 3000, 'success');
 // });
+
+/* <div
+    className={styles.expandButtonWrapper}
+    role='button'
+    tabIndex={0}
+    onClick={() => setFullScreen(!fullScreen)}
+    onKeyDown={() => setFullScreen(!fullScreen)}
+>
+    <img
+        className={styles.expandButton}
+        title='Toggle full screen'
+        src={fullScreen ? '/icons/compress-solid.svg' : '/icons/expand-solid.svg'}
+        aria-label='test'
+    />
+</div> */

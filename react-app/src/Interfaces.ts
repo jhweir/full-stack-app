@@ -105,233 +105,135 @@ export interface ISpaceMapData {
 }
 
 export interface IAccountContext {
-    accountContextLoading: boolean
-    pageBottomReached: boolean
     isLoggedIn: boolean
     accountData: any
-    authModalOpen: boolean
-    navBarDropDownModalOpen: boolean
-    alertMessage: string
-    alertModalOpen: boolean
-    imageUploadModalOpen: boolean
-    imageUploadType: string
-    createHolonModalOpen: boolean
-    createPostModalOpen: boolean
-    createCommentModalOpen: boolean
-    settingModalOpen: boolean
-    settingModalType: string
-    createPostFromTurn: boolean
-    createPostFromTurnData: any
-    resetPasswordModalOpen: boolean
-    resetPasswordModalToken: string | null
-    selectedNavBarItem: string
+    accountDataLoading: boolean
     notifications: any[]
-    setAccountContextLoading: (payload: boolean) => void
-    setAccountData: (payload: any) => void
-    setAuthModalOpen: (payload: boolean) => void
-    setNavBarDropDownModalOpen: (payload: boolean) => void
-    setAlertMessage: (payload: string) => void
-    setAlertModalOpen: (payload: boolean) => void
-    setImageUploadModalOpen: (payload: boolean) => void
-    setImageUploadType: (payload: string) => void
-    setCreateHolonModalOpen: (payload: boolean) => void
-    setCreatePostModalOpen: (payload: boolean) => void
-    setCreateCommentModalOpen: (payload: boolean) => void
-    setSettingModalOpen: (payload: boolean) => void
-    setSettingModalType: (payload: string) => void
-    setCreatePostFromTurn: (payload: boolean) => void
-    setCreatePostFromTurnData: (payload: any) => void
-    setResetPasswordModalOpen: (payload: boolean) => void
-    setResetPasswordModalToken: (payload: string | null) => void
-    setSelectedNavBarItem: (payload: string) => void
     setNotifications: (payload: any[]) => void
-    logOut: () => void
+    notificationsLoading: boolean
+    // modals (todo: most to be removed...)
+    alertModalOpen: boolean
+    setAlertModalOpen: (payload: boolean) => void
+    alertMessage: string
+    setAlertMessage: (payload: string) => void
+    authModalOpen: boolean
+    setAuthModalOpen: (payload: boolean) => void
+    navBarDropDownModalOpen: boolean
+    setNavBarDropDownModalOpen: (payload: boolean) => void
+    createPostModalOpen: boolean
+    setCreatePostModalOpen: (payload: boolean) => void
+    // createSpaceModalOpen: boolean
+    // setCreateSpaceModalOpen: (payload: boolean) => void
+    createCommentModalOpen: boolean
+    setCreateCommentModalOpen: (payload: boolean) => void
+    settingModalOpen: boolean
+    setSettingModalOpen: (payload: boolean) => void
+    settingModalType: string
+    setSettingModalType: (payload: string) => void
+    imageUploadModalOpen: boolean
+    setImageUploadModalOpen: (payload: boolean) => void
+    imageUploadType: string
+    setImageUploadType: (payload: string) => void
+    resetPasswordModalOpen: boolean
+    setResetPasswordModalOpen: (payload: boolean) => void
+    resetPasswordModalToken: string | null
+    setResetPasswordModalToken: (payload: string | null) => void
+    // functions
     getAccountData: () => void
+    updateAccountData: (key: string, payload: any) => void
     getNotifications: () => void
-    getNextNotifications: () => void
+    updateAccountNotification: (id: number, key: string, payload: any) => void
+    logOut: () => void
 }
 
 export interface ISpaceContext {
-    spaceContextLoading: boolean
-    spaceHandle: string
-    spaceData: Partial<ISpace>
-    spaceHighlights: Partial<ISpaceHighlights>
+    spaceData: any
+    setSpaceData: (payload: any) => void
     isFollowing: boolean
+    setIsFollowing: (payload: boolean) => void
     isModerator: boolean
     selectedSpaceSubPage: string
+    setSelectedSpaceSubPage: (payload: string) => void
     fullScreen: boolean
+    setFullScreen: (payload: boolean) => void
+
+    spaceDataLoading: boolean
+    spacePostsLoading: boolean
+    setSpacePostsLoading: (payload: boolean) => void
+    nextSpacePostsLoading: boolean
+    spaceSpacesLoading: boolean
+    nextSpaceSpacesLoading: boolean
+    spaceUsersLoading: boolean
+    nextSpaceUsersLoading: boolean
 
     spacePosts: IPost[]
     totalMatchingPosts: number
+    spacePostsFilters: any
     spacePostsFiltersOpen: boolean
-    spacePostsSearchFilter: string
-    spacePostsTimeRangeFilter: string
-    spacePostsTypeFilter: string
-    spacePostsSortByFilter: string
-    spacePostsSortOrderFilter: string
-    spacePostsDepthFilter: string
+    setSpacePostsFiltersOpen: (payload: boolean) => void
     spacePostsPaginationLimit: number
     spacePostsPaginationOffset: number
     spacePostsPaginationHasMore: boolean
-    spacePostsView: string
 
-    spaceSpaces: ISpace[]
+    spaceSpaces: any[] // ISpace[]
+    setSpaceSpaces: (payload: any[]) => void
+    spaceSpacesFilters: any
     spaceSpacesFiltersOpen: boolean
-    spaceSpacesSearchFilter: string
-    spaceSpacesTimeRangeFilter: string
-    spaceSpacesTypeFilter: string
-    spaceSpacesSortByFilter: string
-    spaceSpacesSortOrderFilter: string
-    spaceSpacesDepthFilter: string
+    setSpaceSpacesFiltersOpen: (payload: boolean) => void
     spaceSpacesPaginationLimit: number
     spaceSpacesPaginationOffset: number
     spaceSpacesPaginationHasMore: boolean
-    spaceSpacesView: string
 
     spaceUsers: IUser[]
+    spaceUsersFilters: any
     spaceUsersFiltersOpen: boolean
-    spaceUsersSearchFilter: string
-    spaceUsersTimeRangeFilter: string
-    spaceUsersTypeFilter: string
-    spaceUsersSortByFilter: string
-    spaceUsersSortOrderFilter: string
+    setSpaceUsersFiltersOpen: (payload: boolean) => void
     spaceUsersPaginationLimit: number
     spaceUsersPaginationOffset: number
     spaceUsersPaginationHasMore: boolean
 
-    getSpaceData: () => void
-    getSpaceHighlights: () => void
-    getSpaceSpaces: () => void
-    getNextSpaceSpaces: () => void
-    getSpacePosts: () => void
-    getNextSpacePosts: () => void
-    getAllPosts: () => void
-    getSpaceUsers: () => void
-    getNextSpaceUsers: () => void
+    getSpaceData: (handle: string, returnFunction: any) => void
+    getSpacePosts: (handle: string, offset: number, limit: number) => void
+    getSpaceSpaces: (handle: string, offset: number, limit: number) => void
+    getSpaceUsers: (handle: string, offset: number, limit: number) => void
 
-    setSpaceContextLoading: (payload: boolean) => void
-    setSpaceHandle: (payload: string) => void
-    setSpaceData: (payload: Partial<ISpace>) => void
-    setSpaceHighlights: (payload: ISpaceHighlights) => void
-    setIsFollowing: (payload: boolean) => void
-    setIsModerator: (payload: boolean) => void
-    setSelectedSpaceSubPage: (payload: string) => void
-    setFullScreen: (payload: boolean) => void
-
-    setSpacePosts: (payload: IPost[]) => void
-    setTotalMatchingPosts: (payload: number) => void
-    setSpacePostsFiltersOpen: (payload: boolean) => void
-    setSpacePostsSearchFilter: (payload: string) => void
-    setSpacePostsTimeRangeFilter: (payload: string) => void
-    setSpacePostsTypeFilter: (payload: string) => void
-    setSpacePostsSortByFilter: (payload: string) => void
-    setSpacePostsSortOrderFilter: (payload: string) => void
-    setSpacePostsDepthFilter: (payload: string) => void
-    setSpacePostsPaginationLimit: (payload: number) => void
-    setSpacePostsPaginationOffset: (payload: number) => void
-    setSpacePostsPaginationHasMore: (payload: boolean) => void
-    setSpacePostsView: (payload: string) => void
-
-    setSpaceSpaces: (payload: ISpace[]) => void
-    setSpaceSpacesFiltersOpen: (payload: boolean) => void
-    setSpaceSpacesSearchFilter: (payload: string) => void
-    setSpaceSpacesTimeRangeFilter: (payload: string) => void
-    setSpaceSpacesTypeFilter: (payload: string) => void
-    setSpaceSpacesSortByFilter: (payload: string) => void
-    setSpaceSpacesSortOrderFilter: (payload: string) => void
-    setSpaceSpacesDepthFilter: (payload: string) => void
-    setSpaceSpacesPaginationLimit: (payload: number) => void
-    setSpaceSpacesPaginationOffset: (payload: number) => void
-    setSpaceSpacesPaginationHasMore: (payload: boolean) => void
-    setSpaceSpacesView: (payload: string) => void
-
-    setSpaceUsers: (payload: IUser[]) => void
-    setSpaceUsersFiltersOpen: (payload: boolean) => void
-    setSpaceUsersSearchFilter: (payload: string) => void
-    setSpaceUsersTimeRangeFilter: (payload: string) => void
-    setSpaceUsersTypeFilter: (payload: string) => void
-    setSpaceUsersSortByFilter: (payload: string) => void
-    setSpaceUsersSortOrderFilter: (payload: string) => void
-    setSpaceUsersPaginationLimit: (payload: number) => void
-    setSpaceUsersPaginationOffset: (payload: number) => void
-    setSpaceUsersPaginationHasMore: (payload: boolean) => void
+    updateSpacePostsFilter: (key: string, payload: string) => void
+    updateSpaceSpacesFilter: (key: string, payload: string) => void
+    updateSpaceUsersFilter: (key: string, payload: string) => void
+    resetSpaceData: () => void
+    resetSpacePosts: () => void
+    resetSpaceSpaces: () => void
+    resetSpaceUsers: () => void
 }
 
 export interface IPostContext {
-    postContextLoading: boolean
-    postId: number | undefined
-    postData: Partial<IPost>
     selectedSubPage: string
-    selectedPollAnswers: IPollAnswer[]
-    voteCast: boolean
-    postComments: IComment[]
-    postCommentFiltersOpen: boolean
-    postCommentTimeRangeFilter: string
-    postCommentSortByFilter: string
-    postCommentSortOrderFilter: string
-    postCommentSearchFilter: string
-    postCommentPaginationLimit: number
-    postCommentPaginationOffset: number
-    postCommentPaginationHasMore: boolean
-    pollAnswersSortedById?: IPollAnswer[]
-    pollAnswersSortedByScore?: IPollAnswer[]
-    totalPollVotes?: number
-    totalUsedPoints: number
-    validVote: boolean
-    colorScale: any // d3 scale
-    setPostContextLoading: (payload: boolean) => void
-    setPostId: (payload: number) => void
-    setPostData: (payload: IPost) => void
     setSelectedSubPage: (payload: string) => void
-    setSelectedPollAnswers: (payload: IPollAnswer[]) => void
-    setVoteCast: (payload: boolean) => void
-    setPostComments: (payload: IComment[]) => void
-    setPostCommentFiltersOpen: (payload: boolean) => void
-    setPostCommentTimeRangeFilter: (payload: string) => void
-    setPostCommentSortByFilter: (payload: string) => void
-    setPostCommentSortOrderFilter: (payload: string) => void
-    setPostCommentSearchFilter: (payload: string) => void
-    setPostCommentPaginationLimit: (payload: number) => void
-    setPostCommentPaginationOffset: (payload: number) => void
-    setPostCommentPaginationHasMore: (payload: boolean) => void
-    getPostData: () => void
-    getPostComments: () => void
-    getNextPostComments: () => void
-    castVote: () => void
+    postData: any
+    postDataLoading: boolean
+    // functions
+    getPostData: (payload: number) => void
+    resetPostContext: () => void
 }
 
 export interface IUserContext {
-    userContextLoading: boolean
-    userHandle: string
-    userData: any // Partial<IUser>
-    selectedUserSubPage: string
     isOwnAccount: boolean
-    createdPosts: IPost[]
-    createdPostPaginationLimit: number
-    createdPostPaginationOffset: number
-    createdPostPaginationHasMore: boolean
-    createdPostFiltersOpen: boolean
-    createdPostSearchFilter: string
-    createdPostTimeRangeFilter: string
-    createdPostTypeFilter: string
-    createdPostSortByFilter: string
-    createdPostSortOrderFilter: string
-    setUserContextLoading: (payload: boolean) => void
-    setUserHandle: (payload: string) => void
-    setUserData: (payload: IUser) => void
+    selectedUserSubPage: string
     setSelectedUserSubPage: (payload: string) => void
-    setIsOwnAccount: (payload: boolean) => void
-    setCreatedPosts: (payload: IPost[]) => void
-    setCreatedPostPaginationLimit: (payload: number) => void
-    setCreatedPostPaginationOffset: (payload: number) => void
-    setCreatedPostPaginationHasMore: (payload: boolean) => void
-    setCreatedPostFiltersOpen: (payload: boolean) => void
-    setCreatedPostSearchFilter: (payload: string) => void
-    setCreatedPostTimeRangeFilter: (payload: string) => void
-    setCreatedPostTypeFilter: (payload: string) => void
-    setCreatedPostSortByFilter: (payload: string) => void
-    setCreatedPostSortOrderFilter: (payload: string) => void
-    getUserData: () => void
-    getCreatedPosts: () => void
-    getNextCreatedPosts: () => void
+    userData: any // Partial<IUser>
+    userDataLoading: boolean
+    userPosts: IPost[]
+    userPostsLoading: boolean
+    nextUserPostsLoading: boolean
+    userPostsFilters: any
+    userPostsFiltersOpen: boolean
+    setUserPostsFiltersOpen: (payload: boolean) => void
+    userPostsPaginationLimit: number
+    userPostsPaginationOffset: number
+    userPostsPaginationHasMore: boolean
+    // functions
+    getUserData: (payload: string) => void
+    getUserPosts: (payload: number) => void
+    updateUserPostsFilter: (key: string, payload: string) => void
+    resetUserContext: () => void
 }

@@ -6,16 +6,16 @@ import { PostContext } from '../../contexts/PostContext'
 const PostPagePollVote = (): JSX.Element => {
     const {
         postData,
-        validVote,
-        castVote,
-        voteCast,
-        pollAnswersSortedById,
-        totalUsedPoints,
+        // validVote,
+        // castVote,
+        // voteCast,
+        // pollAnswersSortedById,
+        // totalUsedPoints,
     } = useContext(PostContext)
 
     return (
         <div className={styles.pollVote}>
-            <div className={styles.text}>
+            {/* <div className={styles.text}>
                 Poll type: <b>{postData.subType}</b>
             </div>
             <div className={styles.castVoteSection}>
@@ -58,7 +58,7 @@ const PostPagePollVote = (): JSX.Element => {
                     {totalUsedPoints < 100 && `(add ${100 - totalUsedPoints} more points to vote)`}
                     {totalUsedPoints === 100 && 'ready to vote!'}
                 </div>
-            )}
+            )} */}
         </div>
     )
 }

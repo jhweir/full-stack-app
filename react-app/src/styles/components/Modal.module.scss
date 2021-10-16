@@ -1,0 +1,126 @@
+@import '@styles/Colors.scss';
+
+// background transition
+$backgroundColorStart: rgba(0,0,0,0);
+$backgroundColorEnd: rgba(0,0,0,0.5);
+$backgroundTransitionSpeed: 0.5s;
+@keyframes backgroundTransition {
+    from { background-color: $backgroundColorStart }
+    to   { background-color: $backgroundColorEnd }
+}
+/* Firefox < 16 */
+@-moz-keyframes backgroundTransition {
+    from { background-color: $backgroundColorStart }
+    to   { background-color: $backgroundColorEnd }
+}
+/* Safari, Chrome and Opera > 12.1 */
+@-webkit-keyframes backgroundTransition {
+    from { background-color: $backgroundColorStart }
+    to   { background-color: $backgroundColorEnd }
+}
+/* Internet Explorer */
+@-ms-keyframes backgroundTransition {
+    from { background-color: $backgroundColorStart }
+    to   { background-color: $backgroundColorEnd }
+}
+.background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: $backgroundColorEnd;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 5;
+    -webkit-animation: backgroundTransition $backgroundTransitionSpeed; /* Safari, Chrome and Opera > 12.1 */
+    -moz-animation: backgroundTransition $backgroundTransitionSpeed; /* Firefox < 16 */
+    -ms-animation: backgroundTransition $backgroundTransitionSpeed; /* Internet Explorer */
+    -o-animation: backgroundTransition $backgroundTransitionSpeed; /* Opera < 12.1 */
+    animation: backgroundTransition $backgroundTransitionSpeed;
+}
+
+// modal transition
+$modalPositionStart: -100px;
+$modalPositionEnd: 0;
+$modalTransitionSpeed: 0.3s;
+@keyframes modalTransition {
+    from { bottom: $modalPositionStart; opacity: 0 }
+    to   { bottom: $modalPositionEnd; opacity: 1 }
+}
+/* Firefox < 16 */
+@-moz-keyframes modalTransition {
+    from { bottom: $modalPositionStart; opacity: 0 }
+    to   { bottom: $modalPositionEnd; opacity: 1 }
+}
+/* Safari, Chrome and Opera > 12.1 */
+@-webkit-keyframes modalTransition {
+    from { bottom: $modalPositionStart; opacity: 0 }
+    to   { bottom: $modalPositionEnd; opacity: 1 }
+}
+/* Internet Explorer */
+@-ms-keyframes modalTransition {
+    from { bottom: $modalPositionStart; opacity: 0 }
+    to   { bottom: $modalPositionEnd; opacity: 1 }
+}
+.modal {
+    border-radius: 10px;
+    background-color: $grey1;
+    color: black;
+    padding: 50px;
+    position: relative;
+    .closeButtonWrapper {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+    }
+    > h1 {
+        font-size: 24px;
+        font-weight: 400;
+        margin-bottom: 20px;
+        > a { color: $blue1 }
+    }
+    > p {
+        margin-bottom: 20px;
+        > a { color: $blue1 }
+    }
+    > form {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+        // button {
+        //     margin-top: 20px;
+        // }
+    }
+    -webkit-animation: modalTransition $modalTransitionSpeed; /* Safari, Chrome and Opera > 12.1 */
+    -moz-animation: modalTransition $modalTransitionSpeed; /* Firefox < 16 */
+    -ms-animation: modalTransition $modalTransitionSpeed; /* Internet Explorer */
+    -o-animation: modalTransition $modalTransitionSpeed; /* Opera < 12.1 */
+    animation: modalTransition $modalTransitionSpeed;
+}
+.footer {
+    margin-top: 30px;
+    display: flex;
+    align-items: center;
+    > div {
+        margin-right: 10px;
+    }
+}
+.selectedOptionWrapper {
+    margin-bottom: 10px;
+    > p {
+        font-size: 14px;
+        margin: 0 0 5px 0 !important;
+    }
+    .selectedOption {
+        position: relative;
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+        > div {
+            margin-right: 10px;
+        }
+    }
+}

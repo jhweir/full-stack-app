@@ -1,5 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react'
 import axios from 'axios'
+import { v4 as uuidv4 } from 'uuid'
 import config from '../../../Config'
 import styles from '../../../styles/components/PostCardComments.module.scss'
 import { AccountContext } from '../../../contexts/AccountContext'
@@ -105,8 +106,9 @@ const PostCardComments = (props: {
             {postComments.length > 0 && (
                 <div className={styles.comments}>
                     {postComments.map((comment) => (
+                        // todo: change uuid to comment.id when interface set up
                         <CommentCard
-                            key={comment}
+                            key={uuidv4()}
                             comment={comment}
                             totalComments={totalComments}
                             setTotalComments={setTotalComments}

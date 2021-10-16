@@ -1,27 +1,22 @@
-import React, { useContext, useRef, useEffect } from 'react'
+import React, { useContext } from 'react'
 import { Link } from 'react-router-dom'
-import { AccountContext } from '../../contexts/AccountContext'
-import { UserContext } from '../../contexts/UserContext'
-import styles from '../../styles/components/NavBarDropDownModal.module.scss'
-import CloseOnClickOutside from '../CloseOnClickOutside'
+import { AccountContext } from '@contexts/AccountContext'
+import styles from '@styles/components/NavBarDropDownModal.module.scss'
+import CloseOnClickOutside from '@components/CloseOnClickOutside'
 
 const NavBarDropDownModal = (): JSX.Element => {
-    const { setNavBarDropDownModalOpen, setAccountData, accountData, logOut } = useContext(
-        AccountContext
-    )
-    const { setUserHandle } = useContext(UserContext)
+    const { setNavBarDropDownModalOpen, accountData, logOut } = useContext(AccountContext)
 
     return (
         <div className={styles.modalWrapper}>
-            <div className={styles.modalPositioner}>
-                <CloseOnClickOutside onClick={() => setNavBarDropDownModalOpen(false)}>
-                    <div className={styles.modal}>
-                        <Link
+            {/* <div className={styles.modalPositioner}> */}
+            <CloseOnClickOutside onClick={() => setNavBarDropDownModalOpen(false)}>
+                <div className={styles.modal}>
+                    {/* <Link
                             to={`/u/${accountData.handle}/notifications`}
                             className={styles.link}
                             onClick={() => {
                                 setNavBarDropDownModalOpen(false)
-                                setUserHandle(accountData.handle)
                             }}
                         >
                             <img
@@ -47,7 +42,6 @@ const NavBarDropDownModal = (): JSX.Element => {
                             className={styles.link}
                             onClick={() => {
                                 setNavBarDropDownModalOpen(false)
-                                setUserHandle(accountData.handle)
                             }}
                         >
                             <img
@@ -62,7 +56,6 @@ const NavBarDropDownModal = (): JSX.Element => {
                             className={styles.link}
                             onClick={() => {
                                 setNavBarDropDownModalOpen(false)
-                                setUserHandle(accountData.handle)
                             }}
                         >
                             <img
@@ -71,19 +64,22 @@ const NavBarDropDownModal = (): JSX.Element => {
                                 aria-label='posts'
                             />
                             <span className={styles.linkText}>Posts</span>
-                        </Link>
-                        {/* <Link to={`/u/${accountData.handle}/about`}
-                            className={styles.link}
-                            onClick={() => { setNavBarDropDownModalOpen(false); setUserHandle(accountData.handle) }}>
-                            <img className={styles.linkIcon} src={`/icons/book-open-solid.svg`}/>
-                            <span className={styles.linkText}>About</span>
                         </Link> */}
-                        <Link
+                    <Link
+                        to={`/u/${accountData.handle}/about`}
+                        className={styles.link}
+                        onClick={() => {
+                            setNavBarDropDownModalOpen(false)
+                        }}
+                    >
+                        <img className={styles.linkIcon} src='/icons/user-solid.svg' />
+                        <span className={styles.linkText}>Profile</span>
+                    </Link>
+                    {/* <Link
                             to={`/u/${accountData.handle}/settings`}
                             className={styles.link}
                             onClick={() => {
                                 setNavBarDropDownModalOpen(false)
-                                setUserHandle(accountData.handle)
                             }}
                         >
                             <img
@@ -92,27 +88,25 @@ const NavBarDropDownModal = (): JSX.Element => {
                                 aria-label='settings'
                             />
                             <span className={styles.linkText}>Settings</span>
-                        </Link>
-                        <div
-                            className='wecoButton mt-10'
-                            role='button'
-                            tabIndex={0}
-                            onClick={() => {
-                                setAccountData(null)
-                                logOut()
-                                setNavBarDropDownModalOpen(false)
-                            }}
-                            onKeyDown={() => {
-                                setAccountData(null)
-                                logOut()
-                                setNavBarDropDownModalOpen(false)
-                            }}
-                        >
-                            Log Out
-                        </div>
+                        </Link> */}
+                    <div
+                        className='wecoButton mt-10'
+                        role='button'
+                        tabIndex={0}
+                        onClick={() => {
+                            logOut()
+                            setNavBarDropDownModalOpen(false)
+                        }}
+                        onKeyDown={() => {
+                            logOut()
+                            setNavBarDropDownModalOpen(false)
+                        }}
+                    >
+                        Log Out
                     </div>
-                </CloseOnClickOutside>
-            </div>
+                </div>
+            </CloseOnClickOutside>
+            {/* </div> */}
         </div>
     )
 }

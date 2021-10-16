@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from 'react'
-import { UserContext } from '../../contexts/UserContext'
-import styles from '../../styles/components/UserPageAbout.module.scss'
+import { UserContext } from '@contexts/UserContext'
+import styles from '@styles/components/UserPageAbout.module.scss'
 // import PostCard from './PostCard'
 // import HolonPagePostsHeader from './HolonPagePostsHeader'
 // import HolonPagePostsPlaceholder from './HolonPagePostsPlaceholder'

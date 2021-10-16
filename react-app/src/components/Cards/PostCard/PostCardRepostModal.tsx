@@ -41,7 +41,7 @@ const PostCardRepostModal = (props: {
     } = props
 
     const { accountData } = useContext(AccountContext)
-    const { setSpaceHandle, spaceData } = useContext(SpaceContext)
+    const { spaceData } = useContext(SpaceContext)
 
     const [addedSpaces, setAddedSpaces] = useState([])
     const [newSpaceError, setNewSpaceError] = useState(false)
@@ -80,7 +80,7 @@ const PostCardRepostModal = (props: {
         <div className={styles.modalWrapper}>
             <CloseOnClickOutside onClick={() => setRepostModalOpen(false)}>
                 <div className={styles.modal}>
-                    <CloseButton onClick={() => setRepostModalOpen(false)} />
+                    <CloseButton size={20} onClick={() => setRepostModalOpen(false)} />
                     <span className={styles.title}>Reposts</span>
                     {reposts.length === 0 ? (
                         <span className={`${styles.text} mb-20`}>
@@ -107,7 +107,6 @@ const PostCardRepostModal = (props: {
                                     <Link
                                         className={styles.imageTextLink}
                                         to={`/s/${repost.space.handle}`}
-                                        onClick={() => setSpaceHandle(repost.space.handle)}
                                     >
                                         <SmallFlagImage
                                             type='space'

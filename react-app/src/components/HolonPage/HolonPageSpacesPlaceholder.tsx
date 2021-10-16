@@ -4,9 +4,9 @@ import { SpaceContext } from '../../contexts/SpaceContext'
 import styles from '../../styles/components/HolonPageSpacesPlaceholder.module.scss'
 
 const HolonPageSpacesPlaceholder = (): JSX.Element => {
-    const { spaceContextLoading } = useContext(SpaceContext)
+    // const { spaceContextLoading } = useContext(SpaceContext)
     return (
-        <div className={`${styles.PHChildHolons} ${spaceContextLoading && styles.visible}`}>
+        <div className={styles.PHChildHolons}>
             <div className={styles.PHChildHolonsGradientWrapper} />
             <HolonCardPlaceholder />
             <HolonCardPlaceholder />

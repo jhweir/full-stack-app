@@ -5,8 +5,8 @@ import AuthModal from './Modals/AuthModal'
 import NavBarDropDownModal from './Modals/NavBarDropDownModal'
 import ImageUploadModal from './Modals/ImageUploadModal'
 import CreatePostModal from './Modals/CreatePostModal'
-import CreateHolonModal from './Modals/CreateHolonModal'
-import CreateCommentModal from './Modals/CreateCommentModal'
+// import CreateSpaceModal from './Modals/CreateSpaceModal'
+// import CreateCommentModal from './Modals/CreateCommentModal'
 import SettingModal from './Modals/SettingModal'
 import ResetPasswordModal from './Modals/ResetPasswordModal'
 
@@ -17,8 +17,8 @@ const Modals = (): JSX.Element => {
         navBarDropDownModalOpen,
         imageUploadModalOpen,
         createPostModalOpen,
-        createHolonModalOpen,
-        createCommentModalOpen,
+        // createSpaceModalOpen,
+        // createCommentModalOpen,
         settingModalOpen,
         resetPasswordModalOpen,
     } = useContext(AccountContext)
@@ -30,8 +30,8 @@ const Modals = (): JSX.Element => {
             {navBarDropDownModalOpen && <NavBarDropDownModal />}
             {imageUploadModalOpen && <ImageUploadModal />}
             {createPostModalOpen && <CreatePostModal />}
-            {createHolonModalOpen && <CreateHolonModal />}
-            {createCommentModalOpen && <CreateCommentModal />}
+            {/* {createSpaceModalOpen && <CreateSpaceModal />} */}
+            {/* {createCommentModalOpen && <CreateCommentModal />} */}
             {settingModalOpen && <SettingModal />}
             {resetPasswordModalOpen && <ResetPasswordModal />}
         </>

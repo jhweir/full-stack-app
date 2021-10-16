@@ -5,7 +5,7 @@ import { PostContext } from '../contexts/PostContext'
 
 const PageSectionSelector = (props: { url: string; pathname: string }): JSX.Element => {
     const { url, pathname } = props
-    const { getPostData, selectedSubPage, setSelectedSubPage } = useContext(PostContext)
+    const { selectedSubPage, setSelectedSubPage } = useContext(PostContext)
 
     useEffect(() => {
         if (pathname.includes('comments')) {
@@ -36,7 +36,7 @@ const PageSectionSelector = (props: { url: string; pathname: string }): JSX.Elem
             <Link
                 className={`${styles.tab} ${selectedSubPage === 'results' && styles.selected}`}
                 to={`${url}/results`}
-                onClick={() => getPostData()}
+                // onClick={() => getPostData()}
             >
                 Results
             </Link>

@@ -1,21 +1,22 @@
-import React, { useContext, useEffect } from 'react'
-import styles from '../../styles/components/PostPageComments.module.scss'
-import { AccountContext } from '../../contexts/AccountContext'
-import { PostContext } from '../../contexts/PostContext'
+import React, { useContext, useEffect, useState } from 'react'
+import styles from '@styles/components/PostPageComments.module.scss'
+import { AccountContext } from '@contexts/AccountContext'
+import { PostContext } from '@contexts/PostContext'
 // import CommentCard from '../Cards/CommentCard'
-import SearchBar from '../SearchBar'
-import PostPageCommentFilters from './PostPageCommentFilters'
+import SearchBar from '@components/SearchBar'
+import PostPageCommentFilters from '@components/PostPage/PostPageCommentFilters'
+import { onPageBottomReached } from '@src/Functions'
 
 const PostPageComments = (): JSX.Element => {
     const {
         isLoggedIn,
-        pageBottomReached,
+        // pageBottomReached,
         setAlertModalOpen,
         setCreateCommentModalOpen,
         setAlertMessage,
     } = useContext(AccountContext)
     const {
-        postContextLoading,
+        postDataLoading,
         postData,
         postComments,
         getPostComments,
@@ -30,6 +31,8 @@ const PostPageComments = (): JSX.Element => {
         postCommentPaginationOffset,
     } = useContext(PostContext)
 
+    const [pageBottomReached, setPageBottomReached] = useState(false)
+
     function openCreateCommentModal() {
         if (isLoggedIn) {
             setCreateCommentModalOpen(true)
@@ -40,11 +43,11 @@ const PostPageComments = (): JSX.Element => {
     }
 
     useEffect(() => {
-        if (!postContextLoading && postData.id) {
+        if (!postDataLoading && postData.id) {
             getPostComments()
         }
     }, [
-        postContextLoading,
+        postDataLoading,
         postCommentSearchFilter,
         postCommentSortByFilter,
         postCommentSortOrderFilter,
@@ -52,10 +55,16 @@ const PostPageComments = (): JSX.Element => {
     ])
 
     useEffect(() => {
-        if (pageBottomReached && !postContextLoading && postData.id) {
+        if (pageBottomReached && !postDataLoading && postData.id) {
             getNextPostComments()
         }
     }, [pageBottomReached])
+
+    useEffect(() => {
+        const scrollHandler = () => onPageBottomReached(setPageBottomReached)
+        window.addEventListener('scroll', scrollHandler)
+        return () => window.removeEventListener('scroll', scrollHandler)
+    }, [])
 
     return (
         <div className={styles.postPageComments}>

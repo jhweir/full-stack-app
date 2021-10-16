@@ -18,7 +18,7 @@ const AlertModal = (): JSX.Element => {
         <div className={styles.modalWrapper}>
             <CloseOnClickOutside onClick={closeModal}>
                 <div className={styles.modal}>
-                    <CloseButton onClick={closeModal} />
+                    <CloseButton size={20} onClick={closeModal} />
                     <span className={styles.text}>{alertMessage}</span>
                     {alertMessage.includes('Log in') && (
                         <div

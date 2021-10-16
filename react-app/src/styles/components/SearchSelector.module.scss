@@ -1,0 +1,17 @@
+.wrapper {
+    position: relative;
+}
+.dropDown {
+    position: absolute;
+    background-color: white;
+    z-index: 5;
+    margin-top: -5px;
+    padding: 10px;
+    border-radius: 5px;
+    > button {
+        margin: 0 0 10px 0 !important;
+        &:last-child {
+            margin: 0 !important;
+        }
+    }
+}

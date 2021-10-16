@@ -9,19 +9,22 @@ import FlagImage from '../FlagImage'
 import SideBarButton from '../SideBarButton'
 
 const HolonPageSideBarLeft = (): JSX.Element => {
-    const { isLoggedIn, accountData, getAccountData } = useContext(AccountContext)
+    const { isLoggedIn, accountData, updateAccountData, accountDataLoading } = useContext(
+        AccountContext
+    )
     const {
-        getSpaceUsers,
         spaceData,
-        getSpaceData,
         isFollowing,
-        // setIsFollowing,
+        spaceDataLoading,
+        setIsFollowing,
         isModerator,
         selectedSpaceSubPage,
-        getSpacePosts,
     } = useContext(SpaceContext)
 
+    const loading = accountDataLoading || spaceDataLoading
+
     function followSpace() {
+        // todo: merge into single request
         if (isFollowing) {
             axios
                 .post(`${config.apiURL}/unfollow-space`, {
@@ -30,11 +33,11 @@ const HolonPageSideBarLeft = (): JSX.Element => {
                 })
                 .then((res) => {
                     if (res.data === 'success') {
-                        setTimeout(() => {
-                            getAccountData()
-                            getSpaceData()
-                            getSpaceUsers()
-                        }, 500)
+                        setIsFollowing(false)
+                        updateAccountData(
+                            'FollowedHolons',
+                            accountData.FollowedHolons.filter((h) => h.handle !== spaceData.handle)
+                        )
                     }
                 })
                 .catch((error) => {
@@ -48,11 +51,14 @@ const HolonPageSideBarLeft = (): JSX.Element => {
                 })
                 .then((res) => {
                     if (res.data === 'success') {
-                        setTimeout(() => {
-                            getAccountData()
-                            getSpaceData()
-                            getSpaceUsers()
-                        }, 500)
+                        setIsFollowing(true)
+                        const newFollowedSpaces = [...accountData.FollowedHolons]
+                        newFollowedSpaces.push({
+                            handle: spaceData.handle,
+                            name: spaceData.name,
+                            flagImagePath: spaceData.flagImagePath,
+                        })
+                        updateAccountData('FollowedHolons', newFollowedSpaces)
                     }
                 })
                 .catch((error) => {
@@ -61,7 +67,7 @@ const HolonPageSideBarLeft = (): JSX.Element => {
         }
     }
 
-    // if (spaceData) {
+    // if (loading) return <HolonPageSideBarLeftPlaceholder />
     return (
         <div className={styles.sideBarLeft}>
             <div className={styles.flagImageWrapper}>
@@ -69,9 +75,10 @@ const HolonPageSideBarLeft = (): JSX.Element => {
                     size={180}
                     type='space'
                     imagePath={spaceData.flagImagePath}
-                    canEdit={isModerator}
+                    canEdit={loading ? false : isModerator}
                     outline
                     shadow
+                    fade
                 />
             </div>
             <div className={styles.name}>{spaceData.name}</div>
@@ -102,21 +109,20 @@ const HolonPageSideBarLeft = (): JSX.Element => {
                     marginBottom={5}
                 />
                 <SideBarButton
-                    icon='overlapping-circles-thick.svg'
-                    text='Spaces'
-                    url='spaces'
-                    selected={selectedSpaceSubPage === 'spaces'}
-                    marginBottom={5}
-                    total={spaceData.total_spaces}
-                />
-                <SideBarButton
                     icon='edit-solid.svg'
                     text='Posts'
                     url='posts'
                     selected={selectedSpaceSubPage === 'posts'}
                     marginBottom={5}
                     total={spaceData.total_posts}
-                    onClickFunction={() => getSpacePosts()}
+                />
+                <SideBarButton
+                    icon='overlapping-circles-thick.svg'
+                    text='Spaces'
+                    url='spaces'
+                    selected={selectedSpaceSubPage === 'spaces'}
+                    marginBottom={5}
+                    total={spaceData.total_spaces}
                 />
                 {/* <SideBarButton
                         icon='overlapping-circles-thick.svg'
@@ -126,17 +132,15 @@ const HolonPageSideBarLeft = (): JSX.Element => {
                         marginBottom={5}
                         total={spaceData.total_spaces}
                     /> */}
-                {spaceData.handle !== 'coops' && (
-                    <SideBarButton
-                        icon='users-solid.svg'
-                        text={spaceData.handle === 'all' ? 'Users' : 'Followers'}
-                        url='users'
-                        selected={selectedSpaceSubPage === 'users'}
-                        marginBottom={5}
-                        total={spaceData.total_users}
-                    />
-                )}
-                {spaceData.handle === 'coops' && (
+                <SideBarButton
+                    icon='users-solid.svg'
+                    text='Users'
+                    url='users'
+                    selected={selectedSpaceSubPage === 'users'}
+                    marginBottom={5}
+                    total={spaceData.total_users}
+                />
+                {/* {spaceData.handle === 'coops' && (
                     <>
                         <SideBarButton
                             icon='users-solid.svg'
@@ -147,7 +151,7 @@ const HolonPageSideBarLeft = (): JSX.Element => {
                             total={spaceData.total_users}
                         />
                     </>
-                )}
+                )} */}
                 {/* {isModerator && (
                     <SideBarButton
                         icon='cog-solid.svg'

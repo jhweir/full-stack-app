@@ -1,6 +1,7 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   const Holon = sequelize.define('Holon', {
+    state: DataTypes.STRING,
     creatorId: DataTypes.INTEGER,
     handle: DataTypes.STRING,
     name: DataTypes.STRING,
@@ -37,9 +38,15 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'holonId'
     })
     // HolonUsers relationship
-    Holon.belongsToMany(models.User, { 
+    // todo: change HolonUsers to Followers and set up where
+    Holon.belongsToMany(models.User, {
         through: models.HolonUser,
         as: 'HolonUsers',
+        foreignKey: 'holonId',
+    })
+    Holon.belongsToMany(models.User, { 
+        through: models.HolonUser,
+        as: 'Moderators',
         foreignKey: 'holonId',
     })
     Holon.belongsTo(models.User, {

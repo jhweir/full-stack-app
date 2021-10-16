@@ -13,8 +13,8 @@
     display: flex;
     flex-direction: column;
     transition:  all $transitionSpeed;
-    opacity: 0;
-    &.visible { opacity: 1 }
+    opacity: 1;
+    // &.visible { opacity: 1 }
     ::-webkit-scrollbar {
         display: none;
     }
