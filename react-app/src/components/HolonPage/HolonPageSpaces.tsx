@@ -31,7 +31,7 @@ const HolonPageSpaces = ({
     const {
         accountDataLoading,
         // setCreateSpaceModalOpen,
-        isLoggedIn,
+        loggedIn,
         setAlertModalOpen,
         setAlertMessage,
     } = useContext(AccountContext)
@@ -58,7 +58,7 @@ const HolonPageSpaces = ({
     const [createSpaceModalOpen, setCreateSpaceModalOpen] = useState(false)
 
     function openCreateSpaceModal() {
-        if (isLoggedIn) setCreateSpaceModalOpen(true)
+        if (loggedIn) setCreateSpaceModalOpen(true)
         else {
             setAlertModalOpen(true)
             setAlertMessage('Log in to create a space')
@@ -107,6 +107,13 @@ const HolonPageSpaces = ({
                             }
                             placeholder='Search spaces...'
                         />
+                        {/* <SearchBar
+                            inputText={searchQuery}
+                            setInputText={(payload) =>
+                                updateSpaceSpacesFilter('searchQuery', payload)
+                            }
+                            placeholder='Search spaces...'
+                        /> */}
                         <Button
                             icon={<SlidersIconSVG />}
                             colour='grey'

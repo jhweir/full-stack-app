@@ -35,7 +35,11 @@ const DropDownMenu = (props: {
                             aria-label='drop-down'
                         />
                     </div>
-                    <div className={`${styles.options} ${menuOpen && styles.visible}`}>
+                    <div
+                        className={`${styles.options} ${menuOpen && styles.visible} ${
+                            orientation === 'horizontal' && styles.horizontal
+                        }`}
+                    >
                         {options.map((option) => (
                             <div
                                 className={styles.option}

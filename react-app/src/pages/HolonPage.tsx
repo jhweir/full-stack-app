@@ -16,7 +16,7 @@ import AccountSideBar from '@components/AccountSideBar'
 
 const HolonPage = ({ match }: { match: { url: string } }): JSX.Element => {
     const { url } = match
-    const { isLoggedIn, accountData } = useContext(AccountContext)
+    const { loggedIn, accountData } = useContext(AccountContext)
     const { spaceData, spaceSpacesFilters, resetSpaceData, isModerator, fullScreen } = useContext(
         SpaceContext
     )
@@ -25,7 +25,7 @@ const HolonPage = ({ match }: { match: { url: string } }): JSX.Element => {
 
     useEffect(() => () => resetSpaceData(), [])
 
-    const showAccountSideBar = isLoggedIn && accountData.FollowedHolons.length
+    const showAccountSideBar = loggedIn && accountData.FollowedHolons.length
 
     return (
         <div className={`${styles.holonPage} ${showAccountSideBar && styles.showAccountSideBar}`}>

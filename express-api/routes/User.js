@@ -255,13 +255,13 @@ router.get('/user-posts', (req, res) => {
                 {
                     model: Holon,
                     as: 'DirectSpaces',
-                    attributes: ['handle'],
+                    attributes: ['handle', 'state'],
                     through: { where: {  relationship: 'direct' }, attributes: ['type'] },
                 },
                 {
                     model: Holon,
                     as: 'IndirectSpaces',
-                    attributes: ['handle'],
+                    attributes: ['handle', 'state'],
                     through: { where: { relationship: 'indirect' }, attributes: ['type'] },
                 },
                 {

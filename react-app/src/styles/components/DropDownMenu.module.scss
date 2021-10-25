@@ -54,6 +54,7 @@
     position: absolute;
     top: 58px;
     z-index: 5;
+    &.horizontal { top: 35px; }
 }
 .option {
     font-size: 14px;

@@ -23,7 +23,7 @@ const PostCard = (props: {
 }): JSX.Element => {
     const { postData, index, location } = props
     const {
-        isLoggedIn,
+        loggedIn,
         accountData,
         setAlertMessage,
         setAlertModalOpen,
@@ -116,7 +116,7 @@ const PostCard = (props: {
     }
 
     // function createPostFromTurn() {
-    //     if (isLoggedIn && creator) {
+    //     if (loggedIn && creator) {
     //         const data = {
     //             creatorName: creator.name,
     //             creatorHandle: creator.handle,
@@ -143,7 +143,7 @@ const PostCard = (props: {
     if (location === 'holon-posts') locationStyle = styles.spacePosts
 
     return (
-        <div className={`${styles.post} ${locationStyle}`} ref={postRef}>
+        <div className={`${styles.post} ${locationStyle}`} ref={postRef} key={id}>
             {/* {location !== 'post-page' && location !== 'holon-post-map' && location !== 'create-post-modal' &&
                 <div className={styles.index}>{index + 1}</div>
             } */}
@@ -167,7 +167,7 @@ const PostCard = (props: {
                                             {space.handle}
                                         </Link>
                                     ) : (
-                                        <p>{space.handle} (removed)</p>
+                                        <p>{space.handle} (space deleted)</p>
                                     )}
                                 </>
                             ))
@@ -182,6 +182,9 @@ const PostCard = (props: {
                             {timeSinceCreated(createdAt)}
                         </span>
                     </Link>
+                    <div className={`${styles.postType} ${type && styles[type]}`}>
+                        {type && type.toLowerCase()}
+                    </div>
                     {/* <span className={styles.subText}>•</span> */}
                     {/* <div className={styles.postTypeFlag} style={{ backgroundColor }} title={type}/> */}
                     {isOwnPost && (

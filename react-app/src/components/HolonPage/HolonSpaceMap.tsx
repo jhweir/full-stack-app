@@ -61,7 +61,7 @@ const HolonSpaceMap = (): JSX.Element => {
             )
             .then((res) => {
                 // if res.data.id
-                updateTree(res.data)
+                updateTree(res.data, true)
                 // setSpaceMapData(res.data)
                 // console.log('res.data: ', res.data)
             })
@@ -293,10 +293,10 @@ const HolonSpaceMap = (): JSX.Element => {
         })
     }
 
-    function updateTree(data) {
+    function updateTree(data, resetPosition) {
         console.log('updateTree')
 
-        resetTreePosition()
+        if (resetPosition) resetTreePosition()
 
         setTimeout(() => {
             d3.selectAll('.background-circle').classed('transitioning', false)
@@ -355,7 +355,7 @@ const HolonSpaceMap = (): JSX.Element => {
                     match.children = match.children.filter((child) => !child.isExpander)
                     match.children.push(...res.data)
                     // setSpaceMapData(_.cloneDeep(spaceMapData))
-                    updateTree(data)
+                    updateTree(data, false)
                 })
         }
 
@@ -835,7 +835,7 @@ const HolonSpaceMap = (): JSX.Element => {
                                 if (d.data.collapsed === true) match.collapsed = false
                                 else match.collapsed = true
                                 toggleChildren(match)
-                                updateTree(data)
+                                updateTree(data, false)
                             })
                             .call((node) =>
                                 node
@@ -891,7 +891,10 @@ const HolonSpaceMap = (): JSX.Element => {
     useEffect(() => {
         if (spaceData.id) {
             if (firstRun) setFirstRun(false)
-            // if (searchQuery) updateSpaceSpacesFilter('searchQuery', '')
+            // if (searchQuery) {
+            //     updateSpaceSpacesFilter('searchQuery', '')
+            //     // todo: get this to update search in search bar
+            // }
             // else getData()
             getSpaceMapData()
         }
@@ -903,20 +906,7 @@ const HolonSpaceMap = (): JSX.Element => {
             spaceTransitioning.current = true
             getSpaceMapData()
         }
-    }, [type, sortBy, sortOrder, depth])
-
-    // // if search or time range filter applied, set depth to 'All Contained Spaces'
-    // useEffect(() => {
-    //     if (!firstRun) {
-    //         if (searchQuery || timeRange !== 'All Time') {
-    //             if (depth === 'Only Direct Descendants') {
-    //                 updateSpaceSpacesFilter('depth', 'All Contained Spaces')
-    //             } else getSpaceMapData()
-    //         } else if (depth === 'All Contained Spaces') {
-    //             updateSpaceSpacesFilter('depth', 'Only Direct Descendants')
-    //         } else getSpaceMapData()
-    //     }
-    // }, [searchQuery, timeRange])
+    }, [type, sortBy, sortOrder, depth, searchQuery, timeRange])
 
     // useEffect(() => {
     //     setWidth(fullScreen ? '100%' : 700)
@@ -925,12 +915,6 @@ const HolonSpaceMap = (): JSX.Element => {
     // useEffect(() => {
     //     updateCanvasSize()
     // }, [width])
-
-    // useEffect(() => {
-    //     if (spaceMapData.id && !firstRun) {
-    //         updateTree(spaceMapData)
-    //     }
-    // }, [spaceMapData])
 
     return <div id='canvas' />
     // style={{ width: '100%', height: '100%' }}

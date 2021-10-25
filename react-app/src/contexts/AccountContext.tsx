@@ -20,7 +20,7 @@ const defaults = {
 }
 
 function AccountContextProvider({ children }: { children: JSX.Element }): JSX.Element {
-    const [isLoggedIn, setIsLoggedIn] = useState(false)
+    const [loggedIn, setLoggedIn] = useState(false)
     const [accountData, setAccountData] = useState(defaults.accountData)
     const [accountDataLoading, setAccountDataLoading] = useState(true)
     const [notifications, setNotifications] = useState<any[]>([])
@@ -29,6 +29,9 @@ function AccountContextProvider({ children }: { children: JSX.Element }): JSX.El
     const [alertModalOpen, setAlertModalOpen] = useState(false)
     const [alertMessage, setAlertMessage] = useState('')
     const [authModalOpen, setAuthModalOpen] = useState(false)
+    const [logInModalOpen, setLogInModalOpen] = useState(false)
+    const [registerModalOpen, setRegisterModalOpen] = useState(false)
+    const [forgotPasswordModalOpen, setForgotPasswordModalOpen] = useState(false)
     const [navBarDropDownModalOpen, setNavBarDropDownModalOpen] = useState(false)
     const [createPostModalOpen, setCreatePostModalOpen] = useState(false)
     // const [createSpaceModalOpen, setCreateSpaceModalOpen] = useState(false)
@@ -53,7 +56,7 @@ function AccountContextProvider({ children }: { children: JSX.Element }): JSX.El
                 .then((res) => {
                     if (res.data !== 'invalid-auth-token') {
                         setAccountData(res.data)
-                        setIsLoggedIn(true)
+                        setLoggedIn(true)
                     }
                     setAccountDataLoading(false)
                 })
@@ -96,7 +99,7 @@ function AccountContextProvider({ children }: { children: JSX.Element }): JSX.El
         console.log('AccountContext: logOut')
         cookies.remove('accessToken', { path: '/' })
         setAccountData(defaults.accountData)
-        setIsLoggedIn(false)
+        setLoggedIn(false)
     }
 
     useEffect(() => getAccountData(), [])
@@ -104,7 +107,7 @@ function AccountContextProvider({ children }: { children: JSX.Element }): JSX.El
     return (
         <AccountContext.Provider
             value={{
-                isLoggedIn,
+                loggedIn,
                 accountData,
                 accountDataLoading,
                 notifications,
@@ -117,6 +120,12 @@ function AccountContextProvider({ children }: { children: JSX.Element }): JSX.El
                 setAlertMessage,
                 authModalOpen,
                 setAuthModalOpen,
+                logInModalOpen,
+                setLogInModalOpen,
+                registerModalOpen,
+                setRegisterModalOpen,
+                forgotPasswordModalOpen,
+                setForgotPasswordModalOpen,
                 navBarDropDownModalOpen,
                 setNavBarDropDownModalOpen,
                 createPostModalOpen,

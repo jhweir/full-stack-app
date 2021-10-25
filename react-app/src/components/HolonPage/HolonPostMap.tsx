@@ -11,7 +11,7 @@ import config from '@src/Config'
 import { IPost } from '@src/Interfaces'
 
 const HolonPostMap = (): JSX.Element => {
-    const { accountData, isLoggedIn } = useContext(AccountContext)
+    const { accountData, loggedIn } = useContext(AccountContext)
     const {
         spaceData,
         spacePostsFilters,
@@ -45,7 +45,7 @@ const HolonPostMap = (): JSX.Element => {
         axios
             .get(
                 /* prettier-ignore */
-                `${config.apiURL}/space-posts?accountId=${isLoggedIn ? accountData.id : null
+                `${config.apiURL}/space-posts?accountId=${loggedIn ? accountData.id : null
                 }&spaceId=${spaceData.id
                 }&sortBy=${sortBy
                 }&sortOrder=${sortOrder

@@ -3,12 +3,12 @@
 .wrapper {
     display: flex;
     align-items: center;
+    max-width: 400px;
     color: $green;
-    > p {
-        margin-right: 10px;
-    }
     > svg {
         width: 30px;
         height: 30px;
+        flex-shrink: 0;
+        margin-right: 10px;
     }
 }

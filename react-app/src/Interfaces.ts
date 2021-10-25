@@ -105,7 +105,7 @@ export interface ISpaceMapData {
 }
 
 export interface IAccountContext {
-    isLoggedIn: boolean
+    loggedIn: boolean
     accountData: any
     accountDataLoading: boolean
     notifications: any[]
@@ -118,6 +118,12 @@ export interface IAccountContext {
     setAlertMessage: (payload: string) => void
     authModalOpen: boolean
     setAuthModalOpen: (payload: boolean) => void
+    logInModalOpen: boolean
+    setLogInModalOpen: (payload: boolean) => void
+    registerModalOpen: boolean
+    setRegisterModalOpen: (payload: boolean) => void
+    forgotPasswordModalOpen: boolean
+    setForgotPasswordModalOpen: (payload: boolean) => void
     navBarDropDownModalOpen: boolean
     setNavBarDropDownModalOpen: (payload: boolean) => void
     createPostModalOpen: boolean

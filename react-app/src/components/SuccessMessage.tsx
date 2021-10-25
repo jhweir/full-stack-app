@@ -6,8 +6,8 @@ const SuccessMessage = (props: { text: string }): JSX.Element => {
     const { text } = props
     return (
         <div className={styles.wrapper}>
-            <p>{text}</p>
             <SuccessIconSVG />
+            <h3>{text}</h3>
         </div>
     )
 }

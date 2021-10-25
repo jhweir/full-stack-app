@@ -39,7 +39,8 @@ const Homepage = (): JSX.Element => {
     const {
         setAlertMessage,
         setAlertModalOpen,
-        setAuthModalOpen,
+        setRegisterModalOpen,
+        setLogInModalOpen,
         setResetPasswordModalOpen,
         setResetPasswordModalToken,
     } = useContext(AccountContext)
@@ -138,21 +139,21 @@ const Homepage = (): JSX.Element => {
                         colour='blue'
                         size='medium'
                         margin='0 10px 0 0'
-                        onClick={() => setAuthModalOpen(true)}
+                        onClick={() => setLogInModalOpen(true)}
                     />
                     <Button
                         text='Create new account'
                         colour='green'
                         size='medium'
-                        onClick={() => setAuthModalOpen(true)}
+                        onClick={() => setRegisterModalOpen(true)}
                     />
                 </div>
             </div>
+            <div className={styles.backgroundImage}>
+                {/* <BackgroundImageSVG /> */}
+                <img src='/images/earth.svg' alt='background wave svg' />
+            </div>
             <div className={styles.bottom}>
-                <div className={styles.backgroundImage}>
-                    {/* <BackgroundImageSVG /> */}
-                    <img src='/images/earth.svg' alt='background wave svg' />
-                </div>
                 <div className={styles.introText}>
                     {/* comes from a beleif that collective intelligence technologies hold the key to solving the worlds problems.
                     cooperative ownership, democratic governance, transparency etc putting power into the peoples hands */}

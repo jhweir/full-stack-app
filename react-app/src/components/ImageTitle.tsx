@@ -8,18 +8,22 @@ const ImageTitle = (props: {
     imagePath: string
     title: string
     link?: string
+    imageSize?: number
+    fontSize?: number
+    margin?: string
     onClick?: () => void
 }): JSX.Element => {
-    const { type, imagePath, title, link, onClick } = props
+    const { type, imagePath, title, link, imageSize, fontSize, margin, onClick } = props
     if (link) {
         return (
             <Link
-                className={`${styles.container} ${styles.cursorPointer}`}
                 to={link}
                 onClick={onClick}
+                className={`${styles.container} ${styles.cursorPointer}`}
+                style={{ margin }}
             >
-                <FlagImage type={type} size={30} imagePath={imagePath} />
-                <p>{title}</p>
+                <FlagImage type={type} size={imageSize!} imagePath={imagePath} />
+                <p style={{ fontSize }}>{title}</p>
             </Link>
         )
     }
@@ -27,18 +31,19 @@ const ImageTitle = (props: {
         return (
             <button
                 type='button'
-                className={`${styles.container} ${styles.cursorPointer}`}
                 onClick={onClick}
+                className={`${styles.container} ${styles.cursorPointer}`}
+                style={{ margin }}
             >
-                <FlagImage type={type} size={30} imagePath={imagePath} />
-                <p>{title}</p>
+                <FlagImage type={type} size={imageSize!} imagePath={imagePath} />
+                <p style={{ fontSize }}>{title}</p>
             </button>
         )
     }
     return (
-        <div className={styles.container}>
-            <FlagImage type={type} size={30} imagePath={imagePath} />
-            <p>{title}</p>
+        <div className={styles.container} style={{ margin }}>
+            <FlagImage type={type} size={imageSize!} imagePath={imagePath} />
+            <p style={{ fontSize }}>{title}</p>
         </div>
     )
 }
@@ -46,6 +51,9 @@ const ImageTitle = (props: {
 ImageTitle.defaultProps = {
     onClick: null,
     link: null,
+    imageSize: 30,
+    fontSize: 14,
+    margin: null,
 }
 
 export default ImageTitle

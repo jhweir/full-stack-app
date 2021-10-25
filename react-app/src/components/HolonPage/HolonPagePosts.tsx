@@ -18,7 +18,7 @@ const HolonPagePosts = ({ match }: { match: { params: { spaceHandle: string } } 
     const { spaceHandle } = params
     const {
         accountDataLoading,
-        isLoggedIn,
+        loggedIn,
         setCreatePostModalOpen,
         setAlertModalOpen,
         setAlertMessage,
@@ -44,7 +44,7 @@ const HolonPagePosts = ({ match }: { match: { params: { spaceHandle: string } } 
     const [pageBottomReached, setPageBottomReached] = useState(false)
 
     function openCreatePostModal() {
-        if (isLoggedIn) setCreatePostModalOpen(true)
+        if (loggedIn) setCreatePostModalOpen(true)
         else {
             setAlertModalOpen(true)
             setAlertMessage('Log in to create a post')

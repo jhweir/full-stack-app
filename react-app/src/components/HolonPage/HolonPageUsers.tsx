@@ -33,6 +33,7 @@ const HolonPageUsers = ({ match }: { match: { params: { spaceHandle: string } } 
         spaceUsersLoading,
         resetSpaceUsers,
         spaceUsersPaginationHasMore,
+        updateSpaceUsersFilter,
         // fullScreen,
         // setFullScreen,
     } = useContext(SpaceContext)
@@ -67,23 +68,15 @@ const HolonPageUsers = ({ match }: { match: { params: { spaceHandle: string } } 
 
     useEffect(() => () => resetSpaceUsers(), [])
 
-    // useEffect(() => {
-    //     if (spaceData.id) getSpaceUsers()
-    // }, [spaceData.id, spaceUsersFilters])
-
-    // useEffect(() => {
-    //     if (pageBottomReached && spaceData.id) {
-    //         // getNextSpaceUsers()
-    //     }
-    // }, [pageBottomReached])
-
     return (
         <div className={styles.wrapper}>
             <div className={styles.header}>
                 <div className={styles.headerRow}>
                     <div>
                         <SearchBar
-                            setSearchFilter={spaceUsersFilters.searchQuery}
+                            setSearchFilter={(payload) =>
+                                updateSpaceUsersFilter('searchQuery', payload)
+                            }
                             placeholder='Search users...'
                         />
                         <Button

@@ -15,7 +15,7 @@ const PostCardComments = (props: {
     setTotalComments: (payload: number) => void
 }): JSX.Element => {
     const { postId, totalComments, setTotalComments } = props
-    const { accountData, isLoggedIn } = useContext(AccountContext)
+    const { accountData, loggedIn } = useContext(AccountContext)
     const { spaceData } = useContext(SpaceContext)
 
     const [postComments, setPostComments] = useState([])
@@ -37,7 +37,7 @@ const PostCardComments = (props: {
         axios
             .get(
                 `${config.apiURL}/post-comments?accountId=${
-                    isLoggedIn ? accountData.id : null
+                    loggedIn ? accountData.id : null
                 }&postId=${postId}&sortBy=${postCommentSortByFilter}&sortOrder=${postCommentSortOrderFilter}&timeRange=${postCommentTimeRangeFilter}&searchQuery=${postCommentSearchFilter}&limit=${postCommentPaginationLimit}&offset=0`
             )
             .then((res) => {
@@ -82,7 +82,7 @@ const PostCardComments = (props: {
     return (
         <div className={styles.wrapper}>
             {/* TODO: create comment input component */}
-            {isLoggedIn && (
+            {loggedIn && (
                 <div className={styles.commentInput}>
                     <SmallFlagImage type='user' size={35} imagePath={accountData.flagImagePath} />
                     <form className={styles.inputWrapper} onSubmit={submitComment}>

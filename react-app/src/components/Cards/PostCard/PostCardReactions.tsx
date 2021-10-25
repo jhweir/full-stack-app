@@ -61,7 +61,7 @@ const PostCardReactions = (props: {
         setBlockedSpaces,
     } = props
 
-    const { isLoggedIn, setAlertMessage, setAlertModalOpen } = useContext(AccountContext)
+    const { loggedIn, setAlertMessage, setAlertModalOpen } = useContext(AccountContext)
 
     const [reactionData, setReactionData] = useState({ Reactions: [] })
     const [likePreviewOpen, setLikePreviewOpen] = useState(false)
@@ -108,7 +108,7 @@ const PostCardReactions = (props: {
                 totalReactions={totalLikes || 0}
                 iconPath='thumbs-up-solid.svg'
                 onClick={() => {
-                    if (isLoggedIn) {
+                    if (loggedIn) {
                         setLikeModalOpen(true)
                     } else {
                         setAlertMessage('Log in to like post')
@@ -130,7 +130,7 @@ const PostCardReactions = (props: {
                 totalReactions={totalReposts || 0}
                 iconPath='retweet-solid.svg'
                 onClick={() => {
-                    if (isLoggedIn) {
+                    if (loggedIn) {
                         setRepostModalOpen(true)
                     } else {
                         setAlertMessage('Log in to repost post')
@@ -154,7 +154,7 @@ const PostCardReactions = (props: {
                 totalReactionPoints={totalRatingPoints}
                 iconPath='star-solid.svg'
                 onClick={() => {
-                    if (isLoggedIn) {
+                    if (loggedIn) {
                         setRatingModalOpen(true)
                     } else {
                         setAlertMessage('Log in to rate post')
@@ -171,7 +171,7 @@ const PostCardReactions = (props: {
                 totalReactions={totalLinks || 0}
                 iconPath='link-solid.svg'
                 onClick={() => {
-                    if (isLoggedIn) {
+                    if (loggedIn) {
                         setLinkModalOpen(true)
                     } else {
                         setAlertMessage('Log in to link post')

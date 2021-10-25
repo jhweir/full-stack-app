@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
     })
     GlassBeadGameComment.belongsTo(models.User, {
         foreignKey: 'userId',
-        as: 'userData'
+        as: 'user'
     })
   };
   return GlassBeadGameComment;

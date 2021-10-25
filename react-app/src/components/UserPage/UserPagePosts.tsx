@@ -5,6 +5,8 @@ import SearchBar from '@components/SearchBar'
 import UserPagePostFilters from '@components/UserPage/UserPagePostFilters'
 import PostCard from '@components/Cards/PostCard/PostCard'
 import { onPageBottomReached } from '@src/Functions'
+import Button from '@components/Button'
+import { ReactComponent as SlidersIconSVG } from '@svgs/sliders-h-solid.svg'
 
 const UserPagePosts = (): JSX.Element => {
     const {
@@ -44,28 +46,22 @@ const UserPagePosts = (): JSX.Element => {
     return (
         <div className={styles.wrapper}>
             <div className={styles.header}>Created</div>
-            <div className='wecoPageHeader'>
-                <div className='wecoPageHeaderRow'>
+            <div className={styles.headerRow}>
+                <div>
                     <SearchBar
                         setSearchFilter={(payload) => updateUserPostsFilter('searchQuery', payload)}
                         placeholder='Search posts...'
                     />
-                    <div
-                        className={styles.filterButton}
-                        role='button'
-                        tabIndex={0}
+                    <Button
+                        icon={<SlidersIconSVG />}
+                        colour='grey'
+                        size='medium'
+                        margin='0 10px 0 0'
                         onClick={() => setUserPostsFiltersOpen(!userPostsFiltersOpen)}
-                        onKeyDown={() => setUserPostsFiltersOpen(!userPostsFiltersOpen)}
-                    >
-                        <img
-                            className={styles.filterButtonIcon}
-                            src='/icons/sliders-h-solid.svg'
-                            aria-label='filters'
-                        />
-                    </div>
+                    />
                 </div>
-                {userPostsFiltersOpen && <UserPagePostFilters />}
             </div>
+            {userPostsFiltersOpen && <UserPagePostFilters />}
             {userPostsLoading ? (
                 <p>Loading...</p>
             ) : (

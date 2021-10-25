@@ -59,6 +59,7 @@ const maxPlayers = 10
 io.on('connection', socket => {
     socket.on('join-room', data => {
         const { roomId, userData } = data
+        console.log(data)
         // create user object
         const user = { socketId: socket.id, userData }
         // if no room, create room
@@ -69,9 +70,9 @@ io.on('connection', socket => {
         socketsToRooms[socket.id] = roomId
         // connect to room
         socket.join(roomId)
-        //send user object to other users in room
-        socket.to(roomId).emit('user-joined', user)
-        // send room data back to joining user
+        // notify room of new user
+        io.in(roomId).emit('user-joined', user)
+        // send room data back to new user
         const usersInRoom = rooms[roomId] //.filter(users => users.socketId !== socket.id)
         socket.emit('room-joined', { socketId: socket.id, usersInRoom })
     })
@@ -84,15 +85,11 @@ io.on('connection', socket => {
         io.to(payload.callerID).emit('signal-returned', { signal: payload.signal, id: socket.id })
     })
 
-    socket.on('sending-comment', commentData => {
-        io.in(commentData.roomId).emit('returning-comment', commentData)
-        axios
-            .post(`${config.apiUrl}/glass-bead-game-comment`, commentData)
-            .catch((error) => console.log('error: ', error))
+    socket.on('sending-comment', data => {
+        io.in(data.roomId).emit('returning-comment', data)
     })
 
     socket.on('sending-start-game', data => {
-        data.players = rooms[data.roomId]
         io.in(data.roomId).emit('returning-start-game', data)
     })
 
@@ -102,6 +99,10 @@ io.on('connection', socket => {
 
     socket.on('sending-audio-bead', data => {
         io.in(data.roomId).emit('returning-audio-bead', data)
+    })
+
+    socket.on('stream-disconnected', data => {
+        io.in(data.roomId).emit('stream-disconnected', data)
     })
 
     socket.on('disconnecting', () => {

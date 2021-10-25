@@ -4,10 +4,11 @@ module.exports = (sequelize, DataTypes) => {
     postId: DataTypes.INTEGER,
     topic: DataTypes.STRING,
     numberOfTurns: DataTypes.INTEGER,
-    turnDuration: DataTypes.INTEGER,
+    moveDuration: DataTypes.INTEGER,
     introDuration: DataTypes.INTEGER,
     intervalDuration: DataTypes.INTEGER,
-    numberOfPlayers: DataTypes.INTEGER,
+    // numberOfPlayers: DataTypes.INTEGER,
+    playerOrder: DataTypes.TEXT,
     locked: DataTypes.BOOLEAN
   }, {});
   GlassBeadGame.associate = function(models) {

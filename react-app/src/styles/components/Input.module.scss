@@ -6,6 +6,7 @@
     flex-direction: column;
     align-items: flex-start;
     width: 100%;
+    &.disabled > div { background-color: $blue6 } //$grey9 }
     // title
     h1 {
         font-size: 14px;
@@ -21,8 +22,8 @@
         margin-bottom: 5px;
     }
     // input wrapper (contains prefix, input, and svg icon)
-    div {
-        margin-bottom: 10px;
+    > div {
+        // margin-bottom: 10px;
         display: flex;
         align-items: center;
         background-color: $white;// rgba(0,0,0,0.02); //gba(10, 8, 72, 0.1);
@@ -45,7 +46,12 @@
             border: none;
             display: flex;
             align-items: center;
+            background-color: transparent;
+            -webkit-background-clip: text !important;
         }
+        // input:-internal-autofill-selected {
+        //     background-color: transparent !important;
+        // }
         textarea {
             font-size: 14px;
             // height: 40px;

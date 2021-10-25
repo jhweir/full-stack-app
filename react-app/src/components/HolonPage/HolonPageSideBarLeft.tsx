@@ -9,7 +9,7 @@ import FlagImage from '../FlagImage'
 import SideBarButton from '../SideBarButton'
 
 const HolonPageSideBarLeft = (): JSX.Element => {
-    const { isLoggedIn, accountData, updateAccountData, accountDataLoading } = useContext(
+    const { loggedIn, accountData, updateAccountData, accountDataLoading } = useContext(
         AccountContext
     )
     const {
@@ -84,7 +84,7 @@ const HolonPageSideBarLeft = (): JSX.Element => {
             <div className={styles.name}>{spaceData.name}</div>
             <div className={styles.navButtons}>
                 {/* TODO: replace side bar button component with actual content */}
-                {isLoggedIn && spaceData.handle !== 'all' && (
+                {loggedIn && spaceData.handle !== 'all' && (
                     <SideBarButton
                         icon={isFollowing ? 'eye-solid.svg' : 'eye-slash-solid.svg'}
                         text={isFollowing ? 'Following' : 'Not Following'}

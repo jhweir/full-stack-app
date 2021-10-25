@@ -1,8 +1,9 @@
+@import '@styles/Colors.scss';
+
 .wrapper {
-    margin-top: 60px;
-    // padding: 50px;
+    padding-top: 60px;
     width: 100%;
-    height: calc(100vh - 60px);
+    height: 100vh;
 }
 .mainContent {
     width: 100%;
@@ -11,7 +12,7 @@
     flex-direction: row;
     justify-content: space-between;
 }
-.leftPanel {
+.comments {
     width: 350px;
     height: 100%;
     border-right: 1px solid #ddd;
@@ -19,118 +20,244 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    flex-shrink: 0;
+    > div {
+        height: 100%;
+        overflow-y: scroll;
+        scroll-snap-type: y proximity;
+    }
+    > form {
+        display: flex;
+        padding: 10px;
+        background-color: #f7f7f9;
+    }
+    .commentWrapper {
+        display: flex;
+        flex-direction: row;
+        //align-items: center;
+        margin: 10px;
+
+        .commentText {
+            margin-left: 10px;
+            > div {
+                > h1 {
+                    font-size: 14px;
+                    font-weight: 800;
+                }
+                > p {
+                    margin-left: 3px;
+                    font-size: 14px;
+                    color: $grey4;
+                }
+            }
+            > p {
+                font-size: 14px;
+            }
+        }
+    }
 }
 .centerPanel {
-    //width: calc(100% - 200px);
+    width: 100%;
+    padding-top: 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    // margin: 0;
-    // padding: 0;
+    position: relative;
 }
-.rightPanel {
-    width: 400px;
-    // height: 100%;
-    // border-left: 1px solid #ddd;
-    // background-color: white;
-    // display: flex;
-    // flex-direction: column;
-    // justify-content: space-between;
-}
-.users {
-
-}
-.user {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    padding: 5px;
+.gameControls {
+    position: absolute;
+    left: 20px;
+    top: 20px;
     > p {
-        margin-left: 10px;
+        margin-bottom: 5px;
     }
 }
-$width: 1280;
-$height: 720;
-$padding: 10px;
-.videos {
+.peopleInRoom {
     position: absolute;
-    right: 0;
-    background-color: rgba(0,0,0,0.5);
+    right: 20px;
+    top: 20px;
+    > div > p {
+        margin-bottom: 10px;
+    }
+}
+.videos {
+    $width: 1280;
+    $height: 720;
+    $padding: 10px;
+
+    // background-color: rgba(0,0,0,0.5);
     margin: $padding;
     padding: $padding;
     border-radius: 5px;
-    max-height: calc(100% - 280px);
+    //max-height: calc(100% - 280px);
     overflow-y: scroll;
     display: flex;
     flex-direction: column;
-}
-.videoWrapper {
-    display: flex;
-    margin-bottom: $padding;
-    &:last-child {
-        margin-bottom: 0;
-    }
-    > video {
-        // margin-bottom: $padding;
-        // &:last-child {
-        //     margin-bottom: 0;
-        // }
-        object-fit: cover;
-        
-    }
-    &.xl {
-        // 1 - 2
+    flex-shrink: 0;
+
+    .videoWrapper {
+        display: flex;
+        position: relative;
+        margin-bottom: $padding;
+        &:last-child { margin-bottom: 0 }
         > video {
+            border-radius: 10px;
+        }
+        > .videoUser {
+            position: absolute;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            margin: 7px;
+            padding: 7px 10px;
+            border-radius: 7px;
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+        > .videoButtons {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            margin: 8px 12px;
+            display: flex;
+            > button {
+                all: unset;
+                color: $white;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                &:not(:last-child) {
+                    margin-right: 10px;
+                }
+                > svg {
+                    width: 25px;
+                    height: 25px;
+                    opacity: 0.5;
+                    &:hover {
+                        opacity: 0.8;
+                    }
+                }
+            }
+        }
+        // 1 - 2
+        &.xl > video {
             width: $width / 3 + px;
             height: $height / 3 + px;
         }
-    }
-    &.lg {
         // 3
-        > video {
-            width: $width / 4 + px;
-            height: $height / 4 + px;
+        &.lg > video {
+                width: $width / 4 + px;
+                height: $height / 4 + px;
         }
-    }
-    &.md {
         // 4 - 6
-        > video {
-            width: $width / 5 + px;
-            height: $height / 5 + px;
+        &.md > video {
+                width: $width / 5 + px;
+                height: $height / 5 + px;
         }
-    }
-    &.sm {
-        // 7 - 8
-        > video {
+        // 7 +
+        &.sm > video {
             width: $width / 6 + px;
             height: $height / 6 + px;
         }
     }
-    &.xs {
-        // 9 +
-        > video {
-            width: $width / 8 + px;
-            height: $height / 8 + px;
+}
+.position {
+    width: 35px;
+    height: 35px;
+    background-color: $white;
+    border-radius: 50%;
+    margin-right: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.positionControls {
+    height: 35px;
+    margin-right: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    > button {
+        all: unset;
+        cursor: pointer;
+        display: flex;
+        //justify-content: center;
+        color: $grey4;
+        &:hover {
+            color: $grey5;
+        }
+        &:disabled {
+            color: $grey3;
+            cursor: unset;
+        }
+        > svg {
+            width: 16px;
+            height: 16px;
+            
         }
     }
-    > .userData {
+    
+}
+.topic {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 2px solid $grey3;
+    margin: 10px 0 20px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    > img {
+        width: 100%;
+        height: 100%;
+        opacity: 0.8;
+    }
+}
+.timer {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    > .timerArcTitles {
         position: absolute;
+        top: -1px;
         display: flex;
-        flex-direction: row;
+        flex-direction: column;
         align-items: center;
-        margin: 7px;
-        padding: 7px 10px;
-        border-radius: 5px;
-        background-color: rgba(255, 255, 255, 0.5);
         > p {
-            margin-left: 5px;
-            //color: white;
+            margin-bottom: 8px;
+        }
+    }
+    > .moveCard {
+        width: 170px;
+        height: 170px;
+        position: absolute;
+        border: 2px solid $grey3;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        > img {
+            width: 120px;
+            height: 120px;
         }
     }
 }
-.topic {
-    font-size: 30px;
-    margin: 60px 0 40px 0;
+.error {
+    color: $red;
+    margin-top: 10px;
+}
+.recordingFlag {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    margin-left: 10px;
+    &.recording {
+        background-color: $red;
+    }
+    &.recordingNext {
+        background-color: $orange;
+    }
 }
 // .giftIcon {
 //     width: 100px;
@@ -155,21 +282,11 @@ $padding: 10px;
     width: 80px;
     height: 80px;
 }
-.comments {
-    height: 100%;
-    overflow-y: scroll;
-}
-.commentWrapper {
-    display: flex;
-    flex-direction: row;
-    //align-items: center;
-    margin: 10px;
-}
-.commentText {
-    margin-left: 10px;
-}
-.userName {
-    font-weight: 800;
+
+.noUsersConnected {
+    margin-top: 10px;
+    color: $grey5;
+    
 }
 .adminText {
     color: rgb(163, 163, 163);
@@ -255,20 +372,20 @@ $padding: 10px;
     height: 40px;
     width: 40px;
 }
-.gameControls {
-    margin-top: 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    > div {
-        display: flex;
-        align-items: center;
-        margin-bottom: 10px;
-        &:last-child {
-            margin-bottom: 0;
-        }
-    }
-}
+// .gameControls {
+//     margin-top: 10px;
+//     display: flex;
+//     flex-direction: column;
+//     align-items: center;
+//     > div {
+//         display: flex;
+//         align-items: center;
+//         margin-bottom: 10px;
+//         &:last-child {
+//             margin-bottom: 0;
+//         }
+//     }
+// }
 .numberInput {
     border: none;
     background-color: white;

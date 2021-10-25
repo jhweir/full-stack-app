@@ -20,7 +20,7 @@
     > div {
         display: flex;
         flex-direction: row;
-        > form,button {
+        > form, > button {
             margin-right: 10px;
         }
     }

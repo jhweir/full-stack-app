@@ -15,9 +15,7 @@ const CommentCard = (props: {
     getPostComments: () => void
 }): JSX.Element => {
     const { comment, totalComments, setTotalComments, getPostComments } = props
-    const { accountData, isLoggedIn, setAlertModalOpen, setAlertMessage } = useContext(
-        AccountContext
-    )
+    const { accountData, loggedIn, setAlertModalOpen, setAlertMessage } = useContext(AccountContext)
     const { spaceData } = useContext(SpaceContext)
 
     const [replyInputOpen, setReplyInputOpen] = useState(false)
@@ -27,7 +25,7 @@ const CommentCard = (props: {
     const replyInput = useRef<HTMLTextAreaElement>(null)
 
     function openReplyInput() {
-        if (isLoggedIn) {
+        if (loggedIn) {
             Promise.all([setReplyInputOpen(!replyInputOpen)]).then(() => {
                 const { current } = replyInput
                 if (current && !replyInputOpen) {

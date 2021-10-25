@@ -56,7 +56,7 @@ const defaults = {
 }
 
 function SpaceContextProvider({ children }: { children: JSX.Element }): JSX.Element {
-    const { accountData, isLoggedIn } = useContext(AccountContext)
+    const { accountData, loggedIn } = useContext(AccountContext)
 
     const [spaceData, setSpaceData] = useState(defaults.spaceData)
     const [isFollowing, setIsFollowing] = useState(false)
@@ -83,6 +83,7 @@ function SpaceContextProvider({ children }: { children: JSX.Element }): JSX.Elem
 
     const [spaceSpaces, setSpaceSpaces] = useState<any[]>([])
     const [spaceSpacesFilters, setSpaceSpacesFilters] = useState(defaults.spaceFilters)
+    // const [spaceSpacesSearchQuery, setSpaceSpacesSearchQuery] = useState('')
     const [spaceSpacesFiltersOpen, setSpaceSpacesFiltersOpen] = useState(false)
     const [spaceSpacesPaginationLimit, setSpaceSpacesPaginationLimit] = useState(10)
     const [spaceSpacesPaginationOffset, setSpaceSpacesPaginationOffset] = useState(0)
@@ -202,12 +203,12 @@ function SpaceContextProvider({ children }: { children: JSX.Element }): JSX.Elem
 
     function updateSpaceSpacesFilter(key, payload) {
         console.log(`SpaceContext: updateSpaceSpacesFilter (${key}: ${payload})`)
-        // if search query set, also change depth to all contained spaces
-        if (key === 'searchQuery' && payload.length) {
+        // if search query set, change depth to all contained spaces and vice versa
+        if (key === 'searchQuery') {
             setSpaceSpacesFilters({
                 ...spaceSpacesFilters,
                 [key]: payload,
-                depth: 'All Contained Spaces',
+                depth: payload.length ? 'All Contained Spaces' : 'Only Direct Descendants',
             })
             return
         }
@@ -253,7 +254,7 @@ function SpaceContextProvider({ children }: { children: JSX.Element }): JSX.Elem
         const moderator = accountData.ModeratedHolons.some((s) => s.handle === spaceData.handle)
         setIsFollowing(following)
         setIsModerator(moderator)
-    }, [isLoggedIn, spaceData.id])
+    }, [loggedIn, spaceData.id])
 
     return (
         <SpaceContext.Provider

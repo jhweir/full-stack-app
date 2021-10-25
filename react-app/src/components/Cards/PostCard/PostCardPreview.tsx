@@ -1,8 +1,8 @@
 import React, { useState, useContext, useEffect, useRef } from 'react'
 import ReactMarkdown from 'react-markdown'
 import gfm from 'remark-gfm'
-import { AccountContext } from '../../../contexts/AccountContext'
-import styles from '../../../styles/components/PostCard.module.scss'
+import { AccountContext } from '@contexts/AccountContext'
+import styles from '@styles/components/PostCard.module.scss'
 import PostCardUrlPreview from './PostCardUrlPreview'
 import SmallFlagImage from '../../SmallFlagImage'
 
@@ -74,6 +74,13 @@ const PostCardPreview = (props: {
                     <div className={styles.link}>
                         <img className={styles.linkIcon} src='/icons/link-solid.svg' alt='' />
                         <span className={styles.subText}>now</span>
+                    </div>
+                    <div
+                        className={`${styles.postType} ${
+                            type && styles[type.toLowerCase().replace(/\s+/g, '-')]
+                        }`}
+                    >
+                        {type && type.toLowerCase().replace(/\s+/g, '-')}
                     </div>
                 </div>
                 <div className={styles.content}>

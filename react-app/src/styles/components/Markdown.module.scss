@@ -28,11 +28,15 @@
     }
     h1 {
         line-height: 30px;
-        margin-bottom: 5px;
+        margin-bottom: 15px;
     }
     h2 {
-        line-height: 25px;
-        margin-bottom: 3px;
+        line-height: 20px;
+        margin-bottom: 15px;
+    }
+    h3 {
+        line-height: 20px;
+        margin-bottom: 15px;
     }
     img {
         max-width: 500px;
@@ -78,6 +82,7 @@
         line-height: 40px;
     }
     blockquote {
+        margin: 0 0 20px 0; 
         padding: 0 10px;
         color:#6a737d;
         border-left: 3px solid #cacaca;

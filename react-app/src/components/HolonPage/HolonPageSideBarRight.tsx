@@ -1,8 +1,8 @@
 import React, { useContext } from 'react'
 import { Link, useHistory } from 'react-router-dom'
-import { SpaceContext } from '../../contexts/SpaceContext'
-import styles from '../../styles/components/HolonPageSideBarRight.module.scss'
-import HolonPageSideBarRightPlaceholder from './HolonPageSideBarRightPlaceholder'
+import { SpaceContext } from '@contexts/SpaceContext'
+import styles from '@styles/components/HolonPageSideBarRight.module.scss'
+import HolonPageSideBarRightPlaceholder from '@components/HolonPage/HolonPageSideBarRightPlaceholder'
 
 const HolonPageSideBarRight = (): JSX.Element => {
     const { spaceData, selectedSpaceSubPage } = useContext(SpaceContext)

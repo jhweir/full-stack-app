@@ -1,6 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
+import Button from '@components/Button'
 import config from '../Config'
 import styles from '../styles/components/SpaceInput.module.scss'
 import { SpaceContext } from '../contexts/SpaceContext'
@@ -49,8 +50,8 @@ const SpaceInput = (props: {
             })
     }
 
-    function addSpace(e) {
-        e.preventDefault()
+    function addSpace() {
+        // e.preventDefault()
         axios.get(`${config.apiURL}/validate-space-handle?searchQuery=${newSpace}`).then((res) => {
             if (res.data === 'success') {
                 setAddedSpaces([...addedSpaces, newSpace])
@@ -120,7 +121,7 @@ const SpaceInput = (props: {
                         ))}
                     </div>
                 )}
-                <button
+                {/* <button
                     className='wecoButton'
                     style={{ flexShrink: 0 }}
                     onClick={addSpace}
@@ -129,7 +130,14 @@ const SpaceInput = (props: {
                     tabIndex={0}
                 >
                     Add
-                </button>
+                </button> */}
+                <Button
+                    text='Add'
+                    colour='blue'
+                    size='medium'
+                    margin='0 10px 0 0'
+                    onClick={() => addSpace()}
+                />
             </div>
             {flashMessage && (
                 <div className={styles.flashMessage}>

@@ -96,35 +96,37 @@
         }
     }
 }
-.bottom {
+.backgroundImage {
     margin-top: -40px;
+    // position: absolute;
+    width: 100%;
+    // z-index: 1;
+    background-color: $bluegrey1;
+    > img {
+        margin-bottom: -10px;
+        width: 100%;
+    }
+}
+.bottom {
+    // margin-top: -40px;
     position: relative;
     width: 100%;
     background-color: #002d50;// #e9eff5; // #ddeffd; // #002d50; //#dfe6f3;//;//#045fa7;//#006fb7;//#0077b7;//#15a1d4;
     display: flex;
     flex-direction: column;
     align-items: center;
-    .backgroundImage {
-        position: absolute;
-        width: 100%;
-        z-index: 1;
-        background-color: $bluegrey1;
-        > img {
-            margin-bottom: -10px;
-            width: 100%;
-        }
-    }
+    
     .introText {
         width: 100%;
         max-width: 700px;
-        margin-top: calc(10% + 30px);
+        //margin-top: calc(10% + 30px);
         padding: 20px;
         z-index: 2;
         color: white;
         display: flex;
         flex-direction: column;
         align-items: center;
-        backdrop-filter: blur(10px);
+        //backdrop-filter: blur(10px);
         > h1 {
             font-size: 24px;
             font-weight: 400;

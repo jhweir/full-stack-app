@@ -12,4 +12,5 @@ module.exports = {
     appURL: process.env[devApp ? 'DEV_APP_URL' : 'PROD_APP_URL'],
     appURL2: devApp ? null : process.env.PROD_APP_URL2,
     apiUrl: process.env[devApi ? 'DEV_API_URL' : 'PROD_API_URL'],
+    recaptchaSecretKey: process.env[devApp ? 'RECAPTCHA_SECRET_KEY_DEV' : 'RECAPTCHA_SECRET_KEY_PROD']
 }

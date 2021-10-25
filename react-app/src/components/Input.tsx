@@ -4,20 +4,39 @@ import { ReactComponent as DangerIconSVG } from '@svgs/exclamation-circle-solid.
 import { ReactComponent as SuccessIconSVG } from '@svgs/check-circle-solid.svg'
 
 const Input = (props: {
-    type: 'text' | 'number' | 'text-area'
+    type: 'text' | 'number' | 'text-area' | 'password' | 'email'
     title?: string
     prefix?: string
     placeholder?: string
     state: 'default' | 'valid' | 'invalid'
     errors?: string[]
-    value: string
+    value: string | number
     onChange: (payload: string) => void
     rows?: number
+    width?: number
+    margin?: string
+    disabled?: boolean
 }): JSX.Element => {
-    const { type, title, prefix, placeholder, state, errors, value, onChange, rows } = props
+    const {
+        type,
+        title,
+        prefix,
+        placeholder,
+        state,
+        errors,
+        value,
+        onChange,
+        rows,
+        width,
+        margin,
+        disabled,
+    } = props
 
     return (
-        <div className={styles.wrapper}>
+        <div
+            className={`${styles.wrapper} ${disabled && styles.disabled}`}
+            style={{ margin, width }}
+        >
             {title && <h1>{title}</h1>}
             {state === 'invalid' && errors && errors.map((error) => <h2 key={error}>{error}</h2>)}
             <div className={styles[state]}>
@@ -28,6 +47,7 @@ const Input = (props: {
                         placeholder={placeholder}
                         value={value}
                         onChange={(e) => onChange(e.target.value)}
+                        disabled={disabled}
                     />
                 ) : (
                     <input
@@ -35,6 +55,7 @@ const Input = (props: {
                         type={type}
                         value={value}
                         onChange={(e) => onChange(e.target.value)}
+                        disabled={disabled}
                     />
                 )}
                 {state === 'invalid' && <DangerIconSVG />}
@@ -50,6 +71,9 @@ Input.defaultProps = {
     placeholder: null,
     errors: null,
     rows: null,
+    width: null,
+    margin: null,
+    disabled: false,
 }
 
 export default Input

@@ -5,6 +5,7 @@ import Modal from '@components/Modal'
 import config from '@src/Config'
 import styles from '@styles/components/AuthModal.module.scss'
 import { AccountContext } from '@contexts/AccountContext'
+import Button from '@components/Button'
 
 const AuthModal = (): JSX.Element => {
     const { executeRecaptcha } = useGoogleReCaptcha()
@@ -186,23 +187,21 @@ const AuthModal = (): JSX.Element => {
     })
 
     return (
-        <Modal close={() => setAuthModalOpen(false)}>
+        <Modal close={() => setAuthModalOpen(false)} centered>
             {display === 'log-in' && (
-                <div className={styles.authModalColumn}>
-                    <span className={styles.authModalTitle}>Log in</span>
-                    <span className={styles.authModalFlashMessage}>{logInFlashMessage}</span>
+                <>
+                    <h1>Log in</h1>
+                    <p>{logInFlashMessage}</p>
                     {displayResendVerificationEmailLink && (
-                        <span
-                            className='blueText mt-10 mb-10'
-                            role='button'
-                            tabIndex={0}
+                        <Button
+                            text='Resend verification email'
+                            colour='blue'
+                            size='medium'
+                            margin='0 10px 0 0'
                             onClick={() => resendVerificationEmail()}
-                            onKeyDown={() => resendVerificationEmail()}
-                        >
-                            Resend verification email
-                        </span>
+                        />
                     )}
-                    <form className={styles.authModalForm} onSubmit={logIn}>
+                    <form onSubmit={logIn}>
                         <input
                             className={`wecoInput mb-10 ${emailOrHandleError && 'error'}`}
                             placeholder='Email or Handle'
@@ -227,9 +226,13 @@ const AuthModal = (): JSX.Element => {
                                 setLogInFlashMessage('')
                             }}
                         />
-                        <button type='submit' className='wecoButton w-100 mt-10 mb-20'>
-                            Log in
-                        </button>
+                        <Button
+                            text='Log in'
+                            colour='blue'
+                            size='medium'
+                            margin='20px 10px 20px 0'
+                            submit
+                        />
                         <span className='mb-10'>
                             New?{' '}
                             <button
@@ -252,14 +255,14 @@ const AuthModal = (): JSX.Element => {
                             Forgot your password?
                         </button>
                     </form>
-                </div>
+                </>
             )}
 
             {display === 'create-new-account' && (
-                <div className={styles.authModalColumn}>
-                    <span className={styles.authModalTitle}>Create new account</span>
-                    <span className={styles.authModalFlashMessage}>{registerFlashMessage}</span>
-                    <form className={styles.authModalForm} onSubmit={register}>
+                <>
+                    <h1>Create new account</h1>
+                    <p>{registerFlashMessage}</p>
+                    <form onSubmit={register}>
                         <input
                             className={`wecoInput mb-10 ${newHandleError && 'error'}`}
                             placeholder='Handle (must be unique)'
@@ -312,9 +315,13 @@ const AuthModal = (): JSX.Element => {
                                 setNewPasswordTwoError(false)
                             }}
                         />
-                        <button type='submit' className='wecoButton w-100 mt-10 mb-20'>
-                            Register
-                        </button>
+                        <Button
+                            text='Register'
+                            colour='blue'
+                            size='medium'
+                            margin='20px 10px 20px 0'
+                            submit
+                        />
                         <span>
                             Already registered?{' '}
                             <button
@@ -328,16 +335,14 @@ const AuthModal = (): JSX.Element => {
                             </button>
                         </span>
                     </form>
-                </div>
+                </>
             )}
 
             {display === 'forgot-password' && (
-                <div className={styles.authModalColumn}>
-                    <span className={styles.authModalTitle}>Reset password</span>
-                    <span className={styles.authModalFlashMessage}>
-                        {forgotPasswordFlashMessage}
-                    </span>
-                    <form className={styles.authModalForm} onSubmit={sendResetLink}>
+                <>
+                    <h1>Reset password</h1>
+                    <p>{forgotPasswordFlashMessage}</p>
+                    <form onSubmit={sendResetLink}>
                         <input
                             className={`wecoInput mb-10 ${resetEmailError && 'error'}`}
                             placeholder='Account email'
@@ -349,9 +354,13 @@ const AuthModal = (): JSX.Element => {
                                 setForgotPasswordFlashMessage('')
                             }}
                         />
-                        <button type='submit' className='wecoButton w-100 mt-10 mb-20'>
-                            Send reset link
-                        </button>
+                        <Button
+                            text='Send reset link'
+                            colour='blue'
+                            size='medium'
+                            margin='20px 10px 20px 0'
+                            submit
+                        />
                         <span className='mb-10'>
                             <button
                                 className={styles.blueText}
@@ -364,7 +373,7 @@ const AuthModal = (): JSX.Element => {
                             </button>
                         </span>
                     </form>
-                </div>
+                </>
             )}
         </Modal>
     )

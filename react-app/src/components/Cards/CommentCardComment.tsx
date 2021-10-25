@@ -14,7 +14,7 @@ const CommentCardComment = (props: {
     getPostComments: () => void
 }): JSX.Element => {
     const { comment, openReplyInput, totalComments, setTotalComments, getPostComments } = props
-    const { accountData, isLoggedIn } = useContext(AccountContext)
+    const { accountData, loggedIn } = useContext(AccountContext)
 
     const [commentOverflow, setCommentOverflow] = useState(false)
     const [showFullComment, setShowFullComment] = useState(false)
@@ -36,7 +36,7 @@ const CommentCardComment = (props: {
         <div className={styles.wrapper}>
             <div
                 className={`${styles.commentWrapper} ${isReply && styles.indented} ${
-                    !isLoggedIn && styles.marginBottom
+                    !loggedIn && styles.marginBottom
                 }`}
             >
                 <Link to={`/u/${comment.creator.handle}`} className={styles.user}>
@@ -74,7 +74,7 @@ const CommentCardComment = (props: {
                             </div>
                         )}
                     </div>
-                    {isLoggedIn && (
+                    {loggedIn && (
                         <div className={styles.interact}>
                             <div
                                 className={styles.interactItem}

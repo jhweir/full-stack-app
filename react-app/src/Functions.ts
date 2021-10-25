@@ -38,15 +38,15 @@ export function timeSinceCreated(createdAt: string | undefined): string | undefi
     let time
     if (difference < minute) {
         const number = Number((difference / second).toFixed(0))
-        time = `${number} second${isPlural(number) ? 's' : ''} ago`
+        time = `${number} sec${isPlural(number) ? 's' : ''} ago`
     }
     if (difference >= minute && difference < hour) {
         const number = Number((difference / minute).toFixed(0))
-        time = `${number} minute${isPlural(number) ? 's' : ''} ago`
+        time = `${number} min${isPlural(number) ? 's' : ''} ago`
     }
     if (difference >= hour && difference < day) {
         const number = Number((difference / hour).toFixed(0))
-        time = `${number} hour${isPlural(number) ? 's' : ''} ago`
+        time = `${number} hr${isPlural(number) ? 's' : ''} ago`
     }
     if (difference >= day && difference < week) {
         const number = Number((difference / day).toFixed(0))
@@ -54,11 +54,11 @@ export function timeSinceCreated(createdAt: string | undefined): string | undefi
     }
     if (difference >= week && difference < year) {
         const number = Number((difference / week).toFixed(0))
-        time = `${number} week${isPlural(number) ? 's' : ''} ago`
+        time = `${number} wk${isPlural(number) ? 's' : ''} ago`
     }
     if (difference >= year) {
         const number = Number((difference / year).toFixed(0))
-        time = `${number} year${isPlural(number) ? 's' : ''} ago`
+        time = `${number} yr${isPlural(number) ? 's' : ''} ago`
     }
     return time
 }

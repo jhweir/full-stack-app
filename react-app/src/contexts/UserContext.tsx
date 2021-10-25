@@ -28,7 +28,7 @@ const defaults = {
 }
 
 function UserContextProvider({ children }: { children: JSX.Element }): JSX.Element {
-    const { isLoggedIn, accountData } = useContext(AccountContext)
+    const { loggedIn, accountData } = useContext(AccountContext)
 
     const [isOwnAccount, setIsOwnAccount] = useState(false)
     const [selectedUserSubPage, setSelectedUserSubPage] = useState('')
@@ -101,9 +101,9 @@ function UserContextProvider({ children }: { children: JSX.Element }): JSX.Eleme
 
     // determine if user is owned by account
     useEffect(() => {
-        if (isLoggedIn && userData.id === accountData.id) setIsOwnAccount(true)
+        if (loggedIn && userData.id === accountData.id) setIsOwnAccount(true)
         else setIsOwnAccount(false)
-    }, [userData.id, isLoggedIn])
+    }, [userData.id, loggedIn])
 
     return (
         <UserContext.Provider

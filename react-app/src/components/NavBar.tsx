@@ -12,9 +12,9 @@ import { ReactComponent as SettingsIconSVG } from '@svgs/cog-solid.svg'
 
 const NavBar = (): JSX.Element => {
     const {
-        isLoggedIn,
+        loggedIn,
         accountData,
-        setAuthModalOpen,
+        setLogInModalOpen,
         navBarDropDownModalOpen,
         setNavBarDropDownModalOpen,
     } = useContext(AccountContext)
@@ -96,7 +96,7 @@ const NavBar = (): JSX.Element => {
                 </div>
             </div>
             {/* <div className={styles.searchBarWrapper}>Search bar</div> */}
-            {isLoggedIn ? (
+            {loggedIn ? (
                 <div className={styles.accountButtons}>
                     {/* <Link to={`/u/${accountData.handle}/messages`} className={styles.accountButton}>
                         <MessageIconSVG />
@@ -132,7 +132,7 @@ const NavBar = (): JSX.Element => {
                     text='Log in'
                     colour='blue'
                     size='medium'
-                    onClick={() => setAuthModalOpen(true)}
+                    onClick={() => setLogInModalOpen(true)}
                 />
             )}
         </div>

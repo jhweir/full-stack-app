@@ -1,39 +1,30 @@
 import React, { useContext } from 'react'
-import { AccountContext } from '../../contexts/AccountContext'
-import styles from '../../styles/components/AlertModal.module.scss'
-import CloseOnClickOutside from '../CloseOnClickOutside'
-import CloseButton from '../CloseButton'
+import { AccountContext } from '@contexts/AccountContext'
+import Modal from '@components/Modal'
+import Button from '@components/Button'
 
 const AlertModal = (): JSX.Element => {
-    const { setAlertModalOpen, alertMessage, setAuthModalOpen } = useContext(AccountContext)
+    const { setAlertModalOpen, alertMessage, setLogInModalOpen } = useContext(AccountContext)
 
     const logIn = () => {
-        setAuthModalOpen(true)
+        setLogInModalOpen(true)
         setAlertModalOpen(false)
     }
 
-    const closeModal = () => setAlertModalOpen(false)
-
     return (
-        <div className={styles.modalWrapper}>
-            <CloseOnClickOutside onClick={closeModal}>
-                <div className={styles.modal}>
-                    <CloseButton size={20} onClick={closeModal} />
-                    <span className={styles.text}>{alertMessage}</span>
-                    {alertMessage.includes('Log in') && (
-                        <div
-                            className='wecoButton'
-                            role='button'
-                            tabIndex={0}
-                            onClick={logIn}
-                            onKeyDown={logIn}
-                        >
-                            Log in
-                        </div>
-                    )}
-                </div>
-            </CloseOnClickOutside>
-        </div>
+        <Modal close={() => setAlertModalOpen(false)} centered>
+            <h1>{alertMessage}</h1>
+            {alertMessage.includes('Log in') ? (
+                <Button text='Log in' colour='blue' size='medium' onClick={() => logIn()} />
+            ) : (
+                <Button
+                    text='Ok'
+                    colour='blue'
+                    size='medium'
+                    onClick={() => setAlertModalOpen(false)}
+                />
+            )}
+        </Modal>
     )
 }
 

@@ -170,7 +170,7 @@ export default PostContextProvider
 //         axios
 //             .get(
 //                 // prettier-ignore
-//                 `${config.apiURL}/post-comments?accountId=${isLoggedIn ? accountData.id : null
+//                 `${config.apiURL}/post-comments?accountId=${loggedIn ? accountData.id : null
 //                 }&postId=${postId
 //                 }&sortBy=${postCommentSortByFilter
 //                 }&sortOrder=${postCommentSortOrderFilter

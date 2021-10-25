@@ -2,13 +2,18 @@ import React, { useContext, useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
 import Cookies from 'universal-cookie'
-import Modal from '@components/Modal'
+
 import { SpaceContext } from '@contexts/SpaceContext'
 import { AccountContext } from '@contexts/AccountContext'
 // import { PostContext } from '@contexts/PostContext'
 import config from '@src/Config'
 import styles from '@styles/components/CreatePostModal.module.scss'
 // import UrlPreview from './UrlPreview'
+import Modal from '@components/Modal'
+import Input from '@components/Input'
+import Button from '@components/Button'
+import LoadingWheel from '@components/LoadingWheel'
+import SuccessMessage from '@components/SuccessMessage'
 import SpaceInput from '@components/SpaceInput'
 import PollAnswerForm from '@components/PostPage/Poll/PollAnswerForm'
 import DropDownMenu from '@components/DropDownMenu'
@@ -27,7 +32,7 @@ const CreatePostModal = (): JSX.Element => {
     const { spaceData, getSpaceData, getSpacePosts } = useContext(SpaceContext)
     // const { setPostId } = useContext(PostContext)
 
-    const [postType, setPostType] = useState('Url')
+    const [postType, setPostType] = useState('Text')
     const [subType, setSubType] = useState('')
     const [text, setText] = useState('')
     const [url, setUrl] = useState<string | null>(null)
@@ -64,6 +69,10 @@ const CreatePostModal = (): JSX.Element => {
     const [urlError, setUrlError] = useState(false)
     const [newSpaceError, setNewSpaceError] = useState(false)
     const [newPollAnswerError, setNewPollAnswerError] = useState(false)
+
+    const [loading, setLoading] = useState(false)
+    const [successMessage, setSuccessMessage] = useState('')
+    const errors = false // nameState === 'invalid' || handleState === 'invalid' || descriptionState === 'invalid'
 
     const cookies = new Cookies()
     const accessToken = cookies.get('accessToken')
@@ -109,7 +118,7 @@ const CreatePostModal = (): JSX.Element => {
     }
 
     function resetForm() {
-        setPostType('Url')
+        setPostType('Text')
         setSubType('')
         setText('')
         setUrl(null)
@@ -122,8 +131,8 @@ const CreatePostModal = (): JSX.Element => {
         // setCreatePostFromTurnData(null)
     }
 
-    function createPost() {
-        console.log('create post!')
+    function createPost(e) {
+        e.preventDefault()
         const invalidText = (!text || text.length > 5000) && !url
         const invalidUrl = postType === 'Url' && !url
         const invalidPollAnswers = postType === 'Poll' && pollAnswers.length < 2
@@ -141,6 +150,7 @@ const CreatePostModal = (): JSX.Element => {
             !urlLoading &&
             accessToken
         ) {
+            setLoading(true)
             const post = {
                 type: postType.replace(/\s+/g, '-').toLowerCase(),
                 subType,
@@ -174,9 +184,11 @@ const CreatePostModal = (): JSX.Element => {
                     { headers: { Authorization: `Bearer ${accessToken}` } }
                 )
                 .then((res) => {
+                    setLoading(false)
                     if (res.data === 'success') {
-                        setCreatePostModalOpen(false)
-                        resetForm()
+                        setSuccessMessage('Post created!')
+                        // setCreatePostModalOpen(false)
+                        // resetForm()
                         // todo: update state directly
                         // setTimeout(() => {
                         //     getSpaceData()
@@ -200,23 +212,21 @@ const CreatePostModal = (): JSX.Element => {
         setNumberOfPlotGraphAxes(0)
     }, [postType])
 
-    const closeForm = () => {
+    function close() {
         setCreatePostModalOpen(false)
         resetForm()
     }
 
     return (
-        <Modal close={closeForm}>
-            <div className={styles.title}>
+        <Modal close={close}>
+            <h1>
                 Create a new{' '}
-                {postType !== 'Url' && postType !== 'Text'
-                    ? postType // .toLowerCase()
-                    : 'post'}{' '}
-                in
-                <Link to={`/s/${spaceData.handle}`} className='ml-5 blueText' onClick={closeForm}>
+                {['Text', 'Url'].includes(postType) ? `${postType.toLowerCase()} post` : postType}{' '}
+                in{' '}
+                <Link to={`/s/${spaceData.handle}`} onClick={close}>
                     {spaceData.name}
                 </Link>
-            </div>
+            </h1>
             <PostCardPreview
                 type={postType}
                 spaces={[spaceData.handle, ...addedSpaces]}
@@ -227,176 +237,176 @@ const CreatePostModal = (): JSX.Element => {
                 urlTitle={urlTitle}
                 urlDescription={urlDescription}
             />
-            <div className={styles.dropDownOptions}>
-                <DropDownMenu
-                    title='Post Type'
-                    options={[
-                        'Text',
-                        'Url',
-                        // 'Poll',
-                        'Glass Bead Game',
-                        // 'Decision Tree',
-                        // 'Plot Graph',
-                        // 'Prism',
-                    ]}
-                    selectedOption={postType}
-                    setSelectedOption={setPostType}
-                    orientation='horizontal'
-                />
-                {postType === 'Poll' && (
+            <form onSubmit={createPost}>
+                <div className={styles.dropDownOptions}>
                     <DropDownMenu
-                        title='Poll Type'
-                        options={['Single Choice', 'Multiple Choice', 'Weighted Choice']}
-                        selectedOption={subType}
-                        setSelectedOption={setSubType}
+                        title='Post Type'
+                        options={[
+                            'Text',
+                            'Url',
+                            // 'Poll',
+                            'Glass Bead Game',
+                            // 'Decision Tree',
+                            // 'Plot Graph',
+                            // 'Prism',
+                        ]}
+                        selectedOption={postType}
+                        setSelectedOption={setPostType}
                         orientation='horizontal'
                     />
-                )}
-                {postType === 'Prism' && (
-                    <>
+                    {postType === 'Poll' && (
                         <DropDownMenu
-                            title='Number Of Players'
-                            options={[3, 6, 12]}
-                            selectedOption={numberOfPrismPlayers}
-                            setSelectedOption={setNumberOfPrismPlayers}
+                            title='Poll Type'
+                            options={['Single Choice', 'Multiple Choice', 'Weighted Choice']}
+                            selectedOption={subType}
+                            setSelectedOption={setSubType}
                             orientation='horizontal'
                         />
+                    )}
+                    {postType === 'Prism' && (
+                        <>
+                            <DropDownMenu
+                                title='Number Of Players'
+                                options={[3, 6, 12]}
+                                selectedOption={numberOfPrismPlayers}
+                                setSelectedOption={setNumberOfPrismPlayers}
+                                orientation='horizontal'
+                            />
+                            <DropDownMenu
+                                title='Duration'
+                                options={['1 Week', '1 Month', '1 Year']}
+                                selectedOption={prismDuration}
+                                setSelectedOption={setPrismDuration}
+                                orientation='horizontal'
+                            />
+                            <DropDownMenu
+                                title='Visibility'
+                                options={['Private', 'Public']}
+                                selectedOption={prismPrivacy}
+                                setSelectedOption={setPrismPrivacy}
+                                orientation='horizontal'
+                            />
+                        </>
+                    )}
+                    {postType === 'Glass Bead Game' && (
+                        <>
+                            {/* <DropDownMenu
+                                        title='Number Of Players'
+                                        options={[2]}
+                                        selectedOption={numberOfGBGPlayers}
+                                        setSelectedOption={setNumberOfGBGPlayers}
+                                        orientation='horizontal'
+                                    /> */}
+                            <DropDownMenu
+                                title='Topic'
+                                options={[
+                                    'Other',
+                                    'Addiction',
+                                    'Art',
+                                    'Attention',
+                                    'Beauty',
+                                    'Beginning',
+                                    'Birth',
+                                    'Cosmos',
+                                    'Death',
+                                    'Ego',
+                                    'Empathy',
+                                    'End',
+                                    'Eutopia',
+                                    'Future',
+                                    'Game',
+                                    'Gift',
+                                    'History',
+                                    'Human',
+                                    'Life',
+                                    'Paradox',
+                                    'Shadow',
+                                    'Society',
+                                    'Time',
+                                    'Truth',
+                                ]}
+                                selectedOption={GBGTopic}
+                                setSelectedOption={setGBGTopic}
+                                orientation='horizontal'
+                            />
+                            {GBGTopic === 'Other' && (
+                                <textarea
+                                    className={`wecoInput textArea white mb-10 ${
+                                        GBGCustomTopicError && 'error'
+                                    }`}
+                                    style={{ height: 30, width: 250 }}
+                                    placeholder='title...'
+                                    value={GBGCustomTopic}
+                                    onChange={(e) => {
+                                        setGBGCustomTopic(e.target.value)
+                                        setGBGCustomTopicError(false)
+                                    }}
+                                />
+                            )}
+                        </>
+                    )}
+                    {postType === 'Plot Graph' && (
                         <DropDownMenu
-                            title='Duration'
-                            options={['1 Week', '1 Month', '1 Year']}
-                            selectedOption={prismDuration}
-                            setSelectedOption={setPrismDuration}
+                            title='Number Of Axes'
+                            options={[0, 1, 2]}
+                            selectedOption={numberOfPlotGraphAxes}
+                            setSelectedOption={setNumberOfPlotGraphAxes}
                             orientation='horizontal'
                         />
-                        <DropDownMenu
-                            title='Visibility'
-                            options={['Private', 'Public']}
-                            selectedOption={prismPrivacy}
-                            setSelectedOption={setPrismPrivacy}
-                            orientation='horizontal'
-                        />
-                    </>
-                )}
-                {postType === 'Glass Bead Game' && (
-                    <>
-                        {/* <DropDownMenu
-                                    title='Number Of Players'
-                                    options={[2]}
-                                    selectedOption={numberOfGBGPlayers}
-                                    setSelectedOption={setNumberOfGBGPlayers}
-                                    orientation='horizontal'
-                                /> */}
-                        <DropDownMenu
-                            title='Topic'
-                            options={[
-                                'Other',
-                                'Addiction',
-                                'Art',
-                                'Attention',
-                                'Beauty',
-                                'Beginning',
-                                'Birth',
-                                'Cosmos',
-                                'Death',
-                                'Ego',
-                                'Empathy',
-                                'End',
-                                'Eutopia',
-                                'Future',
-                                'Game',
-                                'Gift',
-                                'History',
-                                'Human',
-                                'Life',
-                                'Paradox',
-                                'Shadow',
-                                'Society',
-                                'Time',
-                                'Truth',
-                            ]}
-                            selectedOption={GBGTopic}
-                            setSelectedOption={setGBGTopic}
-                            orientation='horizontal'
-                        />
-                        {GBGTopic === 'Other' && (
+                    )}
+                    {numberOfPlotGraphAxes > 1 && (
+                        <div className={styles.yAxesValues}>
                             <textarea
-                                className={`wecoInput textArea white mb-10 ${
-                                    GBGCustomTopicError && 'error'
-                                }`}
-                                style={{ height: 30, width: 250 }}
-                                placeholder='title...'
-                                value={GBGCustomTopic}
+                                className={`wecoInput textArea mb-10 ${axis2TopError && 'error'}`}
+                                style={{ height: 40, width: 250 }}
+                                placeholder='Axis 2: top value...'
+                                value={axis2Top}
                                 onChange={(e) => {
-                                    setGBGCustomTopic(e.target.value)
-                                    setGBGCustomTopicError(false)
+                                    setAxis2Top(e.target.value)
+                                    setAxis2TopError(false)
                                 }}
                             />
-                        )}
-                    </>
-                )}
-                {postType === 'Plot Graph' && (
-                    <DropDownMenu
-                        title='Number Of Axes'
-                        options={[0, 1, 2]}
-                        selectedOption={numberOfPlotGraphAxes}
-                        setSelectedOption={setNumberOfPlotGraphAxes}
-                        orientation='horizontal'
-                    />
-                )}
-                {numberOfPlotGraphAxes > 1 && (
-                    <div className={styles.yAxesValues}>
-                        <textarea
-                            className={`wecoInput textArea mb-10 ${axis2TopError && 'error'}`}
-                            style={{ height: 40, width: 250 }}
-                            placeholder='Axis 2: top value...'
-                            value={axis2Top}
-                            onChange={(e) => {
-                                setAxis2Top(e.target.value)
-                                setAxis2TopError(false)
-                            }}
-                        />
-                    </div>
-                )}
-                {numberOfPlotGraphAxes > 0 && (
-                    <div className={styles.xAxesValues}>
-                        <textarea
-                            className={`wecoInput textArea mb-10 ${axis1LeftError && 'error'}`}
-                            style={{ height: 40, width: 250 }}
-                            placeholder='Axis 1: left value...'
-                            value={axis1Left}
-                            onChange={(e) => {
-                                setAxis1Left(e.target.value)
-                                setAxis1LeftError(false)
-                            }}
-                        />
-                        <textarea
-                            className={`wecoInput textArea mb-10 ${axis1RightError && 'error'}`}
-                            style={{ height: 40, width: 250 }}
-                            placeholder='Axis 1: right value...'
-                            value={axis1Right}
-                            onChange={(e) => {
-                                setAxis1Right(e.target.value)
-                                setAxis1RightError(false)
-                            }}
-                        />
-                    </div>
-                )}
-                {numberOfPlotGraphAxes > 1 && (
-                    <div className={styles.yAxesValues}>
-                        <textarea
-                            className={`wecoInput textArea mb-10 ${axis2BottomError && 'error'}`}
-                            style={{ height: 40, width: 250 }}
-                            placeholder='Axis 2: bottom value...'
-                            value={axis2Bottom}
-                            onChange={(e) => {
-                                setAxis2Bottom(e.target.value)
-                                setAxis2BottomError(false)
-                            }}
-                        />
-                    </div>
-                )}
-            </div>
-            <form className={styles.form}>
+                        </div>
+                    )}
+                    {numberOfPlotGraphAxes > 0 && (
+                        <div className={styles.xAxesValues}>
+                            <textarea
+                                className={`wecoInput textArea mb-10 ${axis1LeftError && 'error'}`}
+                                style={{ height: 40, width: 250 }}
+                                placeholder='Axis 1: left value...'
+                                value={axis1Left}
+                                onChange={(e) => {
+                                    setAxis1Left(e.target.value)
+                                    setAxis1LeftError(false)
+                                }}
+                            />
+                            <textarea
+                                className={`wecoInput textArea mb-10 ${axis1RightError && 'error'}`}
+                                style={{ height: 40, width: 250 }}
+                                placeholder='Axis 1: right value...'
+                                value={axis1Right}
+                                onChange={(e) => {
+                                    setAxis1Right(e.target.value)
+                                    setAxis1RightError(false)
+                                }}
+                            />
+                        </div>
+                    )}
+                    {numberOfPlotGraphAxes > 1 && (
+                        <div className={styles.yAxesValues}>
+                            <textarea
+                                className={`wecoInput textArea mb-10 ${axis2BottomError && 'error'}`}
+                                style={{ height: 40, width: 250 }}
+                                placeholder='Axis 2: bottom value...'
+                                value={axis2Bottom}
+                                onChange={(e) => {
+                                    setAxis2Bottom(e.target.value)
+                                    setAxis2BottomError(false)
+                                }}
+                            />
+                        </div>
+                    )}
+                </div>
                 <textarea
                     className={`wecoInput textArea white mb-10 ${textError && 'error'}`}
                     placeholder='Text (max 20,000 characters)'
@@ -426,7 +436,7 @@ const CreatePostModal = (): JSX.Element => {
                 )}
                 <SpaceInput
                     centered={false}
-                    text='Tag other spaces you want the post to appear in:'
+                    text='Add other spaces you want the post to appear in:'
                     blockedSpaces={[]}
                     addedSpaces={addedSpaces}
                     setAddedSpaces={setAddedSpaces}
@@ -444,14 +454,17 @@ const CreatePostModal = (): JSX.Element => {
                         setNewPollAnswerError={setNewPollAnswerError}
                     />
                 )}
-                <div
-                    className='wecoButton centered' // ${postType === 'Prism' && 'disabled'}
-                    role='button'
-                    tabIndex={0}
-                    onClick={createPost}
-                    onKeyDown={createPost}
-                >
-                    Submit Post
+                <div className={styles.footer}>
+                    <Button
+                        text='Create Post'
+                        colour='blue'
+                        size='medium'
+                        margin='0 10px 0 0'
+                        disabled={loading || successMessage.length > 0 || errors}
+                        submit
+                    />
+                    {loading && <LoadingWheel />}
+                    {successMessage.length > 0 && <SuccessMessage text={successMessage} />}
                 </div>
             </form>
         </Modal>

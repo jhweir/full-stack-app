@@ -1,29 +1,26 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext } from 'react'
 import { Link } from 'react-router-dom'
 import styles from '@styles/components/AccountSideBar.module.scss'
 import { AccountContext } from '@contexts/AccountContext'
-import FlagImage from './FlagImage'
+import { SpaceContext } from '@contexts/SpaceContext'
+import FlagImage from '@components/FlagImage'
 
 const AccountSideBar = (): JSX.Element | null => {
-    const {
-        accountData,
-        isLoggedIn,
-        // accountSideBarDisplay,
-        // setAccountSideBarDisplay
-    } = useContext(AccountContext)
+    const { accountData, loggedIn } = useContext(AccountContext)
+    const { selectedSpaceSubPage } = useContext(SpaceContext)
 
-    // console.log('accountData: ', accountData)
-
-    if (isLoggedIn && accountData.FollowedHolons.length) {
+    if (loggedIn && accountData.FollowedHolons.length) {
         return (
             <div className={styles.wrapper}>
                 <p>FOLLOWED SPACES</p>
                 <div className={styles.section}>
                     {accountData.id &&
                         accountData.FollowedHolons.map((space) => (
-                            <Link to={`/s/${space.handle}`}>
+                            // <div key={space.id}>
+                            <Link to={`/s/${space.handle}/${selectedSpaceSubPage}`} key={space.id}>
                                 <FlagImage type='space' size={50} imagePath={space.flagImagePath} />
                             </Link>
+                            /* </div> */
                         ))}
                 </div>
             </div>
