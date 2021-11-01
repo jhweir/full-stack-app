@@ -74,6 +74,8 @@ $modalTransitionSpeed: 0.3s;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    max-height: calc(100vh - 60px);
+    overflow-y: scroll;
     &.centered {
         align-items: center;
         > form {
@@ -108,12 +110,12 @@ $modalTransitionSpeed: 0.3s;
         width: 100%;
         > p {
             margin-bottom: 5px;
-            > button {
-                all: unset;
-                color: $blue5;
-                cursor: pointer;
-            }
         }
+    }
+    .textButton {
+        all: unset;
+        color: $blue5;
+        cursor: pointer;
     }
     -webkit-animation: modalTransition $modalTransitionSpeed; /* Safari, Chrome and Opera > 12.1 */
     -moz-animation: modalTransition $modalTransitionSpeed; /* Firefox < 16 */

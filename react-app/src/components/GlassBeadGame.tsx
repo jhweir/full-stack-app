@@ -11,7 +11,15 @@ import { PostContext } from '@contexts/PostContext'
 import { AccountContext } from '@contexts/AccountContext'
 import SmallFlagImage from '@components/SmallFlagImage'
 import config from '@src/Config'
-import { isPlural, timeSinceCreated, dateCreated } from '@src/Functions'
+import {
+    isPlural,
+    timeSinceCreated,
+    dateCreated,
+    notNull,
+    allValid,
+    defaultErrorState,
+} from '@src/Functions'
+import GlassBeadGameTopics from '@src/GlassBeadGameTopics'
 import Modal from '@components/Modal'
 import Input from '@components/Input'
 import Button from '@components/Button'
@@ -20,30 +28,55 @@ import LoadingWheel from '@components/LoadingWheel'
 import SuccessMessage from '@components/SuccessMessage'
 import Row from '@components/Row'
 import Column from '@components/Column'
-// import { ReactComponent as SlidersIconSVG } from '@svgs/sliders-h-solid.svg'
 import { ReactComponent as AudioIconSVG } from '@svgs/microphone-solid.svg'
 import { ReactComponent as AudioSlashIconSVG } from '@svgs/microphone-slash-solid.svg'
 import { ReactComponent as VideoIconSVG } from '@svgs/video-solid.svg'
 import { ReactComponent as VideoSlashIconSVG } from '@svgs/video-slash-solid.svg'
 import { ReactComponent as ChevronUpIconSVG } from '@svgs/chevron-up-solid.svg'
 import { ReactComponent as ChevronDownIconSVG } from '@svgs/chevron-down-solid.svg'
-// import { ReactComponent as ChevronDownIconSVG } from '@svgs/caret-up-solid.svg'
+import { ReactComponent as DNAIconSVG } from '@svgs/dna.svg'
+import { ReactComponent as LockIconSVG } from '@svgs/lock-solid.svg'
+import { ReactComponent as PlayIconSVG } from '@svgs/play-solid.svg'
+import { ReactComponent as PauseIconSVG } from '@svgs/pause-solid.svg'
+
+const gameDefaults = {
+    gameId: null,
+    topic: null,
+    locked: true,
+    introDuration: 30,
+    numberOfTurns: 3,
+    moveDuration: 60,
+    intervalDuration: 0,
+}
+
+const colors = {
+    red: '#ef0037',
+    orange: '#f59c27',
+    yellow: '#daf930',
+    green: '#00e697',
+    aqua: '#00b1a9',
+    blue: '#4f8af7',
+    purple: '#a65cda',
+    grey1: '#e9e9ea',
+    grey2: '#d7d7d9',
+    grey3: '#c6c6c7',
+}
 
 const Video = (props) => {
-    const { mainUser, video, size, audioEnabled, videoEnabled, toggleAudio, toggleVideo } = props
-    const { accountData } = useContext(AccountContext)
-    const id = mainUser ? 'main-user-video' : video.socketId
-    const imagePath = mainUser ? accountData.flagImagePath : video.userData.flagImagePath
-    const title = mainUser ? 'You' : video.userData.name
+    const { id, user, size, audioEnabled, videoEnabled, toggleAudio, toggleVideo } = props
     return (
-        <div className={`${styles.videoWrapper} ${size}`}>
-            <video id={id} muted={mainUser} autoPlay playsInline>
+        <div className={`${styles.videoWrapper} ${size}`} key={id}>
+            <video id={id} muted={id === 'account-video'} autoPlay playsInline>
                 <track kind='captions' />
             </video>
             <div className={styles.videoUser}>
-                <ImageTitle type='user' imagePath={imagePath} title={title} />
+                <ImageTitle
+                    type='user'
+                    imagePath={user.flagImagePath}
+                    title={id === 'account-video' ? 'You' : user.name}
+                />
             </div>
-            {mainUser && (
+            {id === 'account-video' && (
                 <div className={styles.videoButtons}>
                     <button type='button' onClick={toggleAudio}>
                         {audioEnabled ? <AudioIconSVG /> : <AudioSlashIconSVG />}
@@ -60,51 +93,199 @@ const Video = (props) => {
 const Comment = (props) => {
     const { comment } = props
     const { user, text, createdAt } = comment
+    if (user)
+        return (
+            <div className={styles.userComment}>
+                <SmallFlagImage type='user' size={40} imagePath={user.flagImagePath} />
+                <div className={styles.commentText}>
+                    <Row>
+                        <h1>{user.name}</h1>
+                        <p title={dateCreated(createdAt)}>{timeSinceCreated(createdAt)}</p>
+                    </Row>
+                    <p>{text}</p>
+                </div>
+            </div>
+        )
     return (
-        <div className={styles.commentWrapper}>
-            {user ? (
-                <>
-                    <SmallFlagImage type='user' size={40} imagePath={user.flagImagePath} />
-                    <div className={styles.commentText}>
-                        <Row>
-                            <h1>{user.name}</h1>
-                            <p title={dateCreated(createdAt)}>{timeSinceCreated(createdAt)}</p>
-                        </Row>
-                        <p>{text}</p>
-                    </div>
-                </>
-            ) : (
-                <p className={styles.adminText}>{text}</p>
-            )}
+        <div className={styles.adminComment}>
+            <p>{text}</p>
         </div>
     )
 }
 
-const PlayerPosition = (props) => {
-    const { you, totalPlayers, position, updatePosition, name, flagImagePath } = props
+const GameSettingsModal = (props) => {
+    const { close, gameData, socketId, players, setPlayers, signalStartGame } = props
+
+    const [formData, setFormData] = useState({
+        introDuration: {
+            value: notNull(gameData.introDuration) || gameDefaults.introDuration,
+            validate: (v) => (v < 10 || v > 60 ? ['Must be between 10 and 60 seconds'] : []),
+            ...defaultErrorState,
+        },
+        numberOfTurns: {
+            value: notNull(gameData.numberOfTurns) || gameDefaults.numberOfTurns,
+            validate: (v) => (v < 1 || v > 20 ? ['Must be between 1 and 20 turns'] : []),
+            ...defaultErrorState,
+        },
+        moveDuration: {
+            value: notNull(gameData.moveDuration) || gameDefaults.moveDuration,
+            validate: (v) => (v < 10 || v > 600 ? ['Must be between 10 seconds and 10 mins'] : []),
+            ...defaultErrorState,
+        },
+        intervalDuration: {
+            value: notNull(gameData.intervalDuration) || gameDefaults.intervalDuration,
+            validate: (v) => (v > 60 ? ['Must be 60 seconds or less'] : []),
+            ...defaultErrorState,
+        },
+    })
+    const { introDuration, numberOfTurns, moveDuration, intervalDuration } = formData
+    const [playersError, setPlayersError] = useState('')
+    const [loading, setLoading] = useState(false)
+    const [saved, setSaved] = useState(false)
+
+    function updateValue(name, value) {
+        setFormData({ ...formData, [name]: { ...formData[name], value, state: 'default' } })
+    }
+
+    function updatePlayerPosition(from, to) {
+        const newPlayers = [...players]
+        const player = newPlayers[from]
+        newPlayers.splice(from, 1)
+        newPlayers.splice(to, 0, player)
+        setPlayers(newPlayers)
+    }
+
+    function saveSettings(e) {
+        e.preventDefault()
+        setPlayersError(players.length ? '' : 'At least one player must connect their audio/video')
+        if (allValid(formData, setFormData) && players.length) {
+            setLoading(true)
+            const dbData = {
+                gameId: gameData.gameId,
+                numberOfTurns: numberOfTurns.value,
+                moveDuration: moveDuration.value,
+                introDuration: introDuration.value,
+                intervalDuration: intervalDuration.value,
+                playerOrder: players.map((p) => p.id).join(','),
+            }
+            axios
+                .post(`${config.apiURL}/save-glass-bead-game-settings`, dbData)
+                .then(() => {
+                    setLoading(false)
+                    setSaved(true)
+                    signalStartGame({
+                        ...gameData,
+                        numberOfTurns: numberOfTurns.value,
+                        moveDuration: moveDuration.value,
+                        introDuration: introDuration.value,
+                        intervalDuration: intervalDuration.value,
+                        players,
+                    })
+                    close()
+                })
+                .catch((error) => console.log(error))
+        }
+    }
+
     return (
-        <Row margin='10px 0 0 0'>
-            <div className={styles.position}>{position}</div>
-            <div className={styles.positionControls}>
-                {position > 1 && (
-                    <button type='button' onClick={() => updatePosition(position, position - 1)}>
-                        <ChevronUpIconSVG />
-                    </button>
-                )}
-                {position < totalPlayers && (
-                    <button type='button' onClick={() => updatePosition(position, position + 1)}>
-                        <ChevronDownIconSVG />
-                    </button>
-                )}
-            </div>
-            <ImageTitle
-                type='user'
-                imagePath={flagImagePath}
-                title={you ? 'You' : name}
-                fontSize={16}
-                imageSize={35}
-            />
-        </Row>
+        <Modal close={close} centered>
+            <h1>Game settings</h1>
+            <p>Players must connect their audio/video to participate in the game</p>
+            <form onSubmit={saveSettings}>
+                <Row margin='10px 0 30px 0'>
+                    <Column margin='0 60px 0 0'>
+                        <Input
+                            title='Intro duration (seconds)'
+                            type='text'
+                            margin='0 0 10px 0'
+                            disabled={loading || saved}
+                            state={introDuration.state}
+                            errors={introDuration.errors}
+                            value={introDuration.value}
+                            onChange={(v) => updateValue('introDuration', +v.replace(/\D/g, ''))}
+                        />
+                        <Input
+                            title='Number of turns'
+                            type='text'
+                            margin='0 0 10px 0'
+                            disabled={loading || saved}
+                            state={numberOfTurns.state}
+                            errors={numberOfTurns.errors}
+                            value={numberOfTurns.value}
+                            onChange={(v) => updateValue('numberOfTurns', +v.replace(/\D/g, ''))}
+                        />
+                        <Input
+                            title='Move duration (seconds)'
+                            type='text'
+                            margin='0 0 10px 0'
+                            disabled={loading || saved}
+                            state={moveDuration.state}
+                            errors={moveDuration.errors}
+                            value={moveDuration.value}
+                            onChange={(v) => updateValue('moveDuration', +v.replace(/\D/g, ''))}
+                        />
+                        <Input
+                            title='Interval duration (seconds)'
+                            type='text'
+                            margin='0 0 10px 0'
+                            disabled={loading || saved}
+                            state={intervalDuration.state}
+                            errors={intervalDuration.errors}
+                            value={intervalDuration.value}
+                            onChange={(v) => updateValue('intervalDuration', +v.replace(/\D/g, ''))}
+                        />
+                    </Column>
+                    <Column width={250}>
+                        <h2>Player order</h2>
+                        {players.map((player, i) => (
+                            <Row margin='10px 0 0 0'>
+                                <div className={styles.position}>{i + 1}</div>
+                                <div className={styles.positionControls}>
+                                    {i > 0 && (
+                                        <button
+                                            type='button'
+                                            onClick={() => updatePlayerPosition(i, i - 1)}
+                                        >
+                                            <ChevronUpIconSVG />
+                                        </button>
+                                    )}
+                                    {i < players.length - 1 && (
+                                        <button
+                                            type='button'
+                                            onClick={() => updatePlayerPosition(i, i + 1)}
+                                        >
+                                            <ChevronDownIconSVG />
+                                        </button>
+                                    )}
+                                </div>
+                                <ImageTitle
+                                    type='user'
+                                    imagePath={player.flagImagePath}
+                                    title={player.socketId === socketId ? 'You' : player.name}
+                                    fontSize={16}
+                                    imageSize={35}
+                                />
+                            </Row>
+                        ))}
+                        {!players.length && <p className={styles.grey}>No users connected...</p>}
+                        {!!playersError.length && <p className={styles.red}>{playersError}</p>}
+                    </Column>
+                </Row>
+                <Row>
+                    {!saved && (
+                        <Button
+                            text='Start game'
+                            colour='blue'
+                            size='medium'
+                            disabled={loading || saved}
+                            submit
+                        />
+                    )}
+                    {loading && <LoadingWheel />}
+                    {saved && <SuccessMessage text='Saved' />}
+                </Row>
+            </form>
+        </Modal>
     )
 }
 
@@ -117,57 +298,23 @@ const GlassBeadGame = (): JSX.Element => {
         setAlertModalOpen,
         setAlertMessage,
     } = useContext(AccountContext)
-    const { postDataLoading, postData } = useContext(PostContext)
+    const { postData } = useContext(PostContext)
 
-    const defaults = {
-        introDuration: 10,
-        numberOfTurns: 6,
-        moveDuration: 30,
-        intervalDuration: 10,
-        numberOfPlayers: 0,
-    }
-
-    // todo: create gameData state, then remove 'new' from contsants names in game settings modal
-    const [gameId, setGameId] = useState(0)
-    const [locked, setLocked] = useState(false)
-    const [topic, setTopic] = useState('')
-    const [numberOfTurns, setNumberOfTurns] = useState(defaults.numberOfTurns)
-    const [moveDuration, setMoveDuration] = useState(defaults.moveDuration)
-    const [introDuration, setIntroDuration] = useState(defaults.introDuration)
-    const [intervalDuration, setIntervalDuration] = useState(defaults.intervalDuration)
-    // todo: number of players not needed
-    const [numberOfPlayers, setNumberOfPlayers] = useState(defaults.numberOfPlayers)
+    const [gameData, setGameData] = useState<any>(gameDefaults)
     const [gameInProgress, setGameInProgress] = useState(false)
     const [userIsStreaming, setUserIsStreaming] = useState(false)
     const [players, setPlayers] = useState<any[]>([])
-    const [turn, setTurn] = useState(0)
-    const [moveInTurn, setMoveInTurn] = useState(0)
-
-    // game settings modal
-    type InputState = 'default' | 'valid' | 'invalid'
     const [gameSettingsModalOpen, setGameSettingsModalOpen] = useState(false)
-    const [newNumberOfTurns, setNewNumberOfTurns] = useState(defaults.numberOfTurns)
-    const [newNumberOfTurnsState, setNewNumberOfTurnsState] = useState<InputState>('default')
-    const [newNumberOfTurnsErrors, setNewNumberOfTurnsErrors] = useState<string[]>([])
-    const [newMoveDuration, setNewMoveDuration] = useState(defaults.moveDuration)
-    const [newMoveDurationState, setNewMoveDurationState] = useState<InputState>('default')
-    const [newMoveDurationErrors, setNewMoveDurationErrors] = useState<string[]>([])
-    const [newIntroDuration, setNewIntroDuration] = useState(defaults.introDuration)
-    const [newIntroDurationState, setNewIntroDurationState] = useState<InputState>('default')
-    const [newIntroDurationErrors, setNewIntroDurationErrors] = useState<string[]>([])
-    const [newIntervalDuration, setNewIntervalDuration] = useState(defaults.intervalDuration)
-    const [newIntervalDurationState, setNewIntervalDurationState] = useState<InputState>('default')
-    const [newIntervalDurationErrors, setNewIntervalDurationErrors] = useState<string[]>([])
-    const [invalidPlayersError, setInvalidPlayersError] = useState(false)
-    // todo: remove, start game instead
-    const [loading, setLoading] = useState(false)
-    const [settingsSaved, setSettingsSaved] = useState(false)
-
     const [beads, setBeads] = useState<any[]>([])
     const [comments, setComments] = useState<any[]>([])
+    const [showComments, setShowComments] = useState(true)
     const [newComment, setNewComment] = useState('')
     const [audioTrackEnabled, setAudioTrackEnabled] = useState(false)
     const [videoTrackEnabled, setVideoTrackEnabled] = useState(false)
+    const [turn, setTurn] = useState(0)
+    const [move, setMove] = useState(0)
+    const [seconds, setSeconds] = useState<number | null>(null)
+    const [moveState, setMoveState] = useState<'Intro' | 'Move' | 'Interval'>('Move')
 
     // state refs (used to...)
     const roomIdRef = useRef<number>()
@@ -178,37 +325,49 @@ const GlassBeadGame = (): JSX.Element => {
     const peersRef = useRef<any[]>([])
     const videosRef = useRef<any[]>([])
     const secondsTimerRef = useRef<any>(null)
-    // const gameInProgressRef = useRef<boolean>(false)
     const mediaRecorderRef = useRef<any>(null)
     const chunksRef = useRef<any[]>([])
     const streamRef = useRef<any>(null)
     const videoRef = useRef<any>(null)
     const commentsRef = useRef<HTMLDivElement>(null)
 
-    const totalUsersStreaming = userIsStreaming
-        ? videosRef.current.length + 1
-        : videosRef.current.length
-
+    const highMetalTone = new Audio('/audio/hi-metal-tone.mp3')
+    // const lowMetalTone = new Audio('/audio/lo-metal-tone.mp3')
+    const arcWidth = 20
     const gameArcRadius = 210
-    const gameArc = d3
-        .arc()
-        .innerRadius(gameArcRadius - 20)
-        .outerRadius(gameArcRadius)
-        .cornerRadius(5)
-
     const turnArcRadius = 180
-    const turnArc = d3
-        .arc()
-        .innerRadius(turnArcRadius - 20)
-        .outerRadius(turnArcRadius)
-        .cornerRadius(5)
-
     const moveArcRadius = 150
-    const moveArc = d3
-        .arc()
-        .innerRadius(moveArcRadius - 20)
-        .outerRadius(moveArcRadius)
-        .cornerRadius(5)
+    const arcs = {
+        gameArc: d3
+            .arc()
+            .innerRadius(gameArcRadius - arcWidth)
+            .outerRadius(gameArcRadius)
+            .cornerRadius(5),
+        turnArc: d3
+            .arc()
+            .innerRadius(turnArcRadius - arcWidth)
+            .outerRadius(turnArcRadius)
+            .cornerRadius(5),
+        moveArc: d3
+            .arc()
+            .innerRadius(moveArcRadius - arcWidth)
+            .outerRadius(moveArcRadius)
+            .cornerRadius(5),
+    }
+    const iceConfig = {
+        iceServers: [
+            { urls: 'stun:stun.l.google.com:19302' },
+            { urls: 'stun:global.stun.twilio.com:3478?transport=udp' },
+            {
+                urls: 'turn:relay.backups.cz?transport=tcp',
+                credential: 'webrtc',
+                username: 'webrtc',
+            },
+        ],
+    }
+    // todo: potentially remove and use players instead
+    const totalUsersStreaming = videosRef.current.length + (userIsStreaming ? 1 : 0)
+    const isYou = (id) => id === socketIdRef.current
 
     function scrollToLatestComment() {
         const { current } = commentsRef
@@ -216,28 +375,23 @@ const GlassBeadGame = (): JSX.Element => {
     }
 
     function getGameData() {
-        console.log('getGameData')
         axios.get(`${config.apiURL}/glass-bead-game-data?postId=${postData.id}`).then((res) => {
-            // console.log('res: ', res)
-            setGameId(res.data.id)
-            setLocked(res.data.locked)
-            setTopic(res.data.topic)
-            setNumberOfTurns(res.data.numberOfTurns || defaults.numberOfTurns)
-            setMoveDuration(res.data.moveDuration || defaults.moveDuration)
-            setIntroDuration(res.data.introDuration || defaults.introDuration)
-            setIntervalDuration(res.data.intervalDuration || defaults.intervalDuration)
-            setNumberOfPlayers(res.data.numberOfPlayers || defaults.numberOfPlayers)
+            setGameData({
+                gameId: res.data.id,
+                topic: res.data.topic,
+                locked: res.data.locked,
+                numberOfTurns: res.data.numberOfTurns,
+                moveDuration: res.data.moveDuration,
+                introDuration: res.data.introDuration,
+                intervalDuration: res.data.intervalDuration,
+            })
             setComments(res.data.GlassBeadGameComments)
             scrollToLatestComment()
             setBeads(res.data.GlassBeads)
-            // attach data to beads
             res.data.GlassBeads.forEach((bead) => {
                 d3.select(`#bead-${bead.index}`).select('audio').attr('src', bead.beadUrl)
-                d3.select(`#bead-${bead.index}`)
-                    .select('p')
-                    .text(bead.User ? bead.User.name : 'Anonymous')
             })
-            // todo: callback?
+            // todo: callback or embed in main useEffect?
         })
     }
 
@@ -268,7 +422,7 @@ const GlassBeadGame = (): JSX.Element => {
                     setUserIsStreaming(true)
                     streamRef.current = stream
                     peersRef.current.forEach((p) => p.peer.addStream(stream))
-                    videoRef.current = document.getElementById('main-user-video')
+                    videoRef.current = document.getElementById('account-video')
                     videoRef.current.srcObject = stream
                     setAudioTrackEnabled(true)
                     setVideoTrackEnabled(true)
@@ -285,24 +439,14 @@ const GlassBeadGame = (): JSX.Element => {
 
     function toggleAudioTrack() {
         const audioTrack = streamRef.current.getTracks()[0]
-        if (audioTrackEnabled) {
-            audioTrack.enabled = false
-            setAudioTrackEnabled(false)
-        } else {
-            audioTrack.enabled = true
-            setAudioTrackEnabled(true)
-        }
+        audioTrack.enabled = !audioTrackEnabled
+        setAudioTrackEnabled(!audioTrackEnabled)
     }
 
     function toggleVideoTrack() {
         const videoTrack = streamRef.current.getTracks()[1]
-        if (videoTrackEnabled) {
-            videoTrack.enabled = false
-            setVideoTrackEnabled(false)
-        } else {
-            videoTrack.enabled = true
-            setVideoTrackEnabled(true)
-        }
+        videoTrack.enabled = !videoTrackEnabled
+        setVideoTrackEnabled(!videoTrackEnabled)
     }
 
     function findVideoSize() {
@@ -310,26 +454,26 @@ const GlassBeadGame = (): JSX.Element => {
         if (totalUsersStreaming > 2) videoSize = styles.lg
         if (totalUsersStreaming > 3) videoSize = styles.md
         if (totalUsersStreaming > 4) videoSize = styles.sm
-        // if (totalUsersStreaming > 6) videoSize = styles.xs
         return videoSize
     }
 
     function createComment(e) {
         e.preventDefault()
-        if (!loggedIn) {
+        if (gameData.locked) {
+            setAlertModalOpen(true)
+            setAlertMessage('Game locked')
+        } else if (!loggedIn) {
             setAlertModalOpen(true)
             setAlertMessage('Log in to create comments')
         } else if (newComment.length) {
             const data = {
-                gameId,
+                gameId: gameData.gameId,
                 userId: accountData.id,
                 text: newComment,
             }
-            // save comment in db
             axios
                 .post(`${config.apiURL}/glass-bead-game-comment`, data)
                 .then(() => {
-                    // singal comment to other users
                     const signalData = {
                         roomId: roomIdRef.current,
                         user: userRef.current,
@@ -339,24 +483,24 @@ const GlassBeadGame = (): JSX.Element => {
                     socketRef.current.emit('sending-comment', signalData)
                     setNewComment('')
                 })
-                .catch((error) => console.log('error: ', error))
+                .catch((error) => console.log(error))
         }
     }
 
-    function addComment(comment) {
+    function pushComment(comment) {
         setComments((c) => [...c, comment.user ? comment : { text: comment }])
         scrollToLatestComment()
     }
 
-    function startGameTimer(duration) {
-        d3.selectAll('#game-timer').remove()
+    function startArc(type: 'game' | 'turn' | 'move', duration: number, color?: string) {
+        d3.select(`#${type}-arc`).remove()
         d3.select('#timer-group')
             .append('path')
             .datum({ startAngle: 0, endAngle: 2 * Math.PI })
-            .attr('id', 'game-timer')
-            .style('fill', '#1ee379')
-            .style('opacity', 0.5)
-            .attr('d', gameArc)
+            .attr('id', `${type}-arc`)
+            .style('fill', color)
+            .style('opacity', 0.8)
+            .attr('d', arcs[`${type}Arc`])
             .transition()
             .ease(d3.easeLinear)
             .duration(duration * 1000)
@@ -364,53 +508,12 @@ const GlassBeadGame = (): JSX.Element => {
                 const interpolate = d3.interpolate(d.endAngle, 0)
                 return (t) => {
                     d.endAngle = interpolate(t)
-                    return gameArc(d)
+                    return arcs[`${type}Arc`](d)
                 }
             })
     }
 
-    function startTurnTimer(duration) {
-        d3.selectAll('#turn-timer').remove()
-        d3.select('#timer-group')
-            .append('path')
-            .datum({ startAngle: 0, endAngle: 2 * Math.PI })
-            .attr('id', 'turn-timer')
-            .style('fill', '#1ee379')
-            .style('opacity', 0.7)
-            .attr('d', turnArc)
-            .transition()
-            .ease(d3.easeLinear)
-            .duration(duration * 1000)
-            .attrTween('d', (d) => {
-                const interpolate = d3.interpolate(d.endAngle, 0)
-                return (t) => {
-                    d.endAngle = interpolate(t)
-                    return turnArc(d)
-                }
-            })
-    }
-
-    function startMoveTimer(duration, colour) {
-        d3.selectAll('#move-timer').remove()
-        d3.select('#timer-group')
-            .append('path')
-            .datum({ startAngle: 0, endAngle: 2 * Math.PI })
-            .attr('id', 'move-timer')
-            .style('fill', colour)
-            .attr('d', moveArc)
-            .transition()
-            .ease(d3.easeLinear)
-            .duration(duration * 1000)
-            .attrTween('d', (d) => {
-                const interpolate = d3.interpolate(d.endAngle, 0)
-                return (t) => {
-                    d.endAngle = interpolate(t)
-                    return moveArc(d)
-                }
-            })
-    }
-
-    function startAudioRecording(turnNumber) {
+    function startAudioRecording(moveNumber: number) {
         navigator.mediaDevices.getUserMedia({ audio: true }).then((audio) => {
             mediaRecorderRef.current = new MediaRecorder(audio)
             mediaRecorderRef.current.ondataavailable = (e) => {
@@ -420,252 +523,168 @@ const GlassBeadGame = (): JSX.Element => {
                 const blob = new Blob(chunksRef.current, { type: 'audio/webm;codecs=opus' })
                 const formData = new FormData()
                 formData.append('file', blob)
-                axios
-                    .post(`${config.apiURL}/audio-upload`, formData, {
-                        headers: { 'Content-Type': 'multipart/form-data' },
-                    })
-                    .then((res) => {
-                        chunksRef.current = []
-                        // send audio url to players
-                        const data = {
-                            roomId: roomIdRef.current,
-                            // gameId,
-                            userData: userRef.current,
-                            beadUrl: res.data,
-                            index: turnNumber,
-                        }
-                        socketRef.current.emit('sending-audio-bead', data)
-                    })
+                const options = { headers: { 'Content-Type': 'multipart/form-data' } }
+                axios.post(`${config.apiURL}/audio-upload`, formData, options).then((res) => {
+                    chunksRef.current = []
+                    const signalData = {
+                        roomId: roomIdRef.current,
+                        user: userRef.current,
+                        beadUrl: res.data,
+                        index: moveNumber,
+                    }
+                    socketRef.current.emit('sending-audio-bead', signalData)
+                })
             }
             mediaRecorderRef.current.start()
         })
     }
 
-    function startGame(gameData) {
-        setPlayers(gameData.players)
-        setIntroDuration(gameData.introDuration)
-        setNumberOfTurns(gameData.numberOfTurns)
-        setMoveDuration(gameData.moveDuration)
-        setIntervalDuration(gameData.intervalDuration)
-        // update canvas text
-        const firstPlayer = gameData.players[0]
-        // const firstPlayerName =
-        //     firstPlayer.socketId === socketIdRef.current ? 'You' : firstPlayer.name
-        // d3.select('#turn-text').text('Intro')
-        // d3.select('#player-text').text(`Next player: ${firstPlayerName}`)
-        d3.select('#timer-seconds').text(gameData.introDuration)
-        d3.select(`#player-${firstPlayer.socketId}`).classed(styles.recordingNext, true)
-        // start intro timer
-        startMoveTimer(gameData.introDuration, '#1ee379')
-        let timeLeft = gameData.introDuration
+    function signalStartGame(data) {
+        // todo: remove beads in db if previously saved
+        const signalData = {
+            roomId: roomIdRef.current,
+            userSignaling: userRef.current,
+            gameData: data,
+        }
+        socketRef.current.emit('sending-start-game', signalData)
+    }
+
+    function startGame(data) {
+        setGameData(data)
+        setPlayers(data.players)
+        setMoveState('Intro')
+        setSeconds(data.introDuration)
+        const firstPlayer = data.players[0]
+        d3.select(`#player-${firstPlayer.socketId}`).text('(up next)')
+        startArc('move', data.introDuration, colors.yellow)
+        let timeLeft = data.introDuration
         secondsTimerRef.current = setInterval(() => {
             timeLeft -= 1
-            d3.select('#timer-seconds').text(timeLeft)
-            if (timeLeft === 0) {
+            setSeconds(timeLeft)
+            if (timeLeft < 1) {
                 clearInterval(secondsTimerRef.current)
-                startMove(1, 0, firstPlayer, gameData)
+                startMove(1, 0, firstPlayer, data)
             }
         }, 1000)
     }
 
-    function startMove(moveNumber, turnNumber, player, gameData) {
-        const yourMove = player.socketId === socketIdRef.current
-        if (yourMove) startAudioRecording(moveNumber)
-        if (moveNumber === 1) {
-            const gameDuration =
-                gameData.turnDuration * gameData.numberOfTurns - gameData.intervalDuration
-            startGameTimer(gameDuration)
-        }
-        const newTurnNumber = Math.ceil(moveNumber / gameData.players.length)
-        const previousTurnMoves = (newTurnNumber - 1) * gameData.players.length
-        setMoveInTurn(moveNumber - previousTurnMoves)
+    function startMove(moveNumber, turnNumber, player, data) {
+        const { numberOfTurns, moveDuration, intervalDuration } = data
+        // if your move, start audio recording
+        if (isYou(player.socketId)) startAudioRecording(moveNumber)
+        // calculate turn and game duration
+        const turnDuration = data.players.length * (moveDuration + intervalDuration)
+        const gameDuration = turnDuration * numberOfTurns - intervalDuration
+        // if first move, start game arc
+        if (moveNumber === 1) startArc('game', gameDuration, colors.blue)
+        // if new turn, start turn arc
+        const newTurnNumber = Math.ceil(moveNumber / data.players.length)
         if (turnNumber !== newTurnNumber) {
             setTurn(newTurnNumber)
-            const lastTurnDuration = gameData.turnDuration - gameData.intervalDuration
-            startTurnTimer(
-                newTurnNumber === gameData.numberOfTurns ? lastTurnDuration : gameData.turnDuration
+            startArc(
+                'turn',
+                // if final turn, remove interval duration from turn duration
+                newTurnNumber === numberOfTurns ? turnDuration - intervalDuration : turnDuration,
+                colors.aqua
             )
         }
-        // update canvas text
-        // d3.select('#timer-seconds').text(gameData.moveDuration)
-        // d3.select('#turn-text').text(`Turn ${turnNumber}`)
-        // // d3.select('#move-text').text(`Move ${moveNumber}`)
-        // d3.select('#player-text').text(`Player: ${yourMove ? 'You' : player.name}`)
-        d3.selectAll(`.${styles.recordingFlag}`).classed(styles.recordingNext, false)
-        d3.selectAll(`.${styles.recordingFlag}`).classed(styles.recording, false)
-        d3.select(`#player-${player.socketId}`).classed(styles.recording, true)
-        // start timer
-        startMoveTimer(gameData.moveDuration, '#4493ff')
-        let timeLeft = gameData.moveDuration
+        // start move arc
+        startArc('move', moveDuration, colors.green)
+        highMetalTone.play()
+        // update ui state
+        setMoveState('Move')
+        setSeconds(moveDuration)
+        d3.selectAll(`.${styles.playerState}`).text('')
+        d3.select(`#player-${player.socketId}`).text('(recording)')
+        // start seconds timer
+        let timeLeft = moveDuration
         secondsTimerRef.current = setInterval(() => {
             timeLeft -= 1
-            // d3.select('#timer-seconds').text(timeLeft)
-            if (timeLeft === 0) {
+            setSeconds(timeLeft)
+            if (timeLeft < 1) {
+                // end seconds timer
                 clearInterval(secondsTimerRef.current)
-                if (yourMove) mediaRecorderRef.current.stop()
-                if (moveNumber < gameData.numberOfTurns * gameData.players.length) {
-                    // end turn
-                    startInterval(moveNumber, newTurnNumber, player, gameData)
+                // if your move, stop audio recording
+                if (isYou(player.socketId)) mediaRecorderRef.current.stop()
+                // if more moves left
+                if (moveNumber < numberOfTurns * data.players.length) {
+                    // calculate next player from previous players index
+                    const PPIndex = data.players.findIndex((p) => p.socketId === player.socketId)
+                    const endOfTurn = PPIndex + 1 === data.players.length
+                    const nextPlayer = data.players[endOfTurn ? 0 : PPIndex + 1]
+                    // if interval, start interval
+                    if (intervalDuration > 0)
+                        startInterval(moveNumber, newTurnNumber, nextPlayer, data)
+                    // else start next move
+                    else startMove(moveNumber + 1, turnNumber, nextPlayer, data)
                 } else {
                     // end game
-                    // d3.select('#turn-text').text('')
-                    // d3.select('#player-text').text('')
+                    highMetalTone.play()
                     setGameInProgress(false)
-                    // gameInProgressRef.current = false
-                    addComment('The game ended')
+                    setTurn(0)
+                    setSeconds(null)
+                    pushComment('The game ended')
+                    d3.select(`#game-arc`).remove()
+                    d3.select(`#turn-arc`).remove()
+                    d3.select(`#move-arc`).remove()
+                    d3.selectAll(`.${styles.playerState}`).text('')
                 }
             }
         }, 1000)
     }
 
-    function startInterval(moveNumber, turnNumber, player, gameData) {
-        // calculate next player
-        const previousPlayerIndex = gameData.players.findIndex(
-            (p) => p.socketId === player.socketId
-        )
-        const endOfTurn = previousPlayerIndex === gameData.players.length - 1
-        const nextPlayer = endOfTurn
-            ? gameData.players[0]
-            : gameData.players[previousPlayerIndex + 1]
-        // update canvas text
-        // const nextPlayerName = nextPlayer.socketId === socketIdRef.current ? 'You' : nextPlayer.name
-        // d3.select('#turn-text').text('Interval')
-        // d3.select('#player-text').text(`Next player: ${nextPlayerName}`)
-        // d3.select('#timer-seconds').text(gameData.intervalDuration)
-        d3.selectAll(`.${styles.recordingFlag}`).classed(styles.recording, false)
-        d3.select(`#player-${nextPlayer.socketId}`).classed(styles.recordingNext, true)
+    function startInterval(moveNumber, turnNumber, nextPlayer, data) {
+        const { intervalDuration } = data
         // start interval timer
-        startMoveTimer(gameData.intervalDuration, '#1ee379')
-        let timeLeft = gameData.intervalDuration
+        startArc('move', intervalDuration, colors.yellow)
+        highMetalTone.play()
+        // update ui state
+        setMoveState('Interval')
+        setSeconds(intervalDuration)
+        d3.selectAll(`.${styles.playerState}`).text('')
+        d3.select(`#player-${nextPlayer.socketId}`).text('(up next)')
+        // start seconds timer
+        let timeLeft = intervalDuration
         secondsTimerRef.current = setInterval(() => {
             timeLeft -= 1
-            d3.select('#timer-seconds').text(timeLeft)
+            setSeconds(timeLeft)
             if (timeLeft === 0) {
+                // end seconds timer and start move
                 clearInterval(secondsTimerRef.current)
-                startMove(moveNumber + 1, turnNumber, nextPlayer, gameData)
+                startMove(moveNumber + 1, turnNumber, nextPlayer, data)
             }
         }, 1000)
     }
 
-    function stopGame() {
+    function signalStopGame() {
         const data = {
             roomId: roomIdRef.current,
-            signaller: userRef.current,
+            userSignaling: userRef.current,
+            gameId: gameData.gameId,
         }
         socketRef.current.emit('sending-stop-game', data)
     }
 
-    // function saveGame() {
-    //     const gameData = {
-    //         gameId,
-    //         numberOfTurns,
-    //         moveDuration,
-    //         introDuration,
-    //         intervalDuration,
-    //         numberOfPlayers,
-    //         beads,
-    //     }
-    //     axios.post(`${config.apiURL}/save-glass-bead-game`, gameData).then((res) => {
-    //         if (res.data === 'game-saved') setLocked(true)
-    //     })
-    // }
-
-    function signalStartGame(e) {
-        e.preventDefault()
-        // validate settings
-        const invalidNumberOfTurns = newNumberOfTurns < 1 || newNumberOfTurns > 20
-        const invalidMoveDuration = newMoveDuration < 10 || newMoveDuration > 600
-        const invalidIntroDuration = newIntroDuration < 10 || newIntroDuration > 60
-        const invalidIntervalDuration = newIntervalDuration < 10 || newIntervalDuration > 60
-        const invalidPlayers = players.length < 1 || players.length > 20
-        setNewNumberOfTurnsState(invalidNumberOfTurns ? 'invalid' : 'valid')
-        setNewNumberOfTurnsErrors(invalidNumberOfTurns ? ['Must be between 1 and 20 turns'] : [])
-        setNewMoveDurationState(invalidMoveDuration ? 'invalid' : 'valid')
-        setNewMoveDurationErrors(
-            invalidMoveDuration ? ['Must be between 10 seconds and 10 minutes'] : []
-        )
-        setNewIntroDurationState(invalidIntroDuration ? 'invalid' : 'valid')
-        setNewIntroDurationErrors(
-            invalidIntroDuration ? ['Must be between 10 seconds and 1 minute'] : []
-        )
-        setNewIntervalDurationState(invalidIntervalDuration ? 'invalid' : 'valid')
-        setNewIntervalDurationErrors(
-            invalidIntervalDuration ? ['Must be between 10 seconds and 1 minute'] : []
-        )
-        setInvalidPlayersError(invalidPlayers)
-        // if all valid
-        if (
-            !invalidNumberOfTurns &&
-            !invalidMoveDuration &&
-            !invalidIntroDuration &&
-            !invalidIntervalDuration &&
-            !invalidPlayers
-        ) {
-            setLoading(true)
-            // save new settings in local state
-            setIntroDuration(newIntroDuration)
-            setNumberOfTurns(newNumberOfTurns)
-            setMoveDuration(newMoveDuration)
-            setIntervalDuration(newIntervalDuration)
-            // save new settings in db
-            const data = {
-                gameId,
-                numberOfTurns: newNumberOfTurns,
-                moveDuration: newMoveDuration,
-                introDuration: newIntroDuration,
-                intervalDuration: newIntervalDuration,
-                playerOrder: players.map((p) => p.id).join(','),
-            }
-            axios
-                .post(`${config.apiURL}/save-glass-bead-game-settings`, data)
-                .then(() => {
-                    setLoading(false)
-                    setSettingsSaved(true)
-                    const signalData = {
-                        roomId: roomIdRef.current,
-                        signaller: userRef.current,
-                        gameData: {
-                            players,
-                            introDuration: newIntroDuration,
-                            numberOfTurns: newNumberOfTurns,
-                            moveDuration: newMoveDuration,
-                            intervalDuration: newIntervalDuration,
-                            turnDuration: players.length * (newMoveDuration + newIntervalDuration),
-                        },
-                    }
-                    socketRef.current.emit('sending-start-game', signalData)
-                    closeGameSettingsModal()
-                })
-                .catch((error) => console.log(error))
-        }
+    function saveGame() {
+        axios
+            .post(`${config.apiURL}/save-glass-bead-game`, { gameId: gameData.gameId, beads })
+            .then(() => setGameData({ ...gameData, locked: true }))
+            .catch((error) => console.log(error))
     }
 
-    function closeGameSettingsModal() {
-        setGameSettingsModalOpen(false)
-        setSettingsSaved(false)
-        setNewNumberOfTurns(numberOfTurns)
-        setNewNumberOfTurnsState('default')
-        setNewNumberOfTurnsErrors([])
-        setNewMoveDuration(moveDuration)
-        setNewMoveDurationState('default')
-        setNewMoveDurationErrors([])
-        setNewIntroDuration(introDuration)
-        setNewIntroDurationState('default')
-        setNewIntroDurationErrors([])
-        setNewIntervalDuration(intervalDuration)
-        setNewIntervalDurationState('default')
-        setNewIntervalDurationErrors([])
-        setInvalidPlayersError(false)
+    function toggleBeadAudio(beadIndex) {
+        const newBeads = [...beads]
+        const bead = newBeads.find((b) => b.index === beadIndex)
+        const audio = d3.select(`#bead-${beadIndex}`).select('audio').node()
+        if (bead.playing) audio.pause()
+        else audio.play()
+        bead.playing = !bead.playing
+        setBeads(newBeads)
     }
 
-    function updatePlayerPosition(from, to) {
-        const fromIndex = from - 1
-        const toIndex = to - 1
-        const newPlayers = [...players]
-        const player = newPlayers[fromIndex]
-        newPlayers.splice(fromIndex, 1)
-        newPlayers.splice(toIndex, 0, player)
-        setPlayers(newPlayers)
+    function findTopicSVG(topicName) {
+        const topicMatch = GlassBeadGameTopics.find((t) => t.name === topicName)
+        return topicMatch ? <topicMatch.icon /> : null
     }
 
     // todo: flatten out userData into user object with socketId
@@ -675,7 +694,7 @@ const GlassBeadGame = (): JSX.Element => {
             // set roomIdRef and userRef
             roomIdRef.current = postData.id
             userRef.current = {
-                // todo: store socketId as well
+                // todo: store socketId as well after returned from server
                 id: accountData.id,
                 handle: accountData.handle,
                 name: accountData.name || 'Anonymous',
@@ -697,24 +716,9 @@ const GlassBeadGame = (): JSX.Element => {
                 socketIdRef.current = socketId
                 usersRef.current = usersInRoom
                 usersInRoom.forEach((user) => {
-                    // if not you
-                    if (user.socketId !== socketIdRef.current) {
+                    if (!isYou(user.socketId)) {
                         // create peer connection
-                        const peer = new Peer({
-                            initiator: true,
-                            // trickle: false,
-                            config: {
-                                iceServers: [
-                                    { urls: 'stun:stun.l.google.com:19302' },
-                                    { urls: 'stun:global.stun.twilio.com:3478?transport=udp' },
-                                    {
-                                        urls: 'turn:relay.backups.cz?transport=tcp',
-                                        credential: 'webrtc',
-                                        username: 'webrtc',
-                                    },
-                                ],
-                            },
-                        })
+                        const peer = new Peer({ initiator: true, config: iceConfig })
                         peer.on('signal', (data) => {
                             socketRef.current.emit('sending-signal', {
                                 userToSignal: user.socketId,
@@ -731,7 +735,7 @@ const GlassBeadGame = (): JSX.Element => {
                                 userData: user.userData,
                                 peer,
                             })
-                            addComment(`${user.userData.name}'s video connected`)
+                            pushComment(`${user.userData.name}'s video connected`)
                             const video = document.getElementById(user.socketId) as HTMLVideoElement
                             video.srcObject = stream
                             const newPlayer = {
@@ -770,18 +774,7 @@ const GlassBeadGame = (): JSX.Element => {
                     const peer = new Peer({
                         initiator: false,
                         stream: streamRef.current || null,
-                        // trickle: false,
-                        config: {
-                            iceServers: [
-                                { urls: 'stun:stun.l.google.com:19302' },
-                                { urls: 'stun:global.stun.twilio.com:3478?transport=udp' },
-                                {
-                                    urls: 'turn:relay.backups.cz?transport=tcp',
-                                    credential: 'webrtc',
-                                    username: 'webrtc',
-                                },
-                            ],
-                        },
+                        config: iceConfig,
                     })
                     peer.on('signal', (data) => {
                         socketRef.current.emit('returning-signal', {
@@ -791,7 +784,7 @@ const GlassBeadGame = (): JSX.Element => {
                     })
                     peer.on('stream', (stream) => {
                         videosRef.current.push({ socketId, userData, peer })
-                        addComment(`${userData.name}'s video connected`)
+                        pushComment(`${userData.name}'s video connected`)
                         const video = document.getElementById(socketId) as HTMLVideoElement
                         video.srcObject = stream
                         const newPlayer = {
@@ -809,7 +802,7 @@ const GlassBeadGame = (): JSX.Element => {
             // user joined room
             socketRef.current.on('user-joined', (user) => {
                 usersRef.current.push(user)
-                addComment(`${user.userData.name} joined the room`)
+                pushComment(`${user.userData.name} joined the room`)
             })
             // user left room
             socketRef.current.on('user-left', (user) => {
@@ -817,109 +810,89 @@ const GlassBeadGame = (): JSX.Element => {
                 usersRef.current = usersRef.current.filter((u) => u.socketId !== socketId)
                 peersRef.current = peersRef.current.filter((p) => p.socketId !== socketId)
                 videosRef.current = videosRef.current.filter((v) => v.socketId !== socketId)
-                addComment(`${userData.name} left the room`)
+                setPlayers((ps) => [...ps.filter((p) => p.socketId !== socketId)])
+                pushComment(`${userData.name} left the room`)
             })
             // comment recieved
             socketRef.current.on('returning-comment', (data) => {
-                addComment(data)
+                pushComment(data)
             })
             // start game signal recieved
             socketRef.current.on('returning-start-game', (data) => {
-                addComment(`${data.signaller.name} started the game`)
+                setGameSettingsModalOpen(false)
                 setGameInProgress(true)
-                // gameInProgressRef.current = true
                 setBeads([])
+                pushComment(`${data.userSignaling.name} started the game`)
                 startGame(data.gameData)
             })
             // stop game signal recieved
             socketRef.current.on('returning-stop-game', (data) => {
-                addComment(`${data.signaller.name} stopped the game`)
+                pushComment(`${data.userSignaling.name} stopped the game`)
                 setGameInProgress(false)
                 clearInterval(secondsTimerRef.current)
-                d3.select('#timer-path').remove()
-                d3.select('#timer-seconds').text(0)
-                // d3.select('#turn-text').text('')
-                // d3.select('#player-text').text('')
-                setMoveInTurn(0)
+                d3.selectAll(`.${styles.playerState}`).text('')
+                d3.select(`#game-arc`).remove()
+                d3.select(`#turn-arc`).remove()
+                d3.select(`#move-arc`).remove()
+                setSeconds(null)
                 setTurn(0)
+                setMove(0)
                 if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording')
                     mediaRecorderRef.current.stop()
             })
             // audio bead recieved
             socketRef.current.on('returning-audio-bead', (data) => {
-                setBeads((b) => [...b, data])
+                setBeads((previousBeads) => [...previousBeads, data])
                 d3.select(`#bead-${data.index}`).select('audio').attr('src', data.beadUrl)
-                d3.select(`#bead-${data.index}`).select('p').text(data.userData.name)
             })
             // stream disconnected
             socketRef.current.on('stream-disconnected', (data) => {
-                videosRef.current = videosRef.current.filter((v) => v.socketId !== data.socketId)
-                setPlayers((p) => [...p.filter((pl) => pl.socketId !== data.socketId)])
-                addComment(`${data.userData.name}'s stream disconnected`)
+                const { socketId, userData } = data
+                videosRef.current = videosRef.current.filter((v) => v.socketId !== socketId)
+                setPlayers((ps) => [...ps.filter((p) => p.socketId !== socketId)])
+                pushComment(`${userData.name}'s stream disconnected`)
             })
         }
-        return () => (postDataLoading ? null : socketRef.current.disconnect())
+        return () => (postData.id ? null : socketRef.current.disconnect())
     }, [accountDataLoading, postData.id])
 
     useEffect(() => {
-        // create svg
-        d3.select('#timer')
+        const svg = d3
+            .select('#timer')
             .append('svg')
             .attr('id', 'timer-svg')
             .attr('width', gameArcRadius * 2)
             .attr('height', gameArcRadius * 2)
 
-        // create timer group
-        d3.select('#timer-svg')
+        const timerGroup = svg
             .append('g')
             .attr('id', 'timer-group')
             .attr('transform', `translate(${gameArcRadius},${gameArcRadius})`)
 
-        // create game arc background
-        d3.select('#timer-group')
-            .append('path')
-            .datum({ startAngle: 0, endAngle: 2 * Math.PI })
-            .attr('id', 'game-arc-background')
-            .style('fill', '#000')
-            .style('opacity', 0.06)
-            .attr('d', gameArc)
+        function createArcBarckground(type: 'game' | 'turn' | 'move', color: string) {
+            timerGroup
+                .append('path')
+                .datum({ startAngle: 0, endAngle: 2 * Math.PI })
+                .attr('id', `${type}-arc-background`)
+                .style('fill', color)
+                .style('opacity', 0.8)
+                .attr('d', arcs[`${type}Arc`])
+        }
 
-        // create turn arc background
-        d3.select('#timer-group')
-            .append('path')
-            .datum({ startAngle: 0, endAngle: 2 * Math.PI })
-            .attr('id', 'turn-arc-background')
-            .style('fill', '#000')
-            .style('opacity', 0.13)
-            .attr('d', turnArc)
-
-        // create move arc background
-        d3.select('#timer-group')
-            .append('path')
-            .datum({ startAngle: 0, endAngle: 2 * Math.PI })
-            .attr('id', 'move-arc-background')
-            .style('fill', '#000')
-            .style('opacity', 0.2)
-            .attr('d', moveArc)
-
-        // // create timer seconds
-        // d3.select('#timer-svg')
-        //     .append('text')
-        //     .text(0)
-        //     .attr('id', 'timer-seconds')
-        //     .attr('font-size', 24)
-        //     .attr('opacity', 0.5)
-        //     .attr('text-anchor', 'middle')
-        //     .attr('y', -120)
-        //     .attr('x', 0)
-        //     .attr('transform', `translate(${moveArcRadius},${moveArcRadius})`)
+        createArcBarckground('game', colors.grey1)
+        createArcBarckground('turn', colors.grey2)
+        createArcBarckground('move', colors.grey3)
     }, [])
 
     return (
         <div className={styles.wrapper}>
             <div className={styles.mainContent}>
-                <div className={`${styles.comments} hide-scrollbars`}>
-                    <div ref={commentsRef} className='hide-scrollbars'>
+                <div
+                    className={`${styles.comments} ${
+                        !showComments && styles.hidden
+                    } hide-scrollbars`}
+                >
+                    <div ref={commentsRef}>
                         {comments.map((comment) => (
                             <Comment comment={comment} key={uuidv4()} />
                         ))}
@@ -935,215 +908,147 @@ const GlassBeadGame = (): JSX.Element => {
                         />
                         <Button text='Send' colour='blue' size='medium' submit />
                     </form>
+                    <button
+                        type='button'
+                        className={styles.closeCommentsBar}
+                        onClick={() => setShowComments(!showComments)}
+                    >
+                        <ChevronUpIconSVG transform={`rotate(${showComments ? 270 : 90})`} />
+                    </button>
                 </div>
                 <div className={styles.centerPanel}>
-                    <div className={styles.gameControls}>
-                        {gameInProgress ? (
-                            <>
-                                <Button
-                                    text='Stop game'
-                                    colour='red'
-                                    size='medium'
-                                    margin='0 0 10px 0'
-                                    onClick={stopGame}
-                                />
-                                <p>
-                                    Turn {turn} / {numberOfTurns}
-                                </p>
-                                {/* <p>
-                                    Move {moveInTurn} / {players.length}
-                                </p> */}
-                                {/* <p>Players</p> */}
-                                {players.map((player, index) => (
-                                    <Row margin='10px 0 0 0' centerX key={player.socketId}>
-                                        <div className={styles.position}>{index + 1}</div>
-                                        <ImageTitle
-                                            type='user'
-                                            imagePath={player.flagImagePath}
-                                            title={
-                                                player.socketId === socketIdRef.current
-                                                    ? 'You'
-                                                    : player.name
-                                            }
-                                            fontSize={16}
-                                            imageSize={35}
+                    {gameInProgress ? (
+                        <div className={styles.gameControls}>
+                            <Button
+                                text='Stop game'
+                                colour='red'
+                                size='medium'
+                                margin='0 0 10px 0'
+                                onClick={signalStopGame}
+                            />
+                            <p>{`Turn ${turn} / ${gameData.numberOfTurns}`}</p>
+                            {players.map((player, index) => (
+                                <Row margin='10px 0 0 0' centerY key={player.socketId}>
+                                    <div className={styles.position}>{index + 1}</div>
+                                    <ImageTitle
+                                        type='user'
+                                        imagePath={player.flagImagePath}
+                                        title={isYou(player.socketId) ? 'You' : player.name}
+                                        fontSize={16}
+                                        imageSize={35}
+                                        margin='0 10px 0 0'
+                                    />
+                                    <p
+                                        id={`player-${player.socketId}`}
+                                        className={styles.playerState}
+                                    />
+                                </Row>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className={styles.gameControls}>
+                            <Button
+                                text={`${userIsStreaming ? 'Disconnect' : 'Connect'} audio/video`}
+                                colour={userIsStreaming ? 'red' : 'grey'}
+                                size='medium'
+                                margin='0 0 10px 0'
+                                onClick={toggleStream}
+                            />
+                            {gameData.locked ? (
+                                <div className={styles.gameLocked}>
+                                    <LockIconSVG />
+                                    <p>Game locked</p>
+                                </div>
+                            ) : (
+                                <>
+                                    <Button
+                                        text={`${beads.length > 0 ? 'Restart' : 'Start'} game`}
+                                        colour='grey'
+                                        size='medium'
+                                        margin='0 0 10px 0'
+                                        onClick={() => setGameSettingsModalOpen(true)}
+                                    />
+                                    {beads.length > 0 && (
+                                        <Button
+                                            text='Save and lock game'
+                                            colour='grey'
+                                            size='medium'
+                                            margin='0 0 10px 0'
+                                            onClick={saveGame}
                                         />
-                                        <div
-                                            id={`player-${player.socketId}`}
-                                            className={styles.recordingFlag}
-                                        />
-                                    </Row>
-                                ))}
-                            </>
-                        ) : (
-                            <>
-                                <Button
-                                    text={`${
-                                        userIsStreaming ? 'Disconnect' : 'Connect'
-                                    } audio/video`}
-                                    colour={userIsStreaming ? 'red' : 'grey'}
-                                    size='medium'
-                                    margin='0 0 10px 0'
-                                    onClick={toggleStream}
-                                />
-                                <Button
-                                    text='Start game'
-                                    colour='grey'
-                                    size='medium'
-                                    margin='0 0 10px 0'
-                                    // icon={<SlidersIconSVG />}
-                                    onClick={() => setGameSettingsModalOpen(true)}
-                                />
-                            </>
-                        )}
-                        {gameSettingsModalOpen && (
-                            <Modal close={() => closeGameSettingsModal()} centered>
-                                <h1>Game settings</h1>
-                                <p>
-                                    Players must connect their audio/video to participate in the
-                                    game
-                                </p>
-                                <form onSubmit={signalStartGame}>
-                                    <Row margin='10px 0 30px 0'>
-                                        <Column margin='0 60px 0 0'>
-                                            <Input
-                                                title='Intro duration (seconds)'
-                                                type='text'
-                                                margin='0 0 10px 0'
-                                                state={newIntroDurationState}
-                                                errors={newIntroDurationErrors}
-                                                value={newIntroDuration}
-                                                onChange={(v) => {
-                                                    setNewIntroDurationState('default')
-                                                    setNewIntroDuration(+v.replace(/\D/g, ''))
-                                                }}
-                                            />
-                                            <Input
-                                                title='Number of turns'
-                                                type='text'
-                                                margin='0 0 10px 0'
-                                                state={newNumberOfTurnsState}
-                                                errors={newNumberOfTurnsErrors}
-                                                value={newNumberOfTurns}
-                                                onChange={(v) => {
-                                                    setNewNumberOfTurnsState('default')
-                                                    setNewNumberOfTurns(+v.replace(/\D/g, ''))
-                                                }}
-                                            />
-                                            <Input
-                                                title='Move duration (seconds)'
-                                                type='text'
-                                                margin='0 0 10px 0'
-                                                state={newMoveDurationState}
-                                                errors={newMoveDurationErrors}
-                                                value={newMoveDuration}
-                                                onChange={(v) => {
-                                                    setNewMoveDurationState('default')
-                                                    setNewMoveDuration(+v.replace(/\D/g, ''))
-                                                }}
-                                            />
-                                            <Input
-                                                title='Interval duration (seconds)'
-                                                type='text'
-                                                margin='0 0 10px 0'
-                                                // disabled={loading || settingsSaved}
-                                                state={newIntervalDurationState}
-                                                errors={newIntervalDurationErrors}
-                                                value={newIntervalDuration}
-                                                onChange={(v) => {
-                                                    setNewIntervalDurationState('default')
-                                                    setNewIntervalDuration(+v.replace(/\D/g, ''))
-                                                }}
-                                            />
-                                        </Column>
-                                        <Column margin='0 60px 0 0'>
-                                            <h2>Player order</h2>
-                                            {players.map((player, index) => (
-                                                <PlayerPosition
-                                                    you={player.socketId === socketIdRef.current}
-                                                    totalPlayers={players.length}
-                                                    position={index + 1}
-                                                    updatePosition={updatePlayerPosition}
-                                                    // setPosition={setPlayerPosition}
-                                                    socketId={player.socketId}
-                                                    name={player.name}
-                                                    flagImagePath={player.flagImagePath}
-                                                />
-                                            ))}
-                                            {!players.length && (
-                                                <p className={styles.noUsersConnected}>
-                                                    No users connected...
-                                                </p>
-                                            )}
-                                            {invalidPlayersError && (
-                                                <p className={styles.error}>
-                                                    At least one player must connect their
-                                                    audio/video
-                                                </p>
-                                            )}
-                                        </Column>
-                                    </Row>
-                                    <Row>
-                                        {!settingsSaved && (
-                                            <Button
-                                                text='Start game'
-                                                colour='blue'
-                                                size='medium'
-                                                disabled={loading}
-                                                submit
-                                            />
-                                        )}
-                                        {loading && <LoadingWheel />}
-                                        {settingsSaved && <SuccessMessage text='Saved' />}
-                                    </Row>
-                                </form>
-                            </Modal>
-                        )}
-                    </div>
+                                    )}
+                                </>
+                            )}
+                        </div>
+                    )}
+                    {gameSettingsModalOpen && (
+                        <GameSettingsModal
+                            close={() => setGameSettingsModalOpen(false)}
+                            gameData={gameData}
+                            socketId={socketIdRef.current}
+                            players={players}
+                            setPlayers={setPlayers}
+                            signalStartGame={signalStartGame}
+                        />
+                    )}
                     <Column centerX>
-                        <h1>{topic}</h1>
+                        <h1>{gameData.topic}</h1>
                         <div className={styles.topic}>
-                            <img src={`/images/archetopics/${topic.toLowerCase()}.png`} alt='' />
+                            {findTopicSVG(gameData.topic)}
+                            {/* {gameData.topic && (
+                                <img
+                                    src={`/images/archetopics/${gameData.topic.toLowerCase()}.png`}
+                                    alt=''
+                                />
+                            )} */}
+                        </div>
+                        <div className={`${styles.dna} ${styles.top}`}>
+                            <DNAIconSVG />
+                            <DNAIconSVG />
+                            <DNAIconSVG />
+                            <DNAIconSVG />
+                        </div>
+                        <div className={`${styles.dna} ${styles.bottom}`}>
+                            <DNAIconSVG />
+                            <DNAIconSVG />
+                            <DNAIconSVG />
+                            <DNAIconSVG />
                         </div>
                         <div id='timer' className={styles.timer}>
                             <div className={styles.timerArcTitles}>
                                 <p>Game</p>
                                 <p>Turn</p>
-                                <p>Move</p>
+                                <p>{moveState}</p>
+                                <span>{seconds}</span>
                             </div>
-                            <div className={styles.moveCard}>
+                            <div className={styles.mainBead}>
                                 <img src='/icons/gbg/sound-wave.png' alt='' />
                             </div>
                         </div>
                     </Column>
                     <div className={`${styles.peopleInRoom} hide-scrollbars`}>
-                        <div>
-                            <p>
-                                {usersRef.current.length}{' '}
-                                {isPlural(usersRef.current.length) ? 'people' : 'person'} in room
-                            </p>
-                            {usersRef.current.map((user) => (
-                                <ImageTitle
-                                    key={user.socketId}
-                                    type='user'
-                                    imagePath={user.userData.flagImagePath}
-                                    title={
-                                        user.socketId === socketIdRef.current
-                                            ? 'You'
-                                            : user.userData.name
-                                    }
-                                    fontSize={16}
-                                    imageSize={40}
-                                    margin='0 0 10px 0'
-                                />
-                            ))}
-                        </div>
+                        <p>
+                            {usersRef.current.length}{' '}
+                            {isPlural(usersRef.current.length) ? 'people' : 'person'} in room
+                        </p>
+                        {usersRef.current.map((user) => (
+                            <ImageTitle
+                                key={user.socketId}
+                                type='user'
+                                imagePath={user.userData.flagImagePath}
+                                title={isYou(user.socketId) ? 'You' : user.userData.name}
+                                fontSize={16}
+                                imageSize={40}
+                                margin='0 0 10px 0'
+                            />
+                        ))}
                     </div>
                 </div>
                 <div className={`${styles.videos} hide-scrollbars`}>
                     {userIsStreaming && (
                         <Video
-                            mainUser
+                            id='account-video'
+                            user={userRef.current}
                             size={findVideoSize()}
                             audioEnabled={audioTrackEnabled}
                             videoEnabled={videoTrackEnabled}
@@ -1151,34 +1056,37 @@ const GlassBeadGame = (): JSX.Element => {
                             toggleVideo={toggleVideoTrack}
                         />
                     )}
-                    {videosRef.current.map((video) => {
-                        return <Video key={video.socketId} video={video} size={findVideoSize()} />
+                    {videosRef.current.map((v) => {
+                        return <Video id={v.socketId} user={v.userData} size={findVideoSize()} />
                     })}
                 </div>
             </div>
-            <div className={styles.beads}>
+            <div className={`${styles.beads}`}>
                 {beads.map((bead, index) => (
-                    <div key={bead.index} className={styles.beadWrapper}>
+                    <div key={bead.id} className={styles.beadWrapper}>
                         <div className={styles.bead} id={`bead-${bead.index}`}>
-                            <p className={styles.beadText}>Test</p>
-                            <img
-                                src='/icons/gbg/sound-wave.png'
-                                alt='sound-wave'
-                                className={styles.soundWaveIconSmall}
+                            <ImageTitle
+                                type='user'
+                                imagePath={bead.user.flagImagePath}
+                                title={bead.user.id === accountData.id ? 'You' : bead.user.name}
+                                fontSize={16}
+                                imageSize={30}
+                                margin='0 10px 0 0'
                             />
-                            <audio controls>
+                            <img src='/icons/gbg/sound-wave.png' alt='sound-wave' />
+                            <div className={styles.beadControls}>
+                                <button type='button' onClick={() => toggleBeadAudio(bead.index)}>
+                                    {bead.playing ? <PauseIconSVG /> : <PlayIconSVG />}
+                                </button>
+                            </div>
+                            <audio>
                                 <track kind='captions' />
                             </audio>
                         </div>
                         {beads.length > index + 1 && (
                             <div className={styles.beadDivider}>
-                                <div className={styles.dividerLine} />
-                                <img
-                                    src='/icons/gbg/infinity.png'
-                                    alt='infinity'
-                                    className={styles.dividerConnector}
-                                />
-                                <div className={styles.dividerLine} />
+                                <DNAIconSVG />
+                                {/* <DNAIconSVG /> */}
                             </div>
                         )}
                     </div>
@@ -1189,6 +1097,291 @@ const GlassBeadGame = (): JSX.Element => {
 }
 
 export default GlassBeadGame
+// 1058
+// 1064
+// 1089
+// 1094
+// 1103
+// 1124
+// 1191 ?
+
+/* <div className={styles.dividerLine} />
+<img
+    src='/icons/gbg/infinity.png'
+    alt='infinity'
+    className={styles.dividerConnector}
+/>
+<div className={styles.dividerLine} /> */
+
+// <PlayerPosition
+//     you={player.socketId === socketId}
+//     totalPlayers={players.length}
+//     position={index + 1}
+//     updatePosition={updatePlayerPosition}
+//     socketId={player.socketId}
+//     name={player.name}
+//     flagImagePath={player.flagImagePath}
+// />
+
+// const PlayerPosition = (props) => {
+//     const { you, totalPlayers, position, updatePosition, name, flagImagePath } = props
+//     return (
+//         <Row margin='10px 0 0 0'>
+//             <div className={styles.position}>{position}</div>
+//             <div className={styles.positionControls}>
+//                 {position > 1 && (
+//                     <button type='button' onClick={() => updatePosition(position, position - 1)}>
+//                         <ChevronUpIconSVG />
+//                     </button>
+//                 )}
+//                 {position < totalPlayers && (
+//                     <button type='button' onClick={() => updatePosition(position, position + 1)}>
+//                         <ChevronDownIconSVG />
+//                     </button>
+//                 )}
+//             </div>
+//             <ImageTitle
+//                 type='user'
+//                 imagePath={flagImagePath}
+//                 title={you ? 'You' : name}
+//                 fontSize={16}
+//                 imageSize={35}
+//             />
+//         </Row>
+//     )
+// }
+
+// todo: create gameData state, then remove 'new' from contsants names in game settings modal
+// const [gameId, setGameId] = useState(0)
+// const [locked, setLocked] = useState(false)
+// const [topic, setTopic] = useState('')
+// const [numberOfTurns, setNumberOfTurns] = useState(defaults.numberOfTurns)
+// const [moveDuration, setMoveDuration] = useState(defaults.moveDuration)
+// const [introDuration, setIntroDuration] = useState(defaults.introDuration)
+// const [intervalDuration, setIntervalDuration] = useState(defaults.intervalDuration)
+// const [moveInTurn, setMoveInTurn] = useState(0)
+
+// // game settings modal
+// type InputState = 'default' | 'valid' | 'invalid'
+// const [gameSettingsModalOpen, setGameSettingsModalOpen] = useState(false)
+// const [newNumberOfTurns, setNewNumberOfTurns] = useState(defaults.numberOfTurns)
+// const [newNumberOfTurnsState, setNewNumberOfTurnsState] = useState<InputState>('default')
+// const [newNumberOfTurnsErrors, setNewNumberOfTurnsErrors] = useState<string[]>([])
+// const [newMoveDuration, setNewMoveDuration] = useState(defaults.moveDuration)
+// const [newMoveDurationState, setNewMoveDurationState] = useState<InputState>('default')
+// const [newMoveDurationErrors, setNewMoveDurationErrors] = useState<string[]>([])
+// const [newIntroDuration, setNewIntroDuration] = useState(defaults.introDuration)
+// const [newIntroDurationState, setNewIntroDurationState] = useState<InputState>('default')
+// const [newIntroDurationErrors, setNewIntroDurationErrors] = useState<string[]>([])
+// const [newIntervalDuration, setNewIntervalDuration] = useState(defaults.intervalDuration)
+// const [newIntervalDurationState, setNewIntervalDurationState] = useState<InputState>('default')
+// const [newIntervalDurationErrors, setNewIntervalDurationErrors] = useState<string[]>([])
+// const [invalidPlayersError, setInvalidPlayersError] = useState(false)
+// // todo: remove, start game instead
+// const [loading, setLoading] = useState(false)
+// const [settingsSaved, setSettingsSaved] = useState(false)
+
+// <Modal close={() => closeGameSettingsModal()} centered>
+//     <h1>Game settings</h1>
+//     <p>
+//         Players must connect their audio/video to participate in the
+//         game
+//     </p>
+//     <form onSubmit={signalStartGame}>
+//         <Row margin='10px 0 30px 0'>
+//             <Column margin='0 60px 0 0'>
+//                 <Input
+//                     title='Intro duration (seconds)'
+//                     type='text'
+//                     margin='0 0 10px 0'
+//                     state={newIntroDurationState}
+//                     errors={newIntroDurationErrors}
+//                     value={newIntroDuration}
+//                     onChange={(v) => {
+//                         setNewIntroDurationState('default')
+//                         setNewIntroDuration(+v.replace(/\D/g, ''))
+//                     }}
+//                 />
+//                 <Input
+//                     title='Number of turns'
+//                     type='text'
+//                     margin='0 0 10px 0'
+//                     state={newNumberOfTurnsState}
+//                     errors={newNumberOfTurnsErrors}
+//                     value={newNumberOfTurns}
+//                     onChange={(v) => {
+//                         setNewNumberOfTurnsState('default')
+//                         setNewNumberOfTurns(+v.replace(/\D/g, ''))
+//                     }}
+//                 />
+//                 <Input
+//                     title='Move duration (seconds)'
+//                     type='text'
+//                     margin='0 0 10px 0'
+//                     state={newMoveDurationState}
+//                     errors={newMoveDurationErrors}
+//                     value={newMoveDuration}
+//                     onChange={(v) => {
+//                         setNewMoveDurationState('default')
+//                         setNewMoveDuration(+v.replace(/\D/g, ''))
+//                     }}
+//                 />
+//                 <Input
+//                     title='Interval duration (seconds)'
+//                     type='text'
+//                     margin='0 0 10px 0'
+//                     // disabled={loading || settingsSaved}
+//                     state={newIntervalDurationState}
+//                     errors={newIntervalDurationErrors}
+//                     value={newIntervalDuration}
+//                     onChange={(v) => {
+//                         setNewIntervalDurationState('default')
+//                         setNewIntervalDuration(+v.replace(/\D/g, ''))
+//                     }}
+//                 />
+//             </Column>
+//             <Column margin='0 60px 0 0'>
+//                 <h2>Player order</h2>
+//                 {players.map((player, index) => (
+//                     <PlayerPosition
+//                         you={player.socketId === socketIdRef.current}
+//                         totalPlayers={players.length}
+//                         position={index + 1}
+//                         updatePosition={updatePlayerPosition}
+//                         // setPosition={setPlayerPosition}
+//                         socketId={player.socketId}
+//                         name={player.name}
+//                         flagImagePath={player.flagImagePath}
+//                     />
+//                 ))}
+//                 {!players.length && (
+//                     <p className={styles.noUsersConnected}>
+//                         No users connected...
+//                     </p>
+//                 )}
+//                 {invalidPlayersError && (
+//                     <p className={styles.error}>
+//                         At least one player must connect their
+//                         audio/video
+//                     </p>
+//                 )}
+//             </Column>
+//         </Row>
+//         <Row>
+//             {!settingsSaved && (
+//                 <Button
+//                     text='Start game'
+//                     colour='blue'
+//                     size='medium'
+//                     disabled={loading}
+//                     submit
+//                 />
+//             )}
+//             {loading && <LoadingWheel />}
+//             {settingsSaved && <SuccessMessage text='Saved' />}
+//         </Row>
+//     </form>
+// </Modal>
+
+// function signalStartGame(e) {
+//     e.preventDefault()
+//     // validate settings
+//     const invalidNumberOfTurns = newNumberOfTurns < 1 || newNumberOfTurns > 20
+//     const invalidMoveDuration = newMoveDuration < 10 || newMoveDuration > 600
+//     const invalidIntroDuration = newIntroDuration < 10 || newIntroDuration > 60
+//     const invalidIntervalDuration = newIntervalDuration < 10 || newIntervalDuration > 60
+//     const invalidPlayers = players.length < 1 || players.length > 20
+//     setNewNumberOfTurnsState(invalidNumberOfTurns ? 'invalid' : 'valid')
+//     setNewNumberOfTurnsErrors(invalidNumberOfTurns ? ['Must be between 1 and 20 turns'] : [])
+//     setNewMoveDurationState(invalidMoveDuration ? 'invalid' : 'valid')
+//     setNewMoveDurationErrors(
+//         invalidMoveDuration ? ['Must be between 10 seconds and 10 minutes'] : []
+//     )
+//     setNewIntroDurationState(invalidIntroDuration ? 'invalid' : 'valid')
+//     setNewIntroDurationErrors(
+//         invalidIntroDuration ? ['Must be between 10 seconds and 1 minute'] : []
+//     )
+//     setNewIntervalDurationState(invalidIntervalDuration ? 'invalid' : 'valid')
+//     setNewIntervalDurationErrors(
+//         invalidIntervalDuration ? ['Must be between 10 seconds and 1 minute'] : []
+//     )
+//     setInvalidPlayersError(invalidPlayers)
+//     // if all valid
+//     if (
+//         !invalidNumberOfTurns &&
+//         !invalidMoveDuration &&
+//         !invalidIntroDuration &&
+//         !invalidIntervalDuration &&
+//         !invalidPlayers
+//     ) {
+//         setLoading(true)
+//         // save new settings in local state
+//         setIntroDuration(newIntroDuration)
+//         setNumberOfTurns(newNumberOfTurns)
+//         setMoveDuration(newMoveDuration)
+//         setIntervalDuration(newIntervalDuration)
+//         // save new settings in db
+//         const data = {
+//             gameId,
+//             numberOfTurns: newNumberOfTurns,
+//             moveDuration: newMoveDuration,
+//             introDuration: newIntroDuration,
+//             intervalDuration: newIntervalDuration,
+//             playerOrder: players.map((p) => p.id).join(','),
+//         }
+//         axios
+//             .post(`${config.apiURL}/save-glass-bead-game-settings`, data)
+//             .then(() => {
+//                 setLoading(false)
+//                 setSettingsSaved(true)
+//                 const signalData = {
+//                     roomId: roomIdRef.current,
+//                     signaller: userRef.current,
+//                     gameData: {
+//                         players,
+//                         introDuration: newIntroDuration,
+//                         numberOfTurns: newNumberOfTurns,
+//                         moveDuration: newMoveDuration,
+//                         intervalDuration: newIntervalDuration,
+//                         turnDuration: players.length * (newMoveDuration + newIntervalDuration),
+//                     },
+//                 }
+//                 socketRef.current.emit('sending-start-game', signalData)
+//                 closeGameSettingsModal()
+//             })
+//             .catch((error) => console.log(error))
+//     }
+// }
+
+// function closeGameSettingsModal() {
+//     setGameSettingsModalOpen(false)
+//     setSettingsSaved(false)
+//     setNewNumberOfTurns(numberOfTurns)
+//     setNewNumberOfTurnsState('default')
+//     setNewNumberOfTurnsErrors([])
+//     setNewMoveDuration(moveDuration)
+//     setNewMoveDurationState('default')
+//     setNewMoveDurationErrors([])
+//     setNewIntroDuration(introDuration)
+//     setNewIntroDurationState('default')
+//     setNewIntroDurationErrors([])
+//     setNewIntervalDuration(intervalDuration)
+//     setNewIntervalDurationState('default')
+//     setNewIntervalDurationErrors([])
+//     setInvalidPlayersError(false)
+// }
+
+// function signalStartGame(data) {
+//     socketRef.current.emit('sending-start-game', data)
+// }
+
+// function updatePlayerPosition(from, to) {
+//     const newPlayers = [...players]
+//     const player = newPlayers[from - 1]
+//     newPlayers.splice(from - 1, 1)
+//     newPlayers.splice(to - 1, 0, player)
+//     setPlayers(newPlayers)
+// }
 
 /* <div
     className={`${styles.button} ${

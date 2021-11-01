@@ -3,6 +3,8 @@ import ReactMarkdown from 'react-markdown'
 import gfm from 'remark-gfm'
 import { AccountContext } from '@contexts/AccountContext'
 import styles from '@styles/components/PostCard.module.scss'
+import ShowMoreLess from '@components/ShowMoreLess'
+import Markdown from '@components/Markdown'
 import PostCardUrlPreview from './PostCardUrlPreview'
 import SmallFlagImage from '../../SmallFlagImage'
 
@@ -19,32 +21,9 @@ const PostCardPreview = (props: {
     const { type, spaces, text, url, urlImage, urlDomain, urlTitle, urlDescription } = props
     const { accountData } = useContext(AccountContext)
 
-    const [textOverflow, setTextOverflow] = useState(false)
-    const [showFullText, setShowFullText] = useState(false)
-
     const postRef = useRef<HTMLDivElement>(null)
 
-    function handleShowFullText() {
-        const { current } = postRef
-        if (showFullText && current) {
-            const yOffset = window.screen.height / 2 - 300
-            const top = current.getBoundingClientRect().top + window.pageYOffset - yOffset
-            window.scrollTo({ top, behavior: 'smooth' })
-        }
-        setShowFullText(!showFullText)
-    }
-
     const showLinkPreview = urlImage || urlDomain || urlTitle || urlDescription
-
-    const textRef = useRef<HTMLDivElement>(null)
-    useEffect(() => {
-        const { current } = textRef
-        if (current && current.scrollHeight > 200) {
-            setTextOverflow(true)
-        } else {
-            setTextOverflow(false)
-        }
-    }, [text])
 
     return (
         <div className={styles.post} ref={postRef}>
@@ -84,24 +63,11 @@ const PostCardPreview = (props: {
                     </div>
                 </div>
                 <div className={styles.content}>
-                    {/* {text && ( */}
-                    <div
-                        className={`${styles.text} ${showFullText ? styles.showFullText : ''}`}
-                        ref={textRef}
-                    >
-                        <ReactMarkdown plugins={[gfm]}>{text || '*Sample text...*'}</ReactMarkdown>
-                        {textOverflow && !showFullText && <div className={styles.showMore} />}
-                    </div>
-                    {/* // )} */}
-                    {textOverflow && (
-                        <div
-                            className={styles.showMoreText}
-                            role='button'
-                            tabIndex={0}
-                            onClick={handleShowFullText}
-                            onKeyDown={handleShowFullText}
-                        >
-                            {showFullText ? 'show less' : 'show more'}
+                    {text && (
+                        <div className={styles.text}>
+                            <ShowMoreLess height={150}>
+                                <Markdown text={text} />
+                            </ShowMoreLess>
                         </div>
                     )}
                     {showLinkPreview && (

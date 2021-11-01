@@ -87,7 +87,7 @@
     }
     .authButtons {
         display: flex;
-        // margin-bottom: 30px;
+        margin-bottom: 30px;
         z-index: 3;
         button {
             &:not(:last-child) {

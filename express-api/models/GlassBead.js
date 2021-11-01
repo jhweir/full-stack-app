@@ -13,6 +13,7 @@ module.exports = (sequelize, DataTypes) => {
     })
     GlassBead.belongsTo(models.User, {
         foreignKey: 'userId',
+        as: 'user'
     })
   };
   return GlassBead;

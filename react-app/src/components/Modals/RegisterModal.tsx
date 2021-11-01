@@ -202,6 +202,7 @@ const RegisterModal = (props: { close: () => void }): JSX.Element => {
                     Already registered?{' '}
                     <button
                         type='button'
+                        className={styles.textButton}
                         onClick={() => {
                             setLogInModalOpen(true)
                             close()

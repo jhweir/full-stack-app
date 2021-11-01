@@ -107,25 +107,6 @@ const Homepage = (): JSX.Element => {
                     <OSIconSVG width={25} height={25} />
                     <p>open source</p>
                 </div>
-                {highlights && (
-                    <div className={styles.highlights}>
-                        <Highlight
-                            type='post'
-                            text={`${highlights.totals.total_posts} Posts`}
-                            imagePaths={highlights.posts}
-                        />
-                        <Highlight
-                            type='space'
-                            text={`${highlights.totals.total_spaces} Spaces`}
-                            imagePaths={highlights.spaces}
-                        />
-                        <Highlight
-                            type='user'
-                            text={`${highlights.totals.total_users} Users`}
-                            imagePaths={highlights.users}
-                        />
-                    </div>
-                )}
                 <div className={styles.currentState}>
                     <p>PRE-ALPHA</p>
                     <div>
@@ -148,6 +129,43 @@ const Homepage = (): JSX.Element => {
                         onClick={() => setRegisterModalOpen(true)}
                     />
                 </div>
+                
+                {highlights && (
+                    <div className={styles.highlights}>
+                        <Highlight
+                            type='post'
+                            text={`${highlights.totals.total_posts} Posts`}
+                            imagePaths={highlights.posts}
+                        />
+                        <Highlight
+                            type='space'
+                            text={`${highlights.totals.total_spaces} Spaces`}
+                            imagePaths={highlights.spaces}
+                        />
+                        <Highlight
+                            type='user'
+                            text={`${highlights.totals.total_users} Users`}
+                            imagePaths={highlights.users}
+                        />
+                    </div>
+                )}
+                
+                
+                {/* <div className={styles.authButtons}>
+                    <Button
+                        text='Log in'
+                        colour='blue'
+                        size='medium'
+                        margin='0 10px 0 0'
+                        onClick={() => setLogInModalOpen(true)}
+                    />
+                    <Button
+                        text='Create new account'
+                        colour='green'
+                        size='medium'
+                        onClick={() => setRegisterModalOpen(true)}
+                    />
+                </div> */}
             </div>
             <div className={styles.backgroundImage}>
                 {/* <BackgroundImageSVG /> */}

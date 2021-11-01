@@ -30,6 +30,7 @@ module.exports = (sequelize, DataTypes) => {
     })
     User.hasMany(models.GlassBead, {
         foreignKey: 'userId',
+        // as: 'user'
     })
     User.hasMany(models.GlassBeadGameComment, {
         foreignKey: 'userId',

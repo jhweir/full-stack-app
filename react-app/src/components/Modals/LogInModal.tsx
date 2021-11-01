@@ -5,6 +5,7 @@ import config from '@src/Config'
 import styles from '@styles/components/Modal.module.scss'
 import { AccountContext } from '@contexts/AccountContext'
 import Modal from '@components/Modal'
+import Column from '@components/Column'
 import Input from '@components/Input'
 import Button from '@components/Button'
 import LoadingWheel from '@components/LoadingWheel'
@@ -28,7 +29,7 @@ const LogInModal = (props: { close: () => void }): JSX.Element => {
     const [passwordErrors, setPasswordErrors] = useState<string[]>([])
 
     const [loading, setLoading] = useState(false)
-    const [showSuccessMessage, setShowSuccessMessage] = useState(false)
+    const [success, setSuccess] = useState(false)
 
     const [logInFlashMessage, setLogInFlashMessage] = useState('')
     const [displayResendVerificationEmailLink, setDisplayResendVerificationEmailLink] = useState(
@@ -51,7 +52,7 @@ const LogInModal = (props: { close: () => void }): JSX.Element => {
                     .post(`${config.apiURL}/log-in`, { reCaptchaToken, emailOrHandle, password })
                     .then((res) => {
                         setLoading(false)
-                        setShowSuccessMessage(true)
+                        setSuccess(true)
                         document.cookie = `accessToken=${res.data}; path=/`
                         getAccountData()
                         setTimeout(() => close(), 1000)
@@ -105,32 +106,34 @@ const LogInModal = (props: { close: () => void }): JSX.Element => {
         <Modal close={close} minWidth={350} centered>
             <h1>Log in</h1>
             <form onSubmit={logIn}>
-                <Input
-                    type='text'
-                    title='Handle or email'
-                    placeholder='handle or email...'
-                    margin='0 0 10px 0'
-                    state={emailOrHandleState}
-                    errors={emailOrHandleErrors}
-                    value={emailOrHandle}
-                    onChange={(newValue) => {
-                        setEmailOrHandleState('default')
-                        setEmailOrHandle(newValue)
-                    }}
-                />
-                <Input
-                    type='password'
-                    title='Password'
-                    placeholder='password...'
-                    margin='0 0 10px 0'
-                    state={passwordState}
-                    errors={passwordErrors}
-                    value={password}
-                    onChange={(newValue) => {
-                        setPasswordState('default')
-                        setPassword(newValue)
-                    }}
-                />
+                <Column margin='0 0 20px 0' width='100%'>
+                    <Input
+                        type='text'
+                        title='Handle or email'
+                        placeholder='handle or email...'
+                        margin='0 0 10px 0'
+                        state={emailOrHandleState}
+                        errors={emailOrHandleErrors}
+                        value={emailOrHandle}
+                        onChange={(newValue) => {
+                            setEmailOrHandleState('default')
+                            setEmailOrHandle(newValue)
+                        }}
+                    />
+                    <Input
+                        type='password'
+                        title='Password'
+                        placeholder='password...'
+                        margin='0 0 10px 0'
+                        state={passwordState}
+                        errors={passwordErrors}
+                        value={password}
+                        onChange={(newValue) => {
+                            setPasswordState('default')
+                            setPassword(newValue)
+                        }}
+                    />
+                </Column>
                 {logInFlashMessage.length > 0 && <p className='danger'>{logInFlashMessage}</p>}
                 {displayResendVerificationEmailLink && (
                     <Button
@@ -141,44 +144,48 @@ const LogInModal = (props: { close: () => void }): JSX.Element => {
                         onClick={() => resendVerificationEmail()}
                     />
                 )}
-                <Button
-                    text='Log in'
-                    colour='blue'
-                    size='medium'
-                    margin='20px 0 20px 0'
-                    disabled={
-                        loading ||
-                        showSuccessMessage ||
-                        emailOrHandleState === 'invalid' ||
-                        logInFlashMessage.length > 0
-                    }
-                    submit
-                />
+                {!loading && !success && (
+                    <Button
+                        text='Log in'
+                        colour='blue'
+                        size='medium'
+                        disabled={
+                            emailOrHandleState === 'invalid' ||
+                            passwordState === 'invalid' ||
+                            !!logInFlashMessage.length
+                        }
+                        submit
+                    />
+                )}
                 {loading && <LoadingWheel />}
-                {showSuccessMessage && <SuccessMessage text='Logged in' />}
-                <p>
-                    New?{' '}
-                    <button
-                        type='button'
-                        onClick={() => {
-                            setRegisterModalOpen(true)
-                            close()
-                        }}
-                    >
-                        Create a new account
-                    </button>
-                </p>
-                <p>
-                    <button
-                        type='button'
-                        onClick={() => {
-                            setForgotPasswordModalOpen(true)
-                            close()
-                        }}
-                    >
-                        Forgot your password?
-                    </button>
-                </p>
+                {success && <SuccessMessage text='Logged in' />}
+                <Column margin='20px 0 0 0' centerX>
+                    <p>
+                        New?{' '}
+                        <button
+                            type='button'
+                            className={styles.textButton}
+                            onClick={() => {
+                                setRegisterModalOpen(true)
+                                close()
+                            }}
+                        >
+                            Create a new account
+                        </button>
+                    </p>
+                    <p>
+                        <button
+                            type='button'
+                            className={styles.textButton}
+                            onClick={() => {
+                                setForgotPasswordModalOpen(true)
+                                close()
+                            }}
+                        >
+                            Forgot your password?
+                        </button>
+                    </p>
+                </Column>
             </form>
         </Modal>
     )

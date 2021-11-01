@@ -1,5 +1,6 @@
 import React from 'react'
 import styles from '@styles/components/Input.module.scss'
+import { resizeTextArea } from '@src/Functions'
 import { ReactComponent as DangerIconSVG } from '@svgs/exclamation-circle-solid.svg'
 import { ReactComponent as SuccessIconSVG } from '@svgs/check-circle-solid.svg'
 
@@ -46,7 +47,10 @@ const Input = (props: {
                         rows={rows}
                         placeholder={placeholder}
                         value={value}
-                        onChange={(e) => onChange(e.target.value)}
+                        onChange={(e) => {
+                            onChange(e.target.value)
+                            resizeTextArea(e.target)
+                        }}
                         disabled={disabled}
                     />
                 ) : (

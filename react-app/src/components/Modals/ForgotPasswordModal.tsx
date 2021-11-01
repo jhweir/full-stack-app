@@ -99,6 +99,7 @@ const ForgotPasswordModal = (props: { close: () => void }): JSX.Element => {
                 <p>
                     <button
                         type='button'
+                        className={styles.textButton}
                         onClick={() => {
                             setLogInModalOpen(true)
                             close()

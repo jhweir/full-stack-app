@@ -90,11 +90,26 @@ io.on('connection', socket => {
     })
 
     socket.on('sending-start-game', data => {
-        io.in(data.roomId).emit('returning-start-game', data)
+        const { userSignaling, roomId, gameData } = data
+        io.in(roomId).emit('returning-start-game', data)
+        // todo: investigate why not wokring in production
+        const comment = {
+            gameId: gameData.gameId,
+            text: `${userSignaling.name} started the game`
+        }
+        axios
+            .post(`${config.apiUrl}/glass-bead-game-comment`, comment)
+            .catch((error) => console.log('error: ', error))
     })
 
     socket.on('sending-stop-game', data => {
-        io.in(data.roomId).emit('returning-stop-game', data)
+        const { userSignaling, roomId, gameId } = data
+        io.in(roomId).emit('returning-stop-game', data)
+        // todo: investigate why not working in production
+        const comment = { gameId, text: `${userSignaling.name} stopped the game` }
+        axios
+            .post(`${config.apiUrl}/glass-bead-game-comment`, comment)
+            .catch((error) => console.log('error: ', error))
     })
 
     socket.on('sending-audio-bead', data => {
