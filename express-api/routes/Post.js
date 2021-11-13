@@ -84,13 +84,13 @@ router.get('/post-data', (req, res) => {
             {
                 model: Holon,
                 as: 'DirectSpaces',
-                attributes: ['handle'],
+                attributes: ['handle', 'state'],
                 through: { where: { relationship: 'direct' }, attributes: ['type'] },
             },
             {
                 model: Holon,
                 as: 'IndirectSpaces',
-                attributes: ['handle'],
+                attributes: ['handle', 'state'],
                 through: { where: { relationship: 'indirect' }, attributes: ['type'] },
             },
             {
@@ -134,7 +134,7 @@ router.get('/post-reaction-data', (req, res) => {
             { 
                 model: Reaction,
                 where: { state: 'active' },
-                attributes: ['type', 'value'],
+                attributes: ['id', 'type', 'value'],
                 include: [
                     {
                         model: User,
@@ -433,34 +433,42 @@ router.get('/glass-bead-game-data', (req, res) => {
     .catch(err => console.log(err))
 })
 
+// router.get('/viable-post-spaces', (req, res) => {
+//     const { spaceId, query } = req.query
+    
+// })
+
+
 // POST
 // todo: add authenticateToken to all endpoints below
 router.post('/create-post', authenticateToken, (req, res) => {
     const accountId = req.user.id
     const {
         type,
-        subType,
-        state,
+        // subType,
         text,
         url,
         urlImage,
         urlDomain,
         urlTitle,
         urlDescription,
+        topic,
         spaceHandles,
-        pollAnswers,
-        numberOfPrismPlayers,
-        prismDuration,
-        prismPrivacy,
-        numberOfPlotGraphAxes,
-        axis1Left,
-        axis1Right,
-        axis2Top,
-        axis2Bottom,
-        // createPostFromTurnData,
-        GBGTopic,
-        GBGCustomTopic,
+        // pollAnswers,
+        // numberOfPrismPlayers,
+        // prismDuration,
+        // prismPrivacy,
+        // numberOfPlotGraphAxes,
+        // axis1Left,
+        // axis1Right,
+        // axis2Top,
+        // axis2Bottom,
+        // // createPostFromTurnData,
+        // GBGTopic,
+        // GBGCustomTopic,
     } = req.body
+
+    // console.log(req.body)
 
     let directHandleIds = []
     let indirectHandleIds = []
@@ -472,6 +480,7 @@ router.post('/create-post', authenticateToken, (req, res) => {
         }
     }
 
+    // todo, use ids from request instead
     function findDirectHandleIds() {
         Holon.findAll({
             where: { handle: spaceHandles, state: 'active' },
@@ -529,92 +538,34 @@ router.post('/create-post', authenticateToken, (req, res) => {
         })
     }
 
-    function createNewPollAnswers(post) {
-        pollAnswers.forEach(answer => PollAnswer.create({ text: answer, postId: post.id }))
-    }
-
-    function createPrism(post) {
-        Prism.create({
-            postId: post.id,
-            numberOfPlayers: numberOfPrismPlayers,
-            duration: prismDuration,
-            privacy: prismPrivacy
-        })
-        .then(prism => {
-            PrismUser.create({
-                prismId: prism.id,
-                userId: accountId
-            })
-        })
-    }
-
-    function createPlotGraph(post) {
-        PlotGraph.create({
-            postId: post.id,
-            numberOfPlotGraphAxes,
-            axis1Left,
-            axis1Right,
-            axis2Top,
-            axis2Bottom
-        })
-    }
-
-    // function createTurnLink(post) {
-    //     Link.create({
-    //         state: 'visible',
-    //         creatorId: accountId,
-    //         type: 'post-post',
-    //         relationship: 'turn',
-    //         itemAId: createPostFromTurnData.postId,
-    //         itemBId: post.id
-    //     })
-    // }
-
     function createGlassBeadGame(post) {
         GlassBeadGame.create({
             postId: post.id,
-            topic: GBGTopic === 'Other' ? GBGCustomTopic : GBGTopic,
-            // numberOfTurns: null,
-            // moveDuration: null,
-            // introDuration: null,
-            // intervalDuration: null,
-            saved: false
+            topic: topic,
         })
     }
 
-    let renamedSubType
-    if (subType === 'Single Choice') { renamedSubType = 'single-choice' }
-    if (subType === 'Multiple Choice') { renamedSubType = 'multiple-choice' }
-    if (subType === 'Weighted Choice') { renamedSubType = 'weighted-choice' }
-
-    function createPost() {
-        Promise.all([findHandleIds()]).then(() => {
-            Post.create({
-                type,
-                subType: renamedSubType,
-                state,
-                creatorId: accountId,
-                text,
-                url,
-                urlImage,
-                urlDomain,
-                urlTitle,
-                urlDescription,
-                state: 'visible'
-            })
-            .then(post => {
-                createNewPostHolons(post)
-                if (type === 'poll') createNewPollAnswers(post)
-                if (type === 'prism') createPrism(post)
-                if (type === 'plot-graph') createPlotGraph(post)
-                if (type === 'glass-bead-game') createGlassBeadGame(post)
-                // if (type === 'glass-bead' && createPostFromTurnData.postId) createTurnLink(post)
-            })
-            .then(res.send('success'))
+    Promise.all([findHandleIds()]).then(() => {
+        Post.create({
+            type,
+            // subType,
+            state: 'visible',
+            creatorId: accountId,
+            text,
+            url,
+            urlImage,
+            urlDomain,
+            urlTitle,
+            urlDescription,
+            state: 'visible'
         })
-    }
-
-    createPost()
+        .then(post => {
+            createNewPostHolons(post)
+            if (type === 'glass-bead-game') createGlassBeadGame(post)
+            res.send(post)
+        })
+        // .then(res.send('success'))
+    })
 })
 
 router.post('/repost-post', (req, res) => {
@@ -1071,66 +1022,70 @@ router.post('/cast-vote', (req, res) => {
     })
 })
 
-router.post('/add-link', (req, res) => {
+router.post('/add-link', async (req, res) => {
     let { accountId, accountHandle, accountName, holonId, type, relationship, description, itemAId, itemBId } = req.body
 
-    // find post owner from postId
-    Post.findOne({
-        where: { id: itemAId },
-        attributes: [],
-        include: [
-            { 
-                model: User,
-                as: 'creator',
-                attributes: ['id', 'handle', 'name', 'flagImagePath', 'email']
-            },
-        ]
-    })
-    .then(post => {
-        const createLink = Link.create({
-            state: 'visible',
-            creatorId: accountId,
-            type,
-            relationship,
-            description,
-            itemAId,
-            itemBId
+    const itemB = await Post.findOne({ where: { id: itemBId } })
+    if (!itemB) res.status(404).send({ message: 'No post found that matches that id' })
+    else {
+        // find post owner from postId
+        Post.findOne({
+            where: { id: itemAId },
+            attributes: [],
+            include: [
+                { 
+                    model: User,
+                    as: 'creator',
+                    attributes: ['id', 'handle', 'name', 'flagImagePath', 'email']
+                },
+            ]
         })
-        const createNotification = Notification.create({
-            ownerId: post.creator.id,
-            type: 'post-link',
-            seen: false,
-            holonAId: holonId,
-            userId: accountId,
-            postId: itemAId,
-            commentId: null
+        .then(post => {
+            const createLink = Link.create({
+                state: 'visible',
+                creatorId: accountId,
+                type,
+                relationship,
+                description,
+                itemAId,
+                itemBId
+            })
+            const createNotification = Notification.create({
+                ownerId: post.creator.id,
+                type: 'post-link',
+                seen: false,
+                holonAId: holonId,
+                userId: accountId,
+                postId: itemAId,
+                commentId: null
+            })
+            const message = {
+                to: post.creator.email,
+                from: 'admin@weco.io',
+                subject: 'Weco - notification',
+                text: `
+                    Hi ${post.creator.name}, ${accountName} just linked your post to another post on weco:
+                    http://${process.env.NODE_ENV === 'dev' ? process.env.DEV_APP_URL : process.env.PROD_APP_URL}/p/${itemAId}
+                `,
+                html: `
+                    <p>
+                        Hi ${post.creator.name},
+                        <br/>
+                        <a href='${process.env.NODE_ENV === 'dev' ? process.env.DEV_APP_URL : process.env.PROD_APP_URL}/u/${accountHandle}'>${accountName}</a>
+                        just linked your
+                        <a href='${process.env.NODE_ENV === 'dev' ? process.env.DEV_APP_URL : process.env.PROD_APP_URL}/p/${itemAId}'>post</a>
+                        to another post on weco
+                    </p>
+                `,
+            }
+            const sendEmail = sgMail.send(message).then(() => console.log('Email sent'))
+            
+            Promise
+                .all([createLink, createNotification, sendEmail])
+                .then(res.send('success'))
+                .catch(err => { res.send(err) })
         })
-        const message = {
-            to: post.creator.email,
-            from: 'admin@weco.io',
-            subject: 'Weco - notification',
-            text: `
-                Hi ${post.creator.name}, ${accountName} just linked your post to another post on weco:
-                http://${process.env.NODE_ENV === 'dev' ? process.env.DEV_APP_URL : process.env.PROD_APP_URL}/p/${itemAId}
-            `,
-            html: `
-                <p>
-                    Hi ${post.creator.name},
-                    <br/>
-                    <a href='${process.env.NODE_ENV === 'dev' ? process.env.DEV_APP_URL : process.env.PROD_APP_URL}/u/${accountHandle}'>${accountName}</a>
-                    just linked your
-                    <a href='${process.env.NODE_ENV === 'dev' ? process.env.DEV_APP_URL : process.env.PROD_APP_URL}/p/${itemAId}'>post</a>
-                    to another post on weco
-                </p>
-            `,
-        }
-        const sendEmail = sgMail.send(message).then(() => console.log('Email sent'))
-        
-        Promise
-            .all([createLink, createNotification, sendEmail])
-            .then(res.send('success'))
-            .catch(err => { res.send(err) })
-    })
+    }
 })
 
 router.post('/remove-link', (req, res) => {
@@ -1198,6 +1153,23 @@ router.post('/save-glass-bead-game-settings', (req, res) => {
         .catch(error => console.log(error))
 })
 
+router.post('/viable-post-spaces', (req, res) => {
+    const { query, blacklist } = req.body
+    Holon.findAll({
+        limit: 20,
+        where: {
+            state: 'active',
+            [Op.not]: [{ id: blacklist }],
+            [Op.or]: [
+                { handle: { [Op.like]: `%${query}%` } },
+                { name: { [Op.like]: `%${query}%` } },
+            ],
+        },
+        attributes: ['id', 'handle', 'name', 'flagImagePath'],
+    })
+    .then(spaces => res.send(spaces))
+})
+
 // DELETE
 router.delete('/delete-post', (req, res) => {
     // TODO: endpoints like this are currently unsafe/open to anyone. include authenticate middleware.
@@ -1223,3 +1195,183 @@ router.delete('/delete-comment', (req, res) => {
 })
 
 module.exports = router
+
+// old create post
+// router.post('/create-post', authenticateToken, (req, res) => {
+//     const accountId = req.user.id
+//     const {
+//         type,
+//         subType,
+//         state,
+//         text,
+//         url,
+//         urlImage,
+//         urlDomain,
+//         urlTitle,
+//         urlDescription,
+//         topic,
+//         spaceHandles,
+//         // pollAnswers,
+//         // numberOfPrismPlayers,
+//         // prismDuration,
+//         // prismPrivacy,
+//         // numberOfPlotGraphAxes,
+//         // axis1Left,
+//         // axis1Right,
+//         // axis2Top,
+//         // axis2Bottom,
+//         // // createPostFromTurnData,
+//         // GBGTopic,
+//         // GBGCustomTopic,
+//     } = req.body
+
+//     let directHandleIds = []
+//     let indirectHandleIds = []
+
+//     // todo: pull in from global constants
+//     async function asyncForEach(array, callback) {
+//         for (let index = 0; index < array.length; index++) {
+//             await callback(array[index], index, array)
+//         }
+//     }
+
+//     function findDirectHandleIds() {
+//         Holon.findAll({
+//             where: { handle: spaceHandles, state: 'active' },
+//             attributes: ['id']
+//         })
+//         .then(holons => {
+//             directHandleIds.push(...holons.map(holon => holon.id))
+//         })
+//     }
+
+//     async function findIndirectHandleIds(handle) {
+//         await Holon.findOne({
+//             where: { handle: handle, state: 'active' },
+//             include: [{
+//                 model: Holon,
+//                 as: 'HolonHandles',
+//                 attributes: ['id'],
+//                 through: { where: { state: 'open' }, attributes: [] }
+//             }]
+//         })
+//         .then(holon => {
+//             indirectHandleIds.push(...holon.HolonHandles.map(holon => holon.id))
+//         })
+//     }
+
+//     async function findHandleIds() {
+//         findDirectHandleIds()
+//         await asyncForEach(spaceHandles, async(handle) => {
+//             await findIndirectHandleIds(handle)
+//         })
+//         // remove duplicates from indirect handle ids
+//         indirectHandleIds = [...new Set(indirectHandleIds)]
+//         // remove ids already included in direct handle ids from indirect handle ids
+//         indirectHandleIds = indirectHandleIds.filter(id => !directHandleIds.includes(id))
+//     }
+
+//     function createNewPostHolons(post) {
+//         directHandleIds.forEach(id => {
+//             PostHolon.create({
+//                 type: 'post',
+//                 relationship: 'direct',
+//                 creatorId: accountId,
+//                 postId: post.id,
+//                 holonId: id
+//             })
+//         })
+//         indirectHandleIds.forEach(id => {
+//             PostHolon.create({
+//                 type: 'post',
+//                 relationship: 'indirect',
+//                 creatorId: accountId,
+//                 postId: post.id,
+//                 holonId: id
+//             })
+//         })
+//     }
+
+//     // function createNewPollAnswers(post) {
+//     //     pollAnswers.forEach(answer => PollAnswer.create({ text: answer, postId: post.id }))
+//     // }
+
+//     // function createPrism(post) {
+//     //     Prism.create({
+//     //         postId: post.id,
+//     //         numberOfPlayers: numberOfPrismPlayers,
+//     //         duration: prismDuration,
+//     //         privacy: prismPrivacy
+//     //     })
+//     //     .then(prism => {
+//     //         PrismUser.create({
+//     //             prismId: prism.id,
+//     //             userId: accountId
+//     //         })
+//     //     })
+//     // }
+
+//     // function createPlotGraph(post) {
+//     //     PlotGraph.create({
+//     //         postId: post.id,
+//     //         numberOfPlotGraphAxes,
+//     //         axis1Left,
+//     //         axis1Right,
+//     //         axis2Top,
+//     //         axis2Bottom
+//     //     })
+//     // }
+
+//     // function createTurnLink(post) {
+//     //     Link.create({
+//     //         state: 'visible',
+//     //         creatorId: accountId,
+//     //         type: 'post-post',
+//     //         relationship: 'turn',
+//     //         itemAId: createPostFromTurnData.postId,
+//     //         itemBId: post.id
+//     //     })
+//     // }
+
+//     function createGlassBeadGame(post) {
+//         GlassBeadGame.create({
+//             postId: post.id,
+//             topic: topic,
+//             // saved: false
+//         })
+//     }
+
+//     // let renamedSubType
+//     // if (subType === 'Single Choice') { renamedSubType = 'single-choice' }
+//     // if (subType === 'Multiple Choice') { renamedSubType = 'multiple-choice' }
+//     // if (subType === 'Weighted Choice') { renamedSubType = 'weighted-choice' }
+
+//     // function createPost() {
+//         Promise.all([findHandleIds()]).then(() => {
+//             Post.create({
+//                 type,
+//                 subType,
+//                 state,
+//                 creatorId: accountId,
+//                 text,
+//                 url,
+//                 urlImage,
+//                 urlDomain,
+//                 urlTitle,
+//                 urlDescription,
+//                 state: 'visible'
+//             })
+//             .then(post => {
+//                 createNewPostHolons(post)
+//                 // if (type === 'poll') createNewPollAnswers(post)
+//                 // if (type === 'prism') createPrism(post)
+//                 // if (type === 'plot-graph') createPlotGraph(post)
+//                 if (type === 'glass-bead-game') createGlassBeadGame(post)
+//                 // if (type === 'glass-bead' && createPostFromTurnData.postId) createTurnLink(post)
+//             })
+//             .then(res.send('success'))
+//         })
+//     // }
+
+//     // createPost()
+// })

@@ -48,6 +48,7 @@ const UserPage = ({
                     <div className={styles.userPageCenterPanel}>
                         <Switch>
                             <Redirect from={`${url}`} to={`${url}/about`} exact />
+                            {/* todo: redirect to users about page */}
                             {isOwnAccount && (
                                 <Route
                                     path={`${url}/settings`}
@@ -55,13 +56,13 @@ const UserPage = ({
                                     exact
                                 />
                             )}
-                            {isOwnAccount && (
-                                <Route
-                                    path={`${url}/notifications`}
-                                    component={UserPageNotifications}
-                                    exact
-                                />
-                            )}
+                            {/* {isOwnAccount && ( */}
+                            <Route
+                                path={`${url}/notifications`}
+                                component={UserPageNotifications}
+                                exact
+                            />
+                            {/* )} */}
                             {isOwnAccount && (
                                 <Route
                                     path={`${url}/messages`}

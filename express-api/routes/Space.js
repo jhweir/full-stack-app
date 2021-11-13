@@ -18,6 +18,7 @@ const {
     Link,
     Notification,
     SpaceNotification,
+    GlassBeadGame,
 } = require('../models')
 const {
     postAttributes,
@@ -211,7 +212,7 @@ router.get('/homepage-highlights', async (req, res) => {
         where: { id: 1 },
         attributes: [
             [sequelize.literal(`(SELECT COUNT(*) FROM Posts WHERE Posts.state = 'visible')`), 'total_posts'],
-            [sequelize.literal(`(SELECT COUNT(*) FROM Holons)`), 'total_spaces'],
+            [sequelize.literal(`(SELECT COUNT(*) FROM Holons WHERE Holons.state = 'active')`), 'total_spaces'],
             [sequelize.literal(`(SELECT COUNT(*) FROM Users WHERE Users.emailVerified = true)`), 'total_users'],
         ]
     })
@@ -587,6 +588,10 @@ router.get('/space-posts', (req, res) => {
                     as: 'IncomingLinks',
                     //where: { state: 'visible' }
                     //attributes: ['id', 'handle', 'name', 'flagImagePath'],
+                },
+                {
+                    model: GlassBeadGame,
+                    attributes: ['topic']
                 }
             ]
         })

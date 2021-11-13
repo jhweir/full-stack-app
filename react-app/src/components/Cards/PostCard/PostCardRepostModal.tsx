@@ -1,15 +1,18 @@
 import React, { useContext, useState } from 'react'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
-import config from '../../../Config'
-import styles from '../../../styles/components/PostCardRepostModal.module.scss'
-import SpaceInput from '../../SpaceInput'
-import CloseButton from '../../CloseButton'
-import SmallFlagImage from '../../SmallFlagImage'
-import { AccountContext } from '../../../contexts/AccountContext'
-import { SpaceContext } from '../../../contexts/SpaceContext'
-import { IPost } from '../../../Interfaces'
-import CloseOnClickOutside from '../../CloseOnClickOutside'
+import config from '@src/Config'
+import styles from '@styles/components/PostCardRepostModal.module.scss'
+import SpaceInput from '@components/SpaceInput'
+import SmallFlagImage from '@components/SmallFlagImage'
+import { AccountContext } from '@contexts/AccountContext'
+import { SpaceContext } from '@contexts/SpaceContext'
+import Modal from '@components/Modal'
+import Column from '@components/Column'
+import Row from '@components/Row'
+import Button from '@components/Button'
+import ImageTitle from '@components/ImageTitle'
+import { IPost } from '@src/Interfaces'
 
 const PostCardRepostModal = (props: {
     postData: Partial<IPost>
@@ -77,81 +80,67 @@ const PostCardRepostModal = (props: {
     }
 
     return (
-        <div className={styles.modalWrapper}>
-            <CloseOnClickOutside onClick={() => setRepostModalOpen(false)}>
-                <div className={styles.modal}>
-                    <CloseButton size={20} onClick={() => setRepostModalOpen(false)} />
-                    <span className={styles.title}>Reposts</span>
-                    {reposts.length === 0 ? (
-                        <span className={`${styles.text} mb-20`}>
-                            <i>No reposts yet...</i>
-                        </span>
-                    ) : (
-                        <div className={styles.reposts}>
-                            {reposts.map((repost) => (
-                                <div className={styles.repost} key={repost}>
-                                    <Link
-                                        className={styles.imageTextLink}
-                                        to={`/u/${repost.creator.handle}`}
-                                    >
-                                        <SmallFlagImage
-                                            type='user'
-                                            size={30}
-                                            imagePath={repost.creator.flagImagePath}
-                                        />
-                                        <span className={styles.linkText}>
-                                            {repost.creator.name}
-                                        </span>
-                                    </Link>
-                                    <div className={`${styles.text} greyText mr-10`}>to</div>
-                                    <Link
-                                        className={styles.imageTextLink}
-                                        to={`/s/${repost.space.handle}`}
-                                    >
-                                        <SmallFlagImage
-                                            type='space'
-                                            size={30}
-                                            imagePath={repost.space.flagImagePath}
-                                        />
-                                        <span className={styles.linkText}>{repost.space.name}</span>
-                                    </Link>
-                                </div>
-                            ))}
+        <Modal close={() => setRepostModalOpen(false)} centered>
+            <span className={styles.title}>Reposts</span>
+            {reposts.length === 0 ? (
+                <span className={`${styles.text} mb-20`}>
+                    <i>No reposts yet...</i>
+                </span>
+            ) : (
+                <div className={styles.reposts}>
+                    {reposts.map((repost) => (
+                        <div className={styles.repost} key={repost}>
+                            <Link
+                                className={styles.imageTextLink}
+                                to={`/u/${repost.creator.handle}`}
+                            >
+                                <SmallFlagImage
+                                    type='user'
+                                    size={30}
+                                    imagePath={repost.creator.flagImagePath}
+                                />
+                                <span className={styles.linkText}>{repost.creator.name}</span>
+                            </Link>
+                            <div className={`${styles.text} greyText mr-10`}>to</div>
+                            <Link className={styles.imageTextLink} to={`/s/${repost.space.handle}`}>
+                                <SmallFlagImage
+                                    type='space'
+                                    size={30}
+                                    imagePath={repost.space.flagImagePath}
+                                />
+                                <span className={styles.linkText}>{repost.space.name}</span>
+                            </Link>
                         </div>
-                    )}
-                    <span className={`${styles.text} mb-20`}>
-                        Repost {postData.creator && postData.creator.name}&apos;s post
-                        {reposts !== null && ' somewhere else'}:
-                    </span>
-                    <SpaceInput
-                        blockedSpaces={blockedSpaces}
-                        addedSpaces={addedSpaces}
-                        setAddedSpaces={setAddedSpaces}
-                        newSpaceError={newSpaceError}
-                        setNewSpaceError={setNewSpaceError}
-                        setParentModalOpen={setRepostModalOpen}
-                        centered
-                    />
-                    <div
-                        className={`wecoButton ${!addedSpaces.length && 'disabled'}`}
-                        role='button'
-                        tabIndex={0}
-                        onClick={() => {
-                            if (addedSpaces.length) {
-                                submitRepost()
-                            }
-                        }}
-                        onKeyDown={() => {
-                            if (addedSpaces.length) {
-                                submitRepost()
-                            }
-                        }}
-                    >
-                        Repost
-                    </div>
+                    ))}
                 </div>
-            </CloseOnClickOutside>
-        </div>
+            )}
+            <span className={`${styles.text} mb-20`}>
+                Repost {postData.creator && postData.creator.name}&apos;s post
+                {reposts !== null && ' somewhere else'}:
+            </span>
+            <SpaceInput
+                blockedSpaces={blockedSpaces}
+                addedSpaces={addedSpaces}
+                setAddedSpaces={setAddedSpaces}
+                newSpaceError={newSpaceError}
+                setNewSpaceError={setNewSpaceError}
+                setParentModalOpen={setRepostModalOpen}
+                centered
+            />
+            <div
+                className={`wecoButton ${!addedSpaces.length && 'disabled'}`}
+                role='button'
+                tabIndex={0}
+                onClick={() => {
+                    if (addedSpaces.length) submitRepost()
+                }}
+                onKeyDown={() => {
+                    if (addedSpaces.length) submitRepost()
+                }}
+            >
+                Repost
+            </div>
+        </Modal>
     )
 }
 

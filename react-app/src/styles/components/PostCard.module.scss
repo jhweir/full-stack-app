@@ -2,7 +2,7 @@
 .post {
     margin-bottom: 10px;
     padding: 20px 30px 10px 20px;
-    width: 700px;//100%;
+    width: 100%; // 700px;//100%;
     //height: 200px;
     border-radius: 10px;
     background-color: white;
@@ -131,6 +131,7 @@
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
+    margin: 2px 3px 0 5px;
 }
 .linkIcon {
     width: 13px;
@@ -146,7 +147,7 @@
 }
 .delete {
     font-size: 14px;
-    //margin-left: 10px;
+    margin-left: 5px;
     opacity: 0.5;
     &:hover {
         cursor: pointer;

@@ -8,10 +8,31 @@
     margin-top: -5px;
     padding: 10px;
     border-radius: 5px;
+    box-shadow: 0 10px 10px 0 rgba(10, 8, 72, 0.06);
     > button {
         margin: 0 0 10px 0 !important;
         &:last-child {
             margin: 0 !important;
+        }
+    }
+}
+.topic {
+    all: unset;
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+    cursor: pointer;
+    
+    > div {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background-color: rgb(243, 243, 243);
+        margin-right: 5px;
+        color: black;
+        > svg {
+            width: 30px;
+            height: 30px;
         }
     }
 }

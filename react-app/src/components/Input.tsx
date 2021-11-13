@@ -1,6 +1,7 @@
 import React from 'react'
 import styles from '@styles/components/Input.module.scss'
 import { resizeTextArea } from '@src/Functions'
+import LoadingWheel from '@components/LoadingWheel'
 import { ReactComponent as DangerIconSVG } from '@svgs/exclamation-circle-solid.svg'
 import { ReactComponent as SuccessIconSVG } from '@svgs/check-circle-solid.svg'
 
@@ -17,6 +18,7 @@ const Input = (props: {
     width?: number
     margin?: string
     disabled?: boolean
+    loading?: boolean
 }): JSX.Element => {
     const {
         type,
@@ -31,6 +33,7 @@ const Input = (props: {
         width,
         margin,
         disabled,
+        loading,
     } = props
 
     return (
@@ -64,6 +67,7 @@ const Input = (props: {
                 )}
                 {state === 'invalid' && <DangerIconSVG />}
                 {state === 'valid' && <SuccessIconSVG />}
+                {loading && <LoadingWheel size={30} />}
             </div>
         </div>
     )
@@ -78,6 +82,7 @@ Input.defaultProps = {
     width: null,
     margin: null,
     disabled: false,
+    loading: false,
 }
 
 export default Input

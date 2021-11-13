@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import styles from '@styles/components/SearchSelector.module.scss'
 import Input from '@components/Input'
 import ImageTitle from '@components/ImageTitle'
+import Row from '@components/Row'
 
 // general purpose search selector:
 // • text input fires onSearchQuery function
@@ -11,9 +12,11 @@ import ImageTitle from '@components/ImageTitle'
 // todo: add selectedOptions array and allowMultiple boolean?
 
 const SearchSelector = (props: {
-    type: 'space' | 'user'
+    type: 'space' | 'user' | 'topic'
     title?: string
     placeholder?: string
+    margin?: string
+    disabled?: boolean
     state: 'default' | 'valid' | 'invalid'
     errors?: string[]
     options: any[]
@@ -26,6 +29,8 @@ const SearchSelector = (props: {
         type,
         title,
         placeholder,
+        margin,
+        disabled,
         state,
         errors,
         options,
@@ -45,29 +50,43 @@ const SearchSelector = (props: {
     }
 
     return (
-        <div className={styles.wrapper}>
+        <div className={styles.wrapper} style={{ margin }}>
             <Input
                 type='text'
                 title={title}
                 placeholder={placeholder}
+                disabled={disabled}
                 state={state}
                 errors={errors}
                 value={inputValue}
                 onChange={(newValue) => handleSearchQuery(newValue)}
             />
-            {options.length ? (
+            {options.length > 0 && (
                 <div className={styles.dropDown}>
-                    {options.map((option) => (
-                        <ImageTitle
-                            key={option.handle}
-                            type={type}
-                            imagePath={option.flagImagePath}
-                            title={`${option.name} (${option.handle})`}
-                            onClick={() => selectOption(option)}
-                        />
-                    ))}
+                    {type === 'topic'
+                        ? options.map((option) => (
+                              <button
+                                  className={styles.topic}
+                                  type='button'
+                                  onClick={() => selectOption(option)}
+                              >
+                                  <div>
+                                      <option.icon />
+                                  </div>
+                                  <p>{option.name}</p>
+                              </button>
+                          ))
+                        : options.map((option) => (
+                              <ImageTitle
+                                  key={option.handle}
+                                  type={type}
+                                  imagePath={option.flagImagePath}
+                                  title={`${option.name} (${option.handle})`}
+                                  onClick={() => selectOption(option)}
+                              />
+                          ))}
                 </div>
-            ) : null}
+            )}
         </div>
     )
 }
@@ -75,6 +94,8 @@ const SearchSelector = (props: {
 SearchSelector.defaultProps = {
     title: null,
     placeholder: null,
+    margin: null,
+    disabled: false,
     errors: null,
 }
 

@@ -61,6 +61,15 @@ const HolonPageSettings = ({
             .then((res) => setRequests(res.data))
     }
 
+    function updateNotification(id, key, payload) {
+        // const newNotifications = [...notifications]
+        // const notification = newNotifications.find((n) => n.id === id)
+        // notification[key] = payload
+        // setNotifications(newNotifications)
+        // console.log('newNotifications: ', newNotifications)
+    }
+
+
     useEffect(() => {
         setSelectedSpaceSubPage('settings')
         if (!accountDataLoading && spaceHandle !== spaceData.handle) {
@@ -252,6 +261,7 @@ const HolonPageSettings = ({
                                 notification={notification}
                                 location='space'
                                 key={notification.id}
+                                updateNotification={updateNotification}
                             />
                         ))}
                 </>

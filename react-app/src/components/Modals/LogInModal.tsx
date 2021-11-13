@@ -13,9 +13,12 @@ import SuccessMessage from '@components/SuccessMessage'
 
 const LogInModal = (props: { close: () => void }): JSX.Element => {
     const { close } = props
-    const { getAccountData, setRegisterModalOpen, setForgotPasswordModalOpen } = useContext(
-        AccountContext
-    )
+    const {
+        getAccountData,
+        setRegisterModalOpen,
+        setForgotPasswordModalOpen,
+        setAccountDataLoading,
+    } = useContext(AccountContext)
     const { executeRecaptcha } = useGoogleReCaptcha()
 
     type InputState = 'default' | 'valid' | 'invalid'
@@ -54,6 +57,7 @@ const LogInModal = (props: { close: () => void }): JSX.Element => {
                         setLoading(false)
                         setSuccess(true)
                         document.cookie = `accessToken=${res.data}; path=/`
+                        setAccountDataLoading(true)
                         getAccountData()
                         setTimeout(() => close(), 1000)
                     })

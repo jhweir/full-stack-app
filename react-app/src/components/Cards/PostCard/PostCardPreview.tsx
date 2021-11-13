@@ -5,6 +5,7 @@ import { AccountContext } from '@contexts/AccountContext'
 import styles from '@styles/components/PostCard.module.scss'
 import ShowMoreLess from '@components/ShowMoreLess'
 import Markdown from '@components/Markdown'
+import { pluralise, dateCreated } from '@src/Functions'
 import PostCardUrlPreview from './PostCardUrlPreview'
 import SmallFlagImage from '../../SmallFlagImage'
 
@@ -17,8 +18,9 @@ const PostCardPreview = (props: {
     urlDomain: string | null
     urlTitle: string | null
     urlDescription: string | null
+    topic: string | null
 }): JSX.Element => {
-    const { type, spaces, text, url, urlImage, urlDomain, urlTitle, urlDescription } = props
+    const { type, spaces, text, url, urlImage, urlDomain, urlTitle, urlDescription, topic } = props
     const { accountData } = useContext(AccountContext)
 
     const postRef = useRef<HTMLDivElement>(null)
@@ -39,20 +41,22 @@ const PostCardPreview = (props: {
                     </div>
                     <span className={styles.subText}>to</span>
                     <div className={styles.postSpaces}>
-                        {spaces.length > 0 ? (
-                            spaces.map((space) => (
-                                <div style={{ marginRight: 10 }} key={space}>
-                                    {space}
-                                </div>
-                            ))
-                        ) : (
-                            <div style={{ marginRight: 10 }}>all</div>
+                        {spaces[0] && (
+                            <div style={{ marginRight: 5 }} key={spaces[0]}>
+                                {spaces[0]}
+                            </div>
+                        )}
+                        {spaces.length > 1 && (
+                            <p title={spaces.filter((s, i) => i !== 0).join(', ')}>
+                                and {spaces.length - 1} other space{pluralise(spaces.length - 1)}
+                            </p>
                         )}
                     </div>
-                    <span className={styles.subText}>•</span>
                     <div className={styles.link}>
                         <img className={styles.linkIcon} src='/icons/link-solid.svg' alt='' />
-                        <span className={styles.subText}>now</span>
+                        <span className={styles.subText} title={dateCreated(new Date().toString())}>
+                            now
+                        </span>
                     </div>
                     <div
                         className={`${styles.postType} ${
@@ -63,6 +67,11 @@ const PostCardPreview = (props: {
                     </div>
                 </div>
                 <div className={styles.content}>
+                    {type === 'Glass Bead Game' && (
+                        <p>
+                            <b>{topic}</b>
+                        </p>
+                    )}
                     {text && (
                         <div className={styles.text}>
                             <ShowMoreLess height={150}>

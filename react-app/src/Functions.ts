@@ -72,9 +72,9 @@ export function allValid(items: any, setItems: (newItems: any) => void): boolean
     const newItems = { ...items }
     Object.keys(newItems).forEach((itemKey) => {
         const item = newItems[itemKey]
-        const errors = item.validate(item.value)
+        const errors = item.required ? item.validate(item.value) : []
         item.state = errors.length ? 'invalid' : 'valid'
-        item.errors = errors.length ? errors : null
+        item.errors = errors
         if (errors.length) valid = false
     })
     setItems(newItems)
@@ -83,4 +83,8 @@ export function allValid(items: any, setItems: (newItems: any) => void): boolean
 
 export const notNull = (value: number | null): number | false => (value !== null ? value : false)
 
-export const defaultErrorState = { errors: [], state: 'default' as 'default' | 'valid' | 'invalid' }
+export const defaultErrorState = {
+    required: true,
+    errors: [],
+    state: 'default' as 'default' | 'valid' | 'invalid',
+}

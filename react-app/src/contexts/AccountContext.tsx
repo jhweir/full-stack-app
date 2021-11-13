@@ -23,8 +23,8 @@ function AccountContextProvider({ children }: { children: JSX.Element }): JSX.El
     const [loggedIn, setLoggedIn] = useState(false)
     const [accountData, setAccountData] = useState(defaults.accountData)
     const [accountDataLoading, setAccountDataLoading] = useState(true)
-    const [notifications, setNotifications] = useState<any[]>([])
-    const [notificationsLoading, setNotificationsLoading] = useState(true)
+    // const [notifications, setNotifications] = useState<any[]>([])
+    // const [notificationsLoading, setNotificationsLoading] = useState(true)
     // modals (todo: most to be removed...)
     const [alertModalOpen, setAlertModalOpen] = useState(false)
     const [alertMessage, setAlertMessage] = useState('')
@@ -68,32 +68,32 @@ function AccountContextProvider({ children }: { children: JSX.Element }): JSX.El
         setAccountData({ ...accountData, [key]: payload })
     }
 
-    // todo: include offset and set up pagination
-    function getNotifications() {
-        console.log('AccountContext: getNotifications')
-        const accessToken = cookies.get('accessToken')
-        const authHeader = { headers: { Authorization: `Bearer ${accessToken}` } }
-        if (!accessToken) setNotificationsLoading(false)
-        else {
-            axios
-                .get(`${config.apiURL}/account-notifications`, authHeader)
-                .then((res) => {
-                    console.log('res.data: ', res.data)
-                    setNotifications(res.data)
-                    setNotificationsLoading(false)
-                })
-                .catch((error) => console.log('GET account-notifications error: ', error))
-        }
-    }
+    // // todo: include offset and set up pagination, move to notifications page
+    // function getNotifications() {
+    //     console.log('AccountContext: getNotifications')
+    //     const accessToken = cookies.get('accessToken')
+    //     const authHeader = { headers: { Authorization: `Bearer ${accessToken}` } }
+    //     if (!accessToken) setNotificationsLoading(false)
+    //     else {
+    //         axios
+    //             .get(`${config.apiURL}/account-notifications`, authHeader)
+    //             .then((res) => {
+    //                 console.log('res.data: ', res.data)
+    //                 setNotifications(res.data)
+    //                 setNotificationsLoading(false)
+    //             })
+    //             .catch((error) => console.log('GET account-notifications error: ', error))
+    //     }
+    // }
 
-    function updateAccountNotification(id, key, payload) {
-        console.log(`AccountContext: updateAccountNotification(${id}, ${key}, ${payload})`)
-        const newNotifications = [...notifications]
-        const notification = newNotifications.find((n) => n.id === id)
-        notification[key] = payload
-        setNotifications(newNotifications)
-        console.log('newNotifications: ', newNotifications)
-    }
+    // function updateAccountNotification(id, key, payload) {
+    //     console.log(`AccountContext: updateAccountNotification(${id}, ${key}, ${payload})`)
+    //     const newNotifications = [...notifications]
+    //     const notification = newNotifications.find((n) => n.id === id)
+    //     notification[key] = payload
+    //     setNotifications(newNotifications)
+    //     console.log('newNotifications: ', newNotifications)
+    // }
 
     function logOut() {
         console.log('AccountContext: logOut')
@@ -110,9 +110,10 @@ function AccountContextProvider({ children }: { children: JSX.Element }): JSX.El
                 loggedIn,
                 accountData,
                 accountDataLoading,
-                notifications,
-                setNotifications,
-                notificationsLoading,
+                setAccountDataLoading,
+                // notifications,
+                // setNotifications,
+                // notificationsLoading,
                 // modals (todo: most to be removed...)
                 alertModalOpen,
                 setAlertModalOpen,
@@ -149,8 +150,8 @@ function AccountContextProvider({ children }: { children: JSX.Element }): JSX.El
                 // functions
                 getAccountData,
                 updateAccountData,
-                getNotifications,
-                updateAccountNotification,
+                // getNotifications,
+                // updateAccountNotification,
                 logOut,
             }}
         >

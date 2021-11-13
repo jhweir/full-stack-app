@@ -39,6 +39,7 @@ router.get('/account-data', authenticateToken, (req, res) => {
 
 router.get('/account-notifications', authenticateToken, (req, res) => {
     const accountId = req.user.id
+
     Notification
         .findAll({
             where: { ownerId: accountId },
@@ -81,20 +82,29 @@ router.post('/update-account-setting', authenticateToken, async (req, res) => {
     }
 })
 
-router.post('/toggle-notification-seen', authenticateToken, (req, res) => {
+router.post('/mark-notifications-seen', authenticateToken, (req, res) => {
     const accountId = req.user.id
-    const { notificationId, seen } = req.body
+    const ids = req.body
+    console.log('ids: ', ids)
     Notification
-        .update({ seen }, { where: { id: notificationId, ownerId: accountId } })
+        .update({ seen: true }, { where: { id: ids, ownerId: accountId } })
         .then(res.send('success'))
 })
 
-router.post('/mark-all-notifications-seen', authenticateToken , (req, res) => {
-    const accountId = req.user.id
-    Notification
-        .update({ seen: true }, { where: { ownerId: accountId } })
-        .then(res.send('success'))
-})
+// router.post('/toggle-notification-seen', authenticateToken, (req, res) => {
+//     const accountId = req.user.id
+//     const { notificationId, seen } = req.body
+//     Notification
+//         .update({ seen }, { where: { id: notificationId, ownerId: accountId } })
+//         .then(res.send('success'))
+// })
+
+// router.post('/mark-all-notifications-seen', authenticateToken , (req, res) => {
+//     const accountId = req.user.id
+//     Notification
+//         .update({ seen: true }, { where: { ownerId: accountId } })
+//         .then(res.send('success'))
+// })
 
 // move to Space routes?
 router.post('/respond-to-mod-invite', authenticateToken, async (req, res) => {

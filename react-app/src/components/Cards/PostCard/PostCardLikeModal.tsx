@@ -1,14 +1,21 @@
 import React, { useContext } from 'react'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
-import config from '../../../Config'
-import styles from '../../../styles/components/PostCardLikeModal.module.scss'
-import CloseButton from '../../CloseButton'
-import SmallFlagImage from '../../SmallFlagImage'
-import { AccountContext } from '../../../contexts/AccountContext'
-import { SpaceContext } from '../../../contexts/SpaceContext'
-import CloseOnClickOutside from '../../CloseOnClickOutside'
-import { IPost } from '../../../Interfaces'
+import config from '@src/Config'
+import styles from '@styles/components/PostCardLikeModal.module.scss'
+// import CloseButton from '@components/CloseButton'
+import SmallFlagImage from '@components/SmallFlagImage'
+import { AccountContext } from '@contexts/AccountContext'
+import { SpaceContext } from '@contexts/SpaceContext'
+// import CloseOnClickOutside from '../../CloseOnClickOutside'
+import { IPost } from '@src/Interfaces'
+import Modal from '@components/Modal'
+import Column from '@components/Column'
+import Row from '@components/Row'
+import Button from '@components/Button'
+import ImageTitle from '@components/ImageTitle'
+import { v4 as uuidv4 } from 'uuid'
+import { isPlural, pluralise } from '@src/Functions'
 
 const PostCardLikeModal = (props: {
     postData: Partial<IPost>
@@ -35,11 +42,14 @@ const PostCardLikeModal = (props: {
         setAccountLike,
     } = props
 
+    console.log('likes: ', likes)
+
     const { accountData } = useContext(AccountContext)
     const { spaceData } = useContext(SpaceContext)
 
+    // todo: rethink state management, add success message, require auth token
+
     function addLike() {
-        console.log('PostCardLikeModal: addLike')
         axios
             .post(`${config.apiURL}/add-like`, {
                 accountId: accountData.id,
@@ -54,6 +64,7 @@ const PostCardLikeModal = (props: {
                     setTotalReactions(totalReactions + 1)
                     setTotalLikes(totalLikes + 1)
                     setAccountLike(1)
+                    // todo: update state directly
                     setTimeout(() => {
                         getReactionData()
                     }, 200)
@@ -64,7 +75,6 @@ const PostCardLikeModal = (props: {
     }
 
     function removeLike() {
-        console.log('PostCardLikeModal: removeLike')
         axios
             .post(`${config.apiURL}/remove-like`, {
                 accountId: accountData.id,
@@ -76,6 +86,7 @@ const PostCardLikeModal = (props: {
                     setTotalReactions(totalReactions - 1)
                     setTotalLikes(totalLikes - 1)
                     setAccountLike(0)
+                    // todo: update state directly
                     setTimeout(() => {
                         getReactionData()
                     }, 200)
@@ -86,60 +97,36 @@ const PostCardLikeModal = (props: {
     }
 
     return (
-        <div className={styles.modalWrapper}>
-            <CloseOnClickOutside onClick={() => setLikeModalOpen(false)}>
-                <div className={styles.modal}>
-                    <CloseButton size={20} onClick={() => setLikeModalOpen(false)} />
-                    <span className={styles.title}>Likes</span>
-                    {likes.length === 0 ? (
-                        <span className={`${styles.text} mb-20`}>
-                            <i>No likes yet...</i>
-                        </span>
-                    ) : (
-                        <div className={styles.likes}>
-                            {likes.map((like) => (
-                                <div className={styles.like} key={like}>
-                                    <Link
-                                        className={styles.imageTextLink}
-                                        to={`/u/${like.creator.handle}`}
-                                    >
-                                        <SmallFlagImage
-                                            type='user'
-                                            size={30}
-                                            imagePath={like.creator.flagImagePath}
-                                        />
-                                        <span className={`${styles.text} ml-5`}>
-                                            {like.creator.name}
-                                        </span>
-                                    </Link>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                    {accountLike === 0 ? (
-                        <div
-                            className='wecoButton'
-                            role='button'
-                            tabIndex={0}
-                            onClick={addLike}
-                            onKeyDown={addLike}
-                        >
-                            Add Like
-                        </div>
-                    ) : (
-                        <div
-                            className='wecoButton'
-                            role='button'
-                            tabIndex={0}
-                            onClick={removeLike}
-                            onKeyDown={removeLike}
-                        >
-                            Remove Like
-                        </div>
-                    )}
-                </div>
-            </CloseOnClickOutside>
-        </div>
+        <Modal close={() => setLikeModalOpen(false)} centered>
+            <Column centerX width={250}>
+                <h1>
+                    {likes.length
+                        ? `${likes.length} like${pluralise(likes.length)}`
+                        : 'No likes yet...'}
+                </h1>
+                {!!likes && (
+                    <Column>
+                        {likes.map((like) => (
+                            <ImageTitle
+                                key={like.id}
+                                type='user'
+                                imagePath={like.creator.flagImagePath}
+                                title={like.creator.name}
+                                link={`/u/${like.creator.handle}`}
+                                margin='0 0 10px 0'
+                            />
+                        ))}
+                    </Column>
+                )}
+                <Button
+                    text={`${accountLike < 1 ? 'Add' : 'Remove'} like`}
+                    colour={accountLike < 1 ? 'blue' : 'red'}
+                    size='medium'
+                    margin={likes.length ? '20px 0 0 0' : ''}
+                    onClick={() => (accountLike < 1 ? addLike() : removeLike())}
+                />
+            </Column>
+        </Modal>
     )
 }
 

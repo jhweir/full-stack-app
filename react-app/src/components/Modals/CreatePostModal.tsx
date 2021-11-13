@@ -1,14 +1,12 @@
-import React, { useContext, useState, useEffect } from 'react'
+/* eslint-disable no-param-reassign */
+import React, { useContext, useState } from 'react'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
 import Cookies from 'universal-cookie'
-
 import { SpaceContext } from '@contexts/SpaceContext'
 import { AccountContext } from '@contexts/AccountContext'
-// import { PostContext } from '@contexts/PostContext'
 import config from '@src/Config'
 import styles from '@styles/components/CreatePostModal.module.scss'
-// import UrlPreview from './UrlPreview'
 import Modal from '@components/Modal'
 import Column from '@components/Column'
 import Row from '@components/Row'
@@ -16,63 +14,108 @@ import Input from '@components/Input'
 import Button from '@components/Button'
 import LoadingWheel from '@components/LoadingWheel'
 import SuccessMessage from '@components/SuccessMessage'
-import SpaceInput from '@components/SpaceInput'
 import DropDownMenu from '@components/DropDownMenu'
-// import SmallFlagImage from '@components/SmallFlagImage'
+import SearchSelector from '@components/SearchSelector'
+import ImageTitle from '@components/ImageTitle'
+import CloseButton from '@components/CloseButton'
 import PostCardPreview from '@components/Cards/PostCard/PostCardPreview'
 import { allValid, defaultErrorState } from '@src/Functions'
 import GlassBeadGameTopics from '@src/GlassBeadGameTopics'
 
-const CreatePostModal = (): JSX.Element => {
-    const { setCreatePostModalOpen } = useContext(AccountContext)
-    const { spaceData, getSpaceData, getSpacePosts } = useContext(SpaceContext)
+// todo: create custom regex and add to @src/Functions
+function isValidUrl(string) {
+    try {
+        new URL(string)
+    } catch (_) {
+        return false
+    }
+    return true
+}
 
+const CreatePostModal = (): JSX.Element => {
+    // todo: set create post modal open in page instead of account context
+    const { setCreatePostModalOpen, accountData } = useContext(AccountContext)
+    const { spaceData, spacePosts, setSpacePosts } = useContext(SpaceContext)
     const [formData, setFormData] = useState({
+        postType: {
+            value: 'Text',
+            ...defaultErrorState,
+        },
         text: {
             value: '',
-            validate: (v) => (!v || v.length > 5000 ? ['Must be less than 5K characters'] : []),
+            ...defaultErrorState,
+        },
+        url: {
+            value: '',
+            ...defaultErrorState,
+        },
+        topic: {
+            value: '',
             ...defaultErrorState,
         },
     })
-    const { text } = formData
-
-    const [postType, setPostType] = useState('Text')
-    const [subType, setSubType] = useState('')
-    // const [text, setText] = useState('')
-    const [url, setUrl] = useState<string | null>(null)
+    const { postType, text, url, topic } = formData
+    const [spaceOptions, setSpaceOptions] = useState<any[]>([])
+    const [selectedSpaces, setSelectedSpaces] = useState<any[]>([])
+    const [topicOptions, setTopicOptions] = useState<any[]>([])
+    const [selectedArchetopic, setSelectedArchetopic] = useState<any>(null)
     const [urlLoading, setUrlLoading] = useState(false)
     const [urlImage, setUrlImage] = useState(null)
     const [urlDomain, setUrlDomain] = useState(null)
     const [urlTitle, setUrlTitle] = useState(null)
     const [urlDescription, setUrlDescription] = useState(null)
-    const [addedSpaces, setAddedSpaces] = useState([])
-
-    const [GBGTopic, setGBGTopic] = useState('Other')
-    const [GBGCustomTopic, setGBGCustomTopic] = useState('')
-    const [GBGCustomTopicError, setGBGCustomTopicError] = useState(false)
-
-    const [textError, setTextError] = useState(false)
-    const [urlError, setUrlError] = useState(false)
-    const [newSpaceError, setNewSpaceError] = useState(false)
-
     const [loading, setLoading] = useState(false)
-    const [successMessage, setSuccessMessage] = useState('')
-    const errors = false // nameState === 'invalid' || handleState === 'invalid' || descriptionState === 'invalid'
-
+    const [saved, setSaved] = useState(false)
     const cookies = new Cookies()
-    const accessToken = cookies.get('accessToken')
 
     function updateValue(name, value) {
-        setFormData({ ...formData, [name]: { ...formData[name], value, state: 'default' } })
+        let resetState = {}
+        if (name === 'postType')
+            resetState = {
+                text: { ...formData.text, state: 'default' },
+                url: { ...formData.url, state: 'default' },
+                topic: { ...formData.topic, state: 'default' },
+            }
+        setFormData({
+            ...formData,
+            [name]: { ...formData[name], value, state: 'default' },
+            ...resetState,
+        })
     }
 
-    function isValidUrl(string) {
-        try {
-            new URL(string)
-        } catch (_) {
-            return false
+    function findSpaces(query) {
+        if (!query) setSpaceOptions([])
+        else {
+            const blacklist = [spaceData.id, ...selectedSpaces.map((s) => s.id)]
+            const data = { query, blacklist }
+            axios
+                .post(`${config.apiURL}/viable-post-spaces`, data)
+                .then((res) => setSpaceOptions(res.data))
+                .catch((error) => console.log(error))
         }
-        return true
+    }
+
+    function addSpace(space) {
+        setSpaceOptions([])
+        setSelectedSpaces((s) => [...s, space])
+    }
+
+    function removeSpace(spaceId) {
+        setSelectedSpaces((s) => [...s.filter((space) => space.id !== spaceId)])
+    }
+
+    function findTopics(query) {
+        const filteredTopics = GlassBeadGameTopics.filter((t) =>
+            t.name.toLowerCase().includes(query.toLowerCase())
+        )
+        setTopicOptions(filteredTopics)
+        updateValue('topic', query)
+    }
+
+    function selectTopic(selectedTopic) {
+        setTopicOptions([])
+        setSelectedArchetopic(selectedTopic)
+        updateValue('topic', selectedTopic.name)
     }
 
     const scrapeURL = (urlString: string): void => {
@@ -108,190 +151,306 @@ const CreatePostModal = (): JSX.Element => {
 
     function createPost(e) {
         e.preventDefault()
-        if (allValid(formData, setFormData)) {
-            console.log('all valid!')
+        // add validation with latest values to form data (is there a way around this?)
+        const newFormData = {
+            postType: {
+                ...postType,
+                required: false,
+            },
+            text: {
+                ...text,
+                required: postType.value !== 'Url',
+                // validate: (v) => (!v || v.length > 5000 ? ['Required. Max 5K characters'] : []),
+                validate: (v) => {
+                    const errors: string[] = []
+                    if (!v) errors.push('Required')
+                    if (v.length > 5000) errors.push('Must be less than 5K characters')
+                    return errors
+                },
+            },
+            url: {
+                ...url,
+                required: postType.value === 'Url',
+                validate: (v) => (!isValidUrl(v) ? ['Must be a valid URL'] : []),
+            },
+            topic: {
+                ...topic,
+                required: postType.value === 'Glass Bead Game',
+                validate: (v) => (!selectedArchetopic && !v ? ['Required'] : []),
+            },
         }
-        // const invalidText = (!text || text.length > 5000) && !url
-        // const invalidUrl = postType === 'Url' && !url
-        // const invalidGBGCustomTopic =
-        //     postType === 'Glass Bead Game' && GBGTopic === 'Other' && GBGCustomTopic === ''
-        // if (invalidText) setTextError(true)
-        // if (invalidUrl) setUrlError(true)
-        // if (invalidGBGCustomTopic) setGBGCustomTopicError(true)
-        // if (!invalidText && !invalidUrl && !invalidGBGCustomTopic && !urlLoading && accessToken) {
-        //     setLoading(true)
-        //     const postData = {
-        //         type: postType.replace(/\s+/g, '-').toLowerCase(),
-        //         subType,
-        //         state: 'visible',
-        //         text,
-        //         url,
-        //         urlImage,
-        //         urlDomain,
-        //         urlTitle,
-        //         urlDescription,
-        //         spaceHandles: addedSpaces.length
-        //             ? [...addedSpaces, spaceData.handle]
-        //             : [spaceData.handle],
-        //         GBGTopic,
-        //         GBGCustomTopic,
-        //     }
-        //     const options = { headers: { Authorization: `Bearer ${accessToken}` } }
-        //     axios.post(`${config.apiURL}/create-post`, postData, options).then((res) => {
-        //         setLoading(false)
-        //         if (res.data === 'success') {
-        //             setSuccessMessage('Post created!')
-        //             // setCreatePostModalOpen(false)
-        //             // resetForm()
-        //             // todo: update state directly
-        //             // setTimeout(() => {
-        //             //     getSpaceData()
-        //             //     getSpacePosts()
-        //             // }, 300)
-        //         }
-        //     })
-        // }
+        if (allValid(newFormData, setFormData)) {
+            setLoading(true)
+            const postData = {
+                type: postType.value.replace(/\s+/g, '-').toLowerCase(),
+                text: text.value,
+                url: url.value,
+                urlImage,
+                urlDomain,
+                urlTitle,
+                urlDescription,
+                topic: selectedArchetopic ? selectedArchetopic.name : topic.value,
+                spaceHandles: [...selectedSpaces.map((s) => s.handle), spaceData.handle],
+            }
+            const accessToken = cookies.get('accessToken')
+            const authHeader = { headers: { Authorization: `Bearer ${accessToken}` } }
+            axios
+                .post(`${config.apiURL}/create-post`, postData, authHeader)
+                .then((res) => {
+                    setLoading(false)
+                    setSaved(true)
+                    // todo: update direct spaces
+                    const DirectSpaces = [spaceData, ...selectedSpaces]
+                    DirectSpaces.forEach((s) => {
+                        s.type = 'post'
+                        s.state = 'active'
+                    })
+                    const newPost = {
+                        ...res.data,
+                        total_comments: 0,
+                        total_reactions: 0,
+                        creator: {
+                            handle: accountData.handle,
+                            name: accountData.name,
+                            flagImagePath: accountData.flagImagePath,
+                        },
+                        DirectSpaces,
+                        GlassBeadGame: { topic: topic.value },
+                    }
+                    setSpacePosts([newPost, ...spacePosts])
+                    setTimeout(() => setCreatePostModalOpen(false), 1000)
+                })
+                .catch((error) => console.log(error))
+        }
     }
+
+    const postTypeName = ['Text', 'Url'].includes(postType.value)
+        ? `${postType.value.toLowerCase()} post`
+        : postType.value
 
     return (
         <Modal close={() => setCreatePostModalOpen(false)} centered>
             <h1>
-                Create a new{' '}
-                {['Text', 'Url'].includes(postType) ? `${postType.toLowerCase()} post` : postType}{' '}
-                in{' '}
+                Create a new {postTypeName} in{' '}
                 <Link to={`/s/${spaceData.handle}`} onClick={() => setCreatePostModalOpen(false)}>
                     {spaceData.name}
                 </Link>
             </h1>
 
             <form onSubmit={createPost}>
-                <Column>
-                    <div className={styles.dropDownOptions}>
-                        <DropDownMenu
-                            title='Post Type'
-                            options={['Text', 'Url', 'Glass Bead Game']}
-                            selectedOption={postType}
-                            setSelectedOption={setPostType}
-                            orientation='horizontal'
-                        />
-                        {postType === 'Glass Bead Game' && (
-                            <>
-                                <DropDownMenu
-                                    title='Topic'
-                                    options={['Other', ...GlassBeadGameTopics.map((t) => t.name)]}
-                                    selectedOption={GBGTopic}
-                                    setSelectedOption={setGBGTopic}
-                                    orientation='horizontal'
-                                />
-                                {/* {GBGTopic === 'Other' && (
-                                    // <textarea
-                                    //     className={`wecoInput textArea white mb-10 ${
-                                    //         GBGCustomTopicError && 'error'
-                                    //     }`}
-                                    //     style={{ height: 30, width: 250 }}
-                                    //     placeholder='title...'
-                                    //     value={GBGCustomTopic}
-                                    //     onChange={(e) => {
-                                    //         setGBGCustomTopic(e.target.value)
-                                    //         setGBGCustomTopicError(false)
-                                    //     }}
-                                    // />
-                                    <Input
-                                        type='text-area'
-                                        // title='Handle (the unique identifier used in the spaces url):'
-                                        // prefix='weco.io/s/'
-                                        placeholder='custom topic...'
-                                        state={handleState}
-                                        errors={handleErrors}
-                                        value={handle}
-                                        onChange={(newValue) => {
-                                            setHandleState('default')
-                                            setHandle(newValue.toLowerCase().replace(/[^a-z0-9]/g, '-'))
+                <Column width={700}>
+                    <DropDownMenu
+                        title='Post Type'
+                        options={['Text', 'Url', 'Glass Bead Game']}
+                        selectedOption={postType.value}
+                        setSelectedOption={(value) => updateValue('postType', value)}
+                        orientation='horizontal'
+                    />
+                    {postType.value === 'Glass Bead Game' && (
+                        <Column margin='5px 0 0 0'>
+                            <SearchSelector
+                                type='topic'
+                                title='Choose a topic for the game'
+                                placeholder={
+                                    selectedArchetopic ? 'archetopic selected' : 'topic...'
+                                }
+                                margin='0 0 15px 0'
+                                state={topic.state}
+                                disabled={!!selectedArchetopic}
+                                errors={topic.errors}
+                                onSearchQuery={(query) => findTopics(query)}
+                                onOptionSelected={(selectedTopic) => selectTopic(selectedTopic)}
+                                options={topicOptions}
+                            />
+                            {selectedArchetopic && (
+                                <Row margin='0 10px 10px 0' centerY>
+                                    <div className={styles.archetopic}>
+                                        <div>
+                                            <selectedArchetopic.icon />
+                                        </div>
+                                        <p>{selectedArchetopic.name}</p>
+                                    </div>
+                                    <CloseButton
+                                        size={17}
+                                        onClick={() => {
+                                            setSelectedArchetopic(null)
+                                            updateValue('topic', '')
                                         }}
                                     />
-                                )} */}
-                            </>
-                        )}
-                    </div>
+                                </Row>
+                            )}
+                        </Column>
+                    )}
+                    {postType.value === 'Url' && (
+                        <Input
+                            title='Url'
+                            type='text'
+                            placeholder='url...'
+                            margin='0 0 15px 0'
+                            loading={urlLoading}
+                            state={url.state}
+                            errors={url.errors}
+                            value={url.value}
+                            onChange={(value) => {
+                                updateValue('url', value)
+                                scrapeURL(value)
+                            }}
+                        />
+                    )}
                     <Input
+                        title={`Text${
+                            postType.value === 'Url' ? ' (not required for url posts)' : ''
+                        }`}
                         type='text-area'
-                        title='Text'
                         placeholder='text...'
-                        margin='0 0 10px 0'
+                        margin='0 0 15px 0'
                         rows={3}
                         state={text.state}
                         errors={text.errors}
                         value={text.value}
                         onChange={(value) => updateValue('text', value)}
                     />
-                    {/* <textarea
-                        className={`wecoInput textArea white mb-10 ${textError && 'error'}`}
-                        placeholder='Text (max 20,000 characters)'
-                        value={text}
-                        onChange={(e) => {
-                            setText(e.target.value)
-                            setTextError(false)
-                            resizeTextArea(e.target)
-                        }}
-                    /> */}
-                    {postType === 'Url' && (
-                        <div className={styles.urlInput}>
-                            <input
-                                className={`wecoInput white mb-10 ${urlError && 'error'}`}
-                                placeholder='Url'
-                                type='url'
-                                value={url || undefined}
-                                onChange={(e) => {
-                                    setUrlError(false)
-                                    // setUrlFlashMessage('')
-                                    setUrl(e.target.value)
-                                    scrapeURL(e.target.value)
-                                }}
-                            />
-                            {urlLoading && <div className={styles.spinner} />}
-                        </div>
+                    <SearchSelector
+                        type='space'
+                        title='Add any other spaces you want the post to appear in'
+                        placeholder='space name or handle...'
+                        margin='0 0 10px 0'
+                        state='default'
+                        // errors={inputErrors}
+                        onSearchQuery={(query) => findSpaces(query)}
+                        onOptionSelected={(space) => addSpace(space)}
+                        options={spaceOptions}
+                    />
+                    {selectedSpaces.length > 0 && (
+                        <Row wrap>
+                            {selectedSpaces.map((space) => (
+                                <Row margin='0 10px 10px 0' centerY>
+                                    <ImageTitle
+                                        type='user'
+                                        imagePath={space.flagImagePath}
+                                        title={`${space.name} (${space.handle})`}
+                                        imageSize={27}
+                                        margin='0 3px 0 0'
+                                    />
+                                    <CloseButton size={17} onClick={() => removeSpace(space.id)} />
+                                </Row>
+                            ))}
+                        </Row>
                     )}
-                    <SpaceInput
-                        centered={false}
-                        text='Add other spaces you want the post to appear in:'
-                        blockedSpaces={[]}
-                        addedSpaces={addedSpaces}
-                        setAddedSpaces={setAddedSpaces}
-                        newSpaceError={newSpaceError}
-                        setNewSpaceError={setNewSpaceError}
-                        setParentModalOpen={setCreatePostModalOpen}
-                    />
-
-                    <h2>Preview: </h2>
-                    <PostCardPreview
-                        type={postType}
-                        spaces={[spaceData.handle, ...addedSpaces]}
-                        text={text.value}
-                        url={url}
-                        urlImage={urlImage}
-                        urlDomain={urlDomain}
-                        urlTitle={urlTitle}
-                        urlDescription={urlDescription}
-                    />
+                    <Column margin='20px 0 10px 0'>
+                        <h2>Post preview</h2>
+                        <PostCardPreview
+                            type={postType.value}
+                            spaces={[spaceData.handle, ...selectedSpaces.map((s) => s.handle)]}
+                            text={text.value}
+                            url={url.value}
+                            urlImage={urlImage}
+                            urlDomain={urlDomain}
+                            urlTitle={urlTitle}
+                            urlDescription={urlDescription}
+                            topic={topic.value}
+                        />
+                    </Column>
                 </Column>
-                <div className={styles.footer}>
+                <Row>
                     <Button
                         text='Create Post'
                         colour='blue'
                         size='medium'
                         margin='0 10px 0 0'
-                        disabled={loading || successMessage.length > 0 || errors}
+                        disabled={urlLoading || loading || saved}
                         submit
                     />
                     {loading && <LoadingWheel />}
-                    {successMessage.length > 0 && <SuccessMessage text={successMessage} />}
-                </div>
+                    {saved && <SuccessMessage text='Post created!' />}
+                </Row>
             </form>
         </Modal>
     )
 }
 
 export default CreatePostModal
+
+// attempted to auto add archetopic space to selected spaces in selectTopic() function
+// const newSelectedSpaces = [...selectedSpaces]
+// newSelectedSpaces.filter((s) => s.handle !== `gbg${selectedArchetopic.toLowerCase()}`)
+// newSelectedSpaces.push({ handle: `gbg${topic.name.toLowerCase()}` })
+// setSelectedSpaces(newSelectedSpaces)
+
+/* <SpaceInput
+    centered={false}
+    text='Add other spaces you want the post to appear in:'
+    blockedSpaces={[]}
+    addedSpaces={addedSpaces}
+    setAddedSpaces={setAddedSpaces}
+    newSpaceError={newSpaceError}
+    setNewSpaceError={setNewSpaceError}
+    setParentModalOpen={setCreatePostModalOpen}
+/> */
+
+/* <DropDownMenu
+        title='Topic'
+        options={['Other', ...GlassBeadGameTopics.map((t) => t.name)]}
+        selectedOption={GBGTopic}
+        setSelectedOption={setGBGTopic}
+        orientation='horizontal'
+    /> */
+/* {GBGTopic === 'Other' && (
+        // <textarea
+        //     className={`wecoInput textArea white mb-10 ${
+        //         GBGCustomTopicError && 'error'
+        //     }`}
+        //     style={{ height: 30, width: 250 }}
+        //     placeholder='title...'
+        //     value={GBGCustomTopic}
+        //     onChange={(e) => {
+        //         setGBGCustomTopic(e.target.value)
+        //         setGBGCustomTopicError(false)
+        //     }}
+        // />
+        <Input
+            type='text-area'
+            // title='Handle (the unique identifier used in the spaces url):'
+            // prefix='weco.io/s/'
+            placeholder='custom topic...'
+            state={handleState}
+            errors={handleErrors}
+            value={handle}
+            onChange={(newValue) => {
+                setHandleState('default')
+                setHandle(newValue.toLowerCase().replace(/[^a-z0-9]/g, '-'))
+            }}
+        />
+    )} */
+
+/* <textarea
+    className={`wecoInput textArea white mb-10 ${textError && 'error'}`}
+    placeholder='Text (max 20,000 characters)'
+    value={text}
+    onChange={(e) => {
+        setText(e.target.value)
+        setTextError(false)
+        resizeTextArea(e.target)
+    }}
+/> */
+
+/* {postType === 'Url' && (
+    <div className={styles.urlInput}>
+        <input
+            className={`wecoInput white mb-10 ${urlError && 'error'}`}
+            placeholder='Url'
+            type='url'
+            value={url || undefined}
+            onChange={(e) => {
+                setUrlError(false)
+                // setUrlFlashMessage('')
+                setUrl(e.target.value)
+                scrapeURL(e.target.value)
+            }}
+        />
+        {urlLoading && <div className={styles.spinner} />}
+    </div>
+)} */
 
 // import PollAnswerForm from '@components/PostPage/Poll/PollAnswerForm'
 

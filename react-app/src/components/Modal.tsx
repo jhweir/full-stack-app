@@ -12,10 +12,10 @@ const Modal = (props: {
 }): JSX.Element => {
     const { close, children, minWidth, maxWidth, centered } = props
     return (
-        <div className={styles.background}>
+        <div className={`${styles.background} hide-scrollbars`}>
             <CloseOnClickOutside onClick={close}>
                 <div
-                    className={`${styles.modal} ${centered && styles.centered}`}
+                    className={`${styles.modal} ${centered && styles.centered} hide-scrollbars`}
                     style={{ minWidth, maxWidth }}
                 >
                     <div className={styles.closeButtonWrapper}>

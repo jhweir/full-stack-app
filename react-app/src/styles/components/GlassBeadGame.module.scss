@@ -48,6 +48,7 @@
                 > h1 {
                     font-size: 14px;
                     font-weight: 800;
+                    margin: 0;
                 }
                 > p {
                     margin-left: 3px;
@@ -93,6 +94,7 @@
     flex-direction: column;
     align-items: center;
     position: relative;
+    h1 { margin: 0 }
 }
 .gameControls {
     position: absolute;
@@ -147,8 +149,18 @@
         position: relative;
         margin-bottom: $padding;
         &:last-child { margin-bottom: 0 }
+        > svg {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            top: calc(50% - 30px);
+            left: calc(50% - 30px);
+            color: $grey6;
+        }
         > video {
             border-radius: 10px;
+            background-color: $grey4;
+            object-fit: cover;
         }
         > .videoUser {
             position: absolute;

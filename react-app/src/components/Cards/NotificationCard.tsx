@@ -100,9 +100,10 @@ const State = (props: {
 const NotificationCard = (props: {
     notification: any
     location: 'account' | 'space'
+    updateNotification: (id, key, payload) => void
 }): JSX.Element => {
     // todo: add location prop: 'account' | 'space'
-    const { notification, location } = props
+    const { notification, location, updateNotification } = props
     const {
         id,
         type,
@@ -115,9 +116,9 @@ const NotificationCard = (props: {
         createdAt,
     } = notification
 
-    console.log(notification)
+    // console.log(notification)
 
-    const { accountData, updateAccountData, updateAccountNotification } = useContext(AccountContext)
+    const { accountData, updateAccountData } = useContext(AccountContext)
     const { spaceData } = useContext(SpaceContext)
 
     const [seen, setSeen] = useState(notification.seen)
@@ -161,7 +162,7 @@ const NotificationCard = (props: {
                 .then((res) => {
                     if (res.status === 200) {
                         // update account context
-                        updateAccountNotification(id, 'state', response)
+                        updateNotification(id, 'state', response)
                         if (response === 'accepted') {
                             const newModeratedSpaces = [
                                 ...accountData.ModeratedHolons,
@@ -175,8 +176,8 @@ const NotificationCard = (props: {
                         }
                         if (!seen) {
                             setSeen(true)
-                            // todo: remove updateAccountNotification function when notifications fetched on component mount
-                            updateAccountNotification(id, 'seen', true)
+                            // todo: remove updateNotification function when notifications fetched on component mount
+                            updateNotification(id, 'seen', true)
                             updateAccountData(
                                 'unseen_notifications',
                                 accountData.unseen_notifications - 1
@@ -210,10 +211,10 @@ const NotificationCard = (props: {
                 .post(`${config.apiURL}/respond-to-parent-space-request`, data, authHeader)
                 .then((res) => {
                     if (res.data === 'success') {
-                        updateAccountNotification(id, 'state', response)
+                        updateNotification(id, 'state', response)
                         if (!seen) {
                             setSeen(true)
-                            updateAccountNotification(id, 'seen', true)
+                            updateNotification(id, 'seen', true)
                             updateAccountData(
                                 'unseen_notifications',
                                 accountData.unseen_notifications - 1
@@ -228,8 +229,10 @@ const NotificationCard = (props: {
         }
     }
 
+    // todo: use switch case to render different notification types
+
     return (
-        <div className={`${styles.wrapper} ${seen && styles.seen}`}>
+        <div className={styles.wrapper}>
             {location === 'account' && (
                 <>
                     {type === 'welcome-message' && (
@@ -374,13 +377,13 @@ const NotificationCard = (props: {
                         </Content>
                     )}
 
-                    <button
+                    {/* <button
                         className={styles.seenButton}
                         type='button'
                         onClick={() => toggleSeen()}
                     >
                         {seen ? <EyeOpenIconSVG /> : <EyeClosedIconSVG />}
-                    </button>
+                    </button> */}
                 </>
             )}
 

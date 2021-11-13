@@ -13,14 +13,11 @@ import FlagImage from '@components/FlagImage'
 import DeleteItemModal from '@components/Modals/DeleteItemModal'
 import ShowMoreLess from '@components/ShowMoreLess'
 import Markdown from '@components/Markdown'
-import { timeSinceCreated, dateCreated } from '@src/Functions'
+import { timeSinceCreated, dateCreated, pluralise } from '@src/Functions'
 import { IPost } from '@src/Interfaces'
+import { v4 as uuidv4 } from 'uuid'
 
-const PostCard = (props: {
-    postData: Partial<IPost>
-    index?: number
-    location: string
-}): JSX.Element => {
+const PostCard = (props: { postData: any; index?: number; location: string }): JSX.Element => {
     const { postData, index, location } = props
     const {
         loggedIn,
@@ -63,6 +60,7 @@ const PostCard = (props: {
         account_link,
         DirectSpaces,
         IndirectSpaces,
+        GlassBeadGame,
     } = postData
 
     // local post state
@@ -144,9 +142,7 @@ const PostCard = (props: {
 
     return (
         <div className={`${styles.post} ${locationStyle}`} ref={postRef} key={id}>
-            {/* {location !== 'post-page' && location !== 'holon-post-map' && location !== 'create-post-modal' &&
-                <div className={styles.index}>{index + 1}</div>
-            } */}
+            {/* <div className={styles.index}>{index + 1}</div> */}
             <div className={styles.body}>
                 <div className={styles.tags}>
                     <Link to={`/u/${creator && creator.handle}`} className={styles.creator}>
@@ -158,30 +154,38 @@ const PostCard = (props: {
                         <span className={styles.creatorName}>{creator && creator.name}</span>
                     </Link>
                     <span className={styles.subText}>to</span>
-                    <div className={styles.postSpaces}>
-                        {postSpaces && postSpaces.length > 0 ? (
-                            postSpaces.map((space) => (
-                                <>
-                                    {space.state === 'active' ? (
-                                        <Link to={`/s/${space.handle}`} key={space.handle}>
-                                            {space.handle}
+                    {postSpaces && (
+                        <div className={styles.postSpaces}>
+                            {postSpaces[0] && (
+                                <div style={{ marginRight: 5 }}>
+                                    {postSpaces[0].state === 'active' ? (
+                                        <Link to={`/s/${postSpaces[0].handle}`}>
+                                            {postSpaces[0].handle}
                                         </Link>
                                     ) : (
-                                        <p>{space.handle} (space deleted)</p>
+                                        <p>{postSpaces[0].handle} (space deleted)</p>
                                     )}
-                                </>
-                            ))
-                        ) : (
-                            <Link to='/s/all'>all</Link>
-                        )}
-                    </div>
-                    <span className={styles.subText}>•</span>
+                                </div>
+                            )}
+                            {postSpaces.length > 1 && (
+                                <p
+                                    title={postSpaces
+                                        .map((s) => s.handle)
+                                        .filter((s, i) => i !== 0)
+                                        .join(', ')}
+                                >
+                                    and {postSpaces.length - 1} other space
+                                    {pluralise(postSpaces.length - 1)}
+                                </p>
+                            )}
+                        </div>
+                    )}
                     <Link to={`/p/${id}`} className={styles.link}>
                         <img className={styles.linkIcon} src='/icons/link-solid.svg' alt='' />
-                        <span className={styles.subText} title={dateCreated(createdAt)}>
-                            {timeSinceCreated(createdAt)}
-                        </span>
                     </Link>
+                    <span className={styles.subText} title={dateCreated(createdAt)}>
+                        {timeSinceCreated(createdAt)}
+                    </span>
                     <div className={`${styles.postType} ${type && styles[type]}`}>
                         {type && type.toLowerCase()}
                     </div>
@@ -189,7 +193,7 @@ const PostCard = (props: {
                     {/* <div className={styles.postTypeFlag} style={{ backgroundColor }} title={type}/> */}
                     {isOwnPost && (
                         <>
-                            <span className={styles.subText}>•</span>
+                            {/* <span className={styles.subText}>•</span> */}
                             <div
                                 className={styles.delete}
                                 role='button'
@@ -203,6 +207,11 @@ const PostCard = (props: {
                     )}
                 </div>
                 <div className={styles.content}>
+                    {type === 'glass-bead-game' && (
+                        <p>
+                            <b>{GlassBeadGame && GlassBeadGame.topic}</b>
+                        </p>
+                    )}
                     {text && (
                         <div className={styles.text}>
                             <ShowMoreLess height={150}>

@@ -279,6 +279,7 @@ function SpaceContextProvider({ children }: { children: JSX.Element }): JSX.Elem
                 nextSpaceUsersLoading,
 
                 spacePosts,
+                setSpacePosts,
                 totalMatchingPosts,
                 spacePostsFilters,
                 spacePostsFiltersOpen,

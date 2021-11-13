@@ -1,14 +1,17 @@
 import React, { useContext, useState } from 'react'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
-import config from '../../../Config'
-import styles from '../../../styles/components/PostCardRatingModal.module.scss'
-import CloseButton from '../../CloseButton'
-import SmallFlagImage from '../../SmallFlagImage'
-import { AccountContext } from '../../../contexts/AccountContext'
-import { SpaceContext } from '../../../contexts/SpaceContext'
-import CloseOnClickOutside from '../../CloseOnClickOutside'
-import { IPost } from '../../../Interfaces'
+import config from '@src/Config'
+import styles from '@styles/components/PostCardRatingModal.module.scss'
+import SmallFlagImage from '@components/SmallFlagImage'
+import { AccountContext } from '@contexts/AccountContext'
+import { SpaceContext } from '@contexts/SpaceContext'
+import { IPost } from '@src/Interfaces'
+import Modal from '@components/Modal'
+import Column from '@components/Column'
+import Row from '@components/Row'
+import Button from '@components/Button'
+import ImageTitle from '@components/ImageTitle'
 
 const PostCardRatingModal = (props: {
     postData: Partial<IPost>
@@ -114,92 +117,83 @@ const PostCardRatingModal = (props: {
     }
 
     return (
-        <div className={styles.modalWrapper}>
-            <CloseOnClickOutside onClick={() => setRatingModalOpen(false)}>
-                <div className={styles.modal}>
-                    <CloseButton size={20} onClick={() => setRatingModalOpen(false)} />
-                    <span className={styles.title}>Ratings</span>
-                    {!ratings ? (
-                        <span className={`${styles.text} mb-20`}>
-                            <i>No ratings yet...</i>
-                        </span>
-                    ) : (
-                        <div className={styles.ratings}>
-                            <div className={`${styles.rating} ${styles.averageScore}`}>
-                                <span className={`${styles.text} mr-10`}>Average score:</span>
-                                <div className={styles.totalScoreBar}>
-                                    <div
-                                        className={styles.averageScorePercentage}
-                                        style={{ width: totalReactions ? averageScore() : 0 }}
-                                    />
-                                    <div className={styles.totalScoreText}>{averageScore()}</div>
-                                </div>
-                            </div>
-                            {ratings.map((rating) => (
-                                <div className={styles.rating} key={rating}>
-                                    <Link
-                                        className={styles.imageTextLink}
-                                        to={`/u/${rating.creator.handle}`}
-                                    >
-                                        <SmallFlagImage
-                                            type='user'
-                                            size={30}
-                                            imagePath={rating.creator.flagImagePath}
-                                        />
-                                        <span className={`${styles.text} ml-5`}>
-                                            {rating.creator.name}
-                                        </span>
-                                    </Link>
-                                    <div className={styles.totalScoreBar}>
-                                        <div
-                                            className={styles.totalScorePercentage}
-                                            style={{ width: `${rating.value}%` }}
-                                        />
-                                        <div
-                                            className={styles.totalScoreText}
-                                        >{`${rating.value}%`}</div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                    {accountRating < 1 ? (
-                        <div className={styles.inputWrapper}>
-                            <input
-                                className={`wecoInput mr-10 ${newRatingError && 'error'}`}
-                                style={{ width: 40, padding: '0 10px', fontSize: 16 }}
-                                value={newRating || undefined}
-                                type='text'
-                                onChange={(e) => {
-                                    setNewRating(+e.target.value)
-                                    setNewRatingError(false)
-                                }}
-                            />
-                            <div className='mr-10'>/ 100</div>
+        <Modal close={() => setRatingModalOpen(false)} centered>
+            <span className={styles.title}>Ratings</span>
+            {!ratings ? (
+                <span className={`${styles.text} mb-20`}>
+                    <i>No ratings yet...</i>
+                </span>
+            ) : (
+                <div className={styles.ratings}>
+                    <div className={`${styles.rating} ${styles.averageScore}`}>
+                        <span className={`${styles.text} mr-10`}>Average score:</span>
+                        <div className={styles.totalScoreBar}>
                             <div
-                                className='wecoButton'
-                                role='button'
-                                tabIndex={0}
-                                onClick={addRating}
-                                onKeyDown={addRating}
+                                className={styles.averageScorePercentage}
+                                style={{ width: totalReactions ? averageScore() : 0 }}
+                            />
+                            <div className={styles.totalScoreText}>{averageScore()}</div>
+                        </div>
+                    </div>
+                    {ratings.map((rating) => (
+                        <div className={styles.rating} key={rating}>
+                            <Link
+                                className={styles.imageTextLink}
+                                to={`/u/${rating.creator.handle}`}
                             >
-                                Add Rating
+                                <SmallFlagImage
+                                    type='user'
+                                    size={30}
+                                    imagePath={rating.creator.flagImagePath}
+                                />
+                                <span className={`${styles.text} ml-5`}>{rating.creator.name}</span>
+                            </Link>
+                            <div className={styles.totalScoreBar}>
+                                <div
+                                    className={styles.totalScorePercentage}
+                                    style={{ width: `${rating.value}%` }}
+                                />
+                                <div className={styles.totalScoreText}>{`${rating.value}%`}</div>
                             </div>
                         </div>
-                    ) : (
-                        <div
-                            className='wecoButton'
-                            role='button'
-                            tabIndex={0}
-                            onClick={removeRating}
-                            onKeyDown={removeRating}
-                        >
-                            Remove Rating
-                        </div>
-                    )}
+                    ))}
                 </div>
-            </CloseOnClickOutside>
-        </div>
+            )}
+            {accountRating < 1 ? (
+                <div className={styles.inputWrapper}>
+                    <input
+                        className={`wecoInput mr-10 ${newRatingError && 'error'}`}
+                        style={{ width: 40, padding: '0 10px', fontSize: 16 }}
+                        value={newRating || undefined}
+                        type='text'
+                        onChange={(e) => {
+                            setNewRating(+e.target.value)
+                            setNewRatingError(false)
+                        }}
+                    />
+                    <div className='mr-10'>/ 100</div>
+                    <div
+                        className='wecoButton'
+                        role='button'
+                        tabIndex={0}
+                        onClick={addRating}
+                        onKeyDown={addRating}
+                    >
+                        Add Rating
+                    </div>
+                </div>
+            ) : (
+                <div
+                    className='wecoButton'
+                    role='button'
+                    tabIndex={0}
+                    onClick={removeRating}
+                    onKeyDown={removeRating}
+                >
+                    Remove Rating
+                </div>
+            )}
+        </Modal>
     )
 }
 

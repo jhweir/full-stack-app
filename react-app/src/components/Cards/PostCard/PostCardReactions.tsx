@@ -106,7 +106,8 @@ const PostCardReactions = (props: {
                 setPreviewOpen={setLikePreviewOpen}
                 accountReaction={accountLike || 0}
                 totalReactions={totalLikes || 0}
-                iconPath='thumbs-up-solid.svg'
+                iconPath='like-01.svg'
+                // iconPath='thumbs-up-solid.svg'
                 onClick={() => {
                     if (loggedIn) {
                         setLikeModalOpen(true)

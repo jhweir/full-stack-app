@@ -48,10 +48,15 @@
     }
     // disabled
     &.disabled {
-        opacity: 0.3;
+        > p { opacity: 0.5 }
     }
+    // icon
     > svg {
         width: 20px;
         height: 20px;
+    }
+    // loading wheel
+    > div {
+        margin: 0 -10px 0 10px;
     }
 }

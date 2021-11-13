@@ -10,6 +10,9 @@ const config = {
     recaptchaSiteKey: devApi
         ? process.env.REACT_APP_RECAPTCHA_SITE_KEY_DEV
         : process.env.REACT_APP_RECAPTCHA_SITE_KEY_PROD,
+    turnServerUrl: process.env.REACT_APP_TURN_SERVER_URL,
+    turnServerUsername: process.env.REACT_APP_TURN_SERVER_USERNAME,
+    turnServerPassword: process.env.REACT_APP_TURN_SERVER_PASSWORD,
 }
 
 export default config

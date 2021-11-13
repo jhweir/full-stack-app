@@ -1,3 +1,5 @@
+/* eslint-disable no-underscore-dangle */
+/* eslint-disable no-return-assign */
 /* eslint-disable no-param-reassign */
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import React, { useState, useEffect, useContext, useRef } from 'react'
@@ -63,27 +65,39 @@ const colors = {
 }
 
 const Video = (props) => {
-    const { id, user, size, audioEnabled, videoEnabled, toggleAudio, toggleVideo } = props
+    const {
+        id,
+        user,
+        size,
+        audioEnabled,
+        videoEnabled,
+        toggleAudio,
+        toggleVideo,
+        audioOnly,
+    } = props
     return (
-        <div className={`${styles.videoWrapper} ${size}`} key={id}>
-            <video id={id} muted={id === 'account-video'} autoPlay playsInline>
+        <div className={`${styles.videoWrapper} ${size}`}>
+            {audioOnly && <AudioIconSVG />}
+            <video id={id} muted={id === 'your-video'} autoPlay playsInline>
                 <track kind='captions' />
             </video>
             <div className={styles.videoUser}>
                 <ImageTitle
                     type='user'
                     imagePath={user.flagImagePath}
-                    title={id === 'account-video' ? 'You' : user.name}
+                    title={id === 'your-video' ? 'You' : user.name}
                 />
             </div>
-            {id === 'account-video' && (
+            {id === 'your-video' && (
                 <div className={styles.videoButtons}>
                     <button type='button' onClick={toggleAudio}>
                         {audioEnabled ? <AudioIconSVG /> : <AudioSlashIconSVG />}
                     </button>
-                    <button type='button' onClick={toggleVideo}>
-                        {videoEnabled ? <VideoIconSVG /> : <VideoSlashIconSVG />}
-                    </button>
+                    {!audioOnly && (
+                        <button type='button' onClick={toggleVideo}>
+                            {videoEnabled ? <VideoIconSVG /> : <VideoSlashIconSVG />}
+                        </button>
+                    )}
                 </div>
             )}
         </div>
@@ -311,10 +325,13 @@ const GlassBeadGame = (): JSX.Element => {
     const [newComment, setNewComment] = useState('')
     const [audioTrackEnabled, setAudioTrackEnabled] = useState(false)
     const [videoTrackEnabled, setVideoTrackEnabled] = useState(false)
+    const [audioOnly, setAudioOnly] = useState(false)
     const [turn, setTurn] = useState(0)
     const [move, setMove] = useState(0)
     const [seconds, setSeconds] = useState<number | null>(null)
     const [moveState, setMoveState] = useState<'Intro' | 'Move' | 'Interval'>('Move')
+    const [loadingStream, setLoadingStream] = useState(false)
+    // const [videoRenderKey, setVideoRenderKey] = useState(0)
 
     // state refs (used to...)
     const roomIdRef = useRef<number>()
@@ -332,7 +349,7 @@ const GlassBeadGame = (): JSX.Element => {
     const commentsRef = useRef<HTMLDivElement>(null)
 
     const highMetalTone = new Audio('/audio/hi-metal-tone.mp3')
-    // const lowMetalTone = new Audio('/audio/lo-metal-tone.mp3')
+    const lowMetalTone = new Audio('/audio/lo-metal-tone.mp3')
     const arcWidth = 20
     const gameArcRadius = 210
     const turnArcRadius = 180
@@ -355,13 +372,20 @@ const GlassBeadGame = (): JSX.Element => {
             .cornerRadius(5),
     }
     const iceConfig = {
+        // iceTransportPolicy: 'relay',
         iceServers: [
-            { urls: 'stun:stun.l.google.com:19302' },
-            { urls: 'stun:global.stun.twilio.com:3478?transport=udp' },
+            // { urls: 'stun:stun.l.google.com:19302' },
+            // { urls: 'stun:global.stun.twilio.com:3478?transport=udp' },
+            // {
+            //     urls: 'turn:relay.backups.cz?transport=tcp',
+            //     credential: 'webrtc',
+            //     username: 'webrtc',
+            // },
+            { urls: `stun:${config.turnServerUrl}` },
             {
-                urls: 'turn:relay.backups.cz?transport=tcp',
-                credential: 'webrtc',
-                username: 'webrtc',
+                urls: `turn:${config.turnServerUrl}`,
+                username: config.turnServerUsername,
+                credential: config.turnServerPassword,
             },
         ],
     }
@@ -403,8 +427,8 @@ const GlassBeadGame = (): JSX.Element => {
             // close stream
             videoRef.current.pause()
             videoRef.current.srcObject = null
-            streamRef.current.getTracks()[0].stop() // audio
-            streamRef.current.getTracks()[1].stop() // video
+            streamRef.current.getTracks().forEach((track) => track.stop())
+            streamRef.current = null
             setUserIsStreaming(false)
             setAudioTrackEnabled(false)
             setVideoTrackEnabled(false)
@@ -416,16 +440,17 @@ const GlassBeadGame = (): JSX.Element => {
             socketRef.current.emit('stream-disconnected', data)
         } else {
             // set up and signal stream
+            setLoadingStream(true)
             navigator.mediaDevices
                 .getUserMedia({ video: { width: 427, height: 240 }, audio: true })
                 .then((stream) => {
                     setUserIsStreaming(true)
+                    setAudioOnly(false)
                     streamRef.current = stream
+                    streamRef.current.getTracks().forEach((track) => (track.enabled = false))
                     peersRef.current.forEach((p) => p.peer.addStream(stream))
-                    videoRef.current = document.getElementById('account-video')
+                    videoRef.current = document.getElementById('your-video')
                     videoRef.current.srcObject = stream
-                    setAudioTrackEnabled(true)
-                    setVideoTrackEnabled(true)
                     const newPlayer = {
                         id: accountData.id,
                         name: accountData.name,
@@ -433,6 +458,36 @@ const GlassBeadGame = (): JSX.Element => {
                         socketId: socketIdRef.current,
                     }
                     setPlayers((previousPlayers) => [...previousPlayers, newPlayer])
+                    setLoadingStream(false)
+                })
+                .catch(() => {
+                    console.log('Unable to connect video, trying audio only...')
+                    navigator.mediaDevices
+                        .getUserMedia({ audio: true })
+                        .then((stream) => {
+                            setUserIsStreaming(true)
+                            setAudioOnly(true)
+                            streamRef.current = stream
+                            streamRef.current
+                                .getTracks()
+                                .forEach((track) => (track.enabled = false))
+                            peersRef.current.forEach((p) => p.peer.addStream(stream))
+                            videoRef.current = document.getElementById('your-video')
+                            videoRef.current.srcObject = stream
+                            const newPlayer = {
+                                id: accountData.id,
+                                name: accountData.name,
+                                flagImagePath: accountData.flagImagePath,
+                                socketId: socketIdRef.current,
+                            }
+                            setPlayers((previousPlayers) => [...previousPlayers, newPlayer])
+                            setLoadingStream(false)
+                        })
+                        .catch(() => {
+                            setAlertMessage('Unable to connect media devices')
+                            setAlertModalOpen(true)
+                            setLoadingStream(false)
+                        })
                 })
         }
     }
@@ -590,7 +645,7 @@ const GlassBeadGame = (): JSX.Element => {
         }
         // start move arc
         startArc('move', moveDuration, colors.green)
-        highMetalTone.play()
+        lowMetalTone.play()
         // update ui state
         setMoveState('Move')
         setSeconds(moveDuration)
@@ -614,9 +669,9 @@ const GlassBeadGame = (): JSX.Element => {
                     const nextPlayer = data.players[endOfTurn ? 0 : PPIndex + 1]
                     // if interval, start interval
                     if (intervalDuration > 0)
-                        startInterval(moveNumber, newTurnNumber, nextPlayer, data)
+                        startInterval(moveNumber + 1, newTurnNumber, nextPlayer, data)
                     // else start next move
-                    else startMove(moveNumber + 1, turnNumber, nextPlayer, data)
+                    else startMove(moveNumber + 1, newTurnNumber, nextPlayer, data)
                 } else {
                     // end game
                     highMetalTone.play()
@@ -637,7 +692,7 @@ const GlassBeadGame = (): JSX.Element => {
         const { intervalDuration } = data
         // start interval timer
         startArc('move', intervalDuration, colors.yellow)
-        highMetalTone.play()
+        lowMetalTone.play()
         // update ui state
         setMoveState('Interval')
         setSeconds(intervalDuration)
@@ -651,7 +706,7 @@ const GlassBeadGame = (): JSX.Element => {
             if (timeLeft === 0) {
                 // end seconds timer and start move
                 clearInterval(secondsTimerRef.current)
-                startMove(moveNumber + 1, turnNumber, nextPlayer, data)
+                startMove(moveNumber, turnNumber, nextPlayer, data)
             }
         }, 1000)
     }
@@ -687,9 +742,15 @@ const GlassBeadGame = (): JSX.Element => {
         return topicMatch ? <topicMatch.icon /> : null
     }
 
+    function peopleInRoomText() {
+        const totalUsers = usersRef.current.length
+        return `${totalUsers} ${isPlural(totalUsers) ? 'people' : 'person'} in room`
+    }
+
     // todo: flatten out userData into user object with socketId
     useEffect(() => {
-        if (!accountDataLoading && postData.id) {
+        if (postData.id && !accountDataLoading) {
+            console.log('main useEffect')
             getGameData()
             // set roomIdRef and userRef
             roomIdRef.current = postData.id
@@ -710,11 +771,14 @@ const GlassBeadGame = (): JSX.Element => {
                 userData: userRef.current,
             })
             // listen for signals:
-            // room joined
+            // room joined (currently firing after 'user-joined' event on page load)
             socketRef.current.on('room-joined', (payload) => {
                 const { socketId, usersInRoom } = payload
+                // console.log('usersInRoom: ', usersInRoom)
                 socketIdRef.current = socketId
+                // userRef.current.socketId = socketId
                 usersRef.current = usersInRoom
+                pushComment(`You joined the room`)
                 usersInRoom.forEach((user) => {
                     if (!isYou(user.socketId)) {
                         // create peer connection
@@ -734,6 +798,7 @@ const GlassBeadGame = (): JSX.Element => {
                                 socketId: user.socketId,
                                 userData: user.userData,
                                 peer,
+                                audioOnly: !stream.getVideoTracks().length,
                             })
                             pushComment(`${user.userData.name}'s video connected`)
                             const video = document.getElementById(user.socketId) as HTMLVideoElement
@@ -746,6 +811,8 @@ const GlassBeadGame = (): JSX.Element => {
                             }
                             setPlayers((previousPlayers) => [...previousPlayers, newPlayer])
                         })
+                        peer.on('close', () => peer.destroy())
+                        peer.on('error', (error) => console.log(error))
                         peersRef.current.push({
                             socketId: user.socketId,
                             userData: user.userData,
@@ -759,7 +826,18 @@ const GlassBeadGame = (): JSX.Element => {
                 // find peer in peers array
                 const peerObject = peersRef.current.find((p) => p.socketId === payload.id)
                 // pass singal to peer
-                peerObject.peer.signal(payload.signal)
+                console.log('peerObject.peer: ', peerObject) // .destroying
+                // peerObject.peer.signal(payload.signal)
+                // console.log('peerObject: ', peerObject) .peer.readable
+                if (peerObject) {
+                    if (peerObject.peer.readable) peerObject.peer.signal(payload.signal)
+                    else {
+                        peerObject.peer.destroy()
+                        peersRef.current = peersRef.current.filter((p) => p.socketId !== payload.id)
+                    }
+                } else {
+                    //
+                }
             })
             // signal request from peer
             socketRef.current.on('signal-request', (payload) => {
@@ -783,10 +861,35 @@ const GlassBeadGame = (): JSX.Element => {
                         })
                     })
                     peer.on('stream', (stream) => {
-                        videosRef.current.push({ socketId, userData, peer })
+                        videosRef.current.push({
+                            socketId,
+                            userData,
+                            peer,
+                            audioOnly: !stream.getVideoTracks().length,
+                        })
+                        // setVideoRenderKey(videoRenderKey + 1)
                         pushComment(`${userData.name}'s video connected`)
+                        // const waitForVideo = setInterval(() => {
+                        //     const video = document.getElementById(socketId) as HTMLVideoElement
+                        //     console.log('wait')
+                        //     if (video) {
+                        //         video.srcObject = stream
+                        //         const newPlayer = {
+                        //             id: userData.id,
+                        //             name: userData.name,
+                        //             flagImagePath: userData.flagImagePath,
+                        //             socketId,
+                        //         }
+                        //         setPlayers((previousPlayers) => [...previousPlayers, newPlayer])
+                        //         pushComment(`${userData.name}'s video connected`)
+                        //         // setVideoRenderKey(videoRenderKey + 1)
+                        //         clearInterval(waitForVideo)
+                        //     }
+                        // }, 100)
                         const video = document.getElementById(socketId) as HTMLVideoElement
-                        video.srcObject = stream
+                        // causing error if no video:
+                        if (video) video.srcObject = stream
+                        else console.log('cant find video')
                         const newPlayer = {
                             id: userData.id,
                             name: userData.name,
@@ -794,13 +897,18 @@ const GlassBeadGame = (): JSX.Element => {
                             socketId,
                         }
                         setPlayers((previousPlayers) => [...previousPlayers, newPlayer])
+                        // pushComment(`${userData.name}'s video connected`)
                     })
+                    peer.on('close', () => peer.destroy())
+                    peer.on('error', (error) => console.log(error))
                     peer.signal(signal)
                     peersRef.current.push({ socketId, userData, peer })
                 }
             })
             // user joined room
             socketRef.current.on('user-joined', (user) => {
+                // console.log('user-joined', user)
+                // if not you ?
                 usersRef.current.push(user)
                 pushComment(`${user.userData.name} joined the room`)
             })
@@ -853,8 +961,12 @@ const GlassBeadGame = (): JSX.Element => {
                 pushComment(`${userData.name}'s stream disconnected`)
             })
         }
-        return () => (postData.id ? null : socketRef.current.disconnect())
-    }, [accountDataLoading, postData.id])
+        return () => socketRef.current && socketRef.current.disconnect()
+        // return () => {
+        //     // console.log('exit')
+        //     if (socketRef.current) socketRef.current.disconnect()
+        // }
+    }, [postData.id, accountDataLoading])
 
     useEffect(() => {
         const svg = d3
@@ -892,7 +1004,7 @@ const GlassBeadGame = (): JSX.Element => {
                         !showComments && styles.hidden
                     } hide-scrollbars`}
                 >
-                    <div ref={commentsRef}>
+                    <div ref={commentsRef} className='hide-scrollbars'>
                         {comments.map((comment) => (
                             <Comment comment={comment} key={uuidv4()} />
                         ))}
@@ -952,6 +1064,8 @@ const GlassBeadGame = (): JSX.Element => {
                                 colour={userIsStreaming ? 'red' : 'grey'}
                                 size='medium'
                                 margin='0 0 10px 0'
+                                loading={loadingStream}
+                                disabled={loadingStream}
                                 onClick={toggleStream}
                             />
                             {gameData.locked ? (
@@ -962,7 +1076,7 @@ const GlassBeadGame = (): JSX.Element => {
                             ) : (
                                 <>
                                     <Button
-                                        text={`${beads.length > 0 ? 'Restart' : 'Start'} game`}
+                                        text={`${beads.length ? 'Restart' : 'Start'} game`}
                                         colour='grey'
                                         size='medium'
                                         margin='0 0 10px 0'
@@ -993,15 +1107,7 @@ const GlassBeadGame = (): JSX.Element => {
                     )}
                     <Column centerX>
                         <h1>{gameData.topic}</h1>
-                        <div className={styles.topic}>
-                            {findTopicSVG(gameData.topic)}
-                            {/* {gameData.topic && (
-                                <img
-                                    src={`/images/archetopics/${gameData.topic.toLowerCase()}.png`}
-                                    alt=''
-                                />
-                            )} */}
-                        </div>
+                        <div className={styles.topic}>{findTopicSVG(gameData.topic)}</div>
                         <div className={`${styles.dna} ${styles.top}`}>
                             <DNAIconSVG />
                             <DNAIconSVG />
@@ -1027,10 +1133,7 @@ const GlassBeadGame = (): JSX.Element => {
                         </div>
                     </Column>
                     <div className={`${styles.peopleInRoom} hide-scrollbars`}>
-                        <p>
-                            {usersRef.current.length}{' '}
-                            {isPlural(usersRef.current.length) ? 'people' : 'person'} in room
-                        </p>
+                        <p>{peopleInRoomText()}</p>
                         {usersRef.current.map((user) => (
                             <ImageTitle
                                 key={user.socketId}
@@ -1044,20 +1147,30 @@ const GlassBeadGame = (): JSX.Element => {
                         ))}
                     </div>
                 </div>
+                {/* key={videoRenderKey} */}
                 <div className={`${styles.videos} hide-scrollbars`}>
                     {userIsStreaming && (
                         <Video
-                            id='account-video'
+                            id='your-video'
                             user={userRef.current}
                             size={findVideoSize()}
                             audioEnabled={audioTrackEnabled}
                             videoEnabled={videoTrackEnabled}
                             toggleAudio={toggleAudioTrack}
                             toggleVideo={toggleVideoTrack}
+                            audioOnly={audioOnly}
                         />
                     )}
                     {videosRef.current.map((v) => {
-                        return <Video id={v.socketId} user={v.userData} size={findVideoSize()} />
+                        return (
+                            <Video
+                                key={v.socketId}
+                                id={v.socketId}
+                                user={v.userData}
+                                size={findVideoSize()}
+                                audioOnly={v.audioOnly}
+                            />
+                        )
                     })}
                 </div>
             </div>
@@ -1103,7 +1216,7 @@ export default GlassBeadGame
 // 1094
 // 1103
 // 1124
-// 1191 ?
+// 1191
 
 /* <div className={styles.dividerLine} />
 <img

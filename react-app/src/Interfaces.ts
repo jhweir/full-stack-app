@@ -108,9 +108,10 @@ export interface IAccountContext {
     loggedIn: boolean
     accountData: any
     accountDataLoading: boolean
-    notifications: any[]
-    setNotifications: (payload: any[]) => void
-    notificationsLoading: boolean
+    setAccountDataLoading: (payload: boolean) => void
+    // notifications: any[]
+    // setNotifications: (payload: any[]) => void
+    // notificationsLoading: boolean
     // modals (todo: most to be removed...)
     alertModalOpen: boolean
     setAlertModalOpen: (payload: boolean) => void
@@ -147,8 +148,8 @@ export interface IAccountContext {
     // functions
     getAccountData: () => void
     updateAccountData: (key: string, payload: any) => void
-    getNotifications: () => void
-    updateAccountNotification: (id: number, key: string, payload: any) => void
+    // getNotifications: () => void
+    // updateAccountNotification: (id: number, key: string, payload: any) => void
     logOut: () => void
 }
 
@@ -173,6 +174,7 @@ export interface ISpaceContext {
     nextSpaceUsersLoading: boolean
 
     spacePosts: IPost[]
+    setSpacePosts: (payload: any[]) => void
     totalMatchingPosts: number
     spacePostsFilters: any
     spacePostsFiltersOpen: boolean
