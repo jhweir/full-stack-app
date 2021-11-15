@@ -312,31 +312,7 @@ router.get('/space-data', (req, res) => {
             ],
             totalUsersQuery
         ],
-        // order: [[ { model: Holon, as: 'DirectChildHolons' }, sequelize.literal(`total_likes`), 'DESC']],
         include: [
-            { 
-                model: Holon,
-                // separate: true,
-                as: 'DirectChildHolons',
-                attributes: ['id', 'handle', 'name', 'description', 'flagImagePath', [sequelize.literal(`(
-                    SELECT COUNT(*)
-                        FROM Reactions
-                        WHERE Reactions.state = 'active'
-                        AND Reactions.type = 'like'
-                        AND Reactions.postId IN (
-                            SELECT PostHolons.postId
-                            FROM PostHolons
-                            RIGHT JOIN Posts
-                            ON PostHolons.postId = Posts.id
-                            WHERE PostHolons.HolonId = DirectChildHolons.id
-                        )
-                    )`), 'total_likes'
-                ]],
-                through: { attributes: [], where: { state: 'open' } },
-                // order: [[ { model: Holon }, { model: Holon, as: 'DirectChildHolons' }, sequelize.literal(`total_likes`), 'DESC']],
-                // required: true,
-                // order: [[ `total_likes`, 'DESC']] //, ['createdAt', 'DESC']
-            },
             {
                 model: Holon,
                 as: 'DirectParentHolons',
@@ -361,9 +337,29 @@ router.get('/space-data', (req, res) => {
                 through: { where: { relationship: 'moderator', state: 'active' }, attributes: [] }
             }
         ],
-        //order: [[ { model: Holon, as: 'DirectChildHolons' }, sequelize.literal(`total_likes`), 'DESC']],
     })
-    .then(holon => res.send(holon))
+    .then(space => {
+        Holon.findAll({
+            include: [{
+                model: Holon,
+                as: 'DirectParentHolons',
+                attributes: ['id'],
+                through: { attributes: [] }
+            }],
+            where: { '$DirectParentHolons.id$': space.id, state: 'active'},
+            attributes: ['id', 'handle', 'name', 'flagImagePath', totalSpaceLikes],
+            order: [[ sequelize.literal(`total_likes`), 'DESC'], ['createdAt', 'DESC']],
+            limit: 100,
+            offset: 0,
+            subQuery: false,
+        })
+        .then(spaces => {
+            space.setDataValue('DirectChildHolons', spaces)
+            res.send(space)
+        })
+        
+        // res.send(holon)
+    })
     .catch(err => console.log(err))
 })
 

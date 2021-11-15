@@ -1,10 +1,14 @@
 .column {
     display: flex;
     flex-direction: column;
+    // overflow-y: scroll;
     &.centerX {
         align-items: center;
     }
     &.centerY {
         justify-content: center;
+    }
+    &.scroll {
+        overflow-y: scroll;
     }
 }

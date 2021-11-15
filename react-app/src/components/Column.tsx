@@ -7,13 +7,17 @@ const Column = (props: {
     centerX?: boolean
     centerY?: boolean
     width?: number | string
+    maxHeight?: number
+    scroll?: boolean
 }): JSX.Element => {
-    const { children, margin, centerX, centerY, width } = props
+    const { children, margin, centerX, centerY, width, maxHeight, scroll } = props
 
     return (
         <div
-            className={`${styles.column} ${centerX && styles.centerX} ${centerY && styles.centerY}`}
-            style={{ margin, width }}
+            className={`${styles.column} ${centerX && styles.centerX} ${
+                centerY && styles.centerY
+            } ${scroll && styles.scroll} hide-scrollbars`}
+            style={{ margin, width, maxHeight }}
         >
             {children}
         </div>
@@ -25,6 +29,8 @@ Column.defaultProps = {
     centerX: false,
     centerY: false,
     width: null,
+    maxHeight: null,
+    scroll: false,
 }
 
 export default Column

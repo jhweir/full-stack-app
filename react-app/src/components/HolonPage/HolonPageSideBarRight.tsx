@@ -1,113 +1,64 @@
 import React, { useContext } from 'react'
-import { Link, useHistory } from 'react-router-dom'
 import { SpaceContext } from '@contexts/SpaceContext'
 import styles from '@styles/components/HolonPageSideBarRight.module.scss'
-import HolonPageSideBarRightPlaceholder from '@components/HolonPage/HolonPageSideBarRightPlaceholder'
+// import HolonPageSideBarRightPlaceholder from '@components/HolonPage/HolonPageSideBarRightPlaceholder'
+import Column from '@components/Column'
+import Row from '@components/Row'
+import ImageTitle from '@components/ImageTitle'
+// import { ReactComponent as ArrowUpIconSVG } from '@svgs/arrow-up-solid.svg'
+// import { ReactComponent as ArrowDownIconSVG } from '@svgs/arrow-down-solid.svg'
+import { ReactComponent as ArrowUpIconSVG } from '@svgs/chevron-up-solid.svg'
+import { ReactComponent as ArrowDownIconSVG } from '@svgs/chevron-down-solid.svg'
 
 const HolonPageSideBarRight = (): JSX.Element => {
     const { spaceData, selectedSpaceSubPage } = useContext(SpaceContext)
-    const history = useHistory()
+    const { DirectParentHolons: parentSpaces, DirectChildHolons: childSpaces } = spaceData
 
     return (
-        <div className={styles.sideBarRight}>
-            <HolonPageSideBarRightPlaceholder />
-            {spaceData && (
-                <div className={styles.sideBarRightContent}>
-                    {spaceData.DirectParentHolons && spaceData.DirectParentHolons.length !== 0 && (
-                        <>
-                            <span className={styles.sideBarRightText}>Parent spaces:</span>
-                            <ul className={`${styles.sideBarRightHolons} hide-scrollbars`}>
-                                {spaceData.DirectParentHolons.map(
-                                    (holon) =>
-                                        holon && (
-                                            <Link
-                                                className={styles.sideBarRightHolon}
-                                                to={`/s/${holon.handle}/${selectedSpaceSubPage}`}
-                                                key={holon.handle}
-                                            >
-                                                {holon.flagImagePath === null ? (
-                                                    <div className={styles.placeholderWrapper}>
-                                                        <img
-                                                            className={styles.placeholder}
-                                                            src='/icons/users-solid.svg'
-                                                            aria-label='space placeholder'
-                                                        />
-                                                    </div>
-                                                ) : (
-                                                    <img
-                                                        className={styles.image}
-                                                        src={holon.flagImagePath}
-                                                        aria-label='space flag image'
-                                                    />
-                                                )}
-                                                {holon.name}
-                                            </Link>
-                                        )
-                                )}
-                            </ul>
-                        </>
-                    )}
-                    {spaceData.DirectChildHolons && spaceData.DirectChildHolons.length !== 0 && (
-                        <>
-                            <span className={styles.sideBarRightText}>Child spaces:</span>
-                            <ul className={`${styles.sideBarRightHolons} hide-scrollbars`}>
-                                {spaceData.DirectChildHolons.map(
-                                    (holon) =>
-                                        holon && (
-                                            //     <button
-                                            //         className={styles.sideBarRightHolon}
-                                            //         type='button'
-                                            //         onClick={() =>
-                                            //             history.push(
-                                            //                 `/s/${holon.handle}/${selectedSpaceSubPage}`
-                                            //             )
-                                            //         }
-                                            //     >
-                                            //         {holon.flagImagePath === null ? (
-                                            //         <div className={styles.placeholderWrapper}>
-                                            //             <img
-                                            //                 className={styles.placeholder}
-                                            //                 src='/icons/users-solid.svg'
-                                            //                 aria-label='space placeholder'
-                                            //             />
-                                            //         </div>
-                                            //     ) : (
-                                            //         <img
-                                            //             className={styles.image}
-                                            //             src={holon.flagImagePath}
-                                            //             aria-label='space flag image'
-                                            //         />
-                                            //     )}
-                                            //     {holon.name}
-                                            // </button>
-                                            <Link
-                                                className={styles.sideBarRightHolon}
-                                                to={`/s/${holon.handle}/${selectedSpaceSubPage}`}
-                                                key={holon.handle}
-                                            >
-                                                {holon.flagImagePath === null ? (
-                                                    <div className={styles.placeholderWrapper}>
-                                                        <img
-                                                            className={styles.placeholder}
-                                                            src='/icons/users-solid.svg'
-                                                            aria-label='space placeholder'
-                                                        />
-                                                    </div>
-                                                ) : (
-                                                    <img
-                                                        className={styles.image}
-                                                        src={holon.flagImagePath}
-                                                        aria-label='space flag image'
-                                                    />
-                                                )}
-                                                {holon.name}
-                                            </Link>
-                                        )
-                                )}
-                            </ul>
-                        </>
-                    )}
-                </div>
+        <div className={`${styles.sideBarRight} hide-scrollbars`}>
+            {parentSpaces && parentSpaces.length > 0 && (
+                <Column margin='0 0 20px 0'>
+                    <Row>
+                        <ArrowUpIconSVG />
+                        <p>Parent spaces</p>
+                    </Row>
+                    <Column scroll>
+                        {parentSpaces.map((space) => (
+                            <ImageTitle
+                                key={space.id}
+                                type='space'
+                                imagePath={space.flagImagePath}
+                                title={space.name}
+                                link={`/s/${space.handle}/${selectedSpaceSubPage}`}
+                                fontSize={16}
+                                imageSize={40}
+                                margin='0 0 10px 0'
+                            />
+                        ))}
+                    </Column>
+                </Column>
+            )}
+            {childSpaces && childSpaces.length > 0 && (
+                <Column maxHeight={600}>
+                    <Row>
+                        <ArrowDownIconSVG />
+                        <p>Child spaces</p>
+                    </Row>
+                    <Column scroll>
+                        {childSpaces.map((space) => (
+                            <ImageTitle
+                                key={space.id}
+                                type='space'
+                                imagePath={space.flagImagePath}
+                                title={space.name}
+                                link={`/s/${space.handle}/${selectedSpaceSubPage}`}
+                                fontSize={16}
+                                imageSize={40}
+                                margin='0 0 10px 0'
+                            />
+                        ))}
+                    </Column>
+                </Column>
             )}
         </div>
     )

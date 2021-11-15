@@ -1,67 +1,22 @@
-@import '../Transitions.scss';
-// TODO: change to importing a variables file including transition speeds etc.
+@import '@styles/Colors.scss';
 
 .sideBarRight {
-    width: 220px;
+    width: 240px;
     padding: 0 20px;
     flex-shrink: 0;
     @media screen and (max-width: 1200px) {
         display: none;
     }
-}
-.sideBarRightContent {
-    display: flex;
-    flex-direction: column;
-    transition:  all $transitionSpeed;
-    opacity: 1;
-    // &.visible { opacity: 1 }
-    ::-webkit-scrollbar {
-        display: none;
-    }
-}
-.sideBarRightText {
-    margin-bottom: 10px;
-}
-.sideBarRightHolons {
-    margin-bottom: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    max-height: 615px;
-    overflow-y: scroll;
-    overflow-x: hidden;
-}
-.sideBarRightHolon {
-    margin-bottom: 10px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-}
-.placeholderWrapper {
-    background-color: #eee; //rgba(0, 0, 0, 0.1);
-    border-radius: 50%;
-    height: 40px;
-    width: 40px;
-    margin-right: 10px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-shrink: 0;
-}
-.placeholder {
-    width: 60%;
-    opacity: 0.2;
-}
-.image {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-right: 10px;
-    flex-shrink: 0;
-}
-.sideBarRightHolonName{
-    &:visited {
-        color: black;
+    > div > div {
+        > svg {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            color: $grey4;
+        }
+        > p {
+            color: $grey5;
+            margin-bottom: 10px;
+        }
     }
 }
