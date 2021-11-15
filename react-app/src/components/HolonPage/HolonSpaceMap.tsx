@@ -102,10 +102,11 @@ const HolonSpaceMap = (): JSX.Element => {
     function findFill(d) {
         const existingImage = d3.select(`#image-${d.data.id}`)
         if (existingImage.node()) {
-            // scale and reposition existing image
+            // scale and reposition existing image (if no imageCircle, transition size instantly)
+            const existingImageCircle = d3.select(`#image-circle-${d.data.id}`).node()
             existingImage
                 .transition()
-                .duration(duration)
+                .duration(existingImageCircle ? duration : 0)
                 .attr('height', findRadius(d) * 2)
                 .attr('width', findRadius(d) * 2)
         } else {
@@ -163,8 +164,7 @@ const HolonSpaceMap = (): JSX.Element => {
         //         d3.zoomIdentity.scale(scale).translate(svgWidth / scale / 2, height / scale / 2)
         // )
         // // reset tree position
-        d3.select('#space-map-svg')
-            .transition()
+        svg.transition()
             .duration(duration)
             .call(zoom.transform, d3.zoomIdentity.scale(1).translate(svgWidth / 2, yOffset))
 
@@ -216,7 +216,8 @@ const HolonSpaceMap = (): JSX.Element => {
         const width = '100%'
         const height = window.innerHeight - 300
         const yOffset = spaceData.DirectParentHolons.length ? 180 : 80
-        d3.select('#canvas')
+        const svg = d3
+            .select('#canvas')
             .append('svg')
             .attr('id', 'space-map-svg')
             .attr('width', width)
@@ -226,27 +227,24 @@ const HolonSpaceMap = (): JSX.Element => {
         //     return `translate(${newWidth / 2},${yOffset})`
         // })
 
-        const newWidth = parseInt(d3.select('#space-map-svg').style('width'), 10)
+        const newWidth = parseInt(svg.style('width'), 10)
 
-        d3.select('#space-map-svg').append('defs').attr('id', 'imgdefs')
-        d3.select('#space-map-svg').append('g').attr('id', 'space-map-master-group')
+        svg.append('defs').attr('id', 'imgdefs')
+        const masterGroup = svg.append('g').attr('id', 'space-map-master-group')
 
-        d3.select('#space-map-master-group').append('g').attr('id', 'link-group')
-        d3.select('#space-map-master-group')
+        masterGroup.append('g').attr('id', 'link-group')
+        masterGroup
             .append('g')
             .attr('id', 'parent-link-group')
             .attr('transform', `translate(0,0),rotate(180,0,0)`)
-        d3.select('#space-map-master-group')
+        masterGroup
             .append('g')
             .attr('id', 'parent-node-group')
             .attr('transform', `translate(0,0),rotate(180,0,0)`)
-        d3.select('#space-map-master-group').append('g').attr('id', 'node-group')
+        masterGroup.append('g').attr('id', 'node-group')
 
-        d3.select('#space-map-svg').call(zoom)
-        d3.select('#space-map-svg').call(
-            zoom.transform,
-            d3.zoomIdentity.translate(newWidth / 2, yOffset)
-        )
+        svg.call(zoom)
+        svg.call(zoom.transform, d3.zoomIdentity.translate(newWidth / 2, yOffset))
     }
 
     // function updateCanvasSize() {
@@ -528,16 +526,14 @@ const HolonSpaceMap = (): JSX.Element => {
                                 if (!spaceTransitioning.current) {
                                     if (d.data.isExpander) {
                                         getChildren(d.parent)
-                                    } else {
+                                    } else if (d.parent) {
                                         spaceTransitioning.current = true
                                         history.push(`/s/${d.data.handle}/spaces`)
-                                        // setSpaceHandle(d.data.handle)
+                                        d3.selectAll('.background-circle').classed(
+                                            'transitioning',
+                                            true
+                                        )
                                     }
-                                    // mark all background circles with transitioning class to prevent animations
-                                    d3.selectAll('.background-circle').classed(
-                                        'transitioning',
-                                        true
-                                    )
                                 }
                             })
                             .call((node) =>
