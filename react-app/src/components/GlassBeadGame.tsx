@@ -575,20 +575,38 @@ const GlassBeadGame = (): JSX.Element => {
                 chunksRef.current.push(e.data)
             }
             mediaRecorderRef.current.onstop = () => {
-                const blob = new Blob(chunksRef.current, { type: 'audio/webm;codecs=opus' })
+                const blob = new Blob(chunksRef.current, { type: 'audio/mpeg-3' }) // audio/webm;codecs=opus' })
                 const formData = new FormData()
                 formData.append('file', blob)
                 const options = { headers: { 'Content-Type': 'multipart/form-data' } }
-                axios.post(`${config.apiURL}/audio-upload`, formData, options).then((res) => {
-                    chunksRef.current = []
-                    const signalData = {
-                        roomId: roomIdRef.current,
-                        user: userRef.current,
-                        beadUrl: res.data,
-                        index: moveNumber,
-                    }
-                    socketRef.current.emit('sending-audio-bead', signalData)
-                })
+                axios
+                    .post(`${config.apiURL}/audio-upload`, formData, options)
+                    .then((res) => {
+                        chunksRef.current = []
+                        const signalData = {
+                            roomId: roomIdRef.current,
+                            user: userRef.current,
+                            beadUrl: res.data,
+                            index: moveNumber,
+                        }
+                        socketRef.current.emit('sending-audio-bead', signalData)
+                    })
+                    .catch((error) => {
+                        const { message } = error.response.data
+                        switch (message) {
+                            case 'File size too large':
+                                // todo: give user option to save bead locally before deleting (edge-case)
+                                chunksRef.current = []
+                                setAlertMessage(`Error uploading audio. ${message}`)
+                                setAlertModalOpen(true)
+                                break
+                            default:
+                                chunksRef.current = []
+                                setAlertMessage(`Unknown error uploading audio`)
+                                setAlertModalOpen(true)
+                                break
+                        }
+                    })
             }
             mediaRecorderRef.current.start()
         })
@@ -750,7 +768,6 @@ const GlassBeadGame = (): JSX.Element => {
     // todo: flatten out userData into user object with socketId
     useEffect(() => {
         if (postData.id && !accountDataLoading) {
-            console.log('main useEffect')
             getGameData()
             // set roomIdRef and userRef
             roomIdRef.current = postData.id
@@ -826,7 +843,7 @@ const GlassBeadGame = (): JSX.Element => {
                 // find peer in peers array
                 const peerObject = peersRef.current.find((p) => p.socketId === payload.id)
                 // pass singal to peer
-                console.log('peerObject.peer: ', peerObject) // .destroying
+                // console.log('peerObject.peer: ', peerObject) // .destroying
                 // peerObject.peer.signal(payload.signal)
                 // console.log('peerObject: ', peerObject) .peer.readable
                 if (peerObject) {

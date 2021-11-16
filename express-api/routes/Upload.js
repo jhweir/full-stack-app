@@ -136,20 +136,21 @@ router.post('/audio-upload', (req, res) => {
     // check file type and limits, then save raw audio in 'audio/raw' folder
     multer({
         fileFilter: (req, file, cb) => {
-            if (file.mimetype === 'audio/webm') cb(null, true)
+            if (file.mimetype === 'audio/mpeg-3') cb(null, true) // 'audio/webm'
             else {
                 cb(null, false)
-                cb(new Error('Only audio/webm files allowed'))
+                cb(new Error('Only audio/mpeg-3 files allowed'))
             }
         },
-        limits: { fileSize: 1 * 1024 * 1024 }, // 1MB
+        limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
         dest: './audio/raw',
     }).single('file')(req, res, (error) => {
         // handle errors
         if (error instanceof multer.MulterError) {
-            res.send(error)
+            if (error.code === 'LIMIT_FILE_SIZE') res.status(413).send({ message: 'File size too large' })
+            else res.status(500).send(error)
         } else if (error) {
-            res.send(error)
+            res.status(500).send(error)
         } else {
             const bucket = `weco-${process.env.NODE_ENV}-gbg-audio`
             // convert raw audio to mp3
