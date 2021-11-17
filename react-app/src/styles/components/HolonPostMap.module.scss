@@ -1,8 +1,9 @@
 .postMapWrapper {
-    width: 100%;
+    //width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin-left: 20px;
     // remove up/down arrows from number input fields
     ::-webkit-outer-spin-button,
     ::-webkit-inner-spin-button {

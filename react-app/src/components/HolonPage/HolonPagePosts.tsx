@@ -9,6 +9,7 @@ import HolonPagePostsFilters from '@components/HolonPage/HolonPagePostsFilters'
 import SearchBar from '@components/SearchBar'
 import Toggle from '@components/Toggle'
 import Button from '@components/Button'
+import Row from '@components/Row'
 import HolonPostMap from '@components/HolonPage/HolonPostMap'
 import { onPageBottomReached } from '@src/Functions'
 import { ReactComponent as SlidersIconSVG } from '@svgs/sliders-h-solid.svg'
@@ -116,7 +117,8 @@ const HolonPagePosts = ({ match }: { match: { params: { spaceHandle: string } } 
                 </div>
                 {spacePostsFiltersOpen && <HolonPagePostsFilters />}
             </div>
-            {view === 'List' ? (
+            {/* {view === 'List' ? ( */}
+            <Row>
                 <div className={styles.posts}>
                     {accountDataLoading || spaceDataLoading || spacePostsLoading ? (
                         <HolonPagePostsPlaceholder />
@@ -139,9 +141,11 @@ const HolonPagePosts = ({ match }: { match: { params: { spaceHandle: string } } 
                         </>
                     )}
                 </div>
-            ) : (
                 <HolonPostMap />
-            )}
+            </Row>
+            {/* // ) : (
+            //     <HolonPostMap />
+            // )} */}
         </div>
     )
 }

@@ -608,9 +608,9 @@ const HolonPostMap = (): JSX.Element => {
         if (postMapData) updateMap(postMapData)
     }, [postMapData])
 
-    useEffect(() => {
-        setWidth(fullScreen ? '100%' : 700)
-    }, [fullScreen])
+    // useEffect(() => {
+    //     setWidth(fullScreen ? '100%' : 700)
+    // }, [fullScreen])
 
     useEffect(() => {
         updateCanvasSize()
@@ -744,11 +744,11 @@ const HolonPostMap = (): JSX.Element => {
                 </div>
             </div>
             <div id='canvas' />
-            {selectedPost && (
+            {/* {selectedPost && (
                 <div className={styles.selectedPostWrapper}>
                     <PostCard postData={selectedPost || {}} location='holon-post-map' />
                 </div>
-            )}
+            )} */}
         </div>
     )
 }
