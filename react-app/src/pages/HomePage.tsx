@@ -74,7 +74,7 @@ const Homepage = (): JSX.Element => {
 
     function getHomepageHighlights() {
         axios.get(`${config.apiURL}/homepage-highlights`).then((res) => {
-            console.log(res.data)
+            // console.log(res.data)
             setHighlights(res.data)
         })
     }

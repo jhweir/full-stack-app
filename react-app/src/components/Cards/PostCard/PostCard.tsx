@@ -159,7 +159,7 @@ const PostCard = (props: { postData: any; index?: number; location: string }): J
                             {postSpaces[0] && (
                                 <div style={{ marginRight: 5 }}>
                                     {postSpaces[0].state === 'active' ? (
-                                        <Link to={`/s/${postSpaces[0].handle}`}>
+                                        <Link to={`/s/${postSpaces[0].handle}/posts`}>
                                             {postSpaces[0].handle}
                                         </Link>
                                     ) : (
