@@ -7,7 +7,7 @@ const sgMail = require('@sendgrid/mail')
 sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 const authenticateToken = require('../middleware/authenticateToken')
 const { postAttributes } = require('../GlobalConstants')
-const { Holon, User, Post } = require('../models')
+const { Holon, User, Post, GlassBeadGame } = require('../models')
 
 // GET
 router.get('/all-users', (req, res) => {
@@ -268,6 +268,10 @@ router.get('/user-posts', (req, res) => {
                     model: User,
                     as: 'creator',
                     attributes: ['id', 'handle', 'name', 'flagImagePath'],
+                },
+                {
+                    model: GlassBeadGame,
+                    attributes: ['topic']
                 }
             ]
         })

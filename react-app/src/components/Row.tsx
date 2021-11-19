@@ -12,9 +12,12 @@ const Row = (props: {
 
     return (
         <div
-            className={`${styles.row} ${centerX && styles.centerX} ${centerY && styles.centerY} ${
-                wrap && styles.wrap
-            }`}
+            className={`
+                ${styles.row} 
+                ${centerX && styles.centerX} 
+                ${centerY && styles.centerY} 
+                ${wrap && styles.wrap}
+            `}
             style={{ margin }}
         >
             {children}

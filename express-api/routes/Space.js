@@ -344,9 +344,9 @@ router.get('/space-data', (req, res) => {
                 model: Holon,
                 as: 'DirectParentHolons',
                 attributes: ['id'],
-                through: { attributes: [] }
+                through: { attributes: [], where: { state: 'open' }  }
             }],
-            where: { '$DirectParentHolons.id$': space.id, state: 'active'},
+            where: { '$DirectParentHolons.id$': space.id, state: 'active' },
             attributes: ['id', 'handle', 'name', 'flagImagePath', totalSpaceLikes],
             order: [[ sequelize.literal(`total_likes`), 'DESC'], ['createdAt', 'DESC']],
             limit: 100,

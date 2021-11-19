@@ -250,7 +250,7 @@ const GameSettingsModal = (props) => {
                         />
                     </Column>
                     <Column width={250}>
-                        <h2>Player order</h2>
+                        <h2 style={{ margin: 0 }}>Player order</h2>
                         {players.map((player, i) => (
                             <Row margin='10px 0 0 0'>
                                 <div className={styles.position}>{i + 1}</div>
@@ -1123,7 +1123,7 @@ const GlassBeadGame = (): JSX.Element => {
                         />
                     )}
                     <Column centerX>
-                        <h1>{gameData.topic}</h1>
+                        <h1 style={{ margin: 0 }}>{gameData.topic}</h1>
                         <div className={styles.topic}>{findTopicSVG(gameData.topic)}</div>
                         <div className={`${styles.dna} ${styles.top}`}>
                             <DNAIconSVG />

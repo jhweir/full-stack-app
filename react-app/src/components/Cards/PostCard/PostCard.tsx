@@ -136,9 +136,11 @@ const PostCard = (props: { postData: any; index?: number; location: string }): J
         }
     }, [postData.id])
 
+    // todo: update
     let locationStyle
     if (location === 'post-page') locationStyle = styles.postPage
-    if (location === 'holon-posts') locationStyle = styles.spacePosts
+    if (location === 'holon-posts' || location === 'user-created-posts')
+        locationStyle = styles.spacePosts
 
     return (
         <div className={`${styles.post} ${locationStyle}`} ref={postRef} key={id}>

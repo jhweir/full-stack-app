@@ -136,6 +136,7 @@ const CreateSpaceModal = (props: { close: () => void }): JSX.Element => {
                     title='Handle (the unique identifier used in the spaces url):'
                     prefix='weco.io/s/'
                     placeholder='handle...'
+                    margin='0 0 20px 0'
                     state={handleState}
                     errors={handleErrors}
                     value={handle}
@@ -148,6 +149,7 @@ const CreateSpaceModal = (props: { close: () => void }): JSX.Element => {
                     type='text'
                     title='Name (max 30 characters):'
                     placeholder='name...'
+                    margin='0 0 20px 0'
                     state={nameState}
                     errors={nameErrors}
                     value={name}
@@ -160,6 +162,7 @@ const CreateSpaceModal = (props: { close: () => void }): JSX.Element => {
                     type='text-area'
                     title='Description (max 10K characters):'
                     placeholder='description...'
+                    margin='0 0 20px 0'
                     state={descriptionState}
                     errors={descriptionErrors}
                     value={description}
