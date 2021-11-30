@@ -7,6 +7,9 @@
     &.centerY {
         align-items: center;
     }
+    &.spaceBetween {
+        justify-content: space-between;
+    }
     &.wrap {
         flex-wrap: wrap;
     }

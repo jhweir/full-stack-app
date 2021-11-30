@@ -1,4 +1,5 @@
 @import '../Transitions.scss';
+@import '@styles/Colors.scss';
 // TODO: change to importing a variables file including transition speeds etc.
 
 .wrapper {
@@ -48,4 +49,16 @@
     justify-content: center;
     flex-shrink: 0;
     flex-wrap: wrap;
+    margin-bottom: 10px;
+    > button {
+        color: $grey4;
+        &:not(:last-child) {
+            margin-right: 20px;
+        }
+        > svg {
+            margin-right: 5px;
+            width: 20px;
+            height: 20px;
+        }
+    }
 }

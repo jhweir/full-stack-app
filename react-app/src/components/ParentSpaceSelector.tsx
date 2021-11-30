@@ -53,7 +53,6 @@ const ParentSpaceSelector = (props: {
                 type='text'
                 title={title}
                 placeholder='name or handle...'
-                state='default'
                 value={searchQuery}
                 onChange={(newSearchQuery) => handleNewSearchQuery(newSearchQuery)}
             />

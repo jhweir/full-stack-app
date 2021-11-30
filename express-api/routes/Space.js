@@ -11,10 +11,11 @@ const authenticateToken = require('../middleware/authenticateToken')
 const {
     Holon,
     VerticalHolonRelationship,
-    HolonHandle,
-    HolonUser,
+    HolonHandle, // InheritedSpaceId
+    HolonUser, // SpaceUserRelationship
     User,
     Post,
+    Reaction,
     Link,
     Notification,
     SpaceNotification,
@@ -68,6 +69,8 @@ const secondGenLimit = 3
 const thirdGenLimit = 3
 const fourthGenLimit = 3
 
+// res.status(400).json({"status":"Failed", "reason":"wrong input"})
+
 function findStartDate(timeRange) {
     let timeOffset = Date.now()
     if (timeRange === 'Last Year') { timeOffset = (24*60*60*1000) * 365 }
@@ -84,7 +87,7 @@ function findOrder(sortOrder, sortBy) {
     let direction, order
     if (sortOrder === 'Ascending') { direction = 'ASC' } else { direction = 'DESC' }
     if (sortBy === 'Date') { order = [['createdAt', direction]] }
-    else { order = [[sequelize.literal(`total_${sortBy.toLowerCase()}`), direction], ['createdAt', 'DESC']] }
+    else { order = [[sequelize.literal(`total${sortBy}`), direction], ['createdAt', 'DESC']] }
     return order
 }
 
@@ -211,9 +214,9 @@ router.get('/homepage-highlights', async (req, res) => {
     const totals = Holon.findOne({
         where: { id: 1 },
         attributes: [
-            [sequelize.literal(`(SELECT COUNT(*) FROM Posts WHERE Posts.state = 'visible')`), 'total_posts'],
-            [sequelize.literal(`(SELECT COUNT(*) FROM Holons WHERE Holons.state = 'active')`), 'total_spaces'],
-            [sequelize.literal(`(SELECT COUNT(*) FROM Users WHERE Users.emailVerified = true)`), 'total_users'],
+            [sequelize.literal(`(SELECT COUNT(*) FROM Posts WHERE Posts.state = 'visible')`), 'totalPosts'],
+            [sequelize.literal(`(SELECT COUNT(*) FROM Holons WHERE Holons.state = 'active')`), 'totalSpaces'],
+            [sequelize.literal(`(SELECT COUNT(*) FROM Users WHERE Users.emailVerified = true)`), 'totalUsers'],
         ]
     })
 
@@ -261,7 +264,7 @@ router.get('/space-data', (req, res) => {
     const { handle } = req.query
     let totalUsersQuery
     if (handle === 'all') {
-        totalUsersQuery = [sequelize.literal(`(SELECT COUNT(*) FROM Users WHERE Users.emailVerified = true)`), 'total_users']
+        totalUsersQuery = [sequelize.literal(`(SELECT COUNT(*) FROM Users WHERE Users.emailVerified = true)`), 'totalUsers']
     } else {
         totalUsersQuery = [sequelize.literal(`(
             SELECT COUNT(*)
@@ -276,7 +279,7 @@ router.get('/space-data', (req, res) => {
                     AND HolonUsers.state = 'active'
                     AND HolonUsers.relationship = 'follower'
                 )
-            )`), 'total_users'
+            )`), 'totalUsers'
         ]
     }
     Holon.findOne({ 
@@ -295,7 +298,7 @@ router.get('/space-data', (req, res) => {
                         ON HolonHandles.holonAId = Holons.id
                         WHERE HolonHandles.holonBId = Holon.id
                     )
-                )`), 'total_spaces'
+                )`), 'totalSpaces'
             ],
             [sequelize.literal(`(
                 SELECT COUNT(*)
@@ -308,7 +311,7 @@ router.get('/space-data', (req, res) => {
                         ON PostHolons.postId = Posts.id
                         WHERE PostHolons.HolonId = Holon.id
                     )
-                )`), 'total_posts'
+                )`), 'totalPosts'
             ],
             totalUsersQuery
         ],
@@ -348,7 +351,7 @@ router.get('/space-data', (req, res) => {
             }],
             where: { '$DirectParentHolons.id$': space.id, state: 'active' },
             attributes: ['id', 'handle', 'name', 'flagImagePath', totalSpaceLikes],
-            order: [[ sequelize.literal(`total_likes`), 'DESC'], ['createdAt', 'DESC']],
+            order: [[ sequelize.literal(`totalLikes`), 'DESC'], ['createdAt', 'DESC']],
             limit: 100,
             offset: 0,
             subQuery: false,
@@ -363,6 +366,7 @@ router.get('/space-data', (req, res) => {
     .catch(err => console.log(err))
 })
 
+// todo: potentially merge with user posts: get('/posts')
 router.get('/space-posts', (req, res) => {
     const { accountId, spaceId, timeRange, postType, sortBy, sortOrder, depth, searchQuery, limit, offset } = req.query
 
@@ -379,21 +383,17 @@ router.get('/space-posts', (req, res) => {
     }
 
     function findType() {
-        let type
-        if (postType === 'All Types') {
-            type = ['text', 'url', 'glass-bead-game', 'prism'] //'poll', 'decision-tree', 'prism', 'plot-graph']
-        } else { 
-            type = postType.replace(/\s+/g, '-').toLowerCase()
-        }
-        return type
+        return postType === 'All Types'
+            ? ['text', 'url', 'glass-bead-game', 'prism']
+            : postType.replace(/\s+/g, '-').toLowerCase()
     }
 
     function findOrder() {
         let direction, order
         if (sortOrder === 'Ascending') { direction = 'ASC' } else { direction = 'DESC' }
         if (sortBy === 'Date') { order = [['createdAt', direction]] }
-        if (sortBy === 'Reactions') { order = [[sequelize.literal(`total_reactions`), direction], ['createdAt', 'DESC']] }
-        if (sortBy !== 'Reactions' && sortBy !== 'Date') { order = [[sequelize.literal(`total_${sortBy.toLowerCase()}`), direction], ['createdAt', 'DESC']] }
+        if (sortBy === 'Reactions') { order = [[sequelize.literal(`totalReactions`), direction], ['createdAt', 'DESC']] }
+        if (sortBy !== 'Reactions' && sortBy !== 'Date') { order = [[sequelize.literal(`total${sortBy}`), direction], ['createdAt', 'DESC']] }
         return order
     }
 
@@ -401,23 +401,23 @@ router.get('/space-posts', (req, res) => {
         let firstAttributes = ['id']
         if (sortBy === 'Comments') { firstAttributes.push([sequelize.literal(
             `(SELECT COUNT(*) FROM Comments AS Comment WHERE Comment.state = 'visible' AND Comment.postId = Post.id)`
-            ),'total_comments'
+            ),'totalComments'
         ])}
         if (sortBy === 'Reactions') { firstAttributes.push([sequelize.literal(
             `(SELECT COUNT(*) FROM Reactions AS Reaction WHERE Reaction.postId = Post.id AND Reaction.type != 'vote' AND Reaction.state = 'active')`
-            ),'total_reactions'
+            ),'totalReactions'
         ])}
         if (sortBy === 'Likes') { firstAttributes.push([sequelize.literal(
             `(SELECT COUNT(*) FROM Reactions AS Reaction WHERE Reaction.postId = Post.id AND Reaction.type = 'like' AND Reaction.state = 'active')`
-            ),'total_likes'
+            ),'totalLikes'
         ])}
         if (sortBy === 'Ratings') { firstAttributes.push([sequelize.literal(
             `(SELECT COUNT(*) FROM Reactions AS Reaction WHERE Reaction.postId = Post.id AND Reaction.type = 'rating' AND Reaction.state = 'active')`
-            ),'total_ratings'
+            ),'totalRatings'
         ])}
         if (sortBy === 'Reposts') { firstAttributes.push([sequelize.literal(
             `(SELECT COUNT(*) FROM Reactions AS Reaction WHERE Reaction.postId = Post.id AND Reaction.type = 'repost' AND Reaction.state = 'active')`
-            ),'total_reposts'
+            ),'totalReposts'
         ])}
         return firstAttributes
     }
@@ -451,6 +451,7 @@ router.get('/space-posts', (req, res) => {
     let through = findThrough()
 
     // Find totalMatchingPosts
+    // todo: use .count() function instead
     let totalMatchingPosts
     Post.findAll({
         subQuery: false,
@@ -481,7 +482,6 @@ router.get('/space-posts', (req, res) => {
     // Double query required to to prevent results and pagination being effected by top level where clause.
     // Intial query used to find correct posts with calculated stats and pagination applied.
     // Second query used to return related models.
-    // Final function used to replace PostHolons object with a simpler array.
     Post.findAll({
         subQuery: false,
         where: { 
@@ -511,43 +511,43 @@ router.get('/space-posts', (req, res) => {
         let mainAttributes = [
             ...postAttributes,
             [sequelize.literal(`(
-                SELECT COUNT(*)
+                SELECT COUNT(*) > 0
                 FROM Reactions
                 AS Reaction
                 WHERE Reaction.postId = Post.id
                 AND Reaction.userId = ${accountId}
                 AND Reaction.type = 'like'
                 AND Reaction.state = 'active'
-                )`),'account_like'
+                )`),'accountLike'
             ],
             [sequelize.literal(`(
-                SELECT COUNT(*)
+                SELECT COUNT(*) > 0
                 FROM Reactions
                 AS Reaction
                 WHERE Reaction.postId = Post.id
                 AND Reaction.userId = ${accountId}
                 AND Reaction.type = 'rating'
                 AND Reaction.state = 'active'
-                )`),'account_rating'
+                )`),'accountRating'
             ],
             [sequelize.literal(`(
-                SELECT COUNT(*)
+                SELECT COUNT(*) > 0
                 FROM Reactions
                 AS Reaction
                 WHERE Reaction.postId = Post.id
                 AND Reaction.userId = ${accountId}
                 AND Reaction.type = 'repost'
                 AND Reaction.state = 'active'
-                )`),'account_repost'
+                )`),'accountRepost'
             ],
             [sequelize.literal(`(
-                SELECT COUNT(*)
+                SELECT COUNT(*) > 0
                 FROM Links
                 AS Link
                 WHERE Link.state = 'visible'
                 AND Link.creatorId = ${accountId}
                 AND (Link.itemAId = Post.id OR Link.itemBId = Post.id)
-                )`),'account_link'
+                )`),'accountLink'
             ]
         ]
         return Post.findAll({ 
@@ -556,34 +556,91 @@ router.get('/space-posts', (req, res) => {
             order,
             include: [
                 {
+                    model: User,
+                    as: 'Creator',
+                    attributes: ['id', 'handle', 'name', 'flagImagePath'],
+                },
+                {
                     model: Holon,
                     as: 'DirectSpaces',
-                    attributes: ['handle', 'state'],
+                    attributes: ['id', 'handle', 'state', 'flagImagePath'],
                     through: { where: { relationship: 'direct' }, attributes: ['type'] },
                 },
                 {
                     model: Holon,
                     as: 'IndirectSpaces',
-                    attributes: ['handle', 'state'],
+                    attributes: ['id', 'handle', 'state'],
                     through: { where: { relationship: 'indirect' }, attributes: ['type'] },
                 },
-                {
-                    model: User,
-                    as: 'creator',
-                    attributes: ['id', 'handle', 'name', 'flagImagePath'],
+                { 
+                    model: Reaction,
+                    where: { state: 'active' },
+                    required: false,
+                    attributes: ['id', 'type', 'value'],
+                    include: [
+                        {
+                            model: User,
+                            as: 'Creator',
+                            attributes: ['id', 'handle', 'name', 'flagImagePath']
+                        },
+                        {
+                            model: Holon,
+                            as: 'Space',
+                            attributes: ['id', 'handle', 'name', 'flagImagePath']
+                        },
+                    ]
                 },
-                // todo: links could be removed for list calls, only needed for map.
                 {
                     model: Link,
                     as: 'OutgoingLinks',
-                    //where: { state: 'visible' }
-                    //attributes: ['id', 'handle', 'name', 'flagImagePath'],
+                    where: { state: 'visible' },
+                    required: false,
+                    attributes: ['id'],
+                    include: [
+                        { 
+                            model: User,
+                            as: 'Creator',
+                            attributes: ['id', 'handle', 'name', 'flagImagePath'],
+                        },
+                        { 
+                            model: Post,
+                            as: 'PostB',
+                            attributes: ['id'],
+                            include: [
+                                { 
+                                    model: User,
+                                    as: 'Creator',
+                                    attributes: ['handle', 'name', 'flagImagePath'],
+                                }
+                            ]
+                        },
+                    ]
                 },
                 {
                     model: Link,
                     as: 'IncomingLinks',
-                    //where: { state: 'visible' }
-                    //attributes: ['id', 'handle', 'name', 'flagImagePath'],
+                    where: { state: 'visible' },
+                    required: false,
+                    attributes: ['id'],
+                    include: [
+                        { 
+                            model: User,
+                            as: 'Creator',
+                            attributes: ['id', 'handle', 'name', 'flagImagePath'],
+                        },
+                        { 
+                            model: Post,
+                            as: 'PostA',
+                            attributes: ['id'],
+                            include: [
+                                { 
+                                    model: User,
+                                    as: 'Creator',
+                                    attributes: ['handle', 'name', 'flagImagePath'],
+                                }
+                            ]
+                        },
+                    ]
                 },
                 {
                     model: GlassBeadGame,
@@ -602,6 +659,11 @@ router.get('/space-posts', (req, res) => {
                     space.setDataValue('type', space.dataValues.PostHolon.type)
                     delete space.dataValues.PostHolon
                 })
+                // convert SQL numeric booleans to JS booleans
+                post.setDataValue('accountLike', !!post.dataValues.accountLike)
+                post.setDataValue('accountRating', !!post.dataValues.accountRating)
+                post.setDataValue('accountRepost', !!post.dataValues.accountRepost)
+                post.setDataValue('accountLink', !!post.dataValues.accountLink)
             })
             let holonPosts = {
                 totalMatchingPosts,

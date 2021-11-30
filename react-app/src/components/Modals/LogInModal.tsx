@@ -107,15 +107,15 @@ const LogInModal = (props: { close: () => void }): JSX.Element => {
     })
 
     return (
-        <Modal close={close} minWidth={350} centered>
+        <Modal close={close} style={{ minWidth: 350 }} centered>
             <h1>Log in</h1>
             <form onSubmit={logIn}>
-                <Column margin='0 0 20px 0' width='100%'>
+                <Column style={{ marginBottom: 20, width: '100%' }}>
                     <Input
                         type='text'
                         title='Handle or email'
                         placeholder='handle or email...'
-                        margin='0 0 10px 0'
+                        style={{ marginBottom: 10 }}
                         state={emailOrHandleState}
                         errors={emailOrHandleErrors}
                         value={emailOrHandle}
@@ -128,7 +128,7 @@ const LogInModal = (props: { close: () => void }): JSX.Element => {
                         type='password'
                         title='Password'
                         placeholder='password...'
-                        margin='0 0 10px 0'
+                        style={{ marginBottom: 10 }}
                         state={passwordState}
                         errors={passwordErrors}
                         value={password}
@@ -143,8 +143,7 @@ const LogInModal = (props: { close: () => void }): JSX.Element => {
                     <Button
                         text='Resend verification email'
                         colour='blue'
-                        size='medium'
-                        margin='0 0 10px 0'
+                        style={{ marginBottom: 10 }}
                         onClick={() => resendVerificationEmail()}
                     />
                 )}
@@ -152,7 +151,6 @@ const LogInModal = (props: { close: () => void }): JSX.Element => {
                     <Button
                         text='Log in'
                         colour='blue'
-                        size='medium'
                         disabled={
                             emailOrHandleState === 'invalid' ||
                             passwordState === 'invalid' ||
@@ -163,7 +161,7 @@ const LogInModal = (props: { close: () => void }): JSX.Element => {
                 )}
                 {loading && <LoadingWheel />}
                 {success && <SuccessMessage text='Logged in' />}
-                <Column margin='20px 0 0 0' centerX>
+                <Column style={{ marginTop: 20 }} centerX>
                     <p>
                         New?{' '}
                         <button

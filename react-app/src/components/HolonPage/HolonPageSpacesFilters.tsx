@@ -1,12 +1,13 @@
 import React, { useContext } from 'react'
 import { SpaceContext } from '@contexts/SpaceContext'
 import DropDownMenu from '@components/DropDownMenu'
+import Row from '@components/Row'
 
 const HolonPageSpacesFilters = (): JSX.Element => {
     const { spaceSpacesFilters, updateSpaceSpacesFilter } = useContext(SpaceContext)
-
+    const { sortBy, sortOrder, timeRange, depth } = spaceSpacesFilters
     return (
-        <div className='wecoFilters'>
+        <Row wrap>
             <DropDownMenu
                 title='Sort By'
                 options={[
@@ -18,16 +19,18 @@ const HolonPageSpacesFilters = (): JSX.Element => {
                     'Likes',
                     'Ratings',
                 ]}
-                selectedOption={spaceSpacesFilters.sortBy}
+                selectedOption={sortBy}
                 setSelectedOption={(payload) => updateSpaceSpacesFilter('sortBy', payload)}
                 orientation='vertical'
+                style={{ margin: '0 20px 10px 0' }}
             />
             <DropDownMenu
                 title='Sort Order'
                 options={['Descending', 'Ascending']}
-                selectedOption={spaceSpacesFilters.sortOrder}
+                selectedOption={sortOrder}
                 setSelectedOption={(payload) => updateSpaceSpacesFilter('sortOrder', payload)}
                 orientation='vertical'
+                style={{ margin: '0 20px 10px 0' }}
             />
             <DropDownMenu
                 title='Time Range'
@@ -39,18 +42,20 @@ const HolonPageSpacesFilters = (): JSX.Element => {
                     'Last 24 Hours',
                     'Last Hour',
                 ]}
-                selectedOption={spaceSpacesFilters.timeRange}
+                selectedOption={timeRange}
                 setSelectedOption={(payload) => updateSpaceSpacesFilter('timeRange', payload)}
                 orientation='vertical'
+                style={{ margin: '0 20px 10px 0' }}
             />
             <DropDownMenu
                 title='Depth'
                 options={['All Contained Spaces', 'Only Direct Descendants']}
-                selectedOption={spaceSpacesFilters.depth}
+                selectedOption={depth}
                 setSelectedOption={(payload) => updateSpaceSpacesFilter('depth', payload)}
                 orientation='vertical'
+                style={{ margin: '0 20px 10px 0' }}
             />
-        </div>
+        </Row>
     )
 }
 

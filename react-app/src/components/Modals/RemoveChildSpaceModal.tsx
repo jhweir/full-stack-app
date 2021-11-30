@@ -85,7 +85,7 @@ const RemoveChildSpaceModal = (props: { close: () => void }): JSX.Element => {
     }
 
     return (
-        <Modal close={close} maxWidth={600}>
+        <Modal close={close} style={{ maxWidth: 600 }}>
             <h1>Remove a child space from &apos;{spaceData.name}&apos;</h1>
             <p>
                 Once removed, new posts to the removed child space will no longer appear in &apos;
@@ -120,8 +120,7 @@ const RemoveChildSpaceModal = (props: { close: () => void }): JSX.Element => {
                         submit
                         text='Remove child space'
                         colour='blue'
-                        size='medium'
-                        margin='0 10px 0 0'
+                        style={{ marginRight: 10 }}
                         disabled={loading || showSuccessMessage || !selectedSpace}
                     />
                     {loading && <LoadingWheel />}

@@ -206,12 +206,12 @@ const GameSettingsModal = (props) => {
             <h1>Game settings</h1>
             <p>Players must connect their audio/video to participate in the game</p>
             <form onSubmit={saveSettings}>
-                <Row margin='10px 0 30px 0'>
-                    <Column margin='0 60px 0 0'>
+                <Row style={{ margin: '10px 0 30px 0' }}>
+                    <Column style={{ marginRight: 60 }}>
                         <Input
                             title='Intro duration (seconds)'
                             type='text'
-                            margin='0 0 10px 0'
+                            style={{ marginBottom: 10 }}
                             disabled={loading || saved}
                             state={introDuration.state}
                             errors={introDuration.errors}
@@ -221,7 +221,7 @@ const GameSettingsModal = (props) => {
                         <Input
                             title='Number of turns'
                             type='text'
-                            margin='0 0 10px 0'
+                            style={{ marginBottom: 10 }}
                             disabled={loading || saved}
                             state={numberOfTurns.state}
                             errors={numberOfTurns.errors}
@@ -231,7 +231,7 @@ const GameSettingsModal = (props) => {
                         <Input
                             title='Move duration (seconds)'
                             type='text'
-                            margin='0 0 10px 0'
+                            style={{ marginBottom: 10 }}
                             disabled={loading || saved}
                             state={moveDuration.state}
                             errors={moveDuration.errors}
@@ -241,7 +241,7 @@ const GameSettingsModal = (props) => {
                         <Input
                             title='Interval duration (seconds)'
                             type='text'
-                            margin='0 0 10px 0'
+                            style={{ marginBottom: 10 }}
                             disabled={loading || saved}
                             state={intervalDuration.state}
                             errors={intervalDuration.errors}
@@ -249,10 +249,10 @@ const GameSettingsModal = (props) => {
                             onChange={(v) => updateValue('intervalDuration', +v.replace(/\D/g, ''))}
                         />
                     </Column>
-                    <Column width={250}>
+                    <Column style={{ width: 250 }}>
                         <h2 style={{ margin: 0 }}>Player order</h2>
                         {players.map((player, i) => (
-                            <Row margin='10px 0 0 0'>
+                            <Row style={{ marginTop: 10 }}>
                                 <div className={styles.position}>{i + 1}</div>
                                 <div className={styles.positionControls}>
                                     {i > 0 && (
@@ -290,7 +290,6 @@ const GameSettingsModal = (props) => {
                         <Button
                             text='Start game'
                             colour='blue'
-                            size='medium'
                             disabled={loading || saved}
                             submit
                         />
@@ -1030,12 +1029,11 @@ const GlassBeadGame = (): JSX.Element => {
                         <Input
                             type='text'
                             placeholder='comment...'
-                            margin='0 10px 0 0'
-                            state='default'
+                            style={{ marginRight: 10 }}
                             value={newComment}
                             onChange={(v) => setNewComment(v)}
                         />
-                        <Button text='Send' colour='blue' size='medium' submit />
+                        <Button text='Send' colour='blue' submit />
                     </form>
                     <button
                         type='button'
@@ -1051,13 +1049,12 @@ const GlassBeadGame = (): JSX.Element => {
                             <Button
                                 text='Stop game'
                                 colour='red'
-                                size='medium'
-                                margin='0 0 10px 0'
+                                style={{ marginBottom: 10 }}
                                 onClick={signalStopGame}
                             />
                             <p>{`Turn ${turn} / ${gameData.numberOfTurns}`}</p>
                             {players.map((player, index) => (
-                                <Row margin='10px 0 0 0' centerY key={player.socketId}>
+                                <Row centerY style={{ marginTop: 10 }} key={player.socketId}>
                                     <div className={styles.position}>{index + 1}</div>
                                     <ImageTitle
                                         type='user'
@@ -1065,7 +1062,7 @@ const GlassBeadGame = (): JSX.Element => {
                                         title={isYou(player.socketId) ? 'You' : player.name}
                                         fontSize={16}
                                         imageSize={35}
-                                        margin='0 10px 0 0'
+                                        style={{ marginRight: 10 }}
                                     />
                                     <p
                                         id={`player-${player.socketId}`}
@@ -1079,8 +1076,7 @@ const GlassBeadGame = (): JSX.Element => {
                             <Button
                                 text={`${userIsStreaming ? 'Disconnect' : 'Connect'} audio/video`}
                                 colour={userIsStreaming ? 'red' : 'grey'}
-                                size='medium'
-                                margin='0 0 10px 0'
+                                style={{ marginBottom: 10 }}
                                 loading={loadingStream}
                                 disabled={loadingStream}
                                 onClick={toggleStream}
@@ -1095,16 +1091,14 @@ const GlassBeadGame = (): JSX.Element => {
                                     <Button
                                         text={`${beads.length ? 'Restart' : 'Start'} game`}
                                         colour='grey'
-                                        size='medium'
-                                        margin='0 0 10px 0'
+                                        style={{ marginBottom: 10 }}
                                         onClick={() => setGameSettingsModalOpen(true)}
                                     />
                                     {beads.length > 0 && (
                                         <Button
                                             text='Save and lock game'
                                             colour='grey'
-                                            size='medium'
-                                            margin='0 0 10px 0'
+                                            style={{ marginBottom: 10 }}
                                             onClick={saveGame}
                                         />
                                     )}
@@ -1159,7 +1153,7 @@ const GlassBeadGame = (): JSX.Element => {
                                 title={isYou(user.socketId) ? 'You' : user.userData.name}
                                 fontSize={16}
                                 imageSize={40}
-                                margin='0 0 10px 0'
+                                style={{ marginBottom: 10 }}
                             />
                         ))}
                     </div>
@@ -1201,7 +1195,7 @@ const GlassBeadGame = (): JSX.Element => {
                                 title={bead.user.id === accountData.id ? 'You' : bead.user.name}
                                 fontSize={16}
                                 imageSize={30}
-                                margin='0 10px 0 0'
+                                style={{ marginRight: 10 }}
                             />
                             <img src='/icons/gbg/sound-wave.png' alt='sound-wave' />
                             <div className={styles.beadControls}>
@@ -1323,7 +1317,7 @@ export default GlassBeadGame
 //                 <Input
 //                     title='Intro duration (seconds)'
 //                     type='text'
-//                     margin='0 0 10px 0'
+//                     style={{ marginBottom: 10 }}
 //                     state={newIntroDurationState}
 //                     errors={newIntroDurationErrors}
 //                     value={newIntroDuration}
@@ -1335,7 +1329,7 @@ export default GlassBeadGame
 //                 <Input
 //                     title='Number of turns'
 //                     type='text'
-//                     margin='0 0 10px 0'
+//                     style={{ marginBottom: 10 }}
 //                     state={newNumberOfTurnsState}
 //                     errors={newNumberOfTurnsErrors}
 //                     value={newNumberOfTurns}
@@ -1347,7 +1341,7 @@ export default GlassBeadGame
 //                 <Input
 //                     title='Move duration (seconds)'
 //                     type='text'
-//                     margin='0 0 10px 0'
+//                     style={{ marginBottom: 10 }}
 //                     state={newMoveDurationState}
 //                     errors={newMoveDurationErrors}
 //                     value={newMoveDuration}
@@ -1359,7 +1353,7 @@ export default GlassBeadGame
 //                 <Input
 //                     title='Interval duration (seconds)'
 //                     type='text'
-//                     margin='0 0 10px 0'
+//                     style={{ marginBottom: 10 }}
 //                     // disabled={loading || settingsSaved}
 //                     state={newIntervalDurationState}
 //                     errors={newIntervalDurationErrors}
@@ -1402,7 +1396,6 @@ export default GlassBeadGame
 //                 <Button
 //                     text='Start game'
 //                     colour='blue'
-//                     size='medium'
 //                     disabled={loading}
 //                     submit
 //                 />
@@ -1539,7 +1532,7 @@ export default GlassBeadGame
             title={user.userData.name}
             fontSize={16}
             imageSize={40}
-            margin='0 0 10px 0'
+            style={{ marginBottom: 10 }}
         />
     ))} */
 // </div> */}

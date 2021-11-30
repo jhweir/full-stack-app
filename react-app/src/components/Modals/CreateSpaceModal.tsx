@@ -114,7 +114,7 @@ const CreateSpaceModal = (props: { close: () => void }): JSX.Element => {
     }
 
     return (
-        <Modal close={close} maxWidth={600}>
+        <Modal close={close} style={{ maxWidth: 600 }}>
             <h1>Create a new space in &apos;{spaceData.name}&apos;</h1>
             {!authorizedToAttachParent && (
                 <>
@@ -136,7 +136,7 @@ const CreateSpaceModal = (props: { close: () => void }): JSX.Element => {
                     title='Handle (the unique identifier used in the spaces url):'
                     prefix='weco.io/s/'
                     placeholder='handle...'
-                    margin='0 0 20px 0'
+                    style={{ marginBottom: 20 }}
                     state={handleState}
                     errors={handleErrors}
                     value={handle}
@@ -149,7 +149,7 @@ const CreateSpaceModal = (props: { close: () => void }): JSX.Element => {
                     type='text'
                     title='Name (max 30 characters):'
                     placeholder='name...'
-                    margin='0 0 20px 0'
+                    style={{ marginBottom: 20 }}
                     state={nameState}
                     errors={nameErrors}
                     value={name}
@@ -162,7 +162,7 @@ const CreateSpaceModal = (props: { close: () => void }): JSX.Element => {
                     type='text-area'
                     title='Description (max 10K characters):'
                     placeholder='description...'
-                    margin='0 0 20px 0'
+                    style={{ marginBottom: 20 }}
                     state={descriptionState}
                     errors={descriptionErrors}
                     value={description}
@@ -179,8 +179,7 @@ const CreateSpaceModal = (props: { close: () => void }): JSX.Element => {
                                 : 'Create space and send request'
                         }
                         colour='blue'
-                        size='medium'
-                        margin='0 10px 0 0'
+                        style={{ marginRight: 10 }}
                         disabled={loading || successMessage.length > 0 || errors}
                         submit
                     />

@@ -85,6 +85,10 @@ export const notNull = (value: number | null): number | false => (value !== null
 
 export const defaultErrorState = {
     required: true,
-    errors: [],
+    errors: [] as string[],
     state: 'default' as 'default' | 'valid' | 'invalid',
+}
+
+export function statTitle(text: string, value: number): string {
+    return `${value} ${text}${pluralise(value)}`
 }

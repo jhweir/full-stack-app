@@ -55,8 +55,7 @@ const UserPagePosts = (): JSX.Element => {
                     <Button
                         icon={<SlidersIconSVG />}
                         colour='grey'
-                        size='medium'
-                        margin='0 10px 0 0'
+                        style={{ marginRight: 10 }}
                         onClick={() => setUserPostsFiltersOpen(!userPostsFiltersOpen)}
                     />
                 </div>
@@ -69,7 +68,7 @@ const UserPagePosts = (): JSX.Element => {
                     {userPosts.length > 0 &&
                         userPosts.map((post, index) => (
                             <PostCard
-                                postData={post}
+                                post={post}
                                 key={post.id}
                                 index={index}
                                 location='user-created-posts'

@@ -82,8 +82,7 @@ const UpdateSpaceHandleModal = (props: { close: () => void }): JSX.Element => {
                     <Button
                         text='Save'
                         colour='blue'
-                        size='medium'
-                        margin='0 10px 0 0'
+                        style={{ marginRight: 10 }}
                         disabled={loading || showSuccessMessage || inputState === 'invalid'}
                         submit
                     />

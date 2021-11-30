@@ -117,7 +117,7 @@ const RegisterModal = (props: { close: () => void }): JSX.Element => {
     })
 
     return (
-        <Modal close={close} minWidth={350} centered>
+        <Modal close={close} style={{ minWidth: 350 }} centered>
             <h1>Create a new account</h1>
             <form onSubmit={register}>
                 <Input
@@ -125,7 +125,7 @@ const RegisterModal = (props: { close: () => void }): JSX.Element => {
                     title='Handle (the unique identifier used in your profiles url)'
                     prefix='weco.io/u/'
                     placeholder='handle...'
-                    margin='0 0 10px 0'
+                    style={{ marginBottom: 10 }}
                     state={handleState}
                     errors={handleErrors}
                     value={handle}
@@ -138,7 +138,7 @@ const RegisterModal = (props: { close: () => void }): JSX.Element => {
                     type='text'
                     title='Name (max 30 characters)'
                     placeholder='name...'
-                    margin='0 0 10px 0'
+                    style={{ marginBottom: 10 }}
                     state={nameState}
                     errors={nameErrors}
                     value={name}
@@ -151,7 +151,7 @@ const RegisterModal = (props: { close: () => void }): JSX.Element => {
                     type='email'
                     title='Email'
                     placeholder='email...'
-                    margin='0 0 10px 0'
+                    style={{ marginBottom: 10 }}
                     state={emailState}
                     errors={emailErrors}
                     value={email}
@@ -164,7 +164,7 @@ const RegisterModal = (props: { close: () => void }): JSX.Element => {
                     type='password'
                     title='Password'
                     placeholder='password...'
-                    margin='0 0 10px 0'
+                    style={{ marginBottom: 10 }}
                     state={passwordState}
                     errors={passwordErrors}
                     value={password}
@@ -177,7 +177,7 @@ const RegisterModal = (props: { close: () => void }): JSX.Element => {
                     type='password'
                     title='Confirm password'
                     placeholder='password...'
-                    margin='0 0 10px 0'
+                    style={{ marginBottom: 10 }}
                     state={confirmPasswordState}
                     errors={confirmPasswordErrors}
                     value={confirmPassword}
@@ -189,8 +189,7 @@ const RegisterModal = (props: { close: () => void }): JSX.Element => {
                 <Button
                     text='Create account'
                     colour='blue'
-                    size='medium'
-                    margin='20px 0 20px 0'
+                    style={{ margin: '20px 0 20px 0' }}
                     disabled={loading || showSuccessMessage || errors}
                     submit
                 />

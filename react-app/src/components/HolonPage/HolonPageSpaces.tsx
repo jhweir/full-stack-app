@@ -12,13 +12,14 @@ import VerticalCard from '@components/Cards/VerticalCard'
 import SearchBar from '@components/SearchBar'
 import Button from '@components/Button'
 import Toggle from '@components/Toggle'
-import Stat from '@components/Stat'
-import { isPlural, onPageBottomReached } from '@src/Functions'
+import { statTitle, onPageBottomReached, pluralise } from '@src/Functions'
 import HolonPageSpacesFilters from '@components/HolonPage/HolonPageSpacesFilters'
 import HolonPageSpacesPlaceholder from '@components/HolonPage/HolonPageSpacesPlaceholder'
 import HolonSpaceMap from '@components/HolonPage/HolonSpaceMap'
 import CreateSpaceModal from '@components/Modals/CreateSpaceModal'
+import Row from '@components/Row'
 import { ReactComponent as SlidersIconSVG } from '@svgs/sliders-h-solid.svg'
+import StatButton from '@components/StatButton'
 
 const HolonPageSpaces = ({
     match,
@@ -117,15 +118,13 @@ const HolonPageSpaces = ({
                         <Button
                             icon={<SlidersIconSVG />}
                             colour='grey'
-                            size='medium'
-                            margin='0 10px 0 0'
+                            style={{ marginRight: 10 }}
                             onClick={() => setSpaceSpacesFiltersOpen(!spaceSpacesFiltersOpen)}
                         />
                         <Button
                             text='New space'
                             colour='grey'
-                            size='medium'
-                            margin='0 10px 0 0'
+                            style={{ marginRight: 10 }}
                             onClick={() => openCreateSpaceModal()}
                         />
                         {createSpaceModalOpen && (
@@ -150,49 +149,46 @@ const HolonPageSpaces = ({
                     ) : (
                         <>
                             {spaceSpaces.length ? (
-                                spaceSpaces.map((holon) => (
+                                spaceSpaces.map((space) => (
                                     <VerticalCard
-                                        key={holon.id}
+                                        key={space.id}
                                         type='space'
-                                        route={`/s/${holon.handle}/spaces`}
-                                        coverImagePath={holon.coverImagePath}
-                                        flagImagePath={holon.flagImagePath}
-                                        title={holon.name}
-                                        subTitle={`s/${holon.handle}`}
-                                        text={holon.description}
+                                        route={`/s/${space.handle}/spaces`}
+                                        coverImagePath={space.coverImagePath}
+                                        flagImagePath={space.flagImagePath}
+                                        title={space.name}
+                                        subTitle={`s/${space.handle}`}
+                                        text={space.description}
                                         footer={
                                             <div className={styles.stats}>
-                                                <Stat
+                                                <StatButton
                                                     icon={<UsersIconSVG />}
-                                                    value={holon.total_followers}
-                                                    title={`Follower${
-                                                        isPlural(holon.total_followers) ? 's' : ''
-                                                    }`}
-                                                    small
+                                                    text={space.totalFollowers}
+                                                    title={statTitle(
+                                                        'Follower',
+                                                        space.totalFollowers
+                                                    )}
                                                 />
-                                                <Stat
+                                                <StatButton
                                                     icon={<PostIconSVG />}
-                                                    value={holon.total_posts}
-                                                    title={`Post${
-                                                        isPlural(holon.total_posts) ? 's' : ''
-                                                    }`}
-                                                    small
+                                                    text={space.totalPosts}
+                                                    title={statTitle('Post', space.totalPosts)}
                                                 />
-                                                <Stat
+                                                <StatButton
                                                     icon={<CommentIconSVG />}
-                                                    value={holon.total_comments}
-                                                    title={`Comment${
-                                                        isPlural(holon.total_comments) ? 's' : ''
-                                                    }`}
-                                                    small
+                                                    text={space.totalComments}
+                                                    title={statTitle(
+                                                        'Comment',
+                                                        space.totalComments
+                                                    )}
                                                 />
-                                                <Stat
+                                                <StatButton
                                                     icon={<ReactionIconSVG />}
-                                                    value={holon.total_reactions}
-                                                    title={`Reaction${
-                                                        isPlural(holon.total_reactions) ? 's' : ''
-                                                    }`}
-                                                    small
+                                                    text={space.totalReactions}
+                                                    title={statTitle(
+                                                        'Reaction',
+                                                        space.totalReactions
+                                                    )}
                                                 />
                                             </div>
                                         }

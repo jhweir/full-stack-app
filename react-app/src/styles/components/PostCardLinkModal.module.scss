@@ -1,94 +1,77 @@
-.modalWrapper {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0,0,0,0.3);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 5;
-}
-.modal {
-    min-width: 500px;
-    border-radius: 5px;
-    background-color: white;
-    color: black;
-    padding: 30px;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-}
-.title {
-    font-size: 24px;
-    margin-bottom: 20px;
-}
-.subTitle {
-    font-size: 16px;
-    margin-bottom: 10px;
-}
-.text {
+@import '@styles/Colors.scss';
 
-}
 .links {
     margin-bottom: 20px;
     display: flex;
     flex-direction: column;
-}
-.link {
-    font-size: 14px;
-    line-height: 1;
-    white-space: nowrap;
-    margin-bottom: 5px;
-    display: flex;
-    flex-direction: row;
     align-items: center;
-    flex-shrink: 0;
-    &:last-child { margin-bottom: 0 }
+    > h2 {
+        margin-bottom: 10px;
+    }
+    > div {
+        font-size: 14px;
+        margin-bottom: 10px;
+        > div, > p, > a {
+           margin-right: 5px; 
+        }
+        > p {
+            color: $grey4;
+        }
+        > button {
+            margin-left: 10px;
+        }
+    }
 }
-.imageTextLink {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    span { margin: 0 8px; }
-}
-// .linkText {
-//     margin: 0 8px;
+// .link {
+//     font-size: 14px;
+//     line-height: 1;
+//     white-space: nowrap;
+//     margin-bottom: 5px;
+//     display: flex;
+//     flex-direction: row;
+//     align-items: center;
+//     flex-shrink: 0;
+//     &:last-child { margin-bottom: 0 }
 // }
-.settingsText {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-}
-.icon {
-    width: 20px;
-    height: 20px;
-    margin-right: 5px;
-    opacity: 0.3;
-    // &:hover {
-    //     opacity: 0.5;
-    // }
-    &.selected {
-        opacity: 0.8;
-        filter: invert(.5) sepia(1) saturate(5) hue-rotate(190deg);
-        // Light purple: filter: invert(.5) sepia(1) saturate(5) hue-rotate(190deg);
-        // Blue: filter: invert(.5) sepia(1) saturate(5) hue-rotate(160deg);
-        // Blue/green: filter: invert(.5) sepia(1) saturate(5) hue-rotate(120deg);
-        // Nice orange/red: filter: invert(.5) sepia(1) saturate(5) hue-rotate(-30deg);
-        // Orange: filter: invert(.5) sepia(1) saturate(5) hue-rotate(-20deg);
-    }
-}
-.deleteLink {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    flex-shrink: 0;
-    margin-left: 10px;
-    &:hover {
-        cursor: pointer;
-    }
-}
+// .imageTextLink {
+//     display: flex;
+//     flex-direction: row;
+//     align-items: center;
+//     span { margin: 0 8px; }
+// }
+// // .linkText {
+// //     margin: 0 8px;
+// // }
+// .settingsText {
+//     display: flex;
+//     flex-direction: row;
+//     align-items: center;
+// }
+// .icon {
+//     width: 20px;
+//     height: 20px;
+//     margin-right: 5px;
+//     opacity: 0.3;
+//     // &:hover {
+//     //     opacity: 0.5;
+//     // }
+//     &.selected {
+//         opacity: 0.8;
+//         filter: invert(.5) sepia(1) saturate(5) hue-rotate(190deg);
+//         // Light purple: filter: invert(.5) sepia(1) saturate(5) hue-rotate(190deg);
+//         // Blue: filter: invert(.5) sepia(1) saturate(5) hue-rotate(160deg);
+//         // Blue/green: filter: invert(.5) sepia(1) saturate(5) hue-rotate(120deg);
+//         // Nice orange/red: filter: invert(.5) sepia(1) saturate(5) hue-rotate(-30deg);
+//         // Orange: filter: invert(.5) sepia(1) saturate(5) hue-rotate(-20deg);
+//     }
+// }
+// .deleteLink {
+//     display: flex;
+//     flex-direction: row;
+//     align-items: center;
+//     flex-shrink: 0;
+//     margin-left: 10px;
+//     &:hover {
+//         cursor: pointer;
+//     }
+// }

@@ -134,8 +134,7 @@ const SpaceInput = (props: {
                 <Button
                     text='Add'
                     colour='blue'
-                    size='medium'
-                    margin='0 10px 0 0'
+                    style={{ marginRight: 10 }}
                     onClick={() => addSpace()}
                 />
             </div>

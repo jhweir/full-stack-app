@@ -53,7 +53,7 @@ const DeleteSpaceModal = (props: { close: () => void }): JSX.Element => {
     }
 
     return (
-        <Modal close={close} maxWidth={600}>
+        <Modal close={close} style={{ maxWidth: 600 }}>
             <h1>Delete &apos;{spaceData.name}&apos;</h1>
             <p>Are you sure you want to permanently delete &apos;{spaceData.name}&apos;?</p>
             <p>
@@ -66,8 +66,7 @@ const DeleteSpaceModal = (props: { close: () => void }): JSX.Element => {
                         submit
                         text='Delete space'
                         colour='red'
-                        size='medium'
-                        margin='0 10px 0 0'
+                        style={{ marginRight: 10 }}
                         disabled={loading}
                     />
                     {loading && <LoadingWheel />}

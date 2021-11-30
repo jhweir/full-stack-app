@@ -96,14 +96,12 @@ const HolonPagePosts = ({ match }: { match: { params: { spaceHandle: string } } 
                         <Button
                             icon={<SlidersIconSVG />}
                             colour='grey'
-                            size='medium'
-                            margin='0 10px 0 0'
+                            style={{ marginRight: 10 }}
                             onClick={() => setSpacePostsFiltersOpen(!spacePostsFiltersOpen)}
                         />
                         <Button
                             text='New post'
                             colour='grey'
-                            size='medium'
                             onClick={() => openCreatePostModal()}
                         />
                     </div>
@@ -125,7 +123,7 @@ const HolonPagePosts = ({ match }: { match: { params: { spaceHandle: string } } 
                             {spacePosts.length ? (
                                 spacePosts.map((post, index) => (
                                     <PostCard
-                                        postData={post}
+                                        post={post}
                                         key={post.id}
                                         index={index}
                                         location='holon-posts'

@@ -89,7 +89,7 @@ const RemoveParentSpaceModal = (props: { close: () => void }): JSX.Element => {
     }
 
     return (
-        <Modal close={close} maxWidth={600}>
+        <Modal close={close} style={{ maxWidth: 600 }}>
             <h1>Remove a parent space</h1>
             {onlyParentIsRoot ? (
                 <>
@@ -98,7 +98,7 @@ const RemoveParentSpaceModal = (props: { close: () => void }): JSX.Element => {
                         disconnect from there you need to attach to another parent first, otherwise
                         your space won&apos;t appear anywhere on the site.
                     </p>
-                    <Button onClick={close} text='OK' colour='blue' size='medium' />
+                    <Button onClick={close} text='OK' colour='blue' />
                 </>
             ) : (
                 <>
@@ -143,8 +143,7 @@ const RemoveParentSpaceModal = (props: { close: () => void }): JSX.Element => {
                                 submit
                                 text='Remove parent space'
                                 colour='blue'
-                                size='medium'
-                                margin='0 10px 0 0'
+                                style={{ marginRight: 10 }}
                                 disabled={loading || showSuccessMessage || !selectedSpace}
                             />
                             {loading && <LoadingWheel />}

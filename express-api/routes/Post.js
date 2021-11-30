@@ -1,11 +1,11 @@
 require("dotenv").config()
+const config = require('../Config')
 const express = require('express')
 const router = express.Router()
 const sequelize = require('sequelize')
 const Op = sequelize.Op
 const sgMail = require('@sendgrid/mail')
 sgMail.setApiKey(process.env.SENDGRID_API_KEY)
-// const linkPreviewGenerator = require('link-preview-generator')
 const puppeteer = require('puppeteer')
 const authenticateToken = require('../middleware/authenticateToken')
 const { postAttributes } = require('../GlobalConstants')
@@ -76,37 +76,111 @@ router.get('/post-data', (req, res) => {
         where: { id: postId, state: 'visible' },
         attributes: attributes,
         include: [
-            { 
+            {
                 model: User,
-                as: 'creator',
-                attributes: ['id', 'handle', 'name', 'flagImagePath']
+                as: 'Creator',
+                attributes: ['id', 'handle', 'name', 'flagImagePath'],
             },
             {
                 model: Holon,
                 as: 'DirectSpaces',
-                attributes: ['handle', 'state'],
+                attributes: ['id', 'handle', 'state', 'flagImagePath'],
                 through: { where: { relationship: 'direct' }, attributes: ['type'] },
             },
             {
                 model: Holon,
                 as: 'IndirectSpaces',
-                attributes: ['handle', 'state'],
+                attributes: ['id', 'handle', 'state'],
                 through: { where: { relationship: 'indirect' }, attributes: ['type'] },
             },
-            {
-                model: PollAnswer,
-                attributes: [
-                    'id', 'text',
-                    [sequelize.literal(
-                        `(SELECT COUNT(*) FROM Reactions AS Reaction WHERE Reaction.pollAnswerId = PollAnswers.id )`
-                        ),'total_votes'
-                    ],
-                    [sequelize.literal(
-                        `(SELECT ROUND(SUM(value), 2) FROM Reactions AS Reaction WHERE Reaction.pollAnswerId = PollAnswers.id)`
-                        ),'total_score'
-                    ],
+            { 
+                model: Reaction,
+                where: { state: 'active' },
+                required: false,
+                attributes: ['id', 'type', 'value'],
+                include: [
+                    {
+                        model: User,
+                        as: 'Creator',
+                        attributes: ['id', 'handle', 'name', 'flagImagePath']
+                    },
+                    {
+                        model: Holon,
+                        as: 'Space',
+                        attributes: ['id', 'handle', 'name', 'flagImagePath']
+                    },
                 ]
-            }
+            },
+            {
+                model: Link,
+                as: 'OutgoingLinks',
+                where: { state: 'visible' },
+                required: false,
+                attributes: ['id'],
+                include: [
+                    { 
+                        model: User,
+                        as: 'Creator',
+                        attributes: ['id', 'handle', 'name', 'flagImagePath'],
+                    },
+                    { 
+                        model: Post,
+                        as: 'PostB',
+                        attributes: ['id'],
+                        include: [
+                            { 
+                                model: User,
+                                as: 'Creator',
+                                attributes: ['handle', 'name', 'flagImagePath'],
+                            }
+                        ]
+                    },
+                ]
+            },
+            {
+                model: Link,
+                as: 'IncomingLinks',
+                where: { state: 'visible' },
+                required: false,
+                attributes: ['id'],
+                include: [
+                    { 
+                        model: User,
+                        as: 'Creator',
+                        attributes: ['id', 'handle', 'name', 'flagImagePath'],
+                    },
+                    { 
+                        model: Post,
+                        as: 'PostA',
+                        attributes: ['id'],
+                        include: [
+                            { 
+                                model: User,
+                                as: 'Creator',
+                                attributes: ['handle', 'name', 'flagImagePath'],
+                            }
+                        ]
+                    },
+                ]
+            },
+            // {
+            //     model: GlassBeadGame,
+            //     attributes: ['topic']
+            // }
+            // {
+            //     model: PollAnswer,
+            //     attributes: [
+            //         'id', 'text',
+            //         [sequelize.literal(
+            //             `(SELECT COUNT(*) FROM Reactions AS Reaction WHERE Reaction.pollAnswerId = PollAnswers.id )`
+            //             ),'total_votes'
+            //         ],
+            //         [sequelize.literal(
+            //             `(SELECT ROUND(SUM(value), 2) FROM Reactions AS Reaction WHERE Reaction.pollAnswerId = PollAnswers.id)`
+            //             ),'total_score'
+            //         ],
+            //     ]
+            // }
         ]
     })
     .then(post => {
@@ -122,43 +196,6 @@ router.get('/post-data', (req, res) => {
         res.json(post)
     })
     //.then(post => { res.json(post) })
-    .catch(err => console.log(err))
-})
-
-router.get('/post-reaction-data', (req, res) => {
-    const { postId } = req.query
-    Post.findOne({ 
-        where: { id: postId },
-        attributes: [],
-        include: [
-            { 
-                model: Reaction,
-                where: { state: 'active' },
-                attributes: ['id', 'type', 'value'],
-                include: [
-                    {
-                        model: User,
-                        as: 'creator',
-                        attributes: ['handle', 'name', 'flagImagePath']
-                    },
-                    // TODO: potentially change Reaction includes based on reaction type to reduce unused data
-                    // (most wouldn't need holon data)
-                    {
-                        model: Holon,
-                        as: 'space',
-                        attributes: ['handle', 'name', 'flagImagePath']
-                    }
-                ]
-            },
-            // {
-            //     model: Holon,
-            //     as: 'Reposts',
-            //     attributes: ['handle'],
-            //     through: { where: { type: 'repost', relationship: 'direct' }, attributes: ['creatorId'] },
-            // },
-        ]
-    })
-    .then(post => { res.json(post) })
     .catch(err => console.log(err))
 })
 
@@ -208,12 +245,12 @@ router.get('/post-comments', (req, res) => {
         include: [
             {
                 model: User,
-                as: 'creator',
+                as: 'Creator',
                 attributes: ['id', 'handle', 'name', 'flagImagePath']
             },
             {
                 model: Comment,
-                as: 'replies',
+                as: 'Replies',
                 separate: true,
                 where: { state: 'visible' },
                 order,
@@ -221,7 +258,7 @@ router.get('/post-comments', (req, res) => {
                 include: [
                     {
                         model: User,
-                        as: 'creator',
+                        as: 'Creator',
                         attributes: ['id', 'handle', 'name', 'flagImagePath']
                     }
                 ]
@@ -230,66 +267,6 @@ router.get('/post-comments', (req, res) => {
     })
     .then(comments => { res.json(comments) })
     .catch(err => console.log(err))
-})
-
-router.get('/post-link-data', async (req, res) => {
-    const { postId } = req.query
-    let outgoingLinks = await Link.findAll({
-        where: { state: 'visible', itemAId: postId },
-        attributes: ['id'],
-        include: [
-            { 
-                model: User,
-                as: 'creator',
-                attributes: ['id', 'handle', 'name', 'flagImagePath'],
-            },
-            { 
-                model: Post,
-                as: 'postB',
-                //attributes: ['handle', 'name', 'flagImagePath'],
-                include: [
-                    { 
-                        model: User,
-                        as: 'creator',
-                        attributes: ['handle', 'name', 'flagImagePath'],
-                    }
-                ]
-            },
-        ]
-    })
-
-    let incomingLinks = await Link.findAll({
-        where: { state: 'visible', itemBId: postId },
-        attributes: ['id'],
-        include: [
-            { 
-                model: User,
-                as: 'creator',
-                attributes: ['id', 'handle', 'name', 'flagImagePath'],
-            },
-            { 
-                model: Post,
-                as: 'postA',
-                //attributes: ['handle', 'name', 'flagImagePath'],
-                include: [
-                    { 
-                        model: User,
-                        as: 'creator',
-                        attributes: ['handle', 'name', 'flagImagePath'],
-                    }
-                ]
-            },
-        ]
-    })
-
-    let links = {
-        outgoingLinks,
-        incomingLinks
-    }
-    // .then(links => {
-    //     res.json(links)
-    // })
-    res.json(links)
 })
 
 router.get('/poll-votes', (req, res) => {
@@ -433,11 +410,6 @@ router.get('/glass-bead-game-data', (req, res) => {
     .catch(err => console.log(err))
 })
 
-// router.get('/viable-post-spaces', (req, res) => {
-//     const { spaceId, query } = req.query
-    
-// })
-
 
 // POST
 // todo: add authenticateToken to all endpoints below
@@ -568,263 +540,319 @@ router.post('/create-post', authenticateToken, (req, res) => {
     })
 })
 
-router.post('/repost-post', (req, res) => {
-    const { accountId, accountHandle, accountName, postId, holonId, spaces } = req.body
+router.post('/repost-post', authenticateToken, async (req, res) => {
+    const accountId = req.user.id
+    const { accountHandle, accountName, postId, spaceId, selectedSpaceIds } = req.body
 
-    // find post creator from postId
-    const notifyPostCreator = Post.findOne({
+    const post = await Post.findOne({
         where: { id: postId },
         attributes: [],
-        include: [
-            { 
-                model: User,
-                as: 'creator',
-                attributes: ['id', 'handle', 'name', 'flagImagePath', 'email']
-            },
-        ]
-    })
-    .then(post => {
-        // create notificaton for post creator
-        Notification.create({
-            ownerId: post.creator.id,
-            type: 'post-repost',
-            seen: false,
-            holonAId: holonId,
-            userId: accountId,
-            postId,
-            commentId: null
-        })
-        // send email to post creator
-        let message = {
-            to: post.creator.email,
-            from: 'admin@weco.io',
-            subject: 'Weco - notification',
-            text: `
-                Hi ${post.creator.name}, ${accountName} just reposted your post on weco:
-                http://${process.env.NODE_ENV === 'dev' ? process.env.DEV_APP_URL : process.env.PROD_APP_URL}/p/${postId}
-            `,
-            html: `
-                <p>
-                    Hi ${post.creator.name},
-                    <br/>
-                    <a href='${process.env.NODE_ENV === 'dev' ? process.env.DEV_APP_URL : process.env.PROD_APP_URL}/u/${accountHandle}'>${accountName}</a>
-                    just reposted your
-                    <a href='${process.env.NODE_ENV === 'dev' ? process.env.DEV_APP_URL : process.env.PROD_APP_URL}/p/${postId}'>post</a>
-                    on weco
-                </p>
-            `,
-        }
-        sgMail.send(message)
-            .then(() => {
-                console.log('Email sent')
-                //res.send('success')
-            })
-            .catch((error) => {
-                console.error(error)
-            })
+        include: [{ 
+            model: User,
+            as: 'Creator',
+            attributes: ['id', 'handle', 'name', 'flagImagePath', 'email']
+        }]
     })
 
-    const createPostHolons = spaces.forEach(space => {
-        Holon.findOne({
-            where: { handle: space },
+    const sendNotification = await Notification.create({
+        ownerId: post.Creator.id,
+        type: 'post-repost',
+        seen: false,
+        holonAId: spaceId,
+        userId: accountId,
+        postId,
+    })
+
+    const sendEmail = await sgMail.send({
+        to: post.Creator.email,
+        from: 'admin@weco.io',
+        subject: 'Weco - notification',
+        text: `
+            Hi ${post.Creator.name}, ${accountName} just reposted your post on weco:
+            http://${config.appURL}/p/${postId}
+        `,
+        html: `
+            <p>
+                Hi ${post.Creator.name},
+                <br/>
+                <a href='${config.appURL}/u/${accountHandle}'>${accountName}</a>
+                just reposted your
+                <a href='${config.appURL}/p/${postId}'>post</a>
+                on weco
+            </p>
+        `,
+    })
+
+    const createReactionsAndPostSpaceRelationships = await Holon.findAll({
+        where: { id: selectedSpaceIds },
+        attributes: ['id'],
+        include: [{
+            model: Holon,
+            as: 'HolonHandles', // SpaceIds or SpaceDNA
             attributes: ['id'],
-            include: [{
-                model: Holon,
-                as: 'HolonHandles',
-                attributes: ['id'],
-                through: { attributes: [] }
-            }]
-        })
-        .then(holon => {
+            through: { attributes: [] }
+        }]
+    }).then(spaces => {
+        spaces.forEach((space) => {
+            Reaction.create({
+                type: 'repost',
+                state: 'active',
+                holonId: space.id,
+                userId: accountId,
+                postId: postId
+            })
             PostHolon.create({
                 type: 'repost',
                 relationship: 'direct',
                 creatorId: accountId,
                 postId: postId,
-                holonId: holon.id
+                holonId: space.id
             })
-            Reaction.create({
-                type: 'repost',
-                state: 'active',
-                holonId: holon.id,
-                userId: accountId,
-                postId: postId
-            })
-            holon.HolonHandles
-                .filter(handle => handle.id != holon.id)
-                .forEach(handle => {
+            // loop through SpaceIds ('HolonHandles' for now) to create indirect post spaces ('PostSpaceRelationships' ?)
+            space.HolonHandles.map(item => item.id).forEach(spaceId => {
+                if (spaceId !== space.id) {
+                    // todo: check for 'active' state when set up in db
                     PostHolon
-                        .findOne({ where: { postId: postId, holonId: handle.id } })
+                        .findOne({ where: { postId: postId, holonId: spaceId } })
                         .then(postHolon => {
                             if (!postHolon) {
                                 PostHolon.create({
                                     type: 'repost',
                                     relationship: 'indirect',
+                                    // state: 'active',
                                     creatorId: accountId,
                                     postId: postId,
-                                    holonId: handle.id
+                                    holonId: spaceId
                                 })
                             }
                         })
-                })
+                }
+            })
         })
     })
 
     Promise
-        .all([createPostHolons, notifyPostCreator])
-        .then(res.send('success'))
-        .catch(err => { res.send(err) })
+        .all([sendNotification, sendEmail, createReactionsAndPostSpaceRelationships])
+        .then(() => res.status(200).json({ message: 'Success' }))
+        .catch(() => res.status(500).json({ message: 'Error' }))
 })
 
-router.post('/add-like', (req, res) => {
-    const { accountId, accountHandle, accountName, postId, holonId } = req.body
+router.post('/add-like', authenticateToken, async (req, res) => {
+    const accountId = req.user.id
+    const { accountHandle, accountName, postId, holonId } = req.body
 
-    // find post owner from postId
-    Post.findOne({
+    const post = await Post.findOne({
         where: { id: postId },
         attributes: [],
-        include: [
-            { 
-                model: User,
-                as: 'creator',
-                attributes: ['id', 'handle', 'name', 'flagImagePath', 'email']
-            },
-        ]
+        include: [{ 
+            model: User,
+            as: 'Creator',
+            attributes: ['id', 'handle', 'name', 'flagImagePath', 'email']
+        }]
     })
-    .then(post => {
-        // create reaction
-        Reaction.create({ 
-            type: 'like',
-            value: null,
-            state: 'active',
-            holonId,
-            userId: accountId,
-            postId,
-            commentId: null,
-        })
-        // create notificaton for post owner
-        Notification.create({
-            ownerId: post.creator.id,
-            type: 'post-like',
-            seen: false,
-            holonAId: holonId,
-            userId: accountId,
-            postId,
-            commentId: null
-        })
-        // send email to post owner
-        let message = {
-            to: post.creator.email,
-            from: 'admin@weco.io',
-            subject: 'Weco - notification',
-            text: `
-                Hi ${post.creator.name}, ${accountName} just liked your post on weco:
-                http://${process.env.NODE_ENV === 'dev' ? process.env.DEV_APP_URL : process.env.PROD_APP_URL}/p/${postId}
-            `,
-            html: `
-                <p>
-                    Hi ${post.creator.name},
-                    <br/>
-                    <a href='${process.env.NODE_ENV === 'dev' ? process.env.DEV_APP_URL : process.env.PROD_APP_URL}/u/${accountHandle}'>${accountName}</a>
-                    just liked your
-                    <a href='${process.env.NODE_ENV === 'dev' ? process.env.DEV_APP_URL : process.env.PROD_APP_URL}/p/${postId}'>post</a>
-                    on weco
-                </p>
-            `,
-        }
-        sgMail.send(message)
-            .then(() => {
-                console.log('Email sent')
-                res.send('success')
-            })
-            .catch((error) => {
-                console.error(error)
-            })
+
+    const createReaction = await Reaction.create({ 
+        type: 'like',
+        value: null,
+        state: 'active',
+        holonId,
+        userId: accountId,
+        postId,
+        commentId: null,
     })
+
+    const createNotification = await Notification.create({
+        ownerId: post.Creator.id,
+        type: 'post-like',
+        seen: false,
+        holonAId: holonId,
+        userId: accountId,
+        postId,
+        commentId: null
+    })
+
+    const sendEmail = await sgMail.send({
+        to: post.Creator.email,
+        from: 'admin@weco.io',
+        subject: 'Weco - notification',
+        text: `
+            Hi ${post.Creator.name}, ${accountName} just liked your post on weco:
+            http://${config.appURL}/p/${postId}
+        `,
+        html: `
+            <p>
+                Hi ${post.Creator.name},
+                <br/>
+                <a href='${config.appURL}/u/${accountHandle}'>${accountName}</a>
+                just liked your
+                <a href='${config.appURL}/p/${postId}'>post</a>
+                on weco
+            </p>
+        `,
+    })
+
+    Promise
+        .all([createReaction, createNotification, sendEmail])
+        .then(() => res.status(200).json({ message: 'Success' }))
+        .catch(() => res.status(500).json({ message: 'Error' }))
 })
 
-router.post('/remove-like', (req, res) => {
-    const { accountId, postId } = req.body
+router.post('/remove-like', authenticateToken, async (req, res) => {
+    const accountId = req.user.id
+    const { postId } = req.body
+    Reaction
+        .update({ state: 'removed' }, { where: { 
+            type: 'like',
+            state: 'active',
+            postId,
+            userId: accountId
+        }})
+        .then(() => res.status(200).json({ message: 'Success' }))
+        .catch(() => res.status(500).json({ message: 'Error' }))
+})
+
+router.post('/add-rating', authenticateToken, async (req, res) => {
+    const accountId = req.user.id
+    const { accountHandle, accountName, postId, spaceId, newRating } = req.body
+
+    const post = await Post.findOne({
+        where: { id: postId },
+        attributes: [],
+        include: [{ 
+            model: User,
+            as: 'Creator',
+            attributes: ['id', 'handle', 'name', 'flagImagePath', 'email']
+        }]
+    })
+
+    const createReaction = await Reaction.create({ 
+        type: 'rating',
+        value: newRating,
+        state: 'active',
+        holonId: spaceId,
+        userId: accountId,
+        postId,
+    })
+
+    const sendNotification = await Notification.create({
+        ownerId: post.Creator.id,
+        type: 'post-rating',
+        seen: false,
+        holonAId: spaceId,
+        userId: accountId,
+        postId,
+    })
+
+    const sendEmail = await sgMail.send({
+        to: post.Creator.email,
+        from: 'admin@weco.io',
+        subject: 'Weco - notification',
+        text: `
+            Hi ${post.Creator.name}, ${accountName} just rated your post on weco:
+            http://${config.appURL}/p/${postId}
+        `,
+        html: `
+            <p>
+                Hi ${post.Creator.name},
+                <br/>
+                <a href='${config.appURL}/u/${accountHandle}'>${accountName}</a>
+                just rated your
+                <a href='${config.appURL}/p/${postId}'>post</a>
+                on weco
+            </p>
+        `,
+    })
+
+    Promise
+        .all([createReaction, sendNotification, sendEmail])
+        .then(() => res.status(200).json({ message: 'Success' }))
+        .catch(() => res.status(500).json({ message: 'Error' }))
+})
+
+router.post('/remove-rating', authenticateToken, (req, res) => {
+    const accountId = req.user.id
+    const { postId, spaceId } = req.body
     Reaction
         .update({ state: 'removed' }, {
-            where: { type: 'like', state: 'active', postId, userId: accountId }
+            where: { 
+                type: 'rating',
+                state: 'active',
+                userId: accountId,
+                postId
+            }
         })
-        .then(res.send('success'))
+        .then(() => res.status(200).json({ message: 'Success' }))
+        .catch(() => res.status(500).json({ message: 'Error' }))
 })
 
-router.post('/add-rating', (req, res) => {
-    const { accountId, accountHandle, accountName, postId, holonId, newRating } = req.body
+router.post('/add-link', authenticateToken, async (req, res) => {
+    const accountId = req.user.id
+    const { accountHandle, accountName, spaceId, description, itemAId, itemBId } = req.body
 
-    // find post owner from postId
-    Post.findOne({
-        where: { id: postId },
-        attributes: [],
-        include: [
-            { 
+    const itemB = await Post.findOne({ where: { id: itemBId } })
+    if (!itemB) res.status(404).send({ message: 'Item B not found' })
+    else {
+        const itemA = await Post.findOne({
+            where: { id: itemAId },
+            attributes: [],
+            include: [{ 
                 model: User,
-                as: 'creator',
+                as: 'Creator',
                 attributes: ['id', 'handle', 'name', 'flagImagePath', 'email']
-            },
-        ]
-    })
-    .then(post => {
-        // create reaction
-        Reaction.create({ 
-            type: 'rating',
-            value: newRating,
-            state: 'active',
-            holonId,
-            userId: accountId,
-            postId,
-            commentId: null,
+            }]
         })
-        // create notificaton for post owner
-        Notification.create({
-            ownerId: post.creator.id,
-            type: 'post-rating',
+
+        const createLink = await Link.create({
+            state: 'visible',
+            creatorId: accountId,
+            description,
+            itemAId,
+            itemBId
+        })
+
+        // todo: also send notification to itemB owner, and include itemB info in email
+        const sendNotification = await Notification.create({
+            ownerId: itemA.Creator.id,
+            type: 'post-link',
             seen: false,
-            holonAId: holonId,
+            holonAId: spaceId,
             userId: accountId,
-            postId,
-            commentId: null
+            postId: itemAId,
         })
-        // send email to post owner
-        let message = {
-            to: post.creator.email,
+
+        const sendEmail = await sgMail.send({
+            to: itemA.Creator.email,
             from: 'admin@weco.io',
             subject: 'Weco - notification',
             text: `
-                Hi ${post.creator.name}, ${accountName} just rated your post on weco:
-                http://${process.env.NODE_ENV === 'dev' ? process.env.DEV_APP_URL : process.env.PROD_APP_URL}/p/${postId}
+                Hi ${itemA.Creator.name}, ${accountName} just linked your post to another post on weco:
+                http://${config.appURL}/p/${itemAId}
             `,
             html: `
                 <p>
-                    Hi ${post.creator.name},
+                    Hi ${itemA.Creator.name},
                     <br/>
-                    <a href='${process.env.NODE_ENV === 'dev' ? process.env.DEV_APP_URL : process.env.PROD_APP_URL}/u/${accountHandle}'>${accountName}</a>
-                    just rated your
-                    <a href='${process.env.NODE_ENV === 'dev' ? process.env.DEV_APP_URL : process.env.PROD_APP_URL}/p/${postId}'>post</a>
-                    on weco
+                    <a href='${config.appURL}/u/${accountHandle}'>${accountName}</a>
+                    just linked your
+                    <a href='${config.appURL}/p/${itemAId}'>post</a>
+                    to another post on weco
                 </p>
             `,
-        }
-        sgMail.send(message)
-            .then(() => {
-                console.log('Email sent')
-                res.send('success')
-            })
-            .catch((error) => {
-                console.error(error)
-            })
-    })
+        })
+            
+        Promise
+            .all([createLink, sendNotification, sendEmail])
+            .then((data) => res.status(200).json({ link: data[0], message: 'Success' }))
+            .catch(() => res.status(500).json({ message: 'Error' }))
+    }
 })
 
-router.post('/remove-rating', (req, res) => {
-    const { accountId, postId, holonId } = req.body
-    Reaction.update({ state: 'removed' }, { where: { 
-        type: 'rating', state: 'active', postId, userId: accountId 
-    } })
-    .then(res.send('success'))
+router.post('/remove-link', authenticateToken, (req, res) => {
+    const accountId = req.user.id
+    let { linkId } = req.body
+    Link.update({ state: 'hidden' }, { where: { id: linkId } })
+        .then(() => res.status(200).json({ message: 'Success' }))
+        .catch(() => res.status(500).json({ message: 'Error' }))
 })
 
 router.post('/submit-comment', (req, res) => {
@@ -837,7 +865,7 @@ router.post('/submit-comment', (req, res) => {
         include: [
             { 
                 model: User,
-                as: 'creator',
+                as: 'Creator',
                 attributes: ['id', 'handle', 'name', 'flagImagePath', 'email']
             },
         ]
@@ -905,7 +933,7 @@ router.post('/submit-reply', async (req, res) => {
         attributes: [],
         include: [{ 
             model: User,
-            as: 'creator',
+            as: 'Creator',
             attributes: ['id', 'handle', 'name', 'flagImagePath', 'email']
         }]
     })
@@ -916,7 +944,7 @@ router.post('/submit-reply', async (req, res) => {
         attributes: [],
         include: [{ 
             model: User,
-            as: 'creator',
+            as: 'Creator',
             attributes: ['id', 'handle', 'name', 'flagImagePath', 'email']
         }]
     })
@@ -1006,93 +1034,6 @@ router.post('/submit-reply', async (req, res) => {
                     console.error(error)
                 })
         })
-})
-
-router.post('/cast-vote', (req, res) => {
-    const { selectedPollAnswers, postId, pollType } = req.body.voteData
-    selectedPollAnswers.forEach((answer) => {
-        let value = 1
-        if (pollType === 'weighted-choice') { value = answer.value / 100}
-        Reaction.create({ 
-            type: 'vote',
-            value: value,
-            postId: postId,
-            pollAnswerId: answer.id
-        })
-    })
-})
-
-router.post('/add-link', async (req, res) => {
-    let { accountId, accountHandle, accountName, holonId, type, relationship, description, itemAId, itemBId } = req.body
-
-    const itemB = await Post.findOne({ where: { id: itemBId } })
-    if (!itemB) res.status(404).send({ message: 'No post found that matches that id' })
-    else {
-        // find post owner from postId
-        Post.findOne({
-            where: { id: itemAId },
-            attributes: [],
-            include: [
-                { 
-                    model: User,
-                    as: 'creator',
-                    attributes: ['id', 'handle', 'name', 'flagImagePath', 'email']
-                },
-            ]
-        })
-        .then(post => {
-            const createLink = Link.create({
-                state: 'visible',
-                creatorId: accountId,
-                type,
-                relationship,
-                description,
-                itemAId,
-                itemBId
-            })
-            const createNotification = Notification.create({
-                ownerId: post.creator.id,
-                type: 'post-link',
-                seen: false,
-                holonAId: holonId,
-                userId: accountId,
-                postId: itemAId,
-                commentId: null
-            })
-            const message = {
-                to: post.creator.email,
-                from: 'admin@weco.io',
-                subject: 'Weco - notification',
-                text: `
-                    Hi ${post.creator.name}, ${accountName} just linked your post to another post on weco:
-                    http://${process.env.NODE_ENV === 'dev' ? process.env.DEV_APP_URL : process.env.PROD_APP_URL}/p/${itemAId}
-                `,
-                html: `
-                    <p>
-                        Hi ${post.creator.name},
-                        <br/>
-                        <a href='${process.env.NODE_ENV === 'dev' ? process.env.DEV_APP_URL : process.env.PROD_APP_URL}/u/${accountHandle}'>${accountName}</a>
-                        just linked your
-                        <a href='${process.env.NODE_ENV === 'dev' ? process.env.DEV_APP_URL : process.env.PROD_APP_URL}/p/${itemAId}'>post</a>
-                        to another post on weco
-                    </p>
-                `,
-            }
-            const sendEmail = sgMail.send(message).then(() => console.log('Email sent'))
-            
-            Promise
-                .all([createLink, createNotification, sendEmail])
-                .then(res.send('success'))
-                .catch(err => { res.send(err) })
-        })
-    }
-})
-
-router.post('/remove-link', (req, res) => {
-    let { linkId } = req.body
-    Link.update({ state: 'hidden' }, { where: { id: linkId } })
-        .then(res.send('success'))
-        .catch(err => console.log(err))
 })
 
 router.post('/save-glass-bead-game', (req, res) => {
@@ -1374,4 +1315,115 @@ module.exports = router
 //     // }
 
 //     // createPost()
+// })
+
+// router.get('/post-link-data', async (req, res) => {
+//     const { postId } = req.query
+//     let outgoingLinks = await Link.findAll({
+//         where: { state: 'visible', itemAId: postId },
+//         attributes: ['id'],
+//         include: [
+//             { 
+//                 model: User,
+//                 as: 'creator',
+//                 attributes: ['id', 'handle', 'name', 'flagImagePath'],
+//             },
+//             { 
+//                 model: Post,
+//                 as: 'postB',
+//                 //attributes: ['handle', 'name', 'flagImagePath'],
+//                 include: [
+//                     { 
+//                         model: User,
+//                         as: 'creator',
+//                         attributes: ['handle', 'name', 'flagImagePath'],
+//                     }
+//                 ]
+//             },
+//         ]
+//     })
+
+//     let incomingLinks = await Link.findAll({
+//         where: { state: 'visible', itemBId: postId },
+//         attributes: ['id'],
+//         include: [
+//             { 
+//                 model: User,
+//                 as: 'creator',
+//                 attributes: ['id', 'handle', 'name', 'flagImagePath'],
+//             },
+//             { 
+//                 model: Post,
+//                 as: 'postA',
+//                 //attributes: ['handle', 'name', 'flagImagePath'],
+//                 include: [
+//                     { 
+//                         model: User,
+//                         as: 'creator',
+//                         attributes: ['handle', 'name', 'flagImagePath'],
+//                     }
+//                 ]
+//             },
+//         ]
+//     })
+
+//     let links = {
+//         outgoingLinks,
+//         incomingLinks
+//     }
+//     // .then(links => {
+//     //     res.json(links)
+//     // })
+//     res.json(links)
+// })
+
+// router.get('/post-reaction-data', (req, res) => {
+//     const { postId } = req.query
+//     Post.findOne({ 
+//         where: { id: postId },
+//         attributes: [],
+//         include: [
+//             { 
+//                 model: Reaction,
+//                 where: { state: 'active' },
+//                 attributes: ['id', 'type', 'value'],
+//                 include: [
+//                     {
+//                         model: User,
+//                         as: 'creator',
+//                         attributes: ['handle', 'name', 'flagImagePath']
+//                     },
+//                     // TODO: potentially change Reaction includes based on reaction type to reduce unused data
+//                     // (most wouldn't need holon data)
+//                     {
+//                         model: Holon,
+//                         as: 'space',
+//                         attributes: ['handle', 'name', 'flagImagePath']
+//                     }
+//                 ]
+//             },
+//             // {
+//             //     model: Holon,
+//             //     as: 'Reposts',
+//             //     attributes: ['handle'],
+//             //     through: { where: { type: 'repost', relationship: 'direct' }, attributes: ['creatorId'] },
+//             // },
+//         ]
+//     })
+//     .then(post => { res.json(post) })
+//     .catch(err => console.log(err))
+// })
+
+// router.post('/cast-vote', (req, res) => {
+//     const { selectedPollAnswers, postId, pollType } = req.body.voteData
+//     selectedPollAnswers.forEach((answer) => {
+//         let value = 1
+//         if (pollType === 'weighted-choice') { value = answer.value / 100}
+//         Reaction.create({ 
+//             type: 'vote',
+//             value: value,
+//             postId: postId,
+//             pollAnswerId: answer.id
+//         })
+//     })
 // })

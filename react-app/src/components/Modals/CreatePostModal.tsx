@@ -160,7 +160,6 @@ const CreatePostModal = (): JSX.Element => {
             text: {
                 ...text,
                 required: postType.value !== 'Url',
-                // validate: (v) => (!v || v.length > 5000 ? ['Required. Max 5K characters'] : []),
                 validate: (v) => {
                     const errors: string[] = []
                     if (!v) errors.push('Required')
@@ -238,7 +237,7 @@ const CreatePostModal = (): JSX.Element => {
             </h1>
 
             <form onSubmit={createPost}>
-                <Column width={700}>
+                <Column style={{ width: 700 }}>
                     <DropDownMenu
                         title='Post Type'
                         options={['Text', 'Url', 'Glass Bead Game']}
@@ -247,14 +246,14 @@ const CreatePostModal = (): JSX.Element => {
                         orientation='horizontal'
                     />
                     {postType.value === 'Glass Bead Game' && (
-                        <Column margin='5px 0 0 0'>
+                        <Column style={{ marginTop: 5 }}>
                             <SearchSelector
                                 type='topic'
                                 title='Choose a topic for the game'
                                 placeholder={
                                     selectedArchetopic ? 'archetopic selected' : 'topic...'
                                 }
-                                margin='0 0 15px 0'
+                                style={{ marginBottom: 15 }}
                                 state={topic.state}
                                 disabled={!!selectedArchetopic}
                                 errors={topic.errors}
@@ -263,7 +262,7 @@ const CreatePostModal = (): JSX.Element => {
                                 options={topicOptions}
                             />
                             {selectedArchetopic && (
-                                <Row margin='0 10px 10px 0' centerY>
+                                <Row style={{ margin: '0 10px 10px 0' }} centerY>
                                     <div className={styles.archetopic}>
                                         <div>
                                             <selectedArchetopic.icon />
@@ -286,7 +285,7 @@ const CreatePostModal = (): JSX.Element => {
                             title='Url'
                             type='text'
                             placeholder='url...'
-                            margin='0 0 15px 0'
+                            style={{ marginBottom: 15 }}
                             loading={urlLoading}
                             state={url.state}
                             errors={url.errors}
@@ -303,7 +302,7 @@ const CreatePostModal = (): JSX.Element => {
                         }`}
                         type='text-area'
                         placeholder='text...'
-                        margin='0 0 15px 0'
+                        style={{ marginBottom: 15 }}
                         rows={3}
                         state={text.state}
                         errors={text.errors}
@@ -314,9 +313,7 @@ const CreatePostModal = (): JSX.Element => {
                         type='space'
                         title='Add any other spaces you want the post to appear in'
                         placeholder='space name or handle...'
-                        margin='0 0 10px 0'
-                        state='default'
-                        // errors={inputErrors}
+                        style={{ marginBottom: 10 }}
                         onSearchQuery={(query) => findSpaces(query)}
                         onOptionSelected={(space) => addSpace(space)}
                         options={spaceOptions}
@@ -324,20 +321,20 @@ const CreatePostModal = (): JSX.Element => {
                     {selectedSpaces.length > 0 && (
                         <Row wrap>
                             {selectedSpaces.map((space) => (
-                                <Row margin='0 10px 10px 0' centerY>
+                                <Row centerY style={{ margin: '0 10px 10px 0' }}>
                                     <ImageTitle
                                         type='user'
                                         imagePath={space.flagImagePath}
                                         title={`${space.name} (${space.handle})`}
                                         imageSize={27}
-                                        margin='0 3px 0 0'
+                                        style={{ marginRight: 3 }}
                                     />
                                     <CloseButton size={17} onClick={() => removeSpace(space.id)} />
                                 </Row>
                             ))}
                         </Row>
                     )}
-                    <Column margin='20px 0 10px 0'>
+                    <Column style={{ margin: '20px 0 10px 0' }}>
                         <h2>Post preview</h2>
                         <PostCardPreview
                             type={postType.value}
@@ -356,8 +353,7 @@ const CreatePostModal = (): JSX.Element => {
                     <Button
                         text='Create Post'
                         colour='blue'
-                        size='medium'
-                        margin='0 10px 0 0'
+                        style={{ marginRight: 10 }}
                         disabled={urlLoading || loading || saved}
                         submit
                     />

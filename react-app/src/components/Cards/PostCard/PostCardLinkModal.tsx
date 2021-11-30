@@ -1,337 +1,334 @@
 import React, { useContext, useState } from 'react'
-import { Link } from 'react-router-dom'
+import Cookies from 'universal-cookie'
 import axios from 'axios'
 import config from '@src/Config'
 import styles from '@styles/components/PostCardLinkModal.module.scss'
-// import CloseButton from '../../CloseButton'
-import SmallFlagImage from '@components/SmallFlagImage'
-import DropDownMenu from '@components/DropDownMenu'
+// import DropDownMenu from '@components/DropDownMenu'
 import { AccountContext } from '@contexts/AccountContext'
 import { SpaceContext } from '@contexts/SpaceContext'
-import { PostContext } from '@contexts/PostContext'
-import { IPost } from '@src/Interfaces'
 import Modal from '@components/Modal'
 import Column from '@components/Column'
 import Row from '@components/Row'
 import Button from '@components/Button'
 import ImageTitle from '@components/ImageTitle'
+import TextLink from '@src/components/TextLink'
+import Input from '@components/Input'
+import { pluralise, allValid, defaultErrorState } from '@src/Functions'
 
 const PostCardLinkModal = (props: {
-    postData: Partial<IPost>
-    links: {
-        outgoingLinks: any[]
-        incomingLinks: any[]
-    }
-    setLinkModalOpen: (payload: boolean) => void
-    getReactionData: () => void
-    totalReactions: number
-    setTotalReactions: (payload: number) => void
-    totalLinks: number
-    setTotalLinks: (payload: number) => void
-    setAccountLink: (payload: number) => void
+    close: () => void
+    postData: any
+    setPostData: (payload: any) => void
 }): JSX.Element => {
+    const { close, postData, setPostData } = props
     const {
-        postData,
-        links,
-        setLinkModalOpen,
-        getReactionData,
-        totalReactions,
-        setTotalReactions,
-        totalLinks,
-        setTotalLinks,
-        setAccountLink,
-    } = props
+        loggedIn,
+        accountData,
+        setLogInModalOpen,
+        setAlertMessage,
+        setAlertModalOpen,
+    } = useContext(AccountContext)
+    const { spaceData, spacePosts, setSpacePosts } = useContext(SpaceContext)
+    const [formData, setFormData] = useState({
+        linkTarget: {
+            value: '',
+            validate: (v) => (!v || !+v || +v === postData.id ? ['Must be a valid post ID'] : []),
+            ...defaultErrorState,
+        },
+        linkDescription: {
+            value: '',
+            validate: (v) => (v.length > 50 ? ['Max 50 characters'] : []),
+            ...defaultErrorState,
+        },
+    })
+    const [loading, setLoading] = useState(false)
+    const cookies = new Cookies()
+    const { linkTarget, linkDescription } = formData
+    const { IncomingLinks, OutgoingLinks } = postData
+    const links = [...IncomingLinks, ...OutgoingLinks]
+    const headerText = links.length
+        ? `${links.length} link${pluralise(links.length)}`
+        : 'No links yet...'
 
-    const { accountData } = useContext(AccountContext)
-    const { spaceData } = useContext(SpaceContext)
-    // const { setPostId } = useContext(PostContext)
-
-    const [linkTo, setLinkTo] = useState('Post')
-    const [linkType, setLinkType] = useState('Text')
-    const [linkDescription, setLinkDescription] = useState('')
-    const [linkDescriptionError, setLinkDescriptionError] = useState(false)
-    const [targetUrl, setTargetUrl] = useState('')
-    const [targetUrlError, setTargetUrlError] = useState(false)
-
-    let prefix
-    let placeholder
-    let inputWidth
-    if (linkTo === 'Post') {
-        prefix = 'p/'
-        placeholder = 'id'
-        inputWidth = 40
-    }
-    if (linkTo === 'Comment') {
-        prefix = 'c/'
-        placeholder = 'id'
-        inputWidth = 40
-    }
-    if (linkTo === 'Space') {
-        prefix = 's/'
-        placeholder = 'handle'
-        inputWidth = 70
-    }
-    if (linkTo === 'User') {
-        prefix = 'u/'
-        placeholder = 'handle'
-        inputWidth = 70
+    function updateValue(name, value) {
+        setFormData({ ...formData, [name]: { ...formData[name], value, state: 'default' } })
     }
 
     function addLink() {
-        const validTargetUrl = targetUrl.length > 0
-        const validLinkDescription = linkDescription.length > 0
-        if (validTargetUrl && validLinkDescription) {
-            console.log('PostCardLinkModal: addLink')
-            axios
-                .post(`${config.apiURL}/add-link`, {
-                    accountId: accountData.id,
+        if (allValid(formData, setFormData)) {
+            setLoading(true)
+            const accessToken = cookies.get('accessToken')
+            if (!accessToken) {
+                close()
+                setAlertMessage('Log in to link posts')
+                setAlertModalOpen(true)
+            } else {
+                const data = {
                     accountHandle: accountData.handle,
                     accountName: accountData.name,
-                    holonId: window.location.pathname.includes('/s/') ? spaceData.id : null,
-                    type: `post-${linkTo.toLowerCase()}`,
-                    relationship: linkType.toLowerCase(),
-                    description: linkDescription,
+                    spaceId: window.location.pathname.includes('/s/') ? spaceData.id : null,
+                    description: linkDescription.value,
                     itemAId: postData.id,
-                    itemBId: +targetUrl,
-                })
-                .then((res) => {
-                    if (res.data === 'success') {
-                        setLinkModalOpen(false)
-                        setTotalReactions(totalReactions + 1)
-                        setTotalLinks(totalLinks + 1)
-                        setAccountLink(1)
-                        setTimeout(() => {
-                            getReactionData()
-                        }, 200)
-                    } else {
-                        console.log('error: ', res)
-                    }
-                })
-                .catch(() => {
-                    setTargetUrlError(true)
-                })
+                    itemBId: +linkTarget.value,
+                }
+                const authHeader = { headers: { Authorization: `Bearer ${accessToken}` } }
+                axios
+                    .post(`${config.apiURL}/add-link`, data, authHeader)
+                    .then((res) => {
+                        const { link } = res.data
+                        // update post state
+                        const newPostData = {
+                            ...postData,
+                            totalReactions: postData.totalReactions + 1,
+                            totalLinks: postData.totalLinks + 1,
+                            accountLink: true,
+                            OutgoingLinks: [
+                                ...postData.OutgoingLinks,
+                                {
+                                    id: link.id,
+                                    Creator: {
+                                        id: accountData.id,
+                                        handle: accountData.handle,
+                                        name: accountData.name,
+                                        flagImagePath: accountData.flagImagePath,
+                                    },
+                                    PostB: {
+                                        id: +linkTarget.value,
+                                        Creator: {
+                                            id: postData.Creator.id,
+                                            handle: postData.Creator.handle,
+                                            name: postData.Creator.name,
+                                            flagImagePath: postData.Creator.flagImagePath,
+                                        },
+                                    },
+                                },
+                            ],
+                        }
+                        setPostData(newPostData)
+                        const newSpacePosts = [...spacePosts]
+                        // update post
+                        const postIndex = newSpacePosts.findIndex((p) => p.id === postData.id)
+                        newSpacePosts[postIndex] = newPostData
+                        // update linked post if in state
+                        const linkedPost = newSpacePosts.find((p) => p.id === +linkTarget.value)
+                        if (linkedPost) {
+                            linkedPost.totalLinks += 1
+                            linkedPost.accountLink = true
+                            linkedPost.IncomingLinks = [
+                                ...linkedPost.IncomingLinks,
+                                {
+                                    id: link.id,
+                                    Creator: {
+                                        id: accountData.id,
+                                        handle: accountData.handle,
+                                        name: accountData.name,
+                                        flagImagePath: accountData.flagImagePath,
+                                    },
+                                    PostA: {
+                                        id: postData.id,
+                                        Creator: {
+                                            id: postData.Creator.id,
+                                            handle: postData.Creator.handle,
+                                            name: postData.Creator.name,
+                                            flagImagePath: postData.Creator.flagImagePath,
+                                        },
+                                    },
+                                },
+                            ]
+                        }
+                        setSpacePosts(newSpacePosts)
+                        close()
+                    })
+                    .catch((error) => {
+                        switch (error.response.data.message) {
+                            case 'Item B not found':
+                                setFormData({
+                                    ...formData,
+                                    linkTarget: {
+                                        ...formData.linkTarget,
+                                        state: 'invalid',
+                                        errors: ['Post not found.'],
+                                    },
+                                })
+                                setLoading(false)
+                                break
+                            default:
+                                console.log(error)
+                                setLoading(false)
+                        }
+                    })
+            }
         }
     }
 
-    function removeLink(linkId) {
-        console.log('PostCardLinkModal: removeLink')
-        axios
-            .post(`${config.apiURL}/remove-link`, {
-                // accountId: accountData.id,
-                linkId,
-            })
-            .then((res) => {
-                if (res.data === 'success') {
-                    setLinkModalOpen(false)
-                    setTotalReactions(totalReactions - 1)
-                    setTotalLinks(totalLinks - 1)
-                    setAccountLink(0)
-                    setTimeout(() => {
-                        getReactionData()
-                    }, 200)
-                } else {
-                    console.log('error: ', res)
-                }
-            })
+    function removeLink(direction, linkId, linkedPostId) {
+        setLoading(true)
+        const accessToken = cookies.get('accessToken')
+        if (!accessToken) {
+            close()
+            setAlertMessage('Log in to link posts')
+            setAlertModalOpen(true)
+        } else {
+            const data = { linkId }
+            const authHeader = { headers: { Authorization: `Bearer ${accessToken}` } }
+            axios
+                .post(`${config.apiURL}/remove-link`, data, authHeader)
+                .then(() => {
+                    // filter out removed link
+                    let newLinks =
+                        direction === 'incoming'
+                            ? [...postData.IncomingLinks]
+                            : [...postData.OutgoingLinks]
+                    newLinks = newLinks.filter((l) => l.id !== linkId)
+                    // check if other account links still present
+                    const otherAccountLinks = newLinks.find((l) => l.Creator.id === accountData.id)
+                    // create new post data object
+                    const newPostData = {
+                        ...postData,
+                        totalReactions: postData.totalReactions - 1,
+                        totalLinks: postData.totalLinks - 1,
+                        accountLink: !!otherAccountLinks,
+                        OutgoingLinks: direction === 'outgoing' ? newLinks : postData.OutgoingLinks,
+                        IncomingLinks: direction === 'incoming' ? newLinks : postData.IncomingLinks,
+                    }
+                    setPostData(newPostData)
+                    const newSpacePosts = [...spacePosts]
+                    // update post
+                    const postIndex = newSpacePosts.findIndex((p) => p.id === postData.id)
+                    newSpacePosts[postIndex] = newPostData
+                    // find linked post if present in state
+                    const linkedPost = newSpacePosts.find((p) => p.id === linkedPostId)
+                    if (linkedPost) {
+                        const otherLinkedPostAccountLinks =
+                            direction === 'outgoing'
+                                ? linkedPost.IncomingLinks.find(
+                                      (l) => l.id !== linkId && l.Creator.id === accountData.id
+                                  )
+                                : linkedPost.OutgoingLinks.find(
+                                      (l) => l.id !== linkId && l.Creator.id === accountData.id
+                                  )
+                        linkedPost.totalLinks -= 1
+                        linkedPost.accountLink = !!otherLinkedPostAccountLinks
+                        if (direction === 'outgoing') {
+                            linkedPost.IncomingLinks = linkedPost.IncomingLinks.filter(
+                                (l) => l.id !== linkId
+                            )
+                        } else {
+                            linkedPost.OutgoingLinks = linkedPost.OutgoingLinks.filter(
+                                (l) => l.id !== linkId
+                            )
+                        }
+                    }
+                    setSpacePosts(newSpacePosts)
+                    close()
+                })
+                .catch((error) => console.log(error))
+        }
     }
 
     return (
-        <Modal close={() => setLinkModalOpen(false)} centered>
-            <span className={styles.title}>Links</span>
-            {!links.outgoingLinks.length && !links.incomingLinks.length && (
-                <span className={`${styles.text} mb-20`}>
-                    <i>No links yet...</i>
-                </span>
-            )}
-            {links.incomingLinks.length > 0 && (
+        <Modal close={close} centered style={{ minWidth: 400 }}>
+            <h1>{headerText}</h1>
+            {IncomingLinks.length > 0 && (
                 <div className={styles.links}>
-                    <span className={styles.subTitle}>Incoming:</span>
-                    {links.incomingLinks.map((link) => (
-                        <div className={styles.link} key={link}>
-                            <Link className={styles.imageTextLink} to={`/u/${link.creator.handle}`}>
-                                <SmallFlagImage
-                                    type='user'
-                                    size={30}
-                                    imagePath={link.creator.flagImagePath}
+                    <h2>Incoming:</h2>
+                    {IncomingLinks.map((link) => (
+                        <Row key={link.id} centerY>
+                            <ImageTitle
+                                type='user'
+                                imagePath={link.Creator.flagImagePath}
+                                title={link.Creator.name}
+                                link={`/u/${link.Creator.handle}`}
+                            />
+                            <p>linked from</p>
+                            <ImageTitle
+                                type='user'
+                                imagePath={link.PostA.Creator.flagImagePath}
+                                title={`${link.PostA.Creator.name}'s`}
+                                link={`/u/${link.PostA.Creator.handle}`}
+                            />
+                            <TextLink text='post' link={`/p/${link.PostA.id}`} />
+                            {link.Creator.id === accountData.id && (
+                                <Button
+                                    text='Delete'
+                                    colour='blue'
+                                    size='small'
+                                    onClick={() => removeLink('incoming', link.id, link.PostA.id)}
                                 />
-                                <span>
-                                    {accountData.id === link.creator.id ? 'You' : link.creator.name}
-                                </span>
-                            </Link>
-                            <div className={`${styles.text} greyText mr-10`}>linked from</div>
-                            <Link
-                                className={styles.imageTextLink}
-                                to={`/u/${link.postA.creator.handle}`}
-                            >
-                                <SmallFlagImage
-                                    type='user'
-                                    size={30}
-                                    imagePath={link.postA.creator.flagImagePath}
-                                />
-                                <span>
-                                    {accountData.id === link.postA.creatorId
-                                        ? 'Your'
-                                        : `${link.postA.creator.name}'s`}
-                                </span>
-                            </Link>
-                            <Link
-                                className={styles.imageTextLink}
-                                to={`/p/${link.postA.id}`}
-                                // onClick={() => setPostId(link.postA.id)}
-                            >
-                                <span className='blueText m-0'>post</span>
-                            </Link>
-                            {accountData.id === link.creator.id && (
-                                <div
-                                    className={styles.deleteLink}
-                                    role='button'
-                                    tabIndex={0}
-                                    onClick={() => removeLink(link.id)}
-                                    onKeyDown={() => removeLink(link.id)}
-                                >
-                                    <img
-                                        className={styles.icon}
-                                        src='/icons/trash-alt-solid.svg'
-                                        alt=''
-                                    />
-                                    <span className='greyText'>Delete</span>
-                                </div>
                             )}
-                        </div>
+                        </Row>
                     ))}
                 </div>
             )}
-            {links.outgoingLinks.length > 0 && (
+            {OutgoingLinks.length > 0 && (
                 <div className={styles.links}>
-                    <span className={styles.subTitle}>Outgoing:</span>
-                    {links.outgoingLinks.map((link) => (
-                        <div className={styles.link} key={link}>
-                            <Link className={styles.imageTextLink} to={`/u/${link.creator.handle}`}>
-                                <SmallFlagImage
-                                    type='user'
-                                    size={30}
-                                    imagePath={link.creator.flagImagePath}
+                    <h2>Outgoing:</h2>
+                    {OutgoingLinks.map((link) => (
+                        <Row key={link.id} centerY>
+                            <ImageTitle
+                                type='user'
+                                imagePath={link.Creator.flagImagePath}
+                                title={link.Creator.name}
+                                link={`/u/${link.Creator.handle}`}
+                            />
+                            <p>linked to</p>
+                            <ImageTitle
+                                type='user'
+                                imagePath={link.PostB.Creator.flagImagePath}
+                                title={`${link.PostB.Creator.name}'s`}
+                                link={`/u/${link.PostB.Creator.handle}`}
+                            />
+                            <TextLink text='post' link={`/p/${link.PostB.id}`} />
+                            {link.Creator.id === accountData.id && (
+                                <Button
+                                    text='Delete'
+                                    colour='blue'
+                                    size='small'
+                                    onClick={() => removeLink('outgoing', link.id, link.PostB.id)}
                                 />
-                                <span>
-                                    {accountData.id === link.creator.id ? 'You' : link.creator.name}
-                                </span>
-                            </Link>
-                            <div className={`${styles.text} greyText mr-10`}>linked to</div>
-                            <Link
-                                className={styles.imageTextLink}
-                                to={`/u/${link.postB.creator.handle}`}
-                            >
-                                <SmallFlagImage
-                                    type='user'
-                                    size={30}
-                                    imagePath={link.postB.creator.flagImagePath}
-                                />
-                                <span>
-                                    {accountData.id === link.postB.creatorId
-                                        ? 'Your'
-                                        : `${link.postB.creator.name}'s`}
-                                </span>
-                            </Link>
-                            <Link
-                                className={styles.imageTextLink}
-                                to={`/p/${link.postB.id}`}
-                                // onClick={() => setPostId(link.postB.id)}
-                            >
-                                <span className='blueText m-0'>post</span>
-                            </Link>
-                            {accountData.id === link.creator.id && (
-                                <div
-                                    className={styles.deleteLink}
-                                    role='button'
-                                    tabIndex={0}
-                                    onClick={() => removeLink(link.id)}
-                                    onKeyDown={() => removeLink(link.id)}
-                                >
-                                    <img
-                                        className={styles.icon}
-                                        src='/icons/trash-alt-solid.svg'
-                                        alt=''
-                                    />
-                                    <span className='greyText'>Delete</span>
-                                </div>
                             )}
-                        </div>
+                        </Row>
                     ))}
                 </div>
             )}
-            <div className={`${styles.settingsText} mt-10`}>
-                <span className={styles.text} style={{ marginBottom: 10 }}>
-                    Link this post to another
-                </span>
-                <DropDownMenu
-                    title=''
-                    options={['Post']} // 'Comment', 'User', 'Space'
-                    selectedOption={linkTo}
-                    setSelectedOption={setLinkTo}
-                    orientation='horizontal'
-                />
-                <span className='greyText' style={{ marginBottom: 10, marginRight: 5 }}>
-                    {prefix}
-                </span>
-                <input
-                    className={`wecoInput mb-10 ${targetUrlError && 'error'}`}
-                    style={{ height: 30, width: inputWidth, padding: 10 }}
-                    placeholder={placeholder}
-                    type='text'
-                    value={targetUrl}
-                    onChange={(e) => {
-                        setTargetUrl(e.target.value)
-                        setTargetUrlError(false)
-                    }}
-                />
-            </div>
-            {targetUrlError && <p className='error'>No post found that matches that id</p>}
-            {/* <div className={styles.settingsText}>
-                        <span className={styles.text} style={{marginBottom: 10}}>Link type</span>
-                        <DropDownMenu
-                            title=''
-                            options={['Text', 'Turn']}
-                            selectedOption={linkType}
-                            setSelectedOption={setLinkType}
-                            orientation='horizontal'
-                        />
-                    </div> */}
-            {/* {linkType === 'Text' && */}
-            <textarea
-                className={`wecoInput textArea mb-10 ${linkDescriptionError && 'error'}`}
-                style={{ height: 40, width: 350 }}
-                placeholder='Describe the relationship...'
-                value={linkDescription}
-                onChange={(e) => {
-                    setLinkDescription(e.target.value)
-                    setLinkDescriptionError(false)
-                }}
-            />
-            {/* } */}
-
-            <div
-                className={`wecoButton mt-20 ${
-                    (!targetUrl.length || !linkDescription.length) && 'disabled'
-                }`}
-                role='button'
-                tabIndex={0}
-                onClick={addLink}
-                onKeyDown={addLink}
-            >
-                Add Link
-            </div>
-            {/* {accountLink === 0
-                        ? <div
-                            className='wecoButton'
-                            onClick={addLink}>
-                            Add Link
-                        </div>
-                        : <div
-                            className='wecoButton'
-                            onClick={removeLink}>
-                            Remove Link
-                        </div>
-                    } */}
+            {loggedIn ? (
+                <Column centerX style={{ marginTop: links.length ? 20 : 0 }}>
+                    <Input
+                        title='Link to another post'
+                        type='text'
+                        prefix='p/'
+                        value={linkTarget.value}
+                        state={linkTarget.state}
+                        errors={linkTarget.errors}
+                        onChange={(v) => updateValue('linkTarget', v)}
+                        style={{ marginBottom: 10 }}
+                    />
+                    <Input
+                        title='Description (optional)'
+                        type='text'
+                        placeholder='link description...'
+                        value={linkDescription.value}
+                        state={linkDescription.state}
+                        errors={linkDescription.errors}
+                        onChange={(v) => updateValue('linkDescription', v)}
+                        style={{ marginBottom: 30 }}
+                    />
+                    <Button text='Add link' colour='blue' onClick={addLink} loading={loading} />
+                </Column>
+            ) : (
+                <Row centerY style={{ marginTop: links.length ? 20 : 0 }}>
+                    <Button
+                        text='Log in'
+                        colour='blue'
+                        style={{ marginRight: 5 }}
+                        onClick={() => {
+                            setLogInModalOpen(true)
+                            close()
+                        }}
+                    />
+                    <p>to link posts</p>
+                </Row>
+            )}
         </Modal>
     )
 }

@@ -75,7 +75,7 @@ $modalTransitionSpeed: 0.3s;
     flex-direction: column;
     align-items: flex-start;
     max-height: calc(100vh - 60px);
-    overflow-y: scroll;
+    //overflow-y: scroll;
 
     &.centered {
         align-items: center;

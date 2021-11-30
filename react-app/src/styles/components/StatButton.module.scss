@@ -1,28 +1,27 @@
 @import '../Colors.scss';
 
 .wrapper {
+    all: unset;
     display: flex;
     flex-direction: row;
     align-items: center;
     flex-shrink: 0;
-    margin: 0 10px 10px 10px;
+    transition: color 0.5s;
     > p {
-        color: $grey4;
         margin-right: 5px;
         &:last-child {
             margin-right: 0;
         }
     }
-}
-.icon {
-    width: 20px;
-    height: 20px;
-    margin-right: 5px;
-    > svg {
-        width: 20px;
-        height: 20px;
-        > path {
-            fill: $grey4;
+    .icon {
+        margin-right: 5px;
+        
+        > svg {
+            width: inherit;
+            height: inherit;
+        }
+        &.blue {
+            color: $blue1;
         }
     }
 }

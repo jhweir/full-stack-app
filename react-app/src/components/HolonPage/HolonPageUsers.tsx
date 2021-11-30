@@ -6,12 +6,12 @@ import styles from '@styles/components/HolonPageUsers.module.scss'
 import { AccountContext } from '@contexts/AccountContext'
 import { SpaceContext } from '@contexts/SpaceContext'
 import SearchBar from '@components/SearchBar'
-import Stat from '@components/Stat'
 import Button from '@components/Button'
 import VerticalCard from '@components/Cards/VerticalCard'
 import HolonPageUsersFilters from '@components/HolonPage/HolonPageUsersFilters'
 import HolonPageSpacesPlaceholder from '@components/HolonPage/HolonPageSpacesPlaceholder'
-import { isPlural, onPageBottomReached } from '@src/Functions'
+import Row from '@components/Row'
+import { statTitle, onPageBottomReached } from '@src/Functions'
 import { ReactComponent as SlidersIconSVG } from '@svgs/sliders-h-solid.svg'
 
 const HolonPageUsers = ({ match }: { match: { params: { spaceHandle: string } } }): JSX.Element => {
@@ -82,7 +82,6 @@ const HolonPageUsers = ({ match }: { match: { params: { spaceHandle: string } } 
                         <Button
                             icon={<SlidersIconSVG />}
                             colour='grey'
-                            size='medium'
                             onClick={() => setSpaceUsersFiltersOpen(!spaceUsersFiltersOpen)}
                         />
                     </div>
@@ -108,20 +107,18 @@ const HolonPageUsers = ({ match }: { match: { params: { spaceHandle: string } } 
                                     text={user.bio}
                                     footer={
                                         <div className={styles.stats}>
-                                            <Stat
-                                                icon={<PostIconSVG />}
-                                                value={user.total_posts}
-                                                title={`Post${
-                                                    isPlural(user.total_posts) ? 's' : ''
-                                                }`}
-                                            />
-                                            <Stat
-                                                icon={<CommentIconSVG />}
-                                                value={user.total_comments}
-                                                title={`Comment${
-                                                    isPlural(user.total_comments) ? 's' : ''
-                                                }`}
-                                            />
+                                            <Row>
+                                                <PostIconSVG />
+                                                <p title={statTitle('Post', user.totalPosts)}>
+                                                    {statTitle('Post', user.totalPosts)}
+                                                </p>
+                                            </Row>
+                                            <Row>
+                                                <CommentIconSVG />
+                                                <p title={statTitle('Comment', user.totalComments)}>
+                                                    {statTitle('Comment', user.totalComments)}
+                                                </p>
+                                            </Row>
                                         </div>
                                     }
                                 />

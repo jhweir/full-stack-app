@@ -128,12 +128,7 @@ const NavBar = (): JSX.Element => {
                     </button>
                 </div>
             ) : (
-                <Button
-                    text='Log in'
-                    colour='blue'
-                    size='medium'
-                    onClick={() => setLogInModalOpen(true)}
-                />
+                <Button text='Log in' colour='blue' onClick={() => setLogInModalOpen(true)} />
             )}
         </div>
     )

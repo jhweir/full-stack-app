@@ -67,14 +67,14 @@ const State = (props: {
                         text='Accept'
                         colour='blue'
                         size='small'
-                        margin='0 5px 0 0'
+                        style={{ marginRight: 5 }}
                         onClick={() => respond('accepted')}
                     />
                     <Button
                         text='Reject'
                         colour='green'
                         size='small'
-                        margin='0 5px 0 0'
+                        style={{ marginRight: 5 }}
                         onClick={() => respond('rejected')}
                     />
                 </>
@@ -127,24 +127,24 @@ const NotificationCard = (props: {
     const accessToken = cookies.get('accessToken')
     const you = triggerUser && accountData.id === triggerUser.id
 
-    function toggleSeen() {
-        const data = { notificationId: id, seen: !seen }
-        const authHeader = { headers: { Authorization: `Bearer ${accessToken}` } }
-        setSeen(!seen)
-        axios
-            .post(`${config.apiURL}/toggle-notification-seen`, data, authHeader)
-            .then((res) => {
-                if (res.data === 'success') {
-                    updateAccountData(
-                        'unseen_notifications',
-                        accountData.unseen_notifications + (data.seen ? -1 : 1)
-                    )
-                }
-            })
-            .catch((error) => {
-                console.log('POST toggle-notification-seen error: ', error)
-            })
-    }
+    // function toggleSeen() {
+    //     const data = { notificationId: id, seen: !seen }
+    //     const authHeader = { headers: { Authorization: `Bearer ${accessToken}` } }
+    //     setSeen(!seen)
+    //     axios
+    //         .post(`${config.apiURL}/toggle-notification-seen`, data, authHeader)
+    //         .then((res) => {
+    //             if (res.data === 'success') {
+    //                 updateAccountData(
+    //                     'unseen_notifications',
+    //                     accountData.unseen_notifications + (data.seen ? -1 : 1)
+    //                 )
+    //             }
+    //         })
+    //         .catch((error) => {
+    //             console.log('POST toggle-notification-seen error: ', error)
+    //         })
+    // }
 
     function respondToModInvite(response) {
         if (!accessToken) {

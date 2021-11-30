@@ -141,7 +141,7 @@ const ParentSpaceRequestModal = (props: { close: () => void }): JSX.Element => {
     useEffect(() => getParentSpaceBlacklist(), [])
 
     return (
-        <Modal close={close} maxWidth={600}>
+        <Modal close={close} style={{ maxWidth: 600 }}>
             <h1>Add a new parent space</h1>
             <p>
                 If you&apos;re a moderator of the selected space it will be connected automatically
@@ -184,8 +184,7 @@ const ParentSpaceRequestModal = (props: { close: () => void }): JSX.Element => {
                     <Button
                         text={accountIsModOfSelectedSpace ? 'Add parent space' : 'Send request'}
                         colour='blue'
-                        size='medium'
-                        margin='0 10px 0 0'
+                        style={{ marginRight: 10 }}
                         disabled={loading || showSuccessMessage || !selectedSpace}
                         submit
                     />

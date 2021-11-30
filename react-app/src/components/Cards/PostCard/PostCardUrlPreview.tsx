@@ -10,8 +10,8 @@ const PostCardUrlPreview = (props: {
 }): JSX.Element => {
     const { url, urlImage, urlDomain, urlTitle, urlDescription } = props
 
-    const availableContent =
-        urlImage !== null || urlDomain !== null || urlTitle !== null || urlDescription !== null
+    // const availableContent =
+    //     urlImage !== null || urlDomain !== null || urlTitle !== null || urlDescription !== null
 
     function handleImageError(e) {
         e.target.onerror = null
@@ -23,32 +23,28 @@ const PostCardUrlPreview = (props: {
     }
 
     return (
-        <>
-            {availableContent && (
-                <div className={styles.container}>
-                    <a href={url || ''}>
-                        <img
-                            className={styles.image}
-                            src={urlImage || ''}
-                            onError={(e) => handleImageError(e)}
-                            aria-label='url image'
-                        />
-                    </a>
-                    <div className={styles.text}>
-                        <div className={styles.title}>{urlTitle}</div>
-                        <div className={styles.description}>{urlDescription}</div>
-                        <a className={styles.domain} href={url || ''}>
-                            <img
-                                className={styles.icon}
-                                src='/icons/link-solid.svg'
-                                aria-label='link'
-                            />
-                            <div className={styles.domainText}>{urlDomain}</div>
-                        </a>
-                    </div>
-                </div>
-            )}
-        </>
+        // <>
+        //     {availableContent && (
+        <div className={styles.container}>
+            <a href={url || ''}>
+                <img
+                    className={styles.image}
+                    src={urlImage || ''}
+                    onError={(e) => handleImageError(e)}
+                    aria-label='url image'
+                />
+            </a>
+            <div className={styles.text}>
+                <div className={styles.title}>{urlTitle}</div>
+                <div className={styles.description}>{urlDescription}</div>
+                <a className={styles.domain} href={url || ''}>
+                    <img className={styles.icon} src='/icons/link-solid.svg' aria-label='link' />
+                    <div className={styles.domainText}>{urlDomain}</div>
+                </a>
+            </div>
+        </div>
+        //     )}
+        // </>
     )
 }
 

@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import styles from '@styles/components/SearchSelector.module.scss'
 import Input from '@components/Input'
 import ImageTitle from '@components/ImageTitle'
-import Row from '@components/Row'
+// import Row from '@components/Row'
 
 // general purpose search selector:
 // • text input fires onSearchQuery function
@@ -15,9 +15,9 @@ const SearchSelector = (props: {
     type: 'space' | 'user' | 'topic'
     title?: string
     placeholder?: string
-    margin?: string
+    style?: any
     disabled?: boolean
-    state: 'default' | 'valid' | 'invalid'
+    state?: 'default' | 'valid' | 'invalid'
     errors?: string[]
     options: any[]
     onSearchQuery: (payload: string) => void
@@ -29,7 +29,7 @@ const SearchSelector = (props: {
         type,
         title,
         placeholder,
-        margin,
+        style,
         disabled,
         state,
         errors,
@@ -50,13 +50,13 @@ const SearchSelector = (props: {
     }
 
     return (
-        <div className={styles.wrapper} style={{ margin }}>
+        <div className={styles.wrapper} style={style}>
             <Input
                 type='text'
                 title={title}
                 placeholder={placeholder}
                 disabled={disabled}
-                state={state}
+                state={state || 'default'}
                 errors={errors}
                 value={inputValue}
                 onChange={(newValue) => handleSearchQuery(newValue)}
@@ -94,8 +94,9 @@ const SearchSelector = (props: {
 SearchSelector.defaultProps = {
     title: null,
     placeholder: null,
-    margin: null,
+    style: null,
     disabled: false,
+    state: 'default',
     errors: null,
 }
 

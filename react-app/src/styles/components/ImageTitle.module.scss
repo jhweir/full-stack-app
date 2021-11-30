@@ -5,11 +5,15 @@
     // white-space: nowrap;
     border: none;
     background-color: transparent;
-    &.cursorPointer {
+    &.clickable {
         cursor: pointer;
     }
+    // &.shadow {
+    //     box-shadow: 0 0 5px rgb(0 0 0 / 10%);
+    // }
     p {
         margin: 0 0 0 5px !important;
         font-size: 14px;
+        white-space: nowrap;
     }
 }

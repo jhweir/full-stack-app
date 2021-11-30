@@ -7,7 +7,7 @@ const sgMail = require('@sendgrid/mail')
 sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 const authenticateToken = require('../middleware/authenticateToken')
 const { postAttributes } = require('../GlobalConstants')
-const { Holon, User, Post, GlassBeadGame } = require('../models')
+const { Holon, User, Post, Reaction, Link, GlassBeadGame } = require('../models')
 
 // GET
 router.get('/all-users', (req, res) => {
@@ -31,7 +31,7 @@ router.get('/all-users', (req, res) => {
         let direction, order
         if (sortOrder === 'Ascending') { direction = 'ASC' } else { direction = 'DESC' }
         if (sortBy === 'Date') { order = [['createdAt', direction]] }
-        else { order = [[sequelize.literal(`total_${sortBy.toLowerCase()}`), direction]] }
+        else { order = [[sequelize.literal(`total${sortBy}`), direction]] }
         return order
     }
 
@@ -42,13 +42,13 @@ router.get('/all-users', (req, res) => {
                 FROM Posts
                 WHERE Posts.state = 'visible'
                 AND Posts.creatorId = User.id
-            )`), 'total_posts'
+            )`), 'totalPosts'
         ])}
         if (sortBy === 'Comments') { firstAttributes.push([sequelize.literal(`(
             SELECT COUNT(*)
                 FROM Comments
                 WHERE Comments.creatorId = User.id
-            )`), 'total_comments'
+            )`), 'totalComments'
         ])}
         return firstAttributes
     }
@@ -84,13 +84,13 @@ router.get('/all-users', (req, res) => {
                         FROM Posts
                         WHERE Posts.state = 'visible'
                         AND Posts.creatorId = User.id
-                    )`), 'total_posts'
+                    )`), 'totalPosts'
                 ],
                 [sequelize.literal(`(
                     SELECT COUNT(*)
                         FROM Comments
                         WHERE Comments.creatorId = User.id
-                    )`), 'total_comments'
+                    )`), 'totalComments'
                 ],
             ],
             order,
@@ -156,8 +156,8 @@ router.get('/user-posts', (req, res) => {
         let direction, order
         if (sortOrder === 'Ascending') { direction = 'ASC' } else { direction = 'DESC' }
         if (sortBy === 'Date') { order = [['createdAt', direction]] }
-        if (sortBy === 'Reactions') { order = [[sequelize.literal(`total_reactions`), direction]] }
-        if (sortBy !== 'Reactions' && sortBy !== 'Date') { order = [[sequelize.literal(`total_${sortBy.toLowerCase()}`), direction]] }
+        if (sortBy === 'Reactions') { order = [[sequelize.literal(`totalReactions`), direction]] }
+        if (sortBy !== 'Reactions' && sortBy !== 'Date') { order = [[sequelize.literal(`total${sortBy}`), direction]] }
         return order
     }
 
@@ -165,23 +165,23 @@ router.get('/user-posts', (req, res) => {
         let firstAttributes = ['id']
         if (sortBy === 'Comments') { firstAttributes.push([sequelize.literal(
             `(SELECT COUNT(*) FROM Comments AS Comment WHERE Comment.state = 'visible' AND Comment.postId = Post.id)`
-            ),'total_comments'
+            ),'totalComments'
         ])}
         if (sortBy === 'Reactions') { firstAttributes.push([sequelize.literal(
             `(SELECT COUNT(*) FROM Reactions AS Reaction WHERE Reaction.postId = Post.id AND Reaction.type != 'vote' AND Reaction.state = 'active')`
-            ),'total_reactions'
+            ),'totalReactions'
         ])}
         if (sortBy === 'Likes') { firstAttributes.push([sequelize.literal(
             `(SELECT COUNT(*) FROM Reactions AS Reaction WHERE Reaction.postId = Post.id AND Reaction.type = 'like' AND Reaction.state = 'active')`
-            ),'total_likes'
+            ),'totalLikes'
         ])}
         if (sortBy === 'Ratings') { firstAttributes.push([sequelize.literal(
             `(SELECT COUNT(*) FROM Reactions AS Reaction WHERE Reaction.postId = Post.id AND Reaction.type = 'rating' AND Reaction.state = 'active')`
-            ),'total_ratings'
+            ),'totalRatings'
         ])}
         if (sortBy === 'Reposts') { firstAttributes.push([sequelize.literal(
             `(SELECT COUNT(*) FROM Reactions AS Reaction WHERE Reaction.postId = Post.id AND Reaction.type = 'repost' AND Reaction.state = 'active')`
-            ),'total_reposts'
+            ),'totalReposts'
         ])}
         return firstAttributes
     }
@@ -217,34 +217,43 @@ router.get('/user-posts', (req, res) => {
         let mainAttributes = [
             ...postAttributes,
             [sequelize.literal(`(
-                SELECT COUNT(*)
+                SELECT COUNT(*) > 0
                 FROM Reactions
                 AS Reaction
                 WHERE Reaction.postId = Post.id
                 AND Reaction.userId = ${accountId}
                 AND Reaction.type = 'like'
                 AND Reaction.state = 'active'
-                )`),'account_like'
+                )`),'accountLike'
             ],
             [sequelize.literal(`(
-                SELECT COUNT(*)
+                SELECT COUNT(*) > 0
                 FROM Reactions
                 AS Reaction
                 WHERE Reaction.postId = Post.id
                 AND Reaction.userId = ${accountId}
                 AND Reaction.type = 'rating'
                 AND Reaction.state = 'active'
-                )`),'account_rating'
+                )`),'accountRating'
             ],
             [sequelize.literal(`(
-                SELECT COUNT(*)
+                SELECT COUNT(*) > 0
                 FROM Reactions
                 AS Reaction
                 WHERE Reaction.postId = Post.id
                 AND Reaction.userId = ${accountId}
                 AND Reaction.type = 'repost'
                 AND Reaction.state = 'active'
-                )`),'account_repost'
+                )`),'accountRepost'
+            ],
+            [sequelize.literal(`(
+                SELECT COUNT(*) > 0
+                FROM Links
+                AS Link
+                WHERE Link.state = 'visible'
+                AND Link.creatorId = ${accountId}
+                AND (Link.itemAId = Post.id OR Link.itemBId = Post.id)
+                )`),'accountLink'
             ]
         ]
         return Post.findAll({ 
@@ -253,21 +262,91 @@ router.get('/user-posts', (req, res) => {
             order,
             include: [
                 {
+                    model: User,
+                    as: 'Creator',
+                    attributes: ['id', 'handle', 'name', 'flagImagePath'],
+                },
+                {
                     model: Holon,
                     as: 'DirectSpaces',
-                    attributes: ['handle', 'state'],
-                    through: { where: {  relationship: 'direct' }, attributes: ['type'] },
+                    attributes: ['id', 'handle', 'state', 'flagImagePath'],
+                    through: { where: { relationship: 'direct' }, attributes: ['type'] },
                 },
                 {
                     model: Holon,
                     as: 'IndirectSpaces',
-                    attributes: ['handle', 'state'],
+                    attributes: ['id', 'handle', 'state'],
                     through: { where: { relationship: 'indirect' }, attributes: ['type'] },
                 },
+                { 
+                    model: Reaction,
+                    where: { state: 'active' },
+                    required: false,
+                    attributes: ['id', 'type', 'value'],
+                    include: [
+                        {
+                            model: User,
+                            as: 'Creator',
+                            attributes: ['id', 'handle', 'name', 'flagImagePath']
+                        },
+                        {
+                            model: Holon,
+                            as: 'Space',
+                            attributes: ['id', 'handle', 'name', 'flagImagePath']
+                        },
+                    ]
+                },
                 {
-                    model: User,
-                    as: 'creator',
-                    attributes: ['id', 'handle', 'name', 'flagImagePath'],
+                    model: Link,
+                    as: 'OutgoingLinks',
+                    where: { state: 'visible' },
+                    required: false,
+                    attributes: ['id'],
+                    include: [
+                        { 
+                            model: User,
+                            as: 'Creator',
+                            attributes: ['id', 'handle', 'name', 'flagImagePath'],
+                        },
+                        { 
+                            model: Post,
+                            as: 'PostB',
+                            attributes: ['id'],
+                            include: [
+                                { 
+                                    model: User,
+                                    as: 'Creator',
+                                    attributes: ['handle', 'name', 'flagImagePath'],
+                                }
+                            ]
+                        },
+                    ]
+                },
+                {
+                    model: Link,
+                    as: 'IncomingLinks',
+                    where: { state: 'visible' },
+                    required: false,
+                    attributes: ['id'],
+                    include: [
+                        { 
+                            model: User,
+                            as: 'Creator',
+                            attributes: ['id', 'handle', 'name', 'flagImagePath'],
+                        },
+                        { 
+                            model: Post,
+                            as: 'PostA',
+                            attributes: ['id'],
+                            include: [
+                                { 
+                                    model: User,
+                                    as: 'Creator',
+                                    attributes: ['handle', 'name', 'flagImagePath'],
+                                }
+                            ]
+                        },
+                    ]
                 },
                 {
                     model: GlassBeadGame,

@@ -114,7 +114,7 @@ const HolonPageSideBarLeft = (): JSX.Element => {
                     url='posts'
                     selected={selectedSpaceSubPage === 'posts'}
                     marginBottom={5}
-                    total={spaceData.total_posts}
+                    total={spaceData.totalPosts}
                 />
                 <SideBarButton
                     icon='overlapping-circles-thick.svg'
@@ -122,7 +122,7 @@ const HolonPageSideBarLeft = (): JSX.Element => {
                     url='spaces'
                     selected={selectedSpaceSubPage === 'spaces'}
                     marginBottom={5}
-                    total={spaceData.total_spaces}
+                    total={spaceData.totalSpaces}
                 />
                 {/* <SideBarButton
                         icon='overlapping-circles-thick.svg'
@@ -138,7 +138,7 @@ const HolonPageSideBarLeft = (): JSX.Element => {
                     url='users'
                     selected={selectedSpaceSubPage === 'users'}
                     marginBottom={5}
-                    total={spaceData.total_users}
+                    total={spaceData.totalUsers}
                 />
                 {/* {spaceData.handle === 'coops' && (
                     <>

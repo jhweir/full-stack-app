@@ -53,7 +53,7 @@ const PostPage = ({
     return (
         <div className={styles.wrapper}>
             <div className={styles.postCardWrapper}>
-                {postData.id && <PostCard postData={postData} location='post-page' />}
+                {postData.id && <PostCard post={postData} location='post-page' />}
                 {postData.type === 'poll' && <PageSectionSelector url={url} pathname={pathname} />}
                 <Switch>
                     {/* {!postDataLoading && postData.type !== 'prism' && */}

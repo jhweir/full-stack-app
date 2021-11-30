@@ -12,15 +12,15 @@ module.exports = (sequelize, DataTypes) => {
   Link.associate = function(models) {
     Link.belongsTo(models.User, {
       foreignKey: 'creatorId',
-      as: 'creator'
+      as: 'Creator'
     })
     Link.belongsTo(models.Post, {
       foreignKey: 'itemAId',
-      as: 'postA'
+      as: 'PostA'
     })
     Link.belongsTo(models.Post, {
       foreignKey: 'itemBId',
-      as: 'postB'
+      as: 'PostB'
     })
     // Link.belongsTo(models.Post, {
     //   //as: 'postComment',

@@ -173,7 +173,7 @@ export interface ISpaceContext {
     spaceUsersLoading: boolean
     nextSpaceUsersLoading: boolean
 
-    spacePosts: IPost[]
+    spacePosts: any[]
     setSpacePosts: (payload: any[]) => void
     totalMatchingPosts: number
     spacePostsFilters: any
@@ -192,7 +192,7 @@ export interface ISpaceContext {
     spaceSpacesPaginationOffset: number
     spaceSpacesPaginationHasMore: boolean
 
-    spaceUsers: IUser[]
+    spaceUsers: any[]
     spaceUsersFilters: any
     spaceUsersFiltersOpen: boolean
     setSpaceUsersFiltersOpen: (payload: boolean) => void

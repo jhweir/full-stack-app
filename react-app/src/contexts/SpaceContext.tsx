@@ -15,9 +15,9 @@ const defaults = {
         flagImagePath: null,
         coverImagePath: null,
         createdAt: null,
-        total_posts: 0,
-        total_spaces: 0,
-        total_users: 0,
+        totalPosts: 0,
+        totalSpaces: 0,
+        totalUsers: 0,
         Creator: {
             id: null,
             handle: null,
@@ -73,7 +73,7 @@ function SpaceContextProvider({ children }: { children: JSX.Element }): JSX.Elem
     const [spaceUsersLoading, setSpaceUsersLoading] = useState(false)
     const [nextSpaceUsersLoading, setNextSpaceUsersLoading] = useState(false)
 
-    const [spacePosts, setSpacePosts] = useState<IPost[]>([])
+    const [spacePosts, setSpacePosts] = useState<any[]>([])
     const [totalMatchingPosts, setTotalMatchingPosts] = useState(0)
     const [spacePostsFilters, setSpacePostsFilters] = useState(defaults.postFilters)
     const [spacePostsFiltersOpen, setSpacePostsFiltersOpen] = useState(false)
@@ -89,7 +89,7 @@ function SpaceContextProvider({ children }: { children: JSX.Element }): JSX.Elem
     const [spaceSpacesPaginationOffset, setSpaceSpacesPaginationOffset] = useState(0)
     const [spaceSpacesPaginationHasMore, setSpaceSpacesPaginationHasMore] = useState(true)
 
-    const [spaceUsers, setSpaceUsers] = useState<IUser[]>([])
+    const [spaceUsers, setSpaceUsers] = useState<any[]>([])
     const [spaceUsersFiltersOpen, setSpaceUsersFiltersOpen] = useState(false)
     const [spaceUsersFilters, setSpaceUsersFilters] = useState(defaults.userFilters)
     const [spaceUsersPaginationLimit, setSpaceUsersPaginationLimit] = useState(10)

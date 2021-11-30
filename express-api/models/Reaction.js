@@ -2,7 +2,7 @@
 module.exports = (sequelize, DataTypes) => {
   const Reaction = sequelize.define('Reaction', {
     type: DataTypes.STRING,
-    value: DataTypes.STRING,
+    value: DataTypes.STRING, // update to number
     state: DataTypes.STRING,
     holonId: DataTypes.INTEGER,
     userId: DataTypes.INTEGER,
@@ -17,11 +17,11 @@ module.exports = (sequelize, DataTypes) => {
     })
     Reaction.belongsTo(models.User, {
       foreignKey: 'userId',
-      as: 'creator'
+      as: 'Creator'
     })
     Reaction.belongsTo(models.Holon, {
       foreignKey: 'holonId',
-      as: 'space'
+      as: 'Space'
     })
     Reaction.belongsTo(models.PollAnswer, {
       foreignKey: 'pollAnswerId'

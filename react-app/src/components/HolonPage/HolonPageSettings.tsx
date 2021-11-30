@@ -174,7 +174,6 @@ const HolonPageSettings = ({
                                 <Button
                                     text='Invite moderator'
                                     colour='blue'
-                                    size='medium'
                                     onClick={() => setInviteSpaceModeratorModalOpen(true)}
                                 />
                                 {inviteSpaceModeratorModalOpen && (
@@ -187,7 +186,6 @@ const HolonPageSettings = ({
                                 <Button
                                     text='Remove moderator'
                                     colour='blue'
-                                    size='medium'
                                     onClick={() => setRemoveSpaceModeratorModalOpen(true)}
                                 />
                                 {removeSpaceModeratorModalOpen && (
@@ -202,7 +200,6 @@ const HolonPageSettings = ({
                                         <Button
                                             text='Add parent space'
                                             colour='blue'
-                                            size='medium'
                                             onClick={() => setParentSpaceRequestModalOpen(true)}
                                         />
                                         {parentSpaceRequestModalOpen && (
@@ -215,7 +212,6 @@ const HolonPageSettings = ({
                                         <Button
                                             text='Remove parent space'
                                             colour='blue'
-                                            size='medium'
                                             onClick={() => setRemoveParentSpaceModalOpen(true)}
                                         />
                                         {removeParentSpaceModalOpen && (
@@ -228,7 +224,6 @@ const HolonPageSettings = ({
                                         <Button
                                             text='Remove child space'
                                             colour='blue'
-                                            size='medium'
                                             onClick={() => setRemoveChildSpaceModalOpen(true)}
                                         />
                                         {removeChildSpaceModalOpen && (
@@ -241,7 +236,6 @@ const HolonPageSettings = ({
                                         <Button
                                             text='Delete'
                                             colour='red'
-                                            size='medium'
                                             onClick={() => setDeleteSpaceModalOpen(true)}
                                         />
                                         {deleteSpaceModalOpen && (

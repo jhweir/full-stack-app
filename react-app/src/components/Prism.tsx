@@ -25,7 +25,7 @@ const Prism = (): JSX.Element => {
     return (
         <div className={styles.prism}>
             <div className={styles.postCardContainer}>
-                <PostCard postData={postData} location='post-page' />
+                <PostCard post={postData} location='post-page' />
             </div>
             <div className={styles.infoBar}>
                 <span>

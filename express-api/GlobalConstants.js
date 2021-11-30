@@ -4,32 +4,32 @@ const postAttributes = [
     'id', 'type', 'subType', 'text', 'url', 'urlImage', 'urlDomain', 'urlTitle', 'urlDescription', 'createdAt',
     [sequelize.literal(
         `(SELECT COUNT(*) FROM Comments AS Comment WHERE Comment.state = 'visible' AND Comment.postId = Post.id)`
-        ),'total_comments'
+        ),'totalComments'
     ],
     [sequelize.literal(
         `(SELECT COUNT(*) FROM Reactions AS Reaction WHERE Reaction.postId = Post.id AND Reaction.type != 'vote' AND Reaction.state = 'active')
         + (SELECT COUNT(*) FROM Links AS Link WHERE Link.state = 'visible' AND (Link.itemAId = Post.id OR Link.itemBId = Post.id) AND Link.type = 'post-post')`
-        ),'total_reactions'
+        ),'totalReactions'
     ],
     [sequelize.literal(
         `(SELECT COUNT(*) FROM Reactions AS Reaction WHERE Reaction.postId = Post.id AND Reaction.type = 'like' AND Reaction.state = 'active')`
-        ),'total_likes'
+        ),'totalLikes'
     ],
     [sequelize.literal(
         `(SELECT COUNT(*) FROM Reactions AS Reaction WHERE Reaction.postId = Post.id AND Reaction.type = 'repost' AND Reaction.state = 'active')`
-        ),'total_reposts'
+        ),'totalReposts'
     ],
     [sequelize.literal(
         `(SELECT COUNT(*) FROM Reactions AS Reaction WHERE Reaction.postId = Post.id AND Reaction.type = 'rating' AND Reaction.state = 'active')`
-        ),'total_ratings'
+        ),'totalRatings'
     ],
     [sequelize.literal(
         `(SELECT SUM(value) FROM Reactions AS Reaction WHERE Reaction.postId = Post.id AND Reaction.type = 'rating' AND Reaction.state = 'active')`
-        ),'total_rating_points'
+        ),'totalRatingPoints'
     ],
     [sequelize.literal(
-        `(SELECT COUNT(*) FROM Links AS Link WHERE Link.state = 'visible' AND (Link.itemAId = Post.id OR Link.itemBId = Post.id) AND Link.type = 'post-post')` //AND Link.state = 'active'
-        ),'total_links'
+        `(SELECT COUNT(*) FROM Links AS Link WHERE Link.state = 'visible' AND (Link.itemAId = Post.id OR Link.itemBId = Post.id))` // AND Link.type = 'post-post')` //AND Link.state = 'active'
+        ),'totalLinks'
     ],
 ]
 
@@ -47,7 +47,7 @@ const totalSpaceFollowers = [sequelize.literal(`(
             AND HolonUsers.relationship = 'follower'
             AND HolonUsers.state = 'active'
         )
-    )`), 'total_followers'
+    )`), 'totalFollowers'
 ]
 
 const totalSpaceComments = [sequelize.literal(`(
@@ -61,7 +61,7 @@ const totalSpaceComments = [sequelize.literal(`(
             ON PostHolons.postId = Posts.id
             WHERE PostHolons.HolonId = Holon.id
         )
-    )`), 'total_comments'
+    )`), 'totalComments'
 ]
 
 const totalSpaceReactions = [sequelize.literal(`(
@@ -76,7 +76,7 @@ const totalSpaceReactions = [sequelize.literal(`(
             ON PostHolons.postId = Posts.id
             WHERE PostHolons.HolonId = Holon.id
         )
-    )`), 'total_reactions'
+    )`), 'totalReactions'
 ]
 
 const totalSpaceLikes = [sequelize.literal(`(
@@ -91,7 +91,7 @@ const totalSpaceLikes = [sequelize.literal(`(
             ON PostHolons.postId = Posts.id
             WHERE PostHolons.HolonId = Holon.id
         )
-    )`), 'total_likes'
+    )`), 'totalLikes'
 ]
 
 const totalSpaceRatings = [sequelize.literal(`(
@@ -106,7 +106,7 @@ const totalSpaceRatings = [sequelize.literal(`(
             ON PostHolons.postId = Posts.id
             WHERE PostHolons.HolonId = Holon.id
         )
-    )`), 'total_ratings'
+    )`), 'totalRatings'
 ]
 
 const totalSpacePosts = [sequelize.literal(`(
@@ -120,7 +120,7 @@ const totalSpacePosts = [sequelize.literal(`(
             ON PostHolons.postId = Posts.id
             WHERE PostHolons.HolonId = Holon.id
         )
-    )`), 'total_posts'
+    )`), 'totalPosts'
 ]
 
 const totalSpaceChildren = [sequelize.literal(`(
@@ -129,7 +129,7 @@ const totalSpaceChildren = [sequelize.literal(`(
         AS VHR
         WHERE VHR.holonAId = Holon.id
         AND VHR.state = 'open'
-    )`), 'total_children'
+    )`), 'totalChildren'
 ]
 
 const totalUserPosts = [sequelize.literal(`(
@@ -137,14 +137,14 @@ const totalUserPosts = [sequelize.literal(`(
         FROM Posts
         WHERE Posts.state = 'visible'
         AND Posts.creatorId = User.id
-    )`), 'total_posts'
+    )`), 'totalPosts'
 ]
 
 const totalUserComments = [sequelize.literal(`(
     SELECT COUNT(*)
         FROM Comments
         WHERE Comments.creatorId = User.id
-    )`), 'total_comments'
+    )`), 'totalComments'
 ]
 
 async function asyncForEach(array, callback) {

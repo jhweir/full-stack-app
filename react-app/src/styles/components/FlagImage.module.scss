@@ -26,6 +26,9 @@
     }
     &.shadow {
         box-shadow: 0 0 20px rgba(0,0,0,0.08);
+        &.small {
+            box-shadow: 0 0 3px rgba(0,0,0,0.1);
+        }
     }
 }
 .flagImage {

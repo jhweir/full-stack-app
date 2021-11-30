@@ -3,12 +3,13 @@ import styles from '@styles/components/Row.module.scss'
 
 const Row = (props: {
     children: any
-    margin?: string
     centerX?: boolean
     centerY?: boolean
+    spaceBetween?: boolean
     wrap?: boolean
+    style?: any
 }): JSX.Element => {
-    const { children, margin, centerX, centerY, wrap } = props
+    const { children, centerX, centerY, spaceBetween, wrap, style } = props
 
     return (
         <div
@@ -16,9 +17,10 @@ const Row = (props: {
                 ${styles.row} 
                 ${centerX && styles.centerX} 
                 ${centerY && styles.centerY} 
+                ${spaceBetween && styles.spaceBetween} 
                 ${wrap && styles.wrap}
             `}
-            style={{ margin }}
+            style={style}
         >
             {children}
         </div>
@@ -26,10 +28,11 @@ const Row = (props: {
 }
 
 Row.defaultProps = {
-    margin: null,
     centerX: false,
     centerY: false,
+    spaceBetween: false,
     wrap: false,
+    style: null,
 }
 
 export default Row

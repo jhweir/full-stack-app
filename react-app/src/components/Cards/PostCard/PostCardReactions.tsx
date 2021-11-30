@@ -181,7 +181,7 @@ const PostCardReactions = (props: {
                 }}
             />
             {/* TODO: Move modals into PostCardReactionItems? */}
-            {likeModalOpen && (
+            {/* {likeModalOpen && (
                 <PostCardLikeModal
                     postData={postData}
                     likes={
@@ -200,8 +200,8 @@ const PostCardReactions = (props: {
                     setAccountLike={setAccountLike}
                     getReactionData={getReactionData}
                 />
-            )}
-            {repostModalOpen && (
+            )} */}
+            {/* {repostModalOpen && (
                 <PostCardRepostModal
                     postData={postData}
                     reposts={
@@ -222,8 +222,8 @@ const PostCardReactions = (props: {
                     blockedSpaces={blockedSpaces}
                     setBlockedSpaces={setBlockedSpaces}
                 />
-            )}
-            {ratingModalOpen && (
+            )} */}
+            {/* {ratingModalOpen && (
                 <PostCardRatingModal // TODO: update like repost modal (use postData)?
                     postData={postData}
                     ratings={
@@ -257,7 +257,7 @@ const PostCardReactions = (props: {
                     // accountLink={accountLink}
                     setAccountLink={setAccountLink}
                 />
-            )}
+            )} */}
         </div>
     )
 }

@@ -6,17 +6,16 @@ import CloseButton from '@components/CloseButton'
 const Modal = (props: {
     close: () => void
     children: any
-    minWidth?: number
-    maxWidth?: number
+    style?: any
     centered?: boolean
 }): JSX.Element => {
-    const { close, children, minWidth, maxWidth, centered } = props
+    const { close, children, style, centered } = props
     return (
         <div className={`${styles.background} hide-scrollbars`}>
             <CloseOnClickOutside onClick={close}>
                 <div
                     className={`${styles.modal} ${centered && styles.centered} hide-scrollbars`}
-                    style={{ minWidth, maxWidth }}
+                    style={style}
                 >
                     <div className={styles.closeButtonWrapper}>
                         <CloseButton size={20} onClick={close} />
@@ -29,8 +28,7 @@ const Modal = (props: {
 }
 
 Modal.defaultProps = {
-    minWidth: null,
-    maxWidth: null,
+    style: null,
     centered: false,
 }
 

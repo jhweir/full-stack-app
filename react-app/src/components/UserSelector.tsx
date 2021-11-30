@@ -57,8 +57,6 @@ const UserSelector = (props: {
                 type='text'
                 title={title}
                 placeholder='user name or handle...'
-                errors={undefined}
-                state='default'
                 value={searchQuery}
                 onChange={(newSearchQuery) => handleNewSearchQuery(newSearchQuery)}
             />

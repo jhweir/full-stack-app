@@ -27,7 +27,7 @@ const HolonPostMap = (): JSX.Element => {
     const { sortBy, sortOrder, timeRange, type, depth, searchQuery } = spacePostsFilters
 
     const [postMapData, setPostMapData] = useState([])
-    const [selectedPost, setSelectedPost] = useState(null)
+    const [selectedPost, setSelectedPost] = useState({ id: null })
     const defaultGravity = 30
     const [gravity, setGravity] = useState(defaultGravity)
     const [showKey, setShowKey] = useState(false)
@@ -217,14 +217,10 @@ const HolonPostMap = (): JSX.Element => {
         }
         const linkData = [] as ILinkData[]
         posts.forEach((post, postIndex) => {
-            const filteredLinks = post.OutgoingLinks.filter(
-                (link) => link.state === 'visible' && link.relationship === linkType
-            )
-            filteredLinks.forEach((link) => {
+            post.OutgoingLinks.forEach((link) => {
                 let targetIndex = null
-                // search posts by id to find target index
                 posts.forEach((p, i) => {
-                    if (p.id === link.itemBId) targetIndex = i
+                    if (p.id === link.PostB.id) targetIndex = i
                 })
                 if (targetIndex !== null) {
                     const data = {
@@ -357,7 +353,7 @@ const HolonPostMap = (): JSX.Element => {
         repositionMap(data)
 
         const textLinkData = createLinkData(data, 'text')
-        const turnLinkData = createLinkData(data, 'turn')
+        // const turnLinkData = createLinkData(data, 'turn')
 
         function updateLink(link) {
             function fixna(x) {
@@ -401,7 +397,7 @@ const HolonPostMap = (): JSX.Element => {
             .force('x', d3.forceX(0).strength(gravity / 500)) // (50 / 500 = 0.1)
             .force('y', d3.forceY(0).strength(gravity / 500))
             .force('textLinks', d3.forceLink().links(textLinkData).strength(0.05))
-            .force('turnLinks', d3.forceLink().links(turnLinkData).strength(0.09))
+            // .force('turnLinks', d3.forceLink().links(turnLinkData).strength(0.09))
             .alpha(1)
             .alphaTarget(0)
             .alphaMin(0.01)
@@ -567,30 +563,30 @@ const HolonPostMap = (): JSX.Element => {
                     )
             )
 
-        // create turn links
-        d3.select('#post-map-link-group')
-            .selectAll('.post-map-turn-link')
-            .data(turnLinkData)
-            .join(
-                (enter) =>
-                    enter
-                        .append('line')
-                        .classed('post-map-turn-link', true)
-                        .attr('stroke', 'black')
-                        .attr('stroke-width', '3px')
-                        .attr('stroke-dasharray', 3)
-                        .attr('marker-end', 'url(#turn-link-arrow)')
-                        .attr('opacity', 0)
-                        .call((node) => node.transition().duration(1000).attr('opacity', 0.3)),
-                (update) => update.call((node) => node.transition().duration(1000)),
-                (exit) =>
-                    exit.call((node) =>
-                        node.transition().duration(1000).attr('opacity', 0).remove()
-                    )
-            )
+        // // create turn links
+        // d3.select('#post-map-link-group')
+        //     .selectAll('.post-map-turn-link')
+        //     .data(turnLinkData)
+        //     .join(
+        //         (enter) =>
+        //             enter
+        //                 .append('line')
+        //                 .classed('post-map-turn-link', true)
+        //                 .attr('stroke', 'black')
+        //                 .attr('stroke-width', '3px')
+        //                 .attr('stroke-dasharray', 3)
+        //                 .attr('marker-end', 'url(#turn-link-arrow)')
+        //                 .attr('opacity', 0)
+        //                 .call((node) => node.transition().duration(1000).attr('opacity', 0.3)),
+        //         (update) => update.call((node) => node.transition().duration(1000)),
+        //         (exit) =>
+        //             exit.call((node) =>
+        //                 node.transition().duration(1000).attr('opacity', 0).remove()
+        //             )
+        //     )
 
         // if no selected post and posts present, select top post
-        if (!selectedPost && data[0]) {
+        if (!selectedPost.id && data[0]) {
             setSelectedPost(data[0])
             d3.select(`#post-map-node-${data[0].id}`).style('stroke-width', 6)
         }
@@ -744,9 +740,9 @@ const HolonPostMap = (): JSX.Element => {
                 </div>
             </div>
             <div id='canvas' />
-            {selectedPost && (
+            {selectedPost.id && (
                 <div className={styles.selectedPostWrapper}>
-                    <PostCard postData={selectedPost || {}} location='holon-post-map' />
+                    <PostCard post={selectedPost} location='holon-post-map' key={selectedPost.id} />
                 </div>
             )}
         </div>

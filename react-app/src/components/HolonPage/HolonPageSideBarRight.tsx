@@ -17,7 +17,7 @@ const HolonPageSideBarRight = (): JSX.Element => {
     return (
         <div className={`${styles.sideBarRight} hide-scrollbars`}>
             {parentSpaces && parentSpaces.length > 0 && (
-                <Column margin='0 0 20px 0'>
+                <Column style={{ marginBottom: 20 }}>
                     <Row>
                         <ArrowUpIconSVG />
                         <p>Parent spaces</p>
@@ -32,14 +32,14 @@ const HolonPageSideBarRight = (): JSX.Element => {
                                 link={`/s/${space.handle}/${selectedSpaceSubPage}`}
                                 fontSize={16}
                                 imageSize={40}
-                                margin='0 0 10px 0'
+                                style={{ marginBottom: 10 }}
                             />
                         ))}
                     </Column>
                 </Column>
             )}
             {childSpaces && childSpaces.length > 0 && (
-                <Column maxHeight={600}>
+                <Column style={{ maxHeight: 600 }}>
                     <Row>
                         <ArrowDownIconSVG />
                         <p>Child spaces</p>
@@ -54,7 +54,7 @@ const HolonPageSideBarRight = (): JSX.Element => {
                                 link={`/s/${space.handle}/${selectedSpaceSubPage}`}
                                 fontSize={16}
                                 imageSize={40}
-                                margin='0 0 10px 0'
+                                style={{ marginBottom: 10 }}
                             />
                         ))}
                     </Column>

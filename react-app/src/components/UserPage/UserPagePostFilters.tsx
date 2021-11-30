@@ -1,41 +1,38 @@
 import React, { useContext } from 'react'
 import { UserContext } from '@contexts/UserContext'
 import DropDownMenu from '@components/DropDownMenu'
+import Row from '@components/Row'
 
 const UserPagePostFilters = (): JSX.Element => {
     const { userPostsFilters, updateUserPostsFilter } = useContext(UserContext)
+    const { type, sortBy, sortOrder, timeRange } = userPostsFilters
+    const margin = { margin: '0 20px 10px 0' }
 
     return (
-        <div className='wecoFilters'>
+        <Row wrap>
             <DropDownMenu
                 title='Post Type'
-                options={[
-                    'All Types',
-                    'Text',
-                    'Url',
-                    // 'Poll',
-                    'Glass Bead Game',
-                    // 'Decision Tree',
-                    // 'Plot Graph',
-                    'Prism',
-                ]}
-                selectedOption={userPostsFilters.type}
+                options={['All Types', 'Text', 'Url', 'Glass Bead Game', 'Prism']}
+                selectedOption={type}
                 setSelectedOption={(value) => updateUserPostsFilter('type', value)}
                 orientation='vertical'
+                style={margin}
             />
             <DropDownMenu
                 title='Sort By'
                 options={['Reactions', 'Likes', 'Reposts', 'Ratings', 'Comments', 'Date']}
-                selectedOption={userPostsFilters.sortBy}
+                selectedOption={sortBy}
                 setSelectedOption={(value) => updateUserPostsFilter('sortBy', value)}
                 orientation='vertical'
+                style={margin}
             />
             <DropDownMenu
                 title='Sort Order'
                 options={['Descending', 'Ascending']}
-                selectedOption={userPostsFilters.sortOrder}
+                selectedOption={sortOrder}
                 setSelectedOption={(value) => updateUserPostsFilter('sortOrder', value)}
                 orientation='vertical'
+                style={margin}
             />
             <DropDownMenu
                 title='Time Range'
@@ -47,11 +44,12 @@ const UserPagePostFilters = (): JSX.Element => {
                     'Last 24 Hours',
                     'Last Hour',
                 ]}
-                selectedOption={userPostsFilters.timeRange}
+                selectedOption={timeRange}
                 setSelectedOption={(value) => updateUserPostsFilter('timeRange', value)}
                 orientation='vertical'
+                style={margin}
             />
-        </div>
+        </Row>
     )
 }
 

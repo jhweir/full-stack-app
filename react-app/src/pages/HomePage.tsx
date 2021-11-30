@@ -118,51 +118,46 @@ const Homepage = (): JSX.Element => {
                     <Button
                         text='Log in'
                         colour='blue'
-                        size='medium'
-                        margin='0 10px 0 0'
+                        style={{ marginRight: 10 }}
                         onClick={() => setLogInModalOpen(true)}
                     />
                     <Button
                         text='Create new account'
                         colour='green'
-                        size='medium'
                         onClick={() => setRegisterModalOpen(true)}
                     />
                 </div>
-                
+
                 {highlights && (
                     <div className={styles.highlights}>
                         <Highlight
                             type='post'
-                            text={`${highlights.totals.total_posts} Posts`}
+                            text={`${highlights.totals.totalPosts} Posts`}
                             imagePaths={highlights.posts}
                         />
                         <Highlight
                             type='space'
-                            text={`${highlights.totals.total_spaces} Spaces`}
+                            text={`${highlights.totals.totalSpaces} Spaces`}
                             imagePaths={highlights.spaces}
                         />
                         <Highlight
                             type='user'
-                            text={`${highlights.totals.total_users} Users`}
+                            text={`${highlights.totals.totalUsers} Users`}
                             imagePaths={highlights.users}
                         />
                     </div>
                 )}
-                
-                
+
                 {/* <div className={styles.authButtons}>
                     <Button
                         text='Log in'
                         colour='blue'
-                        size='medium'
-                        margin='0 10px 0 0'
+                        style={{ marginRight: 10 }}
                         onClick={() => setLogInModalOpen(true)}
                     />
                     <Button
                         text='Create new account'
                         colour='green'
-                        size='medium'
                         onClick={() => setRegisterModalOpen(true)}
                     />
                 </div> */}

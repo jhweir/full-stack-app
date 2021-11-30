@@ -8,8 +8,9 @@ const DropDownMenu = (props: {
     selectedOption: string | number
     setSelectedOption: any
     orientation: string
+    style?: any
 }): JSX.Element => {
-    const { title, options, selectedOption, setSelectedOption, orientation } = props
+    const { title, options, selectedOption, setSelectedOption, orientation, style } = props
     const [menuOpen, setMenuOpen] = useState(false)
 
     return (
@@ -17,6 +18,7 @@ const DropDownMenu = (props: {
             className={`${styles.dropDownMenu} ${
                 orientation === 'horizontal' && styles.horizontal
             }`}
+            style={style}
         >
             <span className={styles.title}>{title.toUpperCase()}</span>
             <CloseOnClickOutside onClick={() => setMenuOpen(false)}>
@@ -63,6 +65,10 @@ const DropDownMenu = (props: {
             </CloseOnClickOutside>
         </div>
     )
+}
+
+DropDownMenu.defaultProps = {
+    style: null,
 }
 
 export default DropDownMenu

@@ -68,14 +68,14 @@ const ForgotPasswordModal = (props: { close: () => void }): JSX.Element => {
     })
 
     return (
-        <Modal close={close} minWidth={350} centered>
+        <Modal close={close} style={{ minWidth: 350 }} centered>
             <h1>Reset password</h1>
             <form onSubmit={sendResetLink}>
                 <Input
                     type='email'
                     title='Email'
                     placeholder='email...'
-                    margin='0 0 10px 0'
+                    style={{ marginBottom: 10 }}
                     state={emailState}
                     errors={emailErrors}
                     value={email}
@@ -87,8 +87,7 @@ const ForgotPasswordModal = (props: { close: () => void }): JSX.Element => {
                 <Button
                     text='Send reset link'
                     colour='blue'
-                    size='medium'
-                    margin='20px 0 20px 0'
+                    style={{ margin: '20px 0 20px 0' }}
                     disabled={loading || showSuccessMessage || emailState === 'invalid'}
                     submit
                 />

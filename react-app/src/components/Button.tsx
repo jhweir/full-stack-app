@@ -6,23 +6,23 @@ const Button = (props: {
     text?: string
     icon?: JSX.Element
     colour: string
-    size: string
-    margin?: string
+    size?: 'small' | 'medium' | 'large'
+    style?: any
     disabled?: boolean
     loading?: boolean
     submit?: boolean
     onClick?: () => void
 }): JSX.Element => {
-    const { text, icon, colour, size, margin, disabled, loading, submit, onClick } = props
+    const { text, icon, colour, size, style, disabled, loading, submit, onClick } = props
 
     return (
         <button
-            className={`${styles.button} ${styles[colour]} ${styles[size]} ${
-                disabled && styles.disabled
+            className={`${styles.button} ${styles[colour]} ${styles[size || 'medium']} ${
+                (disabled || loading) && styles.disabled
             }`}
-            style={{ margin }}
+            style={style}
             type={submit ? 'submit' : 'button'}
-            disabled={disabled}
+            disabled={disabled || loading}
             onClick={onClick}
         >
             {!!text && <p>{text}</p>}
@@ -35,7 +35,8 @@ const Button = (props: {
 Button.defaultProps = {
     text: null,
     icon: null,
-    margin: '0 0 0 0',
+    size: 'medium',
+    style: null,
     disabled: false,
     loading: false,
     submit: false,

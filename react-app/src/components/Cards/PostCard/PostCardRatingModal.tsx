@@ -1,197 +1,183 @@
 import React, { useContext, useState } from 'react'
-import { Link } from 'react-router-dom'
+import Cookies from 'universal-cookie'
 import axios from 'axios'
 import config from '@src/Config'
 import styles from '@styles/components/PostCardRatingModal.module.scss'
-import SmallFlagImage from '@components/SmallFlagImage'
 import { AccountContext } from '@contexts/AccountContext'
 import { SpaceContext } from '@contexts/SpaceContext'
-import { IPost } from '@src/Interfaces'
 import Modal from '@components/Modal'
 import Column from '@components/Column'
 import Row from '@components/Row'
 import Button from '@components/Button'
 import ImageTitle from '@components/ImageTitle'
+import Input from '@components/Input'
+import { pluralise } from '@src/Functions'
 
 const PostCardRatingModal = (props: {
-    postData: Partial<IPost>
-    ratings: any[]
-    setRatingModalOpen: (payload: boolean) => void
-    getReactionData: () => void
-    totalReactions: number
-    setTotalReactions: (payload: number) => void
-    totalRatings: number
-    setTotalRatings: (payload: number) => void
-    totalRatingPoints: number
-    setTotalRatingPoints: (payload: number) => void
-    accountRating: number
-    setAccountRating: (payload: number) => void
+    close: () => void
+    postData: any
+    setPostData: (payload: any) => void
 }): JSX.Element => {
+    const { close, postData, setPostData } = props
     const {
-        postData,
-        ratings,
-        setRatingModalOpen,
-        getReactionData,
-        totalReactions,
-        setTotalReactions,
-        totalRatings,
-        setTotalRatings,
-        totalRatingPoints,
-        setTotalRatingPoints,
-        accountRating,
-        setAccountRating,
-    } = props
-
-    const { accountData } = useContext(AccountContext)
+        loggedIn,
+        accountData,
+        setLogInModalOpen,
+        setAlertMessage,
+        setAlertModalOpen,
+    } = useContext(AccountContext)
     const { spaceData } = useContext(SpaceContext)
-
-    const [newRating, setNewRating] = useState<null | number>(null)
-    const [newRatingError, setNewRatingError] = useState(false)
-
-    function averageScore() {
-        if (totalRatings) {
-            return `${(totalRatingPoints / totalRatings).toFixed(2)}%`
-        }
-        return 'N/A'
-    }
+    const [newRating, setNewRating] = useState(100)
+    const [loading, setLoading] = useState(false)
+    const cookies = new Cookies()
+    const ratings = postData.Reactions.filter((r) => r.type === 'rating')
+    const headerText = ratings.length
+        ? `${ratings.length} rating${pluralise(ratings.length)}`
+        : 'No ratings yet...'
+    const averageScore = `${(postData.totalRatingPoints / ratings.length).toFixed(2)}%`
 
     function addRating() {
-        console.log('addRating')
-        const invalidRating = !newRating || newRating > 100 || newRating < 0
-        if (invalidRating) {
-            setNewRatingError(true)
-        } else {
-            setTotalRatings(totalRatings + 1)
-            setTotalReactions(totalReactions + 1)
-            setTotalRatingPoints(newRating ? totalRatingPoints + newRating : totalRatingPoints)
-            setAccountRating(accountRating + 1)
+        setLoading(true)
+        const accessToken = cookies.get('accessToken')
+        if (accessToken) {
+            const data = {
+                accountHandle: accountData.handle,
+                accountName: accountData.name,
+                postId: postData.id,
+                spaceId: window.location.pathname.includes('/s/') ? spaceData.id : null,
+                newRating,
+            }
+            const authHeader = { headers: { Authorization: `Bearer ${accessToken}` } }
             axios
-                .post(`${config.apiURL}/add-rating`, {
-                    accountId: accountData.id,
-                    accountHandle: accountData.handle,
-                    accountName: accountData.name,
-                    postId: postData.id,
-                    holonId: window.location.pathname.includes('/s/') ? spaceData.id : null,
-                    newRating,
+                .post(`${config.apiURL}/add-rating`, data, authHeader)
+                .then(() => {
+                    setPostData({
+                        ...postData,
+                        totalReactions: postData.totalReactions + 1,
+                        totalRatings: postData.totalRatings + 1,
+                        totalRatingPoints: postData.totalRatingPoints + newRating,
+                        accountRating: true,
+                        Reactions: [
+                            ...postData.Reactions,
+                            {
+                                type: 'rating',
+                                value: newRating,
+                                Creator: {
+                                    id: accountData.id,
+                                    handle: accountData.handle,
+                                    name: accountData.name,
+                                    flagImagePath: accountData.flagImagePath,
+                                },
+                            },
+                        ],
+                    })
+                    close()
                 })
-                .then((res) => {
-                    if (res.data === 'success') {
-                        setNewRating(null)
-                        setTimeout(() => getReactionData(), 200)
-                    }
-                })
-                .catch((error) => {
-                    console.log(error)
-                })
+                .catch((error) => console.log(error))
+        } else {
+            close()
+            setAlertMessage('Log in to rate posts')
+            setAlertModalOpen(true)
         }
-    }
-
-    function newTotalRatingPoints() {
-        const oldAccountRating = ratings.filter(
-            (rating) => rating.creator.handle === accountData.handle
-        )[0]
-        // console.log('oldAccountRating: ', oldAccountRating)
-        return totalRatingPoints - oldAccountRating.value
     }
 
     function removeRating() {
-        console.log('removeRating')
-        setTotalRatings(totalRatings - 1)
-        setTotalReactions(totalReactions - 1)
-        setTotalRatingPoints(newTotalRatingPoints())
-        setAccountRating(0)
-        axios
-            .post(`${config.apiURL}/remove-rating`, {
-                accountId: accountData.id,
+        setLoading(true)
+        const accessToken = cookies.get('accessToken')
+        if (accessToken) {
+            const data = {
                 postId: postData.id,
-                holonId: spaceData.id,
-            })
-            .then((res) => {
-                if (res.data === 'success') {
-                    setTimeout(() => getReactionData(), 200)
-                }
-            })
-            .catch((error) => {
-                console.log(error)
-            })
+                spaceId: window.location.pathname.includes('/s/') ? spaceData.id : null,
+            }
+            const authHeader = { headers: { Authorization: `Bearer ${accessToken}` } }
+            axios
+                .post(`${config.apiURL}/remove-rating`, data, authHeader)
+                .then(() => {
+                    const removedRating = ratings.find((r) => r.Creator.id === accountData.id)
+                    setPostData({
+                        ...postData,
+                        totalReactions: postData.totalReactions - 1,
+                        totalRatings: postData.totalRatings - 1,
+                        totalRatingPoints: postData.totalRatingPoints - +removedRating.value,
+                        accountRating: false,
+                        Reactions: [
+                            ...postData.Reactions.filter(
+                                (r) => !(r.type === 'rating' && r.Creator.id === accountData.id)
+                            ),
+                        ],
+                    })
+                    close()
+                })
+                .catch((error) => console.log(error))
+        } else {
+            close()
+            setAlertMessage('Log in to rate posts')
+            setAlertModalOpen(true)
+        }
     }
 
     return (
-        <Modal close={() => setRatingModalOpen(false)} centered>
-            <span className={styles.title}>Ratings</span>
-            {!ratings ? (
-                <span className={`${styles.text} mb-20`}>
-                    <i>No ratings yet...</i>
-                </span>
-            ) : (
-                <div className={styles.ratings}>
-                    <div className={`${styles.rating} ${styles.averageScore}`}>
-                        <span className={`${styles.text} mr-10`}>Average score:</span>
-                        <div className={styles.totalScoreBar}>
-                            <div
-                                className={styles.averageScorePercentage}
-                                style={{ width: totalReactions ? averageScore() : 0 }}
-                            />
-                            <div className={styles.totalScoreText}>{averageScore()}</div>
+        <Modal close={close} centered style={{ width: 400 }}>
+            <h1>{headerText}</h1>
+            {ratings.length > 0 && (
+                <Column style={{ marginBottom: 10 }}>
+                    <Row centerY spaceBetween style={{ marginBottom: 15 }}>
+                        <p>Average score:</p>
+                        <div className={`${styles.scoreBar} ${styles.aqua}`}>
+                            <div style={{ width: averageScore }} />
+                            <p>{averageScore}</p>
                         </div>
-                    </div>
+                    </Row>
                     {ratings.map((rating) => (
-                        <div className={styles.rating} key={rating}>
-                            <Link
-                                className={styles.imageTextLink}
-                                to={`/u/${rating.creator.handle}`}
-                            >
-                                <SmallFlagImage
-                                    type='user'
-                                    size={30}
-                                    imagePath={rating.creator.flagImagePath}
-                                />
-                                <span className={`${styles.text} ml-5`}>{rating.creator.name}</span>
-                            </Link>
-                            <div className={styles.totalScoreBar}>
-                                <div
-                                    className={styles.totalScorePercentage}
-                                    style={{ width: `${rating.value}%` }}
-                                />
-                                <div className={styles.totalScoreText}>{`${rating.value}%`}</div>
+                        <Row centerY spaceBetween style={{ marginBottom: 15 }} key={rating.id}>
+                            <ImageTitle
+                                type='user'
+                                imagePath={rating.Creator.flagImagePath}
+                                title={rating.Creator.name}
+                                link={`/u/${rating.Creator.handle}`}
+                            />
+                            <div className={styles.scoreBar}>
+                                <div style={{ width: `${rating.value}%` }} />
+                                <p>{`${rating.value}%`}</p>
                             </div>
-                        </div>
+                        </Row>
                     ))}
-                </div>
+                </Column>
             )}
-            {accountRating < 1 ? (
-                <div className={styles.inputWrapper}>
-                    <input
-                        className={`wecoInput mr-10 ${newRatingError && 'error'}`}
-                        style={{ width: 40, padding: '0 10px', fontSize: 16 }}
-                        value={newRating || undefined}
-                        type='text'
-                        onChange={(e) => {
-                            setNewRating(+e.target.value)
-                            setNewRatingError(false)
+            {loggedIn ? (
+                <Column>
+                    {!postData.accountRating && (
+                        <Row centerY style={{ marginBottom: 20 }}>
+                            <Input
+                                type='text'
+                                style={{ width: 60, marginRight: 10 }}
+                                value={newRating}
+                                onChange={(v) => setNewRating(+v.replace(/\D/g, ''))}
+                            />
+                            <p>/ 100</p>
+                        </Row>
+                    )}
+                    <Button
+                        text={`${postData.accountRating ? 'Remove' : 'Add'} rating`}
+                        colour={postData.accountRating ? 'red' : 'blue'}
+                        disabled={newRating > 100}
+                        loading={loading}
+                        onClick={postData.accountRating ? removeRating : addRating}
+                    />
+                </Column>
+            ) : (
+                <Row centerY style={{ marginTop: ratings.length ? 20 : 0 }}>
+                    <Button
+                        text='Log in'
+                        colour='blue'
+                        style={{ marginRight: 5 }}
+                        onClick={() => {
+                            setLogInModalOpen(true)
+                            close()
                         }}
                     />
-                    <div className='mr-10'>/ 100</div>
-                    <div
-                        className='wecoButton'
-                        role='button'
-                        tabIndex={0}
-                        onClick={addRating}
-                        onKeyDown={addRating}
-                    >
-                        Add Rating
-                    </div>
-                </div>
-            ) : (
-                <div
-                    className='wecoButton'
-                    role='button'
-                    tabIndex={0}
-                    onClick={removeRating}
-                    onKeyDown={removeRating}
-                >
-                    Remove Rating
-                </div>
+                    <p>to rate posts</p>
+                </Row>
             )}
         </Modal>
     )

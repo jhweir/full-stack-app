@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
     // why not 'belongsTo' like Comment.belongsTo(models.Post, ?
     Post.belongsTo(models.User, {
       foreignKey: 'creatorId',
-      as: 'creator'
+      as: 'Creator'
     })
     Post.belongsToMany(models.Holon, { 
       through: models.PostHolon,
