@@ -11,7 +11,7 @@ import { v4 as uuidv4 } from 'uuid'
 import styles from '@styles/components/GlassBeadGame.module.scss'
 import { PostContext } from '@contexts/PostContext'
 import { AccountContext } from '@contexts/AccountContext'
-import SmallFlagImage from '@components/SmallFlagImage'
+import FlagImage from '@components/FlagImage'
 import config from '@src/Config'
 import {
     isPlural,
@@ -110,7 +110,7 @@ const Comment = (props) => {
     if (user)
         return (
             <div className={styles.userComment}>
-                <SmallFlagImage type='user' size={40} imagePath={user.flagImagePath} />
+                <FlagImage type='user' size={40} imagePath={user.flagImagePath} />
                 <div className={styles.commentText}>
                     <Row>
                         <h1>{user.name}</h1>
@@ -1625,7 +1625,7 @@ export default GlassBeadGame
         </p>
         {usersRef.current.map((user) => (
             <div className={styles.user} key={user.socketId}>
-                <SmallFlagImage
+                <FlagImage
                     type='user'
                     size={40}
                     imagePath={user.userData.flagImagePath || null}

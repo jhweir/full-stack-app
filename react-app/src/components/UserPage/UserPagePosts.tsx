@@ -71,7 +71,7 @@ const UserPagePosts = (): JSX.Element => {
                                 post={post}
                                 key={post.id}
                                 index={index}
-                                location='user-created-posts'
+                                location='user-posts'
                             />
                         ))}
                     {userPostsPaginationOffset > 0 && userPosts.length < 1 && (

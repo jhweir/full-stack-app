@@ -5,7 +5,7 @@ import { AccountContext } from '../../contexts/AccountContext'
 import { SpaceContext } from '../../contexts/SpaceContext'
 import { UserContext } from '../../contexts/UserContext'
 import styles from '../../styles/components/SpaceNotificationCard.module.scss'
-import SmallFlagImage from '../SmallFlagImage'
+import FlagImage from '@components/FlagImage'
 import config from '../../Config'
 import { timeSinceCreated, dateCreated } from '../../Functions'
 
@@ -89,7 +89,7 @@ const SpaceNotificationCard = (props: {
                             className={styles.imageTextLink}
                             to={`/u/${notification.triggerUser.handle}`}
                         >
-                            <SmallFlagImage
+                            <FlagImage
                                 type='user'
                                 size={30}
                                 imagePath={notification.triggerUser.flagImagePath}
@@ -105,7 +105,7 @@ const SpaceNotificationCard = (props: {
                             className={styles.imageTextLink}
                             to={`/s/${notification.triggerSpace.handle}`}
                         >
-                            <SmallFlagImage
+                            <FlagImage
                                 type='space'
                                 size={30}
                                 imagePath={notification.triggerSpace.flagImagePath}
@@ -114,7 +114,7 @@ const SpaceNotificationCard = (props: {
                         </Link>
                         <div className={`${styles.text} mr-10`}>become a child space of</div>
                         <Link className={styles.imageTextLink} to={`/s/${spaceData.handle}`}>
-                            <SmallFlagImage
+                            <FlagImage
                                 type='space'
                                 size={30}
                                 imagePath={spaceData.flagImagePath || null}

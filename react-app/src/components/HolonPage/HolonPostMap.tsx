@@ -742,7 +742,7 @@ const HolonPostMap = (): JSX.Element => {
             <div id='canvas' />
             {selectedPost.id && (
                 <div className={styles.selectedPostWrapper}>
-                    <PostCard post={selectedPost} location='holon-post-map' key={selectedPost.id} />
+                    <PostCard post={selectedPost} location='space-post-map' key={selectedPost.id} />
                 </div>
             )}
         </div>

@@ -126,7 +126,7 @@ const HolonPagePosts = ({ match }: { match: { params: { spaceHandle: string } } 
                                         post={post}
                                         key={post.id}
                                         index={index}
-                                        location='holon-posts'
+                                        location='space-posts'
                                     />
                                 ))
                             ) : (

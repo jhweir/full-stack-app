@@ -1,6 +1,6 @@
 import React from 'react'
-import styles from '../../../styles/components/PostCardRatingPreview.module.scss'
-import SmallFlagImage from '../../SmallFlagImage'
+import styles from '@styles/components/PostCardRatingPreview.module.scss'
+import FlagImage from '@components/FlagImage'
 
 const PostCardRatingPreview = (props: {
     reactions: any[]
@@ -38,7 +38,7 @@ const PostCardRatingPreview = (props: {
                         reactions.map((reaction) => (
                             <div className={styles.item} key={reaction}>
                                 <div className={styles.user}>
-                                    <SmallFlagImage
+                                    <FlagImage
                                         type='user'
                                         size={25}
                                         imagePath={reaction.creator.flagImagePath}

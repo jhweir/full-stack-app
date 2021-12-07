@@ -27,7 +27,7 @@ import { ReactComponent as ArrowRightIconSVG } from '@svgs/arrow-alt-circle-righ
 const PostCard = (props: {
     post: any
     index?: number
-    location: 'post-page' | 'holon-posts' | 'user-created-posts' | 'holon-post-map'
+    location: 'post-page' | 'space-posts' | 'space-post-map' | 'user-posts' | 'preview'
 }): JSX.Element => {
     const { post, index, location } = props
     const { accountData, loggedIn } = useContext(AccountContext)
@@ -68,12 +68,12 @@ const PostCard = (props: {
     const history = useHistory()
     const isOwnPost = accountData && Creator && accountData.id === Creator.id
     const urlPreview = urlImage || urlDomain || urlTitle || urlDescription
-    const postSpaces = DirectSpaces && DirectSpaces.filter((space) => space.type === 'post') // vs. 'repost'
+    const postSpaces = DirectSpaces.filter((space) => space.type === 'post') // vs. 'repost'. todo: apply filter on backend
     const otherSpacesTitle = postSpaces
         .map((s) => s.handle)
         .filter((s, i) => i !== 0)
         .join(', ')
-    const otherSpacesText = `and ${postSpaces.length - 1} other space ${pluralise(
+    const otherSpacesText = `and ${postSpaces.length - 1} other space${pluralise(
         postSpaces.length - 1
     )}`
 
@@ -106,10 +106,21 @@ const PostCard = (props: {
                     )}
                     {postSpaces.length > 1 && <p title={otherSpacesTitle}>{otherSpacesText}</p>}
                 </div>
-                <Link to={`/p/${id}`} className={styles.link}>
-                    <LinkIconSVG />
-                </Link>
-                <p title={dateCreated(createdAt)}>{timeSinceCreated(createdAt)}</p>
+                {location === 'preview' ? (
+                    <>
+                        <div className={styles.link}>
+                            <LinkIconSVG />
+                        </div>
+                        <p>now</p>
+                    </>
+                ) : (
+                    <>
+                        <Link to={`/p/${id}`} className={styles.link}>
+                            <LinkIconSVG />
+                        </Link>
+                        <p title={dateCreated(createdAt)}>{timeSinceCreated(createdAt)}</p>
+                    </>
+                )}
                 <div className={`${styles.postType} ${styles[type]}`}>
                     {type.toLowerCase().split('-').join(' ')}
                 </div>
@@ -151,6 +162,7 @@ const PostCard = (props: {
                         text={totalComments}
                         title={statTitle('Comment', totalComments)}
                         // color={accountComment && 'blue'}
+                        disabled={location === 'preview'}
                         onClick={() => setCommentsOpen(!commentsOpen)}
                     />
                     <StatButton
@@ -159,6 +171,7 @@ const PostCard = (props: {
                         text={totalLikes}
                         title={statTitle('Like', totalLikes)}
                         color={accountLike && 'blue'}
+                        disabled={location === 'preview'}
                         onClick={() => setLikeModalOpen(true)}
                     />
                     {likeModalOpen && (
@@ -174,6 +187,7 @@ const PostCard = (props: {
                         text={totalReposts}
                         title={statTitle('Repost', totalReposts)}
                         color={accountRepost && 'blue'}
+                        disabled={location === 'preview'}
                         onClick={() => setRepostModalOpen(true)}
                     />
                     {repostModalOpen && (
@@ -189,6 +203,7 @@ const PostCard = (props: {
                         text={totalRatings}
                         title={statTitle('Rating', totalRatings)}
                         color={accountRating && 'blue'}
+                        disabled={location === 'preview'}
                         onClick={() => setRatingModalOpen(true)}
                     />
                     {ratingModalOpen && (
@@ -204,6 +219,7 @@ const PostCard = (props: {
                         text={totalLinks}
                         title={statTitle('Link', totalLinks)}
                         color={accountLink && 'blue'}
+                        disabled={location === 'preview'}
                         onClick={() => setLinkModalOpen(true)}
                     />
                     {linkModalOpen && (
@@ -218,6 +234,7 @@ const PostCard = (props: {
                             icon={<ArrowRightIconSVG />}
                             iconSize={18}
                             text='Open game'
+                            disabled={location === 'preview'}
                             onClick={() => history.push(`/p/${id}`)}
                         />
                     )}

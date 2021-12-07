@@ -7,17 +7,19 @@ const StatButton = (props: {
     title?: string
     color?: 'blue'
     iconSize?: number
-    margin?: string
+    style?: any
+    disabled?: boolean
     onClick?: () => void
 }): JSX.Element => {
-    const { icon, text, title, color, iconSize, margin, onClick } = props
+    const { icon, text, title, color, iconSize, style, disabled, onClick } = props
 
     return (
         <button
             className={styles.wrapper}
-            style={{ margin }}
             type='button'
             title={title}
+            style={style}
+            disabled={disabled}
             onClick={onClick}
         >
             <div
@@ -36,7 +38,8 @@ StatButton.defaultProps = {
     title: null,
     color: false,
     iconSize: 20,
-    margin: null,
+    style: null,
+    disabled: false,
     onClick: null,
 }
 

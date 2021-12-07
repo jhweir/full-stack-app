@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 import styles from '../../../styles/components/PostCardLinkPreview.module.scss'
-import SmallFlagImage from '../../SmallFlagImage'
+import FlagImage from '@components/FlagImage'
 import { AccountContext } from '../../../contexts/AccountContext'
 
 const PostCardLinkPreview = (props: { links: any }): JSX.Element => {
@@ -19,7 +19,7 @@ const PostCardLinkPreview = (props: { links: any }): JSX.Element => {
                         {links.incomingLinks.map((link) => (
                             <div className={styles.link} key={link}>
                                 <div className={styles.imageTextLink}>
-                                    <SmallFlagImage
+                                    <FlagImage
                                         type='user'
                                         size={25}
                                         imagePath={link.creator.flagImagePath}
@@ -32,7 +32,7 @@ const PostCardLinkPreview = (props: { links: any }): JSX.Element => {
                                 </div>
                                 <div className={`${styles.text} greyText mr-5`}>linked from</div>
                                 <div className={styles.imageTextLink}>
-                                    <SmallFlagImage
+                                    <FlagImage
                                         type='user'
                                         size={25}
                                         imagePath={link.postA.creator.flagImagePath}
@@ -56,7 +56,7 @@ const PostCardLinkPreview = (props: { links: any }): JSX.Element => {
                         {links.outgoingLinks.map((link) => (
                             <div className={styles.link} key={link}>
                                 <div className={styles.imageTextLink}>
-                                    <SmallFlagImage
+                                    <FlagImage
                                         type='user'
                                         size={30}
                                         imagePath={link.creator.flagImagePath}
@@ -69,7 +69,7 @@ const PostCardLinkPreview = (props: { links: any }): JSX.Element => {
                                 </div>
                                 <div className={`${styles.text} greyText mr-5`}>linked to</div>
                                 <div className={styles.imageTextLink}>
-                                    <SmallFlagImage
+                                    <FlagImage
                                         type='user'
                                         size={25}
                                         imagePath={link.postB.creator.flagImagePath}

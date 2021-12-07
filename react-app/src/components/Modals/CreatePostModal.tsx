@@ -18,7 +18,7 @@ import DropDownMenu from '@components/DropDownMenu'
 import SearchSelector from '@components/SearchSelector'
 import ImageTitle from '@components/ImageTitle'
 import CloseButton from '@components/CloseButton'
-import PostCardPreview from '@components/Cards/PostCard/PostCardPreview'
+import PostCard from '@components/Cards/PostCard/PostCard'
 import { allValid, defaultErrorState } from '@src/Functions'
 import GlassBeadGameTopics from '@src/GlassBeadGameTopics'
 
@@ -66,21 +66,29 @@ const CreatePostModal = (): JSX.Element => {
     const [urlDescription, setUrlDescription] = useState(null)
     const [loading, setLoading] = useState(false)
     const [saved, setSaved] = useState(false)
+    const [previewRenderKey, setPreviewRenderKey] = useState(0)
     const cookies = new Cookies()
 
     function updateValue(name, value) {
         let resetState = {}
-        if (name === 'postType')
+        if (name === 'postType') {
             resetState = {
                 text: { ...formData.text, state: 'default' },
-                url: { ...formData.url, state: 'default' },
-                topic: { ...formData.topic, state: 'default' },
+                url: { ...formData.url, value: '', state: 'default' },
+                topic: { ...formData.topic, value: '', state: 'default' },
             }
+            setUrlImage(null)
+            setUrlDomain(null)
+            setUrlTitle(null)
+            setUrlDescription(null)
+            setSelectedArchetopic(null)
+        }
         setFormData({
             ...formData,
             [name]: { ...formData[name], value, state: 'default' },
             ...resetState,
         })
+        setPreviewRenderKey((k) => k + 1)
     }
 
     function findSpaces(query) {
@@ -98,6 +106,7 @@ const CreatePostModal = (): JSX.Element => {
     function addSpace(space) {
         setSpaceOptions([])
         setSelectedSpaces((s) => [...s, space])
+        setPreviewRenderKey((k) => k + 1)
     }
 
     function removeSpace(spaceId) {
@@ -125,24 +134,15 @@ const CreatePostModal = (): JSX.Element => {
             axios
                 .get(`${config.apiURL}/scrape-url?url=${urlString}`)
                 .then((res) => {
-                    console.log('res: ', res.data)
-                    if (typeof res.data === 'string') {
-                        setUrlDescription(null)
-                        setUrlDomain(null)
-                        setUrlImage(null)
-                        setUrlTitle(null)
-                        // setUrlFlashMessage(res.data)
-                    } else {
-                        const { description, domain, image, title } = res.data
-                        setUrlDescription(description)
-                        setUrlDomain(domain)
-                        setUrlImage(image)
-                        setUrlTitle(title)
-                    }
-                })
-                .then(() => {
+                    const { description, domain, image, title } = res.data
+                    setUrlDescription(description)
+                    setUrlDomain(domain)
+                    setUrlImage(image)
+                    setUrlTitle(title)
                     setUrlLoading(false)
+                    setPreviewRenderKey((k) => k + 1)
                 })
+                .catch((error) => console.log(error))
         } else {
             console.log('invalid Url')
             // setUrlFlashMessage('invalid Url')
@@ -244,6 +244,7 @@ const CreatePostModal = (): JSX.Element => {
                         selectedOption={postType.value}
                         setSelectedOption={(value) => updateValue('postType', value)}
                         orientation='horizontal'
+                        style={{ marginBottom: 10 }}
                     />
                     {postType.value === 'Glass Bead Game' && (
                         <Column style={{ marginTop: 5 }}>
@@ -336,16 +337,48 @@ const CreatePostModal = (): JSX.Element => {
                     )}
                     <Column style={{ margin: '20px 0 10px 0' }}>
                         <h2>Post preview</h2>
-                        <PostCardPreview
-                            type={postType.value}
-                            spaces={[spaceData.handle, ...selectedSpaces.map((s) => s.handle)]}
-                            text={text.value}
-                            url={url.value}
-                            urlImage={urlImage}
-                            urlDomain={urlDomain}
-                            urlTitle={urlTitle}
-                            urlDescription={urlDescription}
-                            topic={topic.value}
+                        <PostCard
+                            key={previewRenderKey}
+                            location='preview'
+                            post={{
+                                text:
+                                    postType.value === 'Url'
+                                        ? text.value
+                                        : text.value || '*sample text*',
+                                type: postType.value.toLowerCase().split(' ').join('-'),
+                                url: url.value,
+                                urlImage,
+                                urlDomain,
+                                urlTitle,
+                                urlDescription,
+                                totalComments: 0,
+                                totalLikes: 0,
+                                totalRatings: 0,
+                                totalReposts: 0,
+                                totalLinks: 0,
+                                Creator: {
+                                    handle: accountData.handle,
+                                    name: accountData.name,
+                                    flagImagePath: accountData.flagImagePath,
+                                },
+                                DirectSpaces: [
+                                    {
+                                        ...spaceData,
+                                        type: 'post',
+                                        state: 'active',
+                                    },
+                                    ...selectedSpaces.map((s) => {
+                                        return {
+                                            ...s,
+                                            type: 'post',
+                                            state: 'active',
+                                        }
+                                    }),
+                                ],
+                                GlassBeadGame: {
+                                    topic: topic.value,
+                                },
+                            }}
                         />
                     </Column>
                 </Column>
@@ -372,17 +405,6 @@ export default CreatePostModal
 // newSelectedSpaces.filter((s) => s.handle !== `gbg${selectedArchetopic.toLowerCase()}`)
 // newSelectedSpaces.push({ handle: `gbg${topic.name.toLowerCase()}` })
 // setSelectedSpaces(newSelectedSpaces)
-
-/* <SpaceInput
-    centered={false}
-    text='Add other spaces you want the post to appear in:'
-    blockedSpaces={[]}
-    addedSpaces={addedSpaces}
-    setAddedSpaces={setAddedSpaces}
-    newSpaceError={newSpaceError}
-    setNewSpaceError={setNewSpaceError}
-    setParentModalOpen={setCreatePostModalOpen}
-/> */
 
 /* <DropDownMenu
         title='Topic'
@@ -606,7 +628,7 @@ export default CreatePostModal
             to={`/u/${createPostFromTurnData.creatorHandle}`}
             onClick={closeForm}
         >
-            <SmallFlagImage
+            <FlagImage
                 type='user'
                 size={30}
                 imagePath={createPostFromTurnData.creatorFlagImagePath}

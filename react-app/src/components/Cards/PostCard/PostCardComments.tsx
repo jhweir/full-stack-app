@@ -6,7 +6,7 @@ import styles from '../../../styles/components/PostCardComments.module.scss'
 import { AccountContext } from '../../../contexts/AccountContext'
 import { SpaceContext } from '../../../contexts/SpaceContext'
 import CommentCard from '../CommentCard'
-import SmallFlagImage from '../../SmallFlagImage'
+import FlagImage from '@components/FlagImage'
 import { resizeTextArea } from '../../../Functions'
 
 const PostCardComments = (props: {
@@ -84,7 +84,7 @@ const PostCardComments = (props: {
             {/* TODO: create comment input component */}
             {loggedIn && (
                 <div className={styles.commentInput}>
-                    <SmallFlagImage type='user' size={35} imagePath={accountData.flagImagePath} />
+                    <FlagImage type='user' size={35} imagePath={accountData.flagImagePath} />
                     <form className={styles.inputWrapper} onSubmit={submitComment}>
                         <textarea
                             className={`${styles.input} ${newCommentError && styles.error}`}

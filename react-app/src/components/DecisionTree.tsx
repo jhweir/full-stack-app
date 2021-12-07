@@ -9,7 +9,7 @@ import { v4 as uuidv4 } from 'uuid'
 import styles from '../styles/components/DecisionTree.module.scss'
 import { PostContext } from '../contexts/PostContext'
 import { AccountContext } from '../contexts/AccountContext'
-import SmallFlagImage from './SmallFlagImage'
+import FlagImage from '@components/FlagImage'
 import config from '../Config'
 
 const Video = (props) => {
@@ -29,7 +29,7 @@ const Video = (props) => {
                 <track kind='captions' />
             </video>
             <div className={styles.userData}>
-                <SmallFlagImage
+                <FlagImage
                     type='user'
                     size={30}
                     imagePath={mainUser ? accountData.flagImagePath : peer.peerData.flagImagePath}
@@ -452,7 +452,7 @@ const DecisionTree = (): JSX.Element => {
                                     comment.userData.name &&
                                     comment.userData.name !== 'admin' ? (
                                         <>
-                                            <SmallFlagImage
+                                            <FlagImage
                                                 type='user'
                                                 size={40}
                                                 imagePath={comment.userData.flagImagePath || null}

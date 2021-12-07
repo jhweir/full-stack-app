@@ -4,7 +4,7 @@ import config from '../../Config'
 import styles from '../../styles/components/CommentCard.module.scss'
 import { AccountContext } from '../../contexts/AccountContext'
 import { SpaceContext } from '../../contexts/SpaceContext'
-import SmallFlagImage from '../SmallFlagImage'
+import FlagImage from '@components/FlagImage'
 import CommentCardComment from './CommentCardComment'
 import { resizeTextArea } from '../../Functions'
 
@@ -89,7 +89,7 @@ const CommentCard = (props: {
             ))}
             {replyInputOpen && (
                 <div className={styles.replyInput}>
-                    <SmallFlagImage type='user' size={35} imagePath={accountData.flagImagePath} />
+                    <FlagImage type='user' size={35} imagePath={accountData.flagImagePath} />
                     <form className={styles.inputWrapper} onSubmit={submitReply}>
                         <textarea
                             ref={replyInput}

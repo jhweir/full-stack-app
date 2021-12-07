@@ -1,8 +1,7 @@
-@import './../Colors.scss';
+@import '@styles/Colors.scss';
 
 .wrapper {
     border-radius: 50%;
-    background-color: $white;
     box-shadow: none;
     display: flex;
     flex-direction: column;
@@ -11,6 +10,7 @@
     position: relative;
     flex-shrink: 0;
     &.outline {
+        background-color: $white;
         > div, .flagImage {
             border-radius: 50%;
             overflow: hidden;

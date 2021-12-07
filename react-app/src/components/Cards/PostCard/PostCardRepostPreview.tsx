@@ -1,6 +1,6 @@
 import React from 'react'
-import styles from '../../../styles/components/PostCardRepostPreview.module.scss'
-import SmallFlagImage from '../../SmallFlagImage'
+import styles from '@styles/components/PostCardRepostPreview.module.scss'
+import FlagImage from '@components/FlagImage'
 
 const PostCardRepostPreview = (props: { reactions: any[] }): JSX.Element => {
     const { reactions } = props
@@ -14,14 +14,14 @@ const PostCardRepostPreview = (props: { reactions: any[] }): JSX.Element => {
                 {reactions &&
                     reactions.map((reaction) => (
                         <div className={styles.modalItem} key={reaction}>
-                            <SmallFlagImage
+                            <FlagImage
                                 type='user'
                                 size={25}
                                 imagePath={reaction.creator.flagImagePath}
                             />
                             <span className={styles.text}>{reaction.creator.name}</span>
                             <div className={`${styles.modalItemText} greyText mr-10`}>to</div>
-                            <SmallFlagImage
+                            <FlagImage
                                 type='space'
                                 size={25}
                                 imagePath={reaction.space.flagImagePath}

@@ -2,7 +2,7 @@ import React, { useContext, useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import styles from '../../styles/components/CommentCardComment.module.scss'
 import { AccountContext } from '../../contexts/AccountContext'
-import SmallFlagImage from '../SmallFlagImage'
+import FlagImage from '@components/FlagImage'
 import DeleteItemModal from '../Modals/DeleteItemModal'
 import { timeSinceCreated, dateCreated } from '../../Functions'
 
@@ -40,7 +40,7 @@ const CommentCardComment = (props: {
                 }`}
             >
                 <Link to={`/u/${comment.creator.handle}`} className={styles.user}>
-                    <SmallFlagImage
+                    <FlagImage
                         type='user'
                         size={30}
                         imagePath={comment.creator.flagImagePath}

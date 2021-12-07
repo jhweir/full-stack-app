@@ -1,6 +1,6 @@
 import React from 'react'
 import styles from '../../../styles/components/PostCardLikePreview.module.scss'
-import SmallFlagImage from '../../SmallFlagImage'
+import FlagImage from '@components/FlagImage'
 
 const PostCardLikePreview = (props: { reactions: any[] }): JSX.Element => {
     const { reactions } = props
@@ -14,7 +14,7 @@ const PostCardLikePreview = (props: { reactions: any[] }): JSX.Element => {
                 {reactions &&
                     reactions.map((reaction) => (
                         <div className={styles.modalItem} key={reaction}>
-                            <SmallFlagImage
+                            <FlagImage
                                 type='user'
                                 size={25}
                                 imagePath={reaction.creator.flagImagePath}
