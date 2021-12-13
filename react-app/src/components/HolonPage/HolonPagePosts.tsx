@@ -125,7 +125,7 @@ const HolonPagePosts = ({ match }: { match: { params: { spaceHandle: string } } 
                                     <PostCard
                                         post={post}
                                         key={post.id}
-                                        index={index}
+                                        // index={index}
                                         location='space-posts'
                                     />
                                 ))

@@ -7,7 +7,7 @@ const sgMail = require('@sendgrid/mail')
 sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 const authenticateToken = require('../middleware/authenticateToken')
 const { postAttributes } = require('../GlobalConstants')
-const { Holon, User, Post, Reaction, Link, GlassBeadGame } = require('../models')
+const { Holon, User, Post, Reaction, Link, GlassBeadGame, GlassBead } = require('../models')
 
 // GET
 router.get('/all-users', (req, res) => {
@@ -350,7 +350,18 @@ router.get('/user-posts', (req, res) => {
                 },
                 {
                     model: GlassBeadGame,
-                    attributes: ['topic']
+                    attributes: ['topic'],
+                    include: [{ 
+                        model: GlassBead,
+                        order: [['index', 'ASC']],
+                        include: [
+                            {
+                                model: User,
+                                as: 'user',
+                                attributes: ['handle', 'name', 'flagImagePath']
+                            }
+                        ]
+                    }]
                 }
             ]
         })
@@ -364,10 +375,11 @@ router.get('/user-posts', (req, res) => {
                     space.setDataValue('type', space.dataValues.PostHolon.type)
                     delete space.dataValues.PostHolon
                 })
-                // // replace PostHolons object with simpler array
-                // const newPostHolons = post.PostHolons.map(ph => ph.handle)
-                // post.setDataValue("spaces", newPostHolons)
-                // delete post.dataValues.PostHolons
+                // convert SQL numeric booleans to JS booleans
+                post.setDataValue('accountLike', !!post.dataValues.accountLike)
+                post.setDataValue('accountRating', !!post.dataValues.accountRating)
+                post.setDataValue('accountRepost', !!post.dataValues.accountRepost)
+                post.setDataValue('accountLink', !!post.dataValues.accountLink)
             })
             return posts
         })

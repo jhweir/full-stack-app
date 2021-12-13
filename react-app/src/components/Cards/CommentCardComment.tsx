@@ -1,10 +1,10 @@
 import React, { useContext, useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import styles from '../../styles/components/CommentCardComment.module.scss'
-import { AccountContext } from '../../contexts/AccountContext'
+import styles from '@styles/components/CommentCardComment.module.scss'
+import { AccountContext } from '@contexts/AccountContext'
 import FlagImage from '@components/FlagImage'
-import DeleteItemModal from '../Modals/DeleteItemModal'
-import { timeSinceCreated, dateCreated } from '../../Functions'
+import DeleteItemModal from '@components/Modals/DeleteItemModal'
+import { timeSinceCreated, dateCreated } from '@src/Functions'
 
 const CommentCardComment = (props: {
     comment: any
@@ -20,7 +20,7 @@ const CommentCardComment = (props: {
     const [showFullComment, setShowFullComment] = useState(false)
     const [deleteCommentModalOpen, setDeleteCommentModalOpen] = useState(false)
 
-    const isOwnComment = accountData.id === comment.creator.id
+    const isOwnComment = accountData.id === comment.Creator.id
     const isReply = comment.parentCommentId !== null
     const commentText = useRef<HTMLDivElement>(null)
 
@@ -39,18 +39,14 @@ const CommentCardComment = (props: {
                     !loggedIn && styles.marginBottom
                 }`}
             >
-                <Link to={`/u/${comment.creator.handle}`} className={styles.user}>
-                    <FlagImage
-                        type='user'
-                        size={30}
-                        imagePath={comment.creator.flagImagePath}
-                    />
+                <Link to={`/u/${comment.Creator.handle}`} className={styles.user}>
+                    <FlagImage type='user' size={30} imagePath={comment.Creator.flagImagePath} />
                 </Link>
                 <div className={styles.comment}>
                     <div className={styles.content}>
                         <div className={styles.tags}>
-                            <Link to={`/u/${comment.creator.handle}`}>
-                                <span className={styles.name}>{comment.creator.name}</span>
+                            <Link to={`/u/${comment.Creator.handle}`}>
+                                <span className={styles.name}>{comment.Creator.name}</span>
                             </Link>
                             <span className={styles.date} title={dateCreated(comment.createdAt)}>
                                 {`• ${timeSinceCreated(comment.createdAt)}`}

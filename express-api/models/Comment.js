@@ -16,11 +16,11 @@ module.exports = (sequelize, DataTypes) => {
     })
     Comment.belongsTo(models.User, {
       foreignKey: 'creatorId',
-      as: 'creator'
+      as: 'Creator'
     })
     Comment.hasMany(models.Comment, {
       foreignKey: 'parentCommentId',
-      as: 'replies'
+      as: 'Replies'
     })
   };
   return Comment;

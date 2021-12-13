@@ -1,12 +1,12 @@
 import React, { useContext, useState, useRef } from 'react'
 import axios from 'axios'
-import config from '../../Config'
-import styles from '../../styles/components/CommentCard.module.scss'
-import { AccountContext } from '../../contexts/AccountContext'
-import { SpaceContext } from '../../contexts/SpaceContext'
+import config from '@src/Config'
+import styles from '@styles/components/CommentCard.module.scss'
+import { AccountContext } from '@contexts/AccountContext'
+import { SpaceContext } from '@contexts/SpaceContext'
 import FlagImage from '@components/FlagImage'
-import CommentCardComment from './CommentCardComment'
-import { resizeTextArea } from '../../Functions'
+import CommentCardComment from '@components/Cards/CommentCardComment'
+import { resizeTextArea } from '@src/Functions'
 
 const CommentCard = (props: {
     comment: any
@@ -77,7 +77,7 @@ const CommentCard = (props: {
                 getPostComments={getPostComments}
                 openReplyInput={openReplyInput}
             />
-            {comment.replies.map((reply) => (
+            {comment.Replies.map((reply) => (
                 <CommentCardComment
                     key={reply.id}
                     comment={reply}

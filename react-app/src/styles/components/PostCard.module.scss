@@ -24,16 +24,17 @@
         flex-shrink: 0;
         color: rgba(0, 0, 0, 0.15);
     }
-    .header {
-        font-size: 14px;
-        line-height: 14px;
+    > header {
+        font-size: 15px;
+        // line-height: 14px;
         margin-bottom: 10px;
         display: flex;
-        flex-direction: row;
+        justify-content: space-between;
+        // flex-direction: row;
         align-items: center;
-        flex-wrap: wrap;
-        > p {
-            color: $grey5;
+        // flex-wrap: wrap;
+        p {
+            //color: $grey5;
             margin-right: 5px;
         }
         .postSpaces {
@@ -41,9 +42,9 @@
             flex-direction: row;
             justify-content: flex-start;
             align-items: center;
-            > p {
-                color: rgb(155, 155, 155);
-            }
+            // > p {
+            //     color: rgb(155, 155, 155);
+            // }
             > p, > a {
                 margin-right: 5px;
             }
@@ -53,7 +54,7 @@
             flex-direction: row;
             justify-content: flex-start;
             align-items: center;
-            margin: 2px 8px 0 3px;
+            margin: 0 8px 0 3px;
             > svg {
                 width: 13px;
                 opacity: 0.3;
@@ -99,6 +100,39 @@
         display: flex;
         flex-direction: column;
         align-items: flex-start;
+
+        .topic {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            box-shadow: 0 0 3px rgba(0,0,0,0.2);
+            margin-right: 10px;
+        }
+
+        .playAllButton {
+            all: unset;
+            cursor: pointer;
+            //display: flex;
+        }
+
+        .beadsWrapper {
+            // margin: 10px 0;
+            margin-bottom: 10px;
+            width: 100%;
+
+            > p {
+                color: $grey5;
+                margin-top: 10px;
+            }
+
+            .beads {
+                width: 100%;
+                display: flex;
+                overflow-x: scroll;
+                padding: 10px;
+                margin-left: -10px;
+            }
+        }
     }
     .statButtons {
         display: flex;

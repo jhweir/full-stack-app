@@ -1,13 +1,13 @@
 import React, { useState, useContext, useEffect } from 'react'
 import axios from 'axios'
 import { v4 as uuidv4 } from 'uuid'
-import config from '../../../Config'
-import styles from '../../../styles/components/PostCardComments.module.scss'
-import { AccountContext } from '../../../contexts/AccountContext'
-import { SpaceContext } from '../../../contexts/SpaceContext'
-import CommentCard from '../CommentCard'
+import config from '@src/Config'
+import styles from '@styles/components/PostCardComments.module.scss'
+import { AccountContext } from '@contexts/AccountContext'
+import { SpaceContext } from '@contexts/SpaceContext'
+import CommentCard from '@components/Cards/CommentCard'
 import FlagImage from '@components/FlagImage'
-import { resizeTextArea } from '../../../Functions'
+import { resizeTextArea } from '@src/Functions'
 
 const PostCardComments = (props: {
     postId: number | undefined
@@ -41,6 +41,7 @@ const PostCardComments = (props: {
                 }&postId=${postId}&sortBy=${postCommentSortByFilter}&sortOrder=${postCommentSortOrderFilter}&timeRange=${postCommentTimeRangeFilter}&searchQuery=${postCommentSearchFilter}&limit=${postCommentPaginationLimit}&offset=0`
             )
             .then((res) => {
+                // console.log(res.data)
                 if (res.data.length < postCommentPaginationLimit) {
                     // setPostCommentPaginationHasMore(false)
                 }

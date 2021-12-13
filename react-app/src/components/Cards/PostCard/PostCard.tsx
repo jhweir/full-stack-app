@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import React, { useState, useContext } from 'react'
 import { useHistory, Link } from 'react-router-dom'
 import { AccountContext } from '@contexts/AccountContext'
@@ -10,12 +11,15 @@ import DeleteItemModal from '@components/Modals/DeleteItemModal'
 import ShowMoreLess from '@components/ShowMoreLess'
 import Markdown from '@components/Markdown'
 import ImageTitle from '@components/ImageTitle'
+import Button from '@components/Button'
 import StatButton from '@components/StatButton'
+import Bead from '@components/Cards/Bead'
 import PostCardLikeModal from '@components/Cards/PostCard/PostCardLikeModal'
 import PostCardRepostModal from '@components/Cards/PostCard/PostCardRepostModal'
 import PostCardRatingModal from '@components/Cards/PostCard/PostCardRatingModal'
 import PostCardLinkModal from '@components/Cards/PostCard/PostCardLinkModal'
 import { timeSinceCreated, dateCreated, pluralise, statTitle } from '@src/Functions'
+import GlassBeadGameTopics from '@src/GlassBeadGameTopics'
 import { ReactComponent as LinkIconSVG } from '@svgs/link-solid.svg'
 // import { ReactComponent as FireIconSVG } from '@svgs/fire-alt-solid.svg'
 import { ReactComponent as CommentIconSVG } from '@svgs/comment-solid.svg'
@@ -64,11 +68,15 @@ const PostCard = (props: {
     const [linkModalOpen, setLinkModalOpen] = useState(false)
     const [commentsOpen, setCommentsOpen] = useState(false)
     const [deletePostModalOpen, setDeletePostModalOpen] = useState(false)
+    const [beads, setBeads] = useState(
+        GlassBeadGame ? GlassBeadGame.GlassBeads.sort((a, b) => a.index - b.index) : []
+    )
 
     const history = useHistory()
     const isOwnPost = accountData && Creator && accountData.id === Creator.id
     const urlPreview = urlImage || urlDomain || urlTitle || urlDescription
-    const postSpaces = DirectSpaces.filter((space) => space.type === 'post') // vs. 'repost'. todo: apply filter on backend
+    const postSpaces = DirectSpaces.filter((space) => space.type === 'post' && space.id !== 1) // vs. 'repost'. todo: apply filter on backend
+    // console.log(beads)
     const otherSpacesTitle = postSpaces
         .map((s) => s.handle)
         .filter((s, i) => i !== 0)
@@ -77,75 +85,165 @@ const PostCard = (props: {
         postSpaces.length - 1
     )}`
 
+    function findTopicSVG(topicName) {
+        const topicMatch = GlassBeadGameTopics.find((t) => t.name === topicName)
+        return topicMatch ? <topicMatch.icon /> : null
+    }
+
+    function playNextBead(beadIndex) {
+        const newBeads = [...beads]
+        const previousBead = newBeads[beadIndex - 1]
+        previousBead.playing = false
+        const bead = newBeads[beadIndex]
+        bead.playing = true
+        const audio = document.getElementById(`${id}-${beadIndex}`) as HTMLAudioElement
+        audio.currentTime = 0
+        audio.play()
+        if (newBeads.length > beadIndex + 1) {
+            audio.addEventListener('ended', () => {
+                playNextBead(beadIndex + 1)
+            })
+        } else {
+            audio.addEventListener('ended', () => {
+                const newBeads2 = [...beads]
+                const bead2 = newBeads[beadIndex]
+                bead2.playing = false
+                setBeads(newBeads2)
+            })
+        }
+        setBeads(newBeads)
+    }
+
+    function playAll() {
+        const newBeads = [...beads]
+        // stop all playing beads
+        newBeads.forEach((b, i) => {
+            if (b.playing) {
+                const audio = document.getElementById(`${id}-${i}`) as HTMLAudioElement
+                audio.pause()
+                audio.currentTime = 0
+                b.playing = false
+            }
+        })
+        const bead = newBeads[0]
+        const audio = document.getElementById(`${id}-${0}`) as HTMLAudioElement
+        audio.currentTime = 0
+        audio.play()
+        bead.playing = true
+        setBeads(newBeads)
+        audio.addEventListener('ended', () => playNextBead(1))
+    }
+
+    function toggleBeadAudio(beadIndex) {
+        const newBeads = [...beads]
+        // stop other beads
+        newBeads.forEach((b, i) => {
+            if (i !== beadIndex && b.playing) {
+                const audio = document.getElementById(`${id}-${i}`) as HTMLAudioElement
+                audio.pause()
+                audio.currentTime = 0
+                b.playing = false
+            }
+        })
+        const bead = newBeads[beadIndex]
+        const audio = document.getElementById(`${id}-${beadIndex}`) as HTMLAudioElement
+        if (bead.playing) audio.pause()
+        else audio.play()
+        bead.playing = !bead.playing
+        setBeads(newBeads)
+    }
+
     return (
         <div className={`${styles.post} ${styles[location]}`} key={id}>
-            {/* <div className={styles.index}>{index! + 1}</div> */}
-            <div className={styles.header}>
-                <ImageTitle
-                    type='user'
-                    imagePath={Creator.flagImagePath}
-                    title={Creator.name}
-                    link={`/u/${Creator.handle}`}
-                    style={{ marginRight: 5 }}
-                />
-                <p>to</p>
-                <div className={styles.postSpaces}>
+            {!!index && <div className={styles.index}>{index! + 1}</div>}
+            <header>
+                <Row centerY>
+                    <ImageTitle
+                        type='user'
+                        imagePath={Creator.flagImagePath}
+                        imageSize={32}
+                        title={Creator.name}
+                        fontSize={15}
+                        link={`/u/${Creator.handle}`}
+                        style={{ marginRight: 5 }}
+                        shadow
+                    />
                     {postSpaces[0] && (
-                        <Row style={{ marginRight: 5 }}>
+                        <Row centerY>
+                            <p className='grey'>to</p>
                             {postSpaces[0].state === 'active' ? (
                                 <ImageTitle
                                     type='space'
                                     imagePath={postSpaces[0].flagImagePath}
+                                    imageSize={32}
                                     title={postSpaces[0].handle}
+                                    fontSize={15}
                                     link={`/s/${postSpaces[0].handle}/posts`}
+                                    style={{ marginRight: 5 }}
+                                    shadow
                                 />
                             ) : (
-                                <p>{postSpaces[0].handle} (space deleted)</p>
+                                <p className='grey'>{postSpaces[0].handle} (space deleted)</p>
                             )}
                         </Row>
                     )}
-                    {postSpaces.length > 1 && <p title={otherSpacesTitle}>{otherSpacesText}</p>}
-                </div>
-                {location === 'preview' ? (
-                    <>
-                        <div className={styles.link}>
-                            <LinkIconSVG />
-                        </div>
-                        <p>now</p>
-                    </>
-                ) : (
-                    <>
-                        <Link to={`/p/${id}`} className={styles.link}>
-                            <LinkIconSVG />
-                        </Link>
-                        <p title={dateCreated(createdAt)}>{timeSinceCreated(createdAt)}</p>
-                    </>
-                )}
-                <div className={`${styles.postType} ${styles[type]}`}>
-                    {type.toLowerCase().split('-').join(' ')}
-                </div>
-                {/* todo: move to corner drop down button */}
-                {isOwnPost && (
-                    <div
-                        className={styles.delete}
-                        role='button'
-                        tabIndex={0}
-                        onClick={() => setDeletePostModalOpen(true)}
-                        onKeyDown={() => setDeletePostModalOpen(true)}
-                    >
-                        Delete
+                    {postSpaces[1] && (
+                        <p className='grey' title={otherSpacesTitle}>
+                            {otherSpacesText}
+                        </p>
+                    )}
+                    {location === 'preview' ? (
+                        <>
+                            <div className={styles.link}>
+                                <LinkIconSVG />
+                            </div>
+                            <p className='grey'>now</p>
+                        </>
+                    ) : (
+                        <>
+                            <Link to={`/p/${id}`} className={styles.link}>
+                                <LinkIconSVG />
+                            </Link>
+                            <p className='grey' title={dateCreated(createdAt)}>
+                                {timeSinceCreated(createdAt)}
+                            </p>
+                        </>
+                    )}
+                </Row>
+                <Row>
+                    <div className={`${styles.postType} ${styles[type]}`}>
+                        {type.toLowerCase().split('-').join(' ')}
                     </div>
-                )}
-            </div>
+                    {/* todo: move to corner drop down button */}
+                    {isOwnPost && (
+                        <div
+                            className={styles.delete}
+                            role='button'
+                            tabIndex={0}
+                            onClick={() => setDeletePostModalOpen(true)}
+                            onKeyDown={() => setDeletePostModalOpen(true)}
+                        >
+                            Delete
+                        </div>
+                    )}
+                </Row>
+            </header>
             <div className={styles.content}>
-                {type === 'glass-bead-game' && <b>{GlassBeadGame.topic}</b>}
-                {text && (
-                    <Column style={{ marginBottom: 10 }}>
-                        <ShowMoreLess height={150}>
-                            <Markdown text={text} />
-                        </ShowMoreLess>
+                <Row>
+                    {type === 'glass-bead-game' && findTopicSVG(GlassBeadGame.topic) && (
+                        <div className={styles.topic}>{findTopicSVG(GlassBeadGame.topic)}</div>
+                    )}
+                    <Column>
+                        {type === 'glass-bead-game' && <b>{GlassBeadGame.topic}</b>}
+                        {text && (
+                            <Column style={{ marginBottom: 10 }}>
+                                <ShowMoreLess height={150}>
+                                    <Markdown text={text} />
+                                </ShowMoreLess>
+                            </Column>
+                        )}
                     </Column>
-                )}
+                </Row>
                 {urlPreview && (
                     <PostCardUrlPreview
                         url={url}
@@ -154,6 +252,44 @@ const PostCard = (props: {
                         urlTitle={urlTitle}
                         urlDescription={urlDescription}
                     />
+                )}
+                {type === 'glass-bead-game' && (
+                    <Column style={{ width: '100%', alignItems: 'start' }}>
+                        <Row>
+                            {beads.length > 0 && (
+                                <Button
+                                    text='Play all beads'
+                                    colour='blue'
+                                    size='small'
+                                    onClick={playAll}
+                                    style={{ marginRight: 5 }}
+                                />
+                            )}
+                            <Button
+                                text='Open game room'
+                                colour='green'
+                                size='small'
+                                onClick={() => history.push(`/p/${id}`)}
+                            />
+                        </Row>
+                        <div className={`${styles.beadsWrapper} hide-scrollbars`}>
+                            {beads.length > 0 ? (
+                                <div className={styles.beads}>
+                                    {beads.map((bead, beadIndex) => (
+                                        <Bead
+                                            key={bead.id}
+                                            postId={id}
+                                            bead={bead}
+                                            index={beadIndex}
+                                            toggleAudio={toggleBeadAudio}
+                                        />
+                                    ))}
+                                </div>
+                            ) : (
+                                <p>No saved beads yet</p>
+                            )}
+                        </div>
+                    </Column>
                 )}
                 <div className={styles.statButtons}>
                     <StatButton
@@ -174,13 +310,6 @@ const PostCard = (props: {
                         disabled={location === 'preview'}
                         onClick={() => setLikeModalOpen(true)}
                     />
-                    {likeModalOpen && (
-                        <PostCardLikeModal
-                            close={() => setLikeModalOpen(false)}
-                            postData={postData}
-                            setPostData={setPostData}
-                        />
-                    )}
                     <StatButton
                         icon={<RepostIconSVG />}
                         iconSize={18}
@@ -190,13 +319,6 @@ const PostCard = (props: {
                         disabled={location === 'preview'}
                         onClick={() => setRepostModalOpen(true)}
                     />
-                    {repostModalOpen && (
-                        <PostCardRepostModal
-                            close={() => setRepostModalOpen(false)}
-                            postData={postData}
-                            setPostData={setPostData}
-                        />
-                    )}
                     <StatButton
                         icon={<RatingIconSVG />}
                         iconSize={18}
@@ -206,13 +328,6 @@ const PostCard = (props: {
                         disabled={location === 'preview'}
                         onClick={() => setRatingModalOpen(true)}
                     />
-                    {ratingModalOpen && (
-                        <PostCardRatingModal
-                            close={() => setRatingModalOpen(false)}
-                            postData={postData}
-                            setPostData={setPostData}
-                        />
-                    )}
                     <StatButton
                         icon={<LinkIconSVG />}
                         iconSize={18}
@@ -222,20 +337,41 @@ const PostCard = (props: {
                         disabled={location === 'preview'}
                         onClick={() => setLinkModalOpen(true)}
                     />
+                    {['prism', 'decision-tree'].includes(type) && ( // 'glass-bead-game'
+                        <StatButton
+                            icon={<ArrowRightIconSVG />}
+                            iconSize={18}
+                            text='Open game room'
+                            disabled={location === 'preview'}
+                            onClick={() => history.push(`/p/${id}`)}
+                        />
+                    )}
+                    {likeModalOpen && (
+                        <PostCardLikeModal
+                            close={() => setLikeModalOpen(false)}
+                            postData={postData}
+                            setPostData={setPostData}
+                        />
+                    )}
+                    {repostModalOpen && (
+                        <PostCardRepostModal
+                            close={() => setRepostModalOpen(false)}
+                            postData={postData}
+                            setPostData={setPostData}
+                        />
+                    )}
+                    {ratingModalOpen && (
+                        <PostCardRatingModal
+                            close={() => setRatingModalOpen(false)}
+                            postData={postData}
+                            setPostData={setPostData}
+                        />
+                    )}
                     {linkModalOpen && (
                         <PostCardLinkModal
                             close={() => setLinkModalOpen(false)}
                             postData={postData}
                             setPostData={setPostData}
-                        />
-                    )}
-                    {['glass-bead-game', 'prism', 'decision-tree'].includes(type) && (
-                        <StatButton
-                            icon={<ArrowRightIconSVG />}
-                            iconSize={18}
-                            text='Open game'
-                            disabled={location === 'preview'}
-                            onClick={() => history.push(`/p/${id}`)}
                         />
                     )}
                 </div>

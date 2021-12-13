@@ -20,6 +20,7 @@ const {
     Notification,
     SpaceNotification,
     GlassBeadGame,
+    GlassBead
 } = require('../models')
 const {
     postAttributes,
@@ -644,7 +645,21 @@ router.get('/space-posts', (req, res) => {
                 },
                 {
                     model: GlassBeadGame,
-                    attributes: ['topic']
+                    attributes: ['topic'],
+                    // required: false,
+                    include: [{ 
+                        model: GlassBead,
+                        // attributes: [],
+                        order: [['index', 'ASC']],
+                        // separate: true,
+                        include: [
+                            {
+                                model: User,
+                                as: 'user',
+                                attributes: ['handle', 'name', 'flagImagePath']
+                            }
+                        ]
+                    }]
                 }
             ]
         })
