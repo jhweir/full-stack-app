@@ -4,7 +4,13 @@
     padding-top: 60px;
     width: 100%;
     height: 100vh;
-    // background-image: url('https://www.treehugger.com/thmb/QolJfOYFmxwIH6Sxv5SBqY8Kq-M=/1885x1414/smart/filters:no_upscale()/GettyImages-1273584292-cbcd5f85f4c646d58f7a7fa158dcaaeb.jpg');
+    .videoBackground {
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        position: absolute;
+        border: none;
+    }
 }
 .mainContent {
     width: 100%;
@@ -19,11 +25,20 @@
     width: 350px;
     height: 100%;
     // border-right: 1px solid #ddd;
-    background-color: white;
+    background-color: $white;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     flex-shrink: 0;
+    &.transparent {
+        background-color: rgba($white, 0.3);
+        > form {
+            background-color: rgba(#f7f7f9, 0.2);
+        }
+        .closeCommentsBar {
+            background-color: rgba($grey2, 0.2);
+        }
+    }
     &.hidden {
         margin-left: -330px;
     }
@@ -364,7 +379,7 @@
 .beads {
     position: relative;
     padding: 0 40px;
-    background-color: #fbfbfb;
+    background-color: #fbfbfb62;
     border-top: 1px solid #ddd;
     height: 200px;
     display: flex;
@@ -392,7 +407,7 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    align-items: center;
+    // align-items: center;
     opacity: 1;
 	animation-name: fadeInOpacity;
 	animation-timing-function: ease-in;
@@ -400,26 +415,35 @@
     > audio {
         width: 100px;
     }
+    // > img {
+    //     /// position: absolute;
+    //     width: 70px;
+    //     height: 70px;
+    // }
     > img {
-        /// position: absolute;
-        width: 70px;
-        height: 70px;
+        position: absolute;
+        width: 80px;
+        height: 80px;
+        left: calc(50% - 40px);
+        top: calc(50% - 40px);
     }
     .beadControls {
-        height: 15px;
-        // position: absolute;
-        // display: flex;
-        // align-items: center;
-        // justify-content: center;
-        width: 100%;
+        // height: 15px;
+        // // position: absolute;
+        display: flex;
+        // // align-items: center;
+        // // justify-content: center;
+        // width: 100%;
         > button {
             all: unset;
             cursor: pointer;
+            display: flex;
             > svg {
-                height: 15px;
+                height: 18px;
+                color: $blue5;
                 // width: 15px;
-                opacity: 0.5;
-                color: rgb(198, 226, 252);
+                // opacity: 0.5;
+                // color: rgb(198, 226, 252);
             }
         }
     }

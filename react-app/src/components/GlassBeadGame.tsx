@@ -330,6 +330,10 @@ const GlassBeadGame = (): JSX.Element => {
     const [seconds, setSeconds] = useState<number | null>(null)
     const [moveState, setMoveState] = useState<'Intro' | 'Move' | 'Interval'>('Move')
     const [loadingStream, setLoadingStream] = useState(false)
+    const [showBackgroundVideo, setShowBackgroundVideo] = useState(false)
+    const [backgroundVideoModalOpen, setBackgroundVideoModalOpen] = useState(false)
+    const [youTubeUrl, setYouTubeUrl] = useState('')
+    // const [youTubeIdentifier, setYouTubeIdentifier] = useState('')
     // const [videoRenderKey, setVideoRenderKey] = useState(0)
 
     // state refs (used to...)
@@ -764,6 +768,17 @@ const GlassBeadGame = (): JSX.Element => {
         return `${totalUsers} ${isPlural(totalUsers) ? 'people' : 'person'} in room`
     }
 
+    function addBackgroundVideo() {
+        // console.log('youTubeUrl: ', youTubeUrl)
+        // let identifier
+        // if (youTubeUrl.includes('.com')) identifier = youTubeUrl.
+
+        // setYouTubeIdentifier()
+
+        setShowBackgroundVideo(true)
+        setBackgroundVideoModalOpen(false)
+    }
+
     // todo: flatten out userData into user object with socketId
     useEffect(() => {
         if (postData.id && !accountDataLoading) {
@@ -1014,10 +1029,17 @@ const GlassBeadGame = (): JSX.Element => {
 
     return (
         <div className={styles.wrapper}>
+            {showBackgroundVideo && (
+                <iframe
+                    className={styles.videoBackground}
+                    title='videoBackground'
+                    src={`https://www.youtube.com/embed/${youTubeUrl}?t=9&autoplay=1&mute=1&enablejsapi=1`} // PyFN_FYwqvc lXBr5tZu60o 6whHTP6L2Is UgHKb_7884o b7Cl7S0pLRw
+                />
+            )}
             <div className={styles.mainContent}>
                 <div
-                    className={`${styles.comments} ${
-                        !showComments && styles.hidden
+                    className={`${styles.comments} ${!showComments && styles.hidden} ${
+                        showBackgroundVideo && styles.transparent
                     } hide-scrollbars`}
                 >
                     <div ref={commentsRef} className='hide-scrollbars'>
@@ -1103,6 +1125,36 @@ const GlassBeadGame = (): JSX.Element => {
                                         />
                                     )}
                                 </>
+                            )}
+                            <Button
+                                text={`${showBackgroundVideo ? 'Remove' : 'Add'} background video`}
+                                colour={showBackgroundVideo ? 'red' : 'grey'}
+                                style={{ marginBottom: 10 }}
+                                onClick={() =>
+                                    showBackgroundVideo
+                                        ? setShowBackgroundVideo(false)
+                                        : setBackgroundVideoModalOpen(true)
+                                }
+                            />
+                            {backgroundVideoModalOpen && (
+                                <Modal close={() => setBackgroundVideoModalOpen(false)} centered>
+                                    <h1>Add a Youtube url below</h1>
+                                    <p>Only include the unique identifier in the videos url</p>
+                                    <p>(i.e: '6whHTP6L2Is')</p>
+                                    <Input
+                                        type='text'
+                                        placeholder='youtube video url...'
+                                        style={{ marginBottom: 30 }}
+                                        value={youTubeUrl}
+                                        onChange={(v) => setYouTubeUrl(v)}
+                                    />
+                                    <Button
+                                        text='Add video'
+                                        colour='blue'
+                                        disabled={!youTubeUrl.length}
+                                        onClick={addBackgroundVideo}
+                                    />
+                                </Modal>
                             )}
                         </div>
                     )}
@@ -1193,8 +1245,8 @@ const GlassBeadGame = (): JSX.Element => {
                                 type='user'
                                 imagePath={bead.user.flagImagePath}
                                 title={bead.user.id === accountData.id ? 'You' : bead.user.name}
-                                fontSize={16}
-                                imageSize={30}
+                                fontSize={12}
+                                imageSize={20}
                                 style={{ marginRight: 10 }}
                             />
                             <img src='/icons/gbg/sound-wave.png' alt='sound-wave' />

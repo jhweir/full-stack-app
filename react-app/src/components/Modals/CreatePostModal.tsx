@@ -377,6 +377,7 @@ const CreatePostModal = (): JSX.Element => {
                                 ],
                                 GlassBeadGame: {
                                     topic: topic.value,
+                                    GlassBeads: [],
                                 },
                             }}
                         />

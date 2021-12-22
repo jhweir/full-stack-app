@@ -70,7 +70,7 @@ const UserPagePosts = (): JSX.Element => {
                             <PostCard
                                 post={post}
                                 key={post.id}
-                                index={index}
+                                // index={index}
                                 location='user-posts'
                             />
                         ))}

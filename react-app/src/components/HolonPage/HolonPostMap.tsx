@@ -57,6 +57,7 @@ const HolonPostMap = (): JSX.Element => {
                 }&offset=0`
             )
             .then((res) => {
+                // console.log('res: ', res)
                 // store previous node positions
                 interface INodePosition {
                     id: number
@@ -100,14 +101,11 @@ const HolonPostMap = (): JSX.Element => {
         let dMin = 0
         let dMax
         if (sortBy === 'Reactions')
-            dMax = d3.max(postMapData.map((post: IPost) => post.total_reactions))
-        if (sortBy === 'Likes') dMax = d3.max(postMapData.map((post: IPost) => post.total_likes))
-        if (sortBy === 'Reposts')
-            dMax = d3.max(postMapData.map((post: IPost) => post.total_reposts))
-        if (sortBy === 'Ratings')
-            dMax = d3.max(postMapData.map((post: IPost) => post.total_ratings))
-        if (sortBy === 'Comments')
-            dMax = d3.max(postMapData.map((post: IPost) => post.total_comments))
+            dMax = d3.max(postMapData.map((post: any) => post.totalReactions))
+        if (sortBy === 'Likes') dMax = d3.max(postMapData.map((post: any) => post.totalLikes))
+        if (sortBy === 'Reposts') dMax = d3.max(postMapData.map((post: any) => post.totalReposts))
+        if (sortBy === 'Ratings') dMax = d3.max(postMapData.map((post: any) => post.totalRatings))
+        if (sortBy === 'Comments') dMax = d3.max(postMapData.map((post: any) => post.totalComments))
         if (sortBy === 'Date') {
             dMin = d3.min(postMapData.map((post: IPost) => Date.parse(post.createdAt)))
             dMax = d3.max(postMapData.map((post: IPost) => Date.parse(post.createdAt)))
@@ -132,11 +130,11 @@ const HolonPostMap = (): JSX.Element => {
             .range([20, 60]) // radius size spread
 
         let radius
-        if (sortBy === 'Reactions') radius = d.total_reactions
-        if (sortBy === 'Likes') radius = d.total_likes
-        if (sortBy === 'Reposts') radius = d.total_reposts
-        if (sortBy === 'Ratings') radius = d.total_ratings
-        if (sortBy === 'Comments') radius = d.total_comments
+        if (sortBy === 'Reactions') radius = d.totalReactions
+        if (sortBy === 'Likes') radius = d.totalLikes
+        if (sortBy === 'Reposts') radius = d.totalReposts
+        if (sortBy === 'Ratings') radius = d.totalRatings
+        if (sortBy === 'Comments') radius = d.totalComments
         if (sortBy === 'Date') radius = Date.parse(d.createdAt)
 
         return radiusScale(radius)

@@ -57,12 +57,16 @@ const FlagImage = (props: {
         >
             {fade ? (
                 <ImageFade imagePath={imagePath} speed={1000}>
+                    {/* {imagePath ? <div className={styles.background} /> : <Placeholder />} */}
                     <Placeholder />
                 </ImageFade>
             ) : (
                 <>
                     {imagePath ? (
-                        <img className={styles.flagImage} src={imagePath} alt='' />
+                        <>
+                            <div className={styles.background} />
+                            <img className={styles.flagImage} src={imagePath} alt='' />
+                        </>
                     ) : (
                         <Placeholder />
                     )}

@@ -90,6 +90,7 @@ const PostCard = (props: {
         return topicMatch ? <topicMatch.icon /> : null
     }
 
+    // todo: clean up bead handling (always auto play next bead and remove 'play all' button?, stop auido playing on other posts, create post component for other post types)
     function playNextBead(beadIndex) {
         const newBeads = [...beads]
         const previousBead = newBeads[beadIndex - 1]
@@ -148,7 +149,15 @@ const PostCard = (props: {
         const bead = newBeads[beadIndex]
         const audio = document.getElementById(`${id}-${beadIndex}`) as HTMLAudioElement
         if (bead.playing) audio.pause()
-        else audio.play()
+        else {
+            audio.play()
+            audio.addEventListener('ended', () => {
+                const newBeads2 = [...beads]
+                const bead2 = newBeads[beadIndex]
+                bead2.playing = false
+                setBeads(newBeads2)
+            })
+        }
         bead.playing = !bead.playing
         setBeads(newBeads)
     }
@@ -272,7 +281,8 @@ const PostCard = (props: {
                                 onClick={() => history.push(`/p/${id}`)}
                             />
                         </Row>
-                        <div className={`${styles.beadsWrapper} hide-scrollbars`}>
+                        {/* <div className={`${styles.beadsWrapper} hide-scrollbars`}> */}
+                        <div className={styles.beadsWrapper}>
                             {beads.length > 0 ? (
                                 <div className={styles.beads}>
                                     {beads.map((bead, beadIndex) => (
