@@ -1,0 +1,53 @@
+@import '@styles/Variables';
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+    // scrollbar-color: rgb(210,210,210) rgb(46,54,69) !important;
+    // scrollbar-width: none;
+
+    // scroll bar styles
+    // ::-webkit-scrollbar {
+    //     width: $scrollBarWidth;
+    //     height: $scrollBarWidth;
+    // }
+
+    // ::-webkit-scrollbar-track {
+    //     background-color: rgba($grey2, 0);
+    //     border-radius: $scrollBarWidth / 2;
+    // }
+
+    // ::-webkit-scrollbar-thumb {
+    //     background-color: rgba($grey4, 0);
+    //     border-radius: $scrollBarWidth / 2;
+    //     &:hover {
+    //         background-color: $grey5; 
+    //     }
+    //     transition: background-color 2s;
+    // }
+
+    .sidebarSmallWrapper {
+        position: fixed;
+        left: 0;
+        top: $navbarHeight;
+        height: 100%; // calc(100vh - $navbarHeight);
+    }
+
+    // .os-scrollbar {
+    //     width: $scrollBarWidth;
+    //     height: $scrollBarWidth;
+    // }
+    // .os-scrollbar-track {
+    //     background-color: green; //rgba($grey2, 0);
+    //     border-radius: $scrollBarWidth / 2;
+    // }
+    // .os-scrollbar-handle {
+    //     background-color: red; //rgba($grey4, 0);
+    //     border-radius: $scrollBarWidth / 2;
+    // }
+    // .os-scrollbar-corner {
+
+    // }
+}

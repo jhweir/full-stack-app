@@ -114,7 +114,7 @@ const RemoveSpaceModeratorModal = (props: { close: () => void }): JSX.Element =>
                 <div className={styles.footer}>
                     <Button
                         text='Remove'
-                        colour='blue'
+                        color='blue'
                         style={{ marginRight: 10 }}
                         disabled={loading || showSuccessMessage || !selectedModerator}
                         submit

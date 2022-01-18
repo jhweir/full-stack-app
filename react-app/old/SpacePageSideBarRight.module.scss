@@ -1,0 +1,22 @@
+@import '@styles/Variables';
+
+.sideBarRight {
+    width: 240px;
+    padding: 0 20px;
+    flex-shrink: 0;
+    @media screen and (max-width: 1200px) {
+        display: none;
+    }
+    > div > div {
+        > svg {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            color: $grey4;
+        }
+        > p {
+            color: $grey5;
+            margin-bottom: 10px;
+        }
+    }
+}

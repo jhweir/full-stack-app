@@ -1,6 +1,6 @@
 import React, { useEffect, useContext } from 'react'
 import { Route, Switch } from 'react-router-dom' // Redirect
-import AccountSideBar from '@components/AccountSideBar'
+// import AccountSideBar from '@components/AccountSideBar'
 import styles from '../styles/pages/PostPage.module.scss'
 import { PostContext } from '../contexts/PostContext'
 // import EmptyPage from './EmptyPage'
@@ -65,7 +65,7 @@ const PostPage = ({
                     {/* <Route component={ EmptyPage }/> */}
                 </Switch>
             </div>
-            <AccountSideBar />
+            {/* <AccountSideBar /> */}
         </div>
     )
 }

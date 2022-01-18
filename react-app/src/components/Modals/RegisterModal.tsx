@@ -188,7 +188,7 @@ const RegisterModal = (props: { close: () => void }): JSX.Element => {
                 />
                 <Button
                     text='Create account'
-                    colour='blue'
+                    color='blue'
                     style={{ margin: '20px 0 20px 0' }}
                     disabled={loading || showSuccessMessage || errors}
                     submit

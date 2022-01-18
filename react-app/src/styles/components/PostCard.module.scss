@@ -1,10 +1,10 @@
-@import '@styles/Colors.scss';
+@import '@styles/Variables';
+
 .post {
-    margin-bottom: 10px;
-    width: 100%;
+    max-width: 800px;
     border-radius: 10px;
     background-color: white;
-    box-shadow: 0 1px 10px 0 rgba(10, 8, 72, 0.04);
+    box-shadow: 0 7px 10px 0 rgba(10, 8, 72, 0.04);
     display: flex;
     flex-direction: column;
     position: relative;
@@ -13,6 +13,7 @@
     &.post-page {
         width: 900px;
     }
+
     .index {
         width: 10px;
         margin-right: 20px;
@@ -109,31 +110,35 @@
             margin-right: 10px;
         }
 
+        .gbgContent {
+            width: 100%;
+
+            .gbgButtons {
+
+            }
+    
+            .gbgBeads {
+                // width: 100%;
+                display: flex;
+                padding: 10px 10px 20px 10px;
+                margin-left: -10px;
+                margin-bottom: 10px;
+            }
+
+            .noSavedBeads {
+                margin: 10px 0;
+                color: $grey4;
+            }
+        }
+
         .playAllButton {
             all: unset;
             cursor: pointer;
             //display: flex;
         }
 
-        .beadsWrapper {
-            // margin: 10px 0;
-            margin-bottom: 10px;
-            width: 100%;
-
-            > p {
-                color: $grey5;
-                margin-top: 10px;
-            }
-
-            .beads {
-                width: 100%;
-                display: flex;
-                overflow-x: scroll;
-                padding: 10px;
-                margin-left: -10px;
-            }
-        }
     }
+
     .statButtons {
         display: flex;
         flex-direction: row;

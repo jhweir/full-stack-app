@@ -112,6 +112,7 @@ function UserContextProvider({ children }: { children: JSX.Element }): JSX.Eleme
                 selectedUserSubPage,
                 setSelectedUserSubPage,
                 userData,
+                setUserData,
                 userDataLoading,
                 userPosts,
                 userPostsLoading,

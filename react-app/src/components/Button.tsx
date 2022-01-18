@@ -5,7 +5,7 @@ import LoadingWheel from '@components/LoadingWheel'
 const Button = (props: {
     text?: string
     icon?: JSX.Element
-    colour: string
+    color: 'blue' | 'aqua' | 'red' | 'grey'
     size?: 'small' | 'medium' | 'large'
     style?: any
     disabled?: boolean
@@ -13,11 +13,11 @@ const Button = (props: {
     submit?: boolean
     onClick?: () => void
 }): JSX.Element => {
-    const { text, icon, colour, size, style, disabled, loading, submit, onClick } = props
+    const { text, icon, color, size, style, disabled, loading, submit, onClick } = props
 
     return (
         <button
-            className={`${styles.button} ${styles[colour]} ${styles[size || 'medium']} ${
+            className={`${styles.button} ${styles[color]} ${styles[size || 'medium']} ${
                 (disabled || loading) && styles.disabled
             }`}
             style={style}

@@ -1,0 +1,37 @@
+
+@import '@styles/Variables';
+
+.wrapper {
+    width: 100%;
+    margin-bottom: 10px;
+
+    .header {
+        padding: 15px $pageContentHorizontalPadding;
+        position: -webkit-sticky;
+        position: sticky;
+        top: 147px;
+        z-index: $headerZIndex;
+        background-color: $grey1;
+        //box-shadow: 0 10px 10px 0 rgba(10, 8, 72, 0.05);
+    }
+
+    .content {
+        width: 100%;
+        height: calc(100vh - 230px);
+
+        .posts {
+            flex-shrink: 0;
+            padding: 0 20px 0 $pageContentHorizontalPadding !important;
+            position: relative;
+            width: 850px;
+            // > div {
+            //     &:not(:last-child) { margin-bottom: 15px; }
+            // }
+        }
+        
+        .postMap {
+            width: 50%;
+            flex-shrink: 0;
+        }
+    }
+}

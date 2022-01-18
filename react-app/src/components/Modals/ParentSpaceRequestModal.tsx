@@ -183,7 +183,7 @@ const ParentSpaceRequestModal = (props: { close: () => void }): JSX.Element => {
                 <div className={styles.footer}>
                     <Button
                         text={accountIsModOfSelectedSpace ? 'Add parent space' : 'Send request'}
-                        colour='blue'
+                        color='blue'
                         style={{ marginRight: 10 }}
                         disabled={loading || showSuccessMessage || !selectedSpace}
                         submit

@@ -78,19 +78,22 @@ const UpdateSpaceDescriptionModal = (props: { close: () => void }): JSX.Element 
                     state={inputState}
                     errors={inputErrors}
                     value={inputValue}
+                    style={{ minWidth: 800 }}
                     onChange={(newValue) => {
                         setInputState('default')
                         setInputValue(newValue)
                     }}
                 />
                 <div className={styles.footer}>
-                    <Button
-                        text='Save'
-                        colour='blue'
-                        style={{ marginRight: 10 }}
-                        disabled={loading || showSuccessMessage || inputState === 'invalid'}
-                        submit
-                    />
+                    {!showSuccessMessage && (
+                        <Button
+                            text='Save'
+                            color='blue'
+                            style={{ marginRight: 10 }}
+                            disabled={loading || inputState === 'invalid'}
+                            submit
+                        />
+                    )}
                     {loading && <LoadingWheel />}
                     {showSuccessMessage && <SuccessMessage text='New description saved!' />}
                 </div>

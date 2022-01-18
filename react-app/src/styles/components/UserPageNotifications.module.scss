@@ -1,42 +1,30 @@
+@import '@styles/Variables';
+
 .wrapper {
-    width: 100%;
-    //height: 800px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-}
-.header {
-    height: 50px;
-    padding: 0 20px;
+    //width: 100%;
     margin-bottom: 10px;
-    background-color: white;
-    border-radius: 10px;
-    font-size: 18px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-}
-// .body {
-//     width: 100%;
-//     //height: 600px;
-//     background-color: white;
-//     border-radius: 10px;
-//     padding: 20px;
-// }
-.notifications {
-    width: 100%;
-}
-.seenIcon {
-    width: 25px;
-    height: 25px;
-    opacity: 0.1;
-    position: absolute;
-    right: 20px;
-    top: 13px;
-    transition-property: opacity;
-    transition-duration: 0.5s;
-    &:hover {
-        cursor: pointer;
-        opacity: 0.2
+    width: 850px;
+    // align-items: flex-start;
+    padding: 15px $pageContentHorizontalPadding;
+
+    .header {
+        padding: 15px $pageContentHorizontalPadding;
+        position: -webkit-sticky;
+        position: sticky;
+        top: 147px;
+        z-index: $headerZIndex;
+        background-color: $grey1;
+    }
+
+    .content {
+        width: 100%;
+        height: calc(100vh - 230px);
+
+        .posts {
+            flex-shrink: 0;
+            padding: 0 20px 0 $pageContentHorizontalPadding !important;
+            position: relative;
+            width: 850px;
+        }
     }
 }

@@ -1,6 +1,7 @@
 /* eslint-disable no-param-reassign */
 import React, { useState, useContext } from 'react'
 import { useHistory, Link } from 'react-router-dom'
+import { OverlayScrollbarsComponent as ScrollbarOverlay } from 'overlayscrollbars-react'
 import { AccountContext } from '@contexts/AccountContext'
 import styles from '@styles/components/PostCard.module.scss'
 import Column from '@src/components/Column'
@@ -32,8 +33,9 @@ const PostCard = (props: {
     post: any
     index?: number
     location: 'post-page' | 'space-posts' | 'space-post-map' | 'user-posts' | 'preview'
+    style?: any
 }): JSX.Element => {
-    const { post, index, location } = props
+    const { post, index, location, style } = props
     const { accountData, loggedIn } = useContext(AccountContext)
     const [postData, setPostData] = useState(post)
     const {
@@ -163,7 +165,7 @@ const PostCard = (props: {
     }
 
     return (
-        <div className={`${styles.post} ${styles[location]}`} key={id}>
+        <div className={`${styles.post} ${styles[location]}`} key={id} style={style}>
             {!!index && <div className={styles.index}>{index! + 1}</div>}
             <header>
                 <Row centerY>
@@ -263,12 +265,12 @@ const PostCard = (props: {
                     />
                 )}
                 {type === 'glass-bead-game' && (
-                    <Column style={{ width: '100%', alignItems: 'start' }}>
-                        <Row>
+                    <Column className={styles.gbgContent}>
+                        <Row className={styles.gbgButtons}>
                             {beads.length > 0 && (
                                 <Button
                                     text='Play all beads'
-                                    colour='blue'
+                                    color='blue'
                                     size='small'
                                     onClick={playAll}
                                     style={{ marginRight: 5 }}
@@ -276,41 +278,32 @@ const PostCard = (props: {
                             )}
                             <Button
                                 text='Open game room'
-                                colour='green'
+                                color='aqua'
                                 size='small'
                                 onClick={() => history.push(`/p/${id}`)}
                             />
                         </Row>
-                        {/* <div className={`${styles.beadsWrapper} hide-scrollbars`}> */}
-                        <div className={styles.beadsWrapper}>
-                            {beads.length > 0 ? (
-                                <div className={styles.beads}>
-                                    {beads.map((bead, beadIndex) => (
-                                        <Bead
-                                            key={bead.id}
-                                            postId={id}
-                                            bead={bead}
-                                            index={beadIndex}
-                                            toggleAudio={toggleBeadAudio}
-                                        />
-                                    ))}
-                                </div>
-                            ) : (
-                                <p>No saved beads yet</p>
-                            )}
-                        </div>
+                        {beads.length > 0 ? (
+                            <ScrollbarOverlay
+                                className={`${styles.gbgBeads} os-host-flexbox scrollbar-theme row`}
+                                options={{ className: 'os-theme-none' }}
+                            >
+                                {beads.map((bead, beadIndex) => (
+                                    <Bead
+                                        key={bead.id}
+                                        postId={id}
+                                        bead={bead}
+                                        index={beadIndex}
+                                        toggleAudio={toggleBeadAudio}
+                                    />
+                                ))}
+                            </ScrollbarOverlay>
+                        ) : (
+                            <p className={styles.noSavedBeads}>No saved beads yet</p>
+                        )}
                     </Column>
                 )}
                 <div className={styles.statButtons}>
-                    <StatButton
-                        icon={<CommentIconSVG />}
-                        iconSize={18}
-                        text={totalComments}
-                        title={statTitle('Comment', totalComments)}
-                        // color={accountComment && 'blue'}
-                        disabled={location === 'preview'}
-                        onClick={() => setCommentsOpen(!commentsOpen)}
-                    />
                     <StatButton
                         icon={<LikeIconSVG />}
                         iconSize={18}
@@ -319,6 +312,15 @@ const PostCard = (props: {
                         color={accountLike && 'blue'}
                         disabled={location === 'preview'}
                         onClick={() => setLikeModalOpen(true)}
+                    />
+                    <StatButton
+                        icon={<CommentIconSVG />}
+                        iconSize={18}
+                        text={totalComments}
+                        title={statTitle('Comment', totalComments)}
+                        // color={accountComment && 'blue'}
+                        disabled={location === 'preview'}
+                        onClick={() => setCommentsOpen(!commentsOpen)}
                     />
                     <StatButton
                         icon={<RepostIconSVG />}
@@ -410,6 +412,7 @@ const PostCard = (props: {
 
 PostCard.defaultProps = {
     index: null,
+    style: null,
 }
 
 export default PostCard

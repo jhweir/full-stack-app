@@ -1,11 +1,16 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState, useRef } from 'react'
+import { OverlayScrollbarsComponent as OverlayScrollbars } from 'overlayscrollbars-react'
 import { UserContext } from '@contexts/UserContext'
 import styles from '@styles/components/UserPagePosts.module.scss'
 import SearchBar from '@components/SearchBar'
-import UserPagePostFilters from '@components/UserPage/UserPagePostFilters'
+import UserPagePostsFilters from '@components/UserPage/UserPagePostsFilters'
 import PostCard from '@components/Cards/PostCard/PostCard'
+import SpacePagePostsPlaceholder from '@components/SpacePage/SpacePagePostsPlaceholder'
 import { onPageBottomReached } from '@src/Functions'
 import Button from '@components/Button'
+import Row from '@components/Row'
+import Column from '@components/Column'
+import LoadingWheel from '@components/LoadingWheel'
 import { ReactComponent as SlidersIconSVG } from '@svgs/sliders-h-solid.svg'
 
 const UserPagePosts = (): JSX.Element => {
@@ -13,6 +18,7 @@ const UserPagePosts = (): JSX.Element => {
         userData,
         userPosts,
         userPostsLoading,
+        nextUserPostsLoading,
         userPostsFilters,
         userPostsFiltersOpen,
         userPostsPaginationOffset,
@@ -23,65 +29,73 @@ const UserPagePosts = (): JSX.Element => {
         updateUserPostsFilter,
     } = useContext(UserContext)
 
-    const [pageBottomReached, setPageBottomReached] = useState(false)
+    const OSRef = useRef<OverlayScrollbars>(null)
+    const OSOptions = {
+        className: 'os-theme-none',
+        callbacks: {
+            onScroll: () => {
+                // load next spaces when scroll bottom reached
+                const instance = OSRef!.current!.osInstance()
+                const scrollInfo = instance!.scroll()
+                if (scrollInfo.ratio.y > 0.999 && userPostsPaginationHasMore) {
+                    getUserPosts(userPostsPaginationOffset)
+                }
+            },
+        },
+    }
 
-    // set selected sub page and add scroll listener
-    useEffect(() => {
-        setSelectedUserSubPage('posts')
-        const scrollHandler = () => onPageBottomReached(setPageBottomReached)
-        window.addEventListener('scroll', scrollHandler)
-        return () => window.removeEventListener('scroll', scrollHandler)
-    }, [])
+    useEffect(() => setSelectedUserSubPage('posts'), [])
 
-    // get user posts
     useEffect(() => {
         if (userData.id) getUserPosts(0)
     }, [userData.id, userPostsFilters])
 
-    // get next user posts
-    useEffect(() => {
-        if (pageBottomReached && userPostsPaginationHasMore) getUserPosts(userPostsPaginationOffset)
-    }, [pageBottomReached])
-
     return (
-        <div className={styles.wrapper}>
-            <div className={styles.header}>Created</div>
-            <div className={styles.headerRow}>
-                <div>
-                    <SearchBar
-                        setSearchFilter={(payload) => updateUserPostsFilter('searchQuery', payload)}
-                        placeholder='Search posts...'
-                    />
-                    <Button
-                        icon={<SlidersIconSVG />}
-                        colour='grey'
-                        style={{ marginRight: 10 }}
-                        onClick={() => setUserPostsFiltersOpen(!userPostsFiltersOpen)}
-                    />
-                </div>
-            </div>
-            {userPostsFiltersOpen && <UserPagePostFilters />}
-            {userPostsLoading ? (
-                <p>Loading...</p>
-            ) : (
-                <ul className={styles.userPosts}>
-                    {userPosts.length > 0 &&
-                        userPosts.map((post, index) => (
-                            <PostCard
-                                post={post}
-                                key={post.id}
-                                // index={index}
-                                location='user-posts'
-                            />
-                        ))}
-                    {userPostsPaginationOffset > 0 && userPosts.length < 1 && (
-                        <div className='wecoNoContentPlaceholder'>
-                            No posts yet that match those settings...
-                        </div>
+        <Column className={styles.wrapper}>
+            <Row centerY className={styles.header}>
+                <SearchBar
+                    setSearchFilter={(payload) => updateUserPostsFilter('searchQuery', payload)}
+                    placeholder='Search posts...'
+                    style={{ marginRight: 10 }}
+                />
+                <UserPagePostsFilters />
+            </Row>
+            <Row className={styles.content}>
+                <OverlayScrollbars
+                    className={`${styles.posts} os-host-flexbox scrollbar-theme`}
+                    options={OSOptions}
+                    ref={OSRef}
+                >
+                    {userPostsLoading ? (
+                        <SpacePagePostsPlaceholder />
+                    ) : (
+                        <>
+                            {userPosts.length ? (
+                                <>
+                                    {userPosts.map((post) => (
+                                        <PostCard
+                                            post={post}
+                                            key={post.id}
+                                            location='space-posts'
+                                            style={{ marginBottom: 15 }}
+                                        />
+                                    ))}
+                                    {nextUserPostsLoading && (
+                                        <Row centerX>
+                                            <LoadingWheel />
+                                        </Row>
+                                    )}
+                                </>
+                            ) : (
+                                <div className='wecoNoContentPlaceholder'>
+                                    No posts yet that match those settings...
+                                </div>
+                            )}
+                        </>
                     )}
-                </ul>
-            )}
-        </div>
+                </OverlayScrollbars>
+            </Row>
+        </Column>
     )
 }
 

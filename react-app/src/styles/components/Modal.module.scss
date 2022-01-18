@@ -1,4 +1,4 @@
-@import '@styles/Colors.scss';
+@import '@styles/Variables';
 
 // background transition
 $backgroundColorStart: rgba(0,0,0,0);
@@ -33,7 +33,7 @@ $backgroundTransitionSpeed: 0.5s;
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 10;
+    z-index: $fullScreenModalZIndex;
     -webkit-animation: backgroundTransition $backgroundTransitionSpeed; /* Safari, Chrome and Opera > 12.1 */
     -moz-animation: backgroundTransition $backgroundTransitionSpeed; /* Firefox < 16 */
     -ms-animation: backgroundTransition $backgroundTransitionSpeed; /* Internet Explorer */
@@ -74,7 +74,7 @@ $modalTransitionSpeed: 0.3s;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    max-height: calc(100vh - 60px);
+    max-height: calc(100vh - #{$navbarHeight});
     //overflow-y: scroll;
 
     &.centered {

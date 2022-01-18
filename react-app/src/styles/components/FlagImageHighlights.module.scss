@@ -1,0 +1,23 @@
+@import '@styles/Variables';
+
+.wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    // margin-bottom: 40px;
+    // &:not(:last-child) { margin-right: 20px }
+
+    > p { margin-left: 10px }
+
+    .item1 {
+        z-index: $sidebarZIndex + 2;
+    }
+    .item2 {
+        z-index: $sidebarZIndex + 1;
+        margin-left: -10px;
+    }
+    .item3 {
+        z-index: $sidebarZIndex;
+        margin-left: -10px;
+    }
+}

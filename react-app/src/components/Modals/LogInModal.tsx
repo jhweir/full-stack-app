@@ -142,7 +142,7 @@ const LogInModal = (props: { close: () => void }): JSX.Element => {
                 {displayResendVerificationEmailLink && (
                     <Button
                         text='Resend verification email'
-                        colour='blue'
+                        color='blue'
                         style={{ marginBottom: 10 }}
                         onClick={() => resendVerificationEmail()}
                     />
@@ -150,7 +150,7 @@ const LogInModal = (props: { close: () => void }): JSX.Element => {
                 {!loading && !success && (
                     <Button
                         text='Log in'
-                        colour='blue'
+                        color='blue'
                         disabled={
                             emailOrHandleState === 'invalid' ||
                             passwordState === 'invalid' ||

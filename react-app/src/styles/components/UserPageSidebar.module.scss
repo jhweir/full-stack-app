@@ -1,0 +1,63 @@
+@import '@styles/Variables';
+
+.wrapper {
+    width: $sidebarWidth;
+    height: 100%;
+    background-color: white;
+    position: fixed;
+    left: 70px;
+    flex-shrink: 0;
+    z-index: $sidebarZIndex;
+    // background-color: $white;
+
+    .flagImage {
+        width: $sidebarWidth;
+        height: $sidebarWidth;
+        object-fit: cover;
+        flex-shrink: 0;
+    }
+
+    @media screen and (max-width: 1500px) {
+        width: $sidebarWidth - 30px;
+        .flagImage {
+            width: $sidebarWidth - 30px;
+            height: $sidebarWidth - 30px;
+        }
+    }
+
+    .content {
+        display: flex;
+        flex-direction: column;
+        padding: 10px 10px 10px 20px;
+        > h1 {
+            font-size: 32px;
+            line-height: 36px;
+            margin: 0 0 5px 0 !important;
+            overflow-wrap: break-word;
+        }
+        > p {
+            margin-bottom: 20px;
+        }
+
+        .followButton {
+            all: unset;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            color: $grey5;
+            > svg {
+                width: 20px;
+                height: 20px;
+                margin-right: 5px;
+            }
+        }
+
+        .description {
+            max-height: 100px;
+            overflow: hidden;
+            margin: 0 0 20px 0;
+        }
+    }
+}
+

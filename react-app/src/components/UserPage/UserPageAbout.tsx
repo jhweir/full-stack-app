@@ -2,31 +2,30 @@ import React, { useContext, useEffect } from 'react'
 import { UserContext } from '@contexts/UserContext'
 import styles from '@styles/components/UserPageAbout.module.scss'
 import { timeSinceCreated, dateCreated } from '@src/Functions'
-// import PostCard from './PostCard'
-// import HolonPagePostsHeader from './HolonPagePostsHeader'
-// import HolonPagePostsPlaceholder from './HolonPagePostsPlaceholder'
+import Column from '@components/Column'
+import Row from '@components/Row'
+import Markdown from '@components/Markdown'
 
 const UserPageAbout = (): JSX.Element => {
     const { userData, setSelectedUserSubPage } = useContext(UserContext)
+    const { createdAt, bio } = userData
 
     useEffect(() => {
         setSelectedUserSubPage('about')
     }, [])
 
     return (
-        <div className={styles.wrapper}>
-            <div className={styles.header}>About</div>
-            <div className={styles.content}>
-                <div className={styles.name}>{userData.name}</div>
-                <div className={styles.handle}>u/{userData.handle}</div>
-                <div className={styles.created}>
-                    <p title={dateCreated(userData.createdAt)}>
-                        Joined {timeSinceCreated(userData.createdAt)}
+        <Column className={styles.wrapper}>
+            <Column className={styles.content}>
+                <Row centerY style={{ marginBottom: 30 }}>
+                    <p>
+                        Joined{' '}
+                        <span title={dateCreated(createdAt)}>{timeSinceCreated(createdAt)}</span>
                     </p>
-                </div>
-                <div className={styles.text}>{userData.bio}</div>
-            </div>
-        </div>
+                </Row>
+                <Markdown text={bio} />
+            </Column>
+        </Column>
     )
 }
 

@@ -1,8 +1,8 @@
-@import './Colors';
-@import './Spacing';
-@import './Transitions';
-@import './Placeholders';
-@import './DarkMode';
+@import '@styles/Variables';
+@import '@styles/Spacing';
+@import '@styles/Transitions';
+@import '@styles/Placeholders';
+@import '@styles/DarkMode';
 
 * {
     box-sizing: border-box;
@@ -15,8 +15,8 @@ html {
     // overflow: -moz-scrollbars-vertical; 
     //overflow-y: scroll;
     //width: 100%;
-    overflow-x: hidden;
-    overflow-y: scroll;
+    // overflow-x: hidden;
+    // overflow-y: scroll;
     //height: 100%;
     //overflow: scroll
 }
@@ -24,7 +24,7 @@ html {
 body {
     background-color: #f7f7f9; //#eee;
     width: 100%;
-    overflow-x: hidden;
+    // overflow-x: hidden;
     //height: 100%;
     //overflow-y: visible
     // transition-property: background-color;
@@ -37,21 +37,128 @@ body {
     //height: 100%;
 }
 
-.app {
-    //width: 100%;
-    //overflow-x: hidden;
-    //height: 100%;
-    //padding-bottom: 100px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    overflow-y: scroll;
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
-    &::-webkit-scrollbar {
-        display: none;
+.scrollbar-theme {
+    // disable hidden scroll bars
+    &.os-theme-none {
+        > .os-scrollbar-vertical, > .os-scrollbar-horizontal {
+            display: flex !important;
+        }
+    }
+    .os-padding {
+        z-index: unset;
+    }
+
+    // scroll bar styles
+    > .os-scrollbar-vertical > .os-scrollbar-track {
+        width: $scrollBarWidth;
+    }
+
+    > .os-scrollbar-horizontal > .os-scrollbar-track {
+        height: $scrollBarWidth;
+    }
+
+    > .os-scrollbar-vertical, > .os-scrollbar-horizontal {
+        //flex-shrink: 0;
+        .os-scrollbar-track {
+            //width: $scrollBarWidth;
+            border-radius: $scrollBarWidth / 2;
+            background-color: transparent;
+            padding-bottom: 5px;
+            transition: background-color 0.3s;
+        }
+        .os-scrollbar-handle {
+            border-radius: $scrollBarWidth / 2;
+            background-color: transparent;
+            transition: background-color 0.3s;
+        }
+    }
+
+    &:hover, &:active {
+        > .os-scrollbar-vertical, > .os-scrollbar-horizontal {
+            .os-scrollbar-track {
+                background-color: $grey2;
+            }
+            .os-scrollbar-handle {
+                background-color: $grey4;
+            }
+        }
+
+    }
+
+    &.row {
+        .os-content {
+            display: flex;
+            flex-direction: row;
+        }
+    }
+
+    &.wrap {
+        .os-content {
+            flex-wrap: wrap;
+        }
     }
 }
+
+// .os-theme-dark {
+//     .os-scrollbar {
+//         width: 80px !important;//$scrollBarWidth;
+//         height: $scrollBarWidth;
+
+//         > .os-scrollbar-track {
+//             background: green !important; //rgba($grey2, 0);
+//             border-radius: $scrollBarWidth / 2;
+//         }
+//     }
+// }
+// // .os-scrollbar-track {
+// //     background: green !important; //rgba($grey2, 0);
+// //     border-radius: $scrollBarWidth / 2;
+// // }
+// .os-scrollbar-handle {
+//     background: red; //rgba($grey4, 0);
+//     border-radius: $scrollBarWidth / 2;
+// }
+// .os-scrollbar-corner {
+
+// }
+
+// /* width */
+// ::-webkit-scrollbar {
+//     width: 20px;
+// }
+
+// /* Track */
+// ::-webkit-scrollbar-track {
+//     box-shadow: inset 0 0 5px grey; 
+//     border-radius: 10px;
+// }
+
+// /* Handle */
+// ::-webkit-scrollbar-thumb {
+//     background: red; 
+//     border-radius: 10px;
+// }
+
+// /* Handle on hover */
+// ::-webkit-scrollbar-thumb:hover {
+//     background: #b30000; 
+// }
+
+// .app {
+//     //width: 100%;
+//     //overflow-x: hidden;
+//     //height: 100%;
+//     //padding-bottom: 100px;
+//     display: flex;
+//     flex-direction: column;
+//     align-items: center;
+//     overflow-y: scroll;
+//     -ms-overflow-style: none;  /* IE and Edge */
+//     scrollbar-width: none;  /* Firefox */
+//     &::-webkit-scrollbar {
+//         display: none;
+//     }
+// }
 
 h1 {
     font-size: 26px;
@@ -172,6 +279,30 @@ input {
     // Hide scroll bars on Chrome:
     ::-webkit-scrollbar {
         display: none;
+    }
+}
+
+.weco-scrollbar {
+    /* width */
+    ::-webkit-scrollbar {
+        width: 20px;
+    }
+
+    /* Track */
+    ::-webkit-scrollbar-track {
+        box-shadow: inset 0 0 5px grey; 
+        border-radius: 10px;
+    }
+
+    /* Handle */
+    ::-webkit-scrollbar-thumb {
+        background: red; 
+        border-radius: 10px;
+    }
+
+    /* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+        background: #b30000; 
     }
 }
 

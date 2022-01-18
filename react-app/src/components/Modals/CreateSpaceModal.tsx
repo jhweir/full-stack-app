@@ -178,7 +178,7 @@ const CreateSpaceModal = (props: { close: () => void }): JSX.Element => {
                                 ? 'Create space'
                                 : 'Create space and send request'
                         }
-                        colour='blue'
+                        color='blue'
                         style={{ marginRight: 10 }}
                         disabled={loading || successMessage.length > 0 || errors}
                         submit

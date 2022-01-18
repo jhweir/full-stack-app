@@ -66,20 +66,38 @@ router.get('/account-notifications', authenticateToken, (req, res) => {
 })
 
 // POST
-router.post('/update-account-setting', authenticateToken, async (req, res) => {
-    const accountId = req.user.id
-    const { setting, newValue } = req.body
+// router.post('/update-account-setting', authenticateToken, async (req, res) => {
+//     const accountId = req.user.id
+//     const { setting, newValue } = req.body
 
-    if (setting === 'change-user-name') {
-        User.update({ name: newValue }, { where : { id: accountId } })
-            .then(res.send('success'))
-            .catch(err => console.log(err))
-    }
-    if (setting === 'change-user-bio') {
-        User.update({ bio: newValue }, { where : { id: accountId } })
-            .then(res.send('success'))
-            .catch(err => console.log(err))
-    }
+//     if (setting === 'change-user-name') {
+//         User.update({ name: newValue }, { where : { id: accountId } })
+//             .then(res.send('success'))
+//             .catch(err => console.log(err))
+//     }
+//     if (setting === 'change-user-bio') {
+//         User.update({ bio: newValue }, { where : { id: accountId } })
+//             .then(res.send('success'))
+//             .catch(err => console.log(err))
+//     }
+// })
+
+router.post('/update-account-name', authenticateToken, async (req, res) => {
+    const accountId = req.user.id
+    const { payload } = req.body
+
+    User.update({ name: payload }, { where : { id: accountId } })
+        .then(res.send('success'))
+        .catch(err => console.log(err))
+})
+
+router.post('/update-account-bio', authenticateToken, async (req, res) => {
+    const accountId = req.user.id
+    const { payload } = req.body
+
+    User.update({ bio: payload }, { where : { id: accountId } })
+        .then(res.send('success'))
+        .catch(err => console.log(err))
 })
 
 router.post('/mark-notifications-seen', authenticateToken, (req, res) => {
