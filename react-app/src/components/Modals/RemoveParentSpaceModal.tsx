@@ -98,7 +98,7 @@ const RemoveParentSpaceModal = (props: { close: () => void }): JSX.Element => {
                         disconnect from there you need to attach to another parent first, otherwise
                         your space won&apos;t appear anywhere on the site.
                     </p>
-                    <Button onClick={close} text='OK' colour='blue' />
+                    <Button onClick={close} text='OK' color='blue' />
                 </>
             ) : (
                 <>
@@ -142,7 +142,7 @@ const RemoveParentSpaceModal = (props: { close: () => void }): JSX.Element => {
                             <Button
                                 submit
                                 text='Remove parent space'
-                                colour='blue'
+                                color='blue'
                                 style={{ marginRight: 10 }}
                                 disabled={loading || showSuccessMessage || !selectedSpace}
                             />

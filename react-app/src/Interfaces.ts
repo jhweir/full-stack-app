@@ -107,6 +107,7 @@ export interface ISpaceMapData {
 export interface IAccountContext {
     loggedIn: boolean
     accountData: any
+    setAccountData: (payload: any) => void
     accountDataLoading: boolean
     setAccountDataLoading: (payload: boolean) => void
     // notifications: any[]
@@ -126,7 +127,7 @@ export interface IAccountContext {
     forgotPasswordModalOpen: boolean
     setForgotPasswordModalOpen: (payload: boolean) => void
     navBarDropDownModalOpen: boolean
-    setNavBarDropDownModalOpen: (payload: boolean) => void
+    setNavbarDropDownModalOpen: (payload: boolean) => void
     createPostModalOpen: boolean
     setCreatePostModalOpen: (payload: boolean) => void
     // createSpaceModalOpen: boolean
@@ -170,8 +171,8 @@ export interface ISpaceContext {
     nextSpacePostsLoading: boolean
     spaceSpacesLoading: boolean
     nextSpaceSpacesLoading: boolean
-    spaceUsersLoading: boolean
-    nextSpaceUsersLoading: boolean
+    spacePeopleLoading: boolean
+    nextSpacePeopleLoading: boolean
 
     spacePosts: any[]
     setSpacePosts: (payload: any[]) => void
@@ -192,26 +193,26 @@ export interface ISpaceContext {
     spaceSpacesPaginationOffset: number
     spaceSpacesPaginationHasMore: boolean
 
-    spaceUsers: any[]
-    spaceUsersFilters: any
-    spaceUsersFiltersOpen: boolean
-    setSpaceUsersFiltersOpen: (payload: boolean) => void
-    spaceUsersPaginationLimit: number
-    spaceUsersPaginationOffset: number
-    spaceUsersPaginationHasMore: boolean
+    spacePeople: any[]
+    spacePeopleFilters: any
+    spacePeopleFiltersOpen: boolean
+    setSpacePeopleFiltersOpen: (payload: boolean) => void
+    spacePeoplePaginationLimit: number
+    spacePeoplePaginationOffset: number
+    spacePeoplePaginationHasMore: boolean
 
     getSpaceData: (handle: string, returnFunction: any) => void
     getSpacePosts: (handle: string, offset: number, limit: number) => void
     getSpaceSpaces: (handle: string, offset: number, limit: number) => void
-    getSpaceUsers: (handle: string, offset: number, limit: number) => void
+    getSpacePeople: (handle: string, offset: number, limit: number) => void
 
     updateSpacePostsFilter: (key: string, payload: string) => void
     updateSpaceSpacesFilter: (key: string, payload: string) => void
-    updateSpaceUsersFilter: (key: string, payload: string) => void
+    updateSpacePeopleFilter: (key: string, payload: string) => void
     resetSpaceData: () => void
     resetSpacePosts: () => void
     resetSpaceSpaces: () => void
-    resetSpaceUsers: () => void
+    resetSpacePeople: () => void
 }
 
 export interface IPostContext {
@@ -229,6 +230,7 @@ export interface IUserContext {
     selectedUserSubPage: string
     setSelectedUserSubPage: (payload: string) => void
     userData: any // Partial<IUser>
+    setUserData: (payload: any) => void
     userDataLoading: boolean
     userPosts: IPost[]
     userPostsLoading: boolean

@@ -1,4 +1,4 @@
-.column {
+.wrapper {
     display: flex;
     flex-direction: column;
     // overflow-y: scroll;
@@ -8,7 +8,10 @@
     &.centerY {
         justify-content: center;
     }
+    &.spaceBetween {
+        justify-content: space-between;
+    }
     &.scroll {
-        overflow-y: scroll;
+        overflow: auto;
     }
 }

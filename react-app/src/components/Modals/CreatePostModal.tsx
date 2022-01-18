@@ -386,7 +386,7 @@ const CreatePostModal = (): JSX.Element => {
                 <Row>
                     <Button
                         text='Create Post'
-                        colour='blue'
+                        color='blue'
                         style={{ marginRight: 10 }}
                         disabled={urlLoading || loading || saved}
                         submit

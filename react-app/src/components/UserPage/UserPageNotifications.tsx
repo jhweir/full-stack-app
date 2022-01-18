@@ -6,6 +6,7 @@ import { AccountContext } from '@contexts/AccountContext'
 import { UserContext } from '@contexts/UserContext'
 import styles from '@styles/components/UserPageNotifications.module.scss'
 import NotificationCard from '@components/Cards/NotificationCard'
+import Column from '@components/Column'
 import config from '@src/Config'
 
 const UserPageNotifications = (): JSX.Element => {
@@ -67,10 +68,9 @@ const UserPageNotifications = (): JSX.Element => {
     }, [accountDataLoading, userData.id])
 
     return (
-        <div className={styles.wrapper}>
-            <span className={styles.header}>Notifications</span>
-            <ul className={styles.notifications}>
-                {notifications ? (
+        <Column className={styles.wrapper}>
+            <Column className={styles.notifications}>
+                {notifications.length > 0 ? (
                     notifications.map((notification) => (
                         <NotificationCard
                             key={notification.id}
@@ -82,8 +82,8 @@ const UserPageNotifications = (): JSX.Element => {
                 ) : (
                     <p>No notifications yet</p>
                 )}
-            </ul>
-        </div>
+            </Column>
+        </Column>
     )
 }
 

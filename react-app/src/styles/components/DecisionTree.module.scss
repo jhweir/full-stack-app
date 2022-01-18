@@ -1,8 +1,10 @@
+@import '@styles/Variables';
+
 .wrapper {
     margin-top: 60px;
     // padding: 50px;
     width: 100%;
-    height: calc(100vh - 60px);
+    height: calc(100vh - #{$navbarHeight});
 }
 .mainContent {
     width: 100%;

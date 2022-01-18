@@ -67,6 +67,15 @@ export function onPageBottomReached(set: (payload: boolean) => void): void {
     else set(false)
 }
 
+export function onElementBottomReached(id: string, set: (payload: boolean) => void): void {
+    const element = document.getElementById(id) as HTMLElement
+    const { scrollTop, clientHeight, scrollHeight } = element
+    const offset = 10
+    const height = scrollHeight - clientHeight
+    const bottomReached = scrollTop + offset > height
+    set(bottomReached)
+}
+
 export function allValid(items: any, setItems: (newItems: any) => void): boolean {
     let valid = true
     const newItems = { ...items }

@@ -125,7 +125,7 @@ const PostCardLikeModal = (props: {
                 {loggedIn ? (
                     <Button
                         text={`${postData.accountLike ? 'Remove' : 'Add'} like`}
-                        colour={postData.accountLike ? 'red' : 'blue'}
+                        color={postData.accountLike ? 'red' : 'blue'}
                         style={{ marginTop: likes.length ? 20 : 0 }}
                         loading={loading}
                         onClick={postData.accountLike ? removeLike : addLike}
@@ -134,7 +134,7 @@ const PostCardLikeModal = (props: {
                     <Row centerY style={{ marginTop: likes.length ? 20 : 0 }}>
                         <Button
                             text='Log in'
-                            colour='blue'
+                            color='blue'
                             style={{ marginRight: 5 }}
                             onClick={() => {
                                 setLogInModalOpen(true)

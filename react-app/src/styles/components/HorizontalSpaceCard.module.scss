@@ -1,0 +1,102 @@
+@import '@styles/Variables';
+
+.wrapper {
+    //width: 100%;
+    max-width: 800px;
+    //height: 180px;
+    min-height: 180px;
+    border-radius: 10px;
+    background-color: white;
+    box-shadow: 0 1px 10px 0 rgba(10, 8, 72, 0.05);
+    flex-shrink: 0;
+    overflow: hidden;
+    position: relative;
+
+    .images {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 250px;
+        flex-shrink: 0;
+
+        .coverImage {
+            width: 250px;
+            height: 100%;
+            background-size: cover;
+            position: absolute;
+        }
+
+        .flagImage {}
+    }
+
+    .content {
+        width: 100%;
+        padding: 15px 20px;
+        justify-content: flex-start;
+
+        h1 {
+            font-size: 24px;
+            margin: 0;
+        }
+
+        h2 {
+            font-size: 16px;
+            color: $grey4;
+            margin: 0 0 5px 0;
+        }
+
+        .stats {
+            margin-top: auto;
+            color: $grey5;
+
+            > button {
+                margin-right: 15px;
+            }
+        }
+    }
+
+}
+// .content {
+//     position: relative;
+//     width: 100%;
+//     height: 100%;
+//     display: flex;
+//     flex-direction: column;
+//     align-items: center;
+// }
+// .coverImage {
+//     width: 100%;
+//     height: 110px;
+//     background-size: cover;
+//     background-position: center;
+//     border-top-left-radius: 10px;
+//     border-top-right-radius: 10px;
+//     flex-shrink: 0;
+// }
+// .flagImageWrapper {
+//     width: 100%;
+//     height: 130px;
+//     margin-top: -65px;
+//     display: flex;
+//     justify-content: center;
+// }
+// .text {
+//     width: 250px;
+//     margin-bottom: 10px;
+//     display: flex;
+//     flex-direction: column;
+//     align-items: center;
+// }
+// .title {
+//     font-size: 30px;
+//     line-height: 30px;
+//     margin-top: 10px;
+//     margin-bottom: 5px;
+// }
+// .subTitle {
+//     opacity: 0.6;
+//     margin-bottom: 10px;
+// }
+// .footer {
+//     margin-bottom: 5px;
+//}

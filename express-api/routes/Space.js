@@ -278,10 +278,10 @@ router.get('/space-data', (req, res) => {
                     ON HolonUsers.userId = Users.id
                     WHERE HolonUsers.holonId = Holon.id
                     AND HolonUsers.state = 'active'
-                    AND HolonUsers.relationship = 'follower'
                 )
             )`), 'totalUsers'
         ]
+        // AND HolonUsers.relationship = 'follower'
     }
     Holon.findOne({ 
         where: { handle: handle, state: 'active' },
@@ -320,7 +320,7 @@ router.get('/space-data', (req, res) => {
             {
                 model: Holon,
                 as: 'DirectParentHolons',
-                attributes: ['id', 'handle', 'name', 'description', 'flagImagePath'],
+                attributes: ['id', 'handle', 'name', 'description', 'flagImagePath', totalSpaceChildren],
                 through: { attributes: [], where: { state: 'open' } },
             },
             {
@@ -339,7 +339,15 @@ router.get('/space-data', (req, res) => {
                 as: 'Moderators',
                 attributes: ['id', 'handle', 'name', 'flagImagePath'],
                 through: { where: { relationship: 'moderator', state: 'active' }, attributes: [] }
-            }
+            },
+            {
+                model: User,
+                as: 'HolonUsers',
+                attributes: ['id', 'handle', 'name', 'flagImagePath'],
+                through: { where: { state: 'active' }, attributes: [] },
+                // todo: add limit
+            },
+            // todo: include all users if root space
         ],
     })
     .then(space => {
@@ -351,7 +359,7 @@ router.get('/space-data', (req, res) => {
                 through: { attributes: [], where: { state: 'open' }  }
             }],
             where: { '$DirectParentHolons.id$': space.id, state: 'active' },
-            attributes: ['id', 'handle', 'name', 'flagImagePath', totalSpaceLikes],
+            attributes: ['id', 'handle', 'name', 'flagImagePath', totalSpaceLikes, totalSpaceChildren],
             order: [[ sequelize.literal(`totalLikes`), 'DESC'], ['createdAt', 'DESC']],
             limit: 100,
             offset: 0,
@@ -359,7 +367,22 @@ router.get('/space-data', (req, res) => {
         })
         .then(spaces => {
             space.setDataValue('DirectChildHolons', spaces)
-            res.send(space)
+            if (space.id !== 1) res.send(space)
+            else {
+                User.findAll({
+                    where: {
+                        emailVerified: true,
+                        flagImagePath: { [Op.ne]: null }
+                    },
+                    attributes: ['flagImagePath'],
+                    order: [['createdAt', 'DESC']],
+                    limit: 3
+                }).then(users => {
+                    space.setDataValue('HolonUsers', users)
+                    res.send(space)
+                })
+                
+            }
         })
         
         // res.send(holon)
@@ -705,6 +728,8 @@ router.get('/space-spaces', (req, res) => {
         offset
     } = req.query
 
+    console.log('req.query: ', req.query)
+
     // Double query required to to prevent results and pagination being effected by top level where clause.
     // Intial query used to find correct posts with calculated stats and pagination applied.
     // Second query used to return related models.
@@ -713,7 +738,7 @@ router.get('/space-spaces', (req, res) => {
         order: findOrder(sortOrder, sortBy),
         attributes: findSpaceFirstAttributes(sortBy),
         include: findSpaceInclude(depth),
-        limit: Number(limit),
+        limit: Number(limit) || null,
         offset: Number(offset),
         subQuery: false,
     })

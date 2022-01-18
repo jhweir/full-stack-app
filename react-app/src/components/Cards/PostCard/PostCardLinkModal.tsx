@@ -251,7 +251,7 @@ const PostCardLinkModal = (props: {
                             {link.Creator.id === accountData.id && (
                                 <Button
                                     text='Delete'
-                                    colour='blue'
+                                    color='blue'
                                     size='small'
                                     onClick={() => removeLink('incoming', link.id, link.PostA.id)}
                                 />
@@ -282,7 +282,7 @@ const PostCardLinkModal = (props: {
                             {link.Creator.id === accountData.id && (
                                 <Button
                                     text='Delete'
-                                    colour='blue'
+                                    color='blue'
                                     size='small'
                                     onClick={() => removeLink('outgoing', link.id, link.PostB.id)}
                                 />
@@ -313,13 +313,13 @@ const PostCardLinkModal = (props: {
                         onChange={(v) => updateValue('linkDescription', v)}
                         style={{ marginBottom: 30 }}
                     />
-                    <Button text='Add link' colour='blue' onClick={addLink} loading={loading} />
+                    <Button text='Add link' color='blue' onClick={addLink} loading={loading} />
                 </Column>
             ) : (
                 <Row centerY style={{ marginTop: links.length ? 20 : 0 }}>
                     <Button
                         text='Log in'
-                        colour='blue'
+                        color='blue'
                         style={{ marginRight: 5 }}
                         onClick={() => {
                             setLogInModalOpen(true)

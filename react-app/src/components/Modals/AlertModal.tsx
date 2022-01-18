@@ -15,9 +15,9 @@ const AlertModal = (): JSX.Element => {
         <Modal close={() => setAlertModalOpen(false)} centered>
             <h1>{alertMessage}</h1>
             {alertMessage.includes('Log in') ? (
-                <Button text='Log in' colour='blue' onClick={() => logIn()} />
+                <Button text='Log in' color='blue' onClick={() => logIn()} />
             ) : (
-                <Button text='Ok' colour='blue' onClick={() => setAlertModalOpen(false)} />
+                <Button text='Ok' color='blue' onClick={() => setAlertModalOpen(false)} />
             )}
         </Modal>
     )

@@ -65,7 +65,7 @@ const DeleteSpaceModal = (props: { close: () => void }): JSX.Element => {
                     <Button
                         submit
                         text='Delete space'
-                        colour='red'
+                        color='red'
                         style={{ marginRight: 10 }}
                         disabled={loading}
                     />

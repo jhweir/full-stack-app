@@ -1,22 +1,22 @@
 import React, { useContext } from 'react'
 import { Link } from 'react-router-dom'
 import { AccountContext } from '@contexts/AccountContext'
-import styles from '@styles/components/NavBarDropDownModal.module.scss'
+import styles from '@styles/components/NavbarDropDownModal.module.scss'
 import CloseOnClickOutside from '@components/CloseOnClickOutside'
 
-const NavBarDropDownModal = (): JSX.Element => {
-    const { setNavBarDropDownModalOpen, accountData, logOut } = useContext(AccountContext)
+const NavbarDropDownModal = (): JSX.Element => {
+    const { setNavbarDropDownModalOpen, accountData, logOut } = useContext(AccountContext)
 
     return (
         <div className={styles.modalWrapper}>
             {/* <div className={styles.modalPositioner}> */}
-            <CloseOnClickOutside onClick={() => setNavBarDropDownModalOpen(false)}>
+            <CloseOnClickOutside onClick={() => setNavbarDropDownModalOpen(false)}>
                 <div className={styles.modal}>
                     {/* <Link
                             to={`/u/${accountData.handle}/notifications`}
                             className={styles.link}
                             onClick={() => {
-                                setNavBarDropDownModalOpen(false)
+                                setNavbarDropDownModalOpen(false)
                             }}
                         >
                             <img
@@ -41,7 +41,7 @@ const NavBarDropDownModal = (): JSX.Element => {
                             to={`/u/${accountData.handle}/messages`}
                             className={styles.link}
                             onClick={() => {
-                                setNavBarDropDownModalOpen(false)
+                                setNavbarDropDownModalOpen(false)
                             }}
                         >
                             <img
@@ -55,7 +55,7 @@ const NavBarDropDownModal = (): JSX.Element => {
                             to={`/u/${accountData.handle}/posts`}
                             className={styles.link}
                             onClick={() => {
-                                setNavBarDropDownModalOpen(false)
+                                setNavbarDropDownModalOpen(false)
                             }}
                         >
                             <img
@@ -69,7 +69,7 @@ const NavBarDropDownModal = (): JSX.Element => {
                         to={`/u/${accountData.handle}/about`}
                         className={styles.link}
                         onClick={() => {
-                            setNavBarDropDownModalOpen(false)
+                            setNavbarDropDownModalOpen(false)
                         }}
                     >
                         <img className={styles.linkIcon} src='/icons/user-solid.svg' />
@@ -79,7 +79,7 @@ const NavBarDropDownModal = (): JSX.Element => {
                             to={`/u/${accountData.handle}/settings`}
                             className={styles.link}
                             onClick={() => {
-                                setNavBarDropDownModalOpen(false)
+                                setNavbarDropDownModalOpen(false)
                             }}
                         >
                             <img
@@ -95,11 +95,11 @@ const NavBarDropDownModal = (): JSX.Element => {
                         tabIndex={0}
                         onClick={() => {
                             logOut()
-                            setNavBarDropDownModalOpen(false)
+                            setNavbarDropDownModalOpen(false)
                         }}
                         onKeyDown={() => {
                             logOut()
-                            setNavBarDropDownModalOpen(false)
+                            setNavbarDropDownModalOpen(false)
                         }}
                     >
                         Log Out
@@ -111,4 +111,4 @@ const NavBarDropDownModal = (): JSX.Element => {
     )
 }
 
-export default NavBarDropDownModal
+export default NavbarDropDownModal

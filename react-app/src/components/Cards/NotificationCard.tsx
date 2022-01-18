@@ -65,14 +65,14 @@ const State = (props: {
                 <>
                     <Button
                         text='Accept'
-                        colour='blue'
+                        color='blue'
                         size='small'
                         style={{ marginRight: 5 }}
                         onClick={() => respond('accepted')}
                     />
                     <Button
                         text='Reject'
-                        colour='green'
+                        color='aqua'
                         size='small'
                         style={{ marginRight: 5 }}
                         onClick={() => respond('rejected')}

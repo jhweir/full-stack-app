@@ -8,6 +8,7 @@
     &.clickable {
         cursor: pointer;
     }
+    
     // &.shadow {
     //     box-shadow: 0 0 5px rgb(0 0 0 / 10%);
     // }
@@ -15,5 +16,8 @@
         margin: 0 0 0 5px !important;
         font-size: 14px;
         white-space: nowrap;
+        &.wrapText {
+            white-space: normal;
+        }
     }
 }

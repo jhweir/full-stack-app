@@ -1,0 +1,28 @@
+@import '@styles/Variables';
+
+.wrapper {
+    width: 100%;
+    margin-top: 60px;
+
+    .content {
+        margin-left: 300px;
+        width: calc(100% - 300px);
+        // background-color: $grey1;
+
+        .sticky {
+            position: -webkit-sticky;
+            position: sticky;
+            top: -130px;
+            background-color: $grey1;
+        }
+
+        @media screen and (max-width: 1500px) {
+            margin-left: 270px;
+            width: calc(100% - 270px);
+        }
+
+        .centerPanel {}
+    }
+
+
+}

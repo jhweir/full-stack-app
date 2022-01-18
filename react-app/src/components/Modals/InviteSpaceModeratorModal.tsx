@@ -107,7 +107,7 @@ const InviteSpaceModeratorModal = (props: { close: () => void }): JSX.Element =>
                 <div className={styles.footer}>
                     <Button
                         text='Send invite'
-                        colour='blue'
+                        color='blue'
                         style={{ marginRight: 10 }}
                         disabled={loading || showSuccessMessage || !selectedUser}
                         submit

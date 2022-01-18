@@ -4,8 +4,9 @@ import styles from '../styles/components/SearchBar.module.scss'
 const SearchBar = (props: {
     setSearchFilter: (payload: string) => void
     placeholder: string
+    style?: any
 }): JSX.Element => {
-    const { setSearchFilter, placeholder } = props
+    const { setSearchFilter, placeholder, style } = props
     const [newSearch, setNewSearch] = useState('')
 
     function applySearch(e) {
@@ -14,7 +15,7 @@ const SearchBar = (props: {
     }
 
     return (
-        <form className={styles.searchBar} onSubmit={applySearch}>
+        <form className={styles.searchBar} onSubmit={applySearch} style={style}>
             <input
                 className={styles.input}
                 type='text'
@@ -25,6 +26,10 @@ const SearchBar = (props: {
             <button className={styles.button} type='submit' aria-label='search button' />
         </form>
     )
+}
+
+SearchBar.defaultProps = {
+    style: null,
 }
 
 export default SearchBar

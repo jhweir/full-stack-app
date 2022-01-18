@@ -119,7 +119,7 @@ const RemoveChildSpaceModal = (props: { close: () => void }): JSX.Element => {
                     <Button
                         submit
                         text='Remove child space'
-                        colour='blue'
+                        color='blue'
                         style={{ marginRight: 10 }}
                         disabled={loading || showSuccessMessage || !selectedSpace}
                     />

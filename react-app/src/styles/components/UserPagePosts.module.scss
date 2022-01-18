@@ -1,69 +1,27 @@
+@import '@styles/Variables';
+
 .wrapper {
     width: 100%;
-    //height: 800px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-}
-.header {
-    height: 50px;
-    padding: 0 20px;
     margin-bottom: 10px;
-    background-color: white;
-    border-radius: 10px;
-    font-size: 18px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-}
-.headerRow {
-    width: 100%;
-    margin-bottom: 10px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    > div {
-        display: flex;
-        flex-direction: row;
-        > form,button {
-            margin-right: 10px;
+
+    .header {
+        padding: 15px $pageContentHorizontalPadding;
+        position: -webkit-sticky;
+        position: sticky;
+        top: 147px;
+        z-index: $headerZIndex;
+        background-color: $grey1;
+    }
+
+    .content {
+        width: 100%;
+        height: calc(100vh - 230px);
+
+        .posts {
+            flex-shrink: 0;
+            padding: 0 20px 0 $pageContentHorizontalPadding !important;
+            position: relative;
+            width: 850px;
         }
     }
-}
-.createdPostsHeader {
-    width: 100%;
-    height: 80px;
-    padding: 20px;
-}
-.userPosts {
-    width: 700px;
-}
-.filterButton {
-    height: 40px;
-    border-radius: 5px;
-    padding: 0 15px;
-    background-color: rgba(0,0,0,0.04);
-    margin-right: 10px;
-    font-size: 14px;
-    font-weight: 800;
-    color: rgba(0,0,0,0.6);
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    transition-property: background-color, color;
-    transition-duration: 0.3s, 0.3s;
-    &:hover {
-        cursor: pointer;
-        background-color: rgba(0,0,0,0.08);// rgba(255, 255, 255, 1);
-        color: rgba(0,0,0,0.8);
-        .filterButtonIcon { opacity: 0.6; }
-    }
-}
-.filterButtonIcon {
-    width: 20px;
-    opacity: 0.4;
-    transition-property: opacity;
-    transition-duration: 0.5s;
 }

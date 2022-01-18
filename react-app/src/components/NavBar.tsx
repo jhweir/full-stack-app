@@ -1,36 +1,36 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { AccountContext } from '@contexts/AccountContext'
-import styles from '@styles/components/NavBar.module.scss'
+import styles from '@styles/components/Navbar.module.scss'
 import config from '@src/Config'
 import FlagImage from '@components/FlagImage'
-import ImageTitle from '@components/ImageTitle'
+// import ImageTitle from '@components/ImageTitle'
 import Button from '@components/Button'
 import { ReactComponent as NotificationIconSVG } from '@svgs/bell-solid.svg'
-import { ReactComponent as MessageIconSVG } from '@svgs/envelope-solid.svg'
+// import { ReactComponent as MessageIconSVG } from '@svgs/envelope-solid.svg'
 import { ReactComponent as SettingsIconSVG } from '@svgs/cog-solid.svg'
 
-const NavBar = (): JSX.Element => {
+const Navbar = (): JSX.Element => {
     const {
         loggedIn,
         accountData,
         setLogInModalOpen,
         navBarDropDownModalOpen,
-        setNavBarDropDownModalOpen,
+        setNavbarDropDownModalOpen,
     } = useContext(AccountContext)
     // const { fullScreen, setFullScreen } = useContext(SpaceContext)
 
     const [exploreDropDownOpen, setExploreDropDownOpen] = useState(false)
-    const [selectedNavBarItem, setSelectedNavBarItem] = useState('')
+    const [selectedNavbarItem, setSelectedNavbarItem] = useState('')
 
     useEffect(() => {
         const url = window.location.href
         if (url === `${config.appURL}/` || url.includes(`${config.appURL}?alert`))
-            setSelectedNavBarItem('home')
-        else if (url === `${config.appURL}/s/all/posts`) setSelectedNavBarItem('posts')
-        else if (url === `${config.appURL}/s/all/spaces`) setSelectedNavBarItem('spaces')
-        else if (url === `${config.appURL}/s/all/users`) setSelectedNavBarItem('users')
-        else setSelectedNavBarItem('')
+            setSelectedNavbarItem('home')
+        else if (url === `${config.appURL}/s/all/posts`) setSelectedNavbarItem('posts')
+        else if (url === `${config.appURL}/s/all/spaces`) setSelectedNavbarItem('spaces')
+        else if (url === `${config.appURL}/s/all/users`) setSelectedNavbarItem('users')
+        else setSelectedNavbarItem('')
     }, [window.location.pathname])
 
     return (
@@ -41,7 +41,7 @@ const NavBar = (): JSX.Element => {
                     {/* <img className={styles.navBarIcon} src='/icons/home-solid.svg' alt='' /> */}
                     <div
                         className={`${styles.navBarText} ${
-                            selectedNavBarItem === 'home' && styles.selected
+                            selectedNavbarItem === 'home' && styles.selected
                         }`}
                     >
                         Home
@@ -83,13 +83,13 @@ const NavBar = (): JSX.Element => {
                                 />
                                 <div className={styles.dropDownText}>Spaces</div>
                             </Link>
-                            <Link to='/s/all/users' className={styles.exploreDropDownItem}>
+                            <Link to='/s/all/people' className={styles.exploreDropDownItem}>
                                 <img
                                     className={styles.navBarIcon}
                                     src='/icons/users-solid.svg'
                                     alt=''
                                 />
-                                <div className={styles.dropDownText}>Users</div>
+                                <div className={styles.dropDownText}>People</div>
                             </Link>
                         </div>
                     )}
@@ -121,20 +121,20 @@ const NavBar = (): JSX.Element => {
                     <button
                         type='button'
                         className={styles.profileButton}
-                        onClick={() => setNavBarDropDownModalOpen(!navBarDropDownModalOpen)}
+                        onClick={() => setNavbarDropDownModalOpen(!navBarDropDownModalOpen)}
                     >
                         <FlagImage type='user' size={40} imagePath={accountData.flagImagePath} />
                         {/* <span className={styles.userName}>{accountData.name}</span> */}
                     </button>
                 </div>
             ) : (
-                <Button text='Log in' colour='blue' onClick={() => setLogInModalOpen(true)} />
+                <Button text='Log in' color='blue' onClick={() => setLogInModalOpen(true)} />
             )}
         </div>
     )
 }
 
-export default NavBar
+export default Navbar
 
 // function toggleDarkMode() {
 //     document.body.classList.toggle("dark-mode"); // look into useRef
@@ -155,7 +155,7 @@ export default NavBar
 
 /* <div className="navBar-text" 
         onClick={() => redirectTo('/s/all', 'all')}>
-        HolonPagePosts
+        SpacePagePosts
     </div> |
     <div className="navBar-text"
         onClick={() => redirectTo('/s/all/spaces', 'all')}>

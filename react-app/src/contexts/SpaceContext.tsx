@@ -70,8 +70,8 @@ function SpaceContextProvider({ children }: { children: JSX.Element }): JSX.Elem
     const [nextSpacePostsLoading, setNextSpacePostsLoading] = useState(false)
     const [spaceSpacesLoading, setSpaceSpacesLoading] = useState(false)
     const [nextSpaceSpacesLoading, setNextSpaceSpacesLoading] = useState(false)
-    const [spaceUsersLoading, setSpaceUsersLoading] = useState(false)
-    const [nextSpaceUsersLoading, setNextSpaceUsersLoading] = useState(false)
+    const [spacePeopleLoading, setSpacePeopleLoading] = useState(false)
+    const [nextSpacePeopleLoading, setNextSpacePeopleLoading] = useState(false)
 
     const [spacePosts, setSpacePosts] = useState<any[]>([])
     const [totalMatchingPosts, setTotalMatchingPosts] = useState(0)
@@ -89,18 +89,18 @@ function SpaceContextProvider({ children }: { children: JSX.Element }): JSX.Elem
     const [spaceSpacesPaginationOffset, setSpaceSpacesPaginationOffset] = useState(0)
     const [spaceSpacesPaginationHasMore, setSpaceSpacesPaginationHasMore] = useState(true)
 
-    const [spaceUsers, setSpaceUsers] = useState<any[]>([])
-    const [spaceUsersFiltersOpen, setSpaceUsersFiltersOpen] = useState(false)
-    const [spaceUsersFilters, setSpaceUsersFilters] = useState(defaults.userFilters)
-    const [spaceUsersPaginationLimit, setSpaceUsersPaginationLimit] = useState(10)
-    const [spaceUsersPaginationOffset, setSpaceUsersPaginationOffset] = useState(0)
-    const [spaceUsersPaginationHasMore, setSpaceUsersPaginationHasMore] = useState(true)
+    const [spacePeople, setSpacePeople] = useState<any[]>([])
+    const [spacePeopleFiltersOpen, setSpacePeopleFiltersOpen] = useState(false)
+    const [spacePeopleFilters, setSpacePeopleFilters] = useState(defaults.userFilters)
+    const [spacePeoplePaginationLimit, setSpacePeoplePaginationLimit] = useState(10)
+    const [spacePeoplePaginationOffset, setSpacePeoplePaginationOffset] = useState(0)
+    const [spacePeoplePaginationHasMore, setSpacePeoplePaginationHasMore] = useState(true)
 
     function getSpaceData(handle, returnFunction) {
         console.log(`SpaceContext: getSpaceData (${handle})`)
         setSpaceDataLoading(true)
         axios.get(`${config.apiURL}/space-data?handle=${handle}`).then((res) => {
-            // console.log('res.data: ', res.data)
+            console.log('res.data: ', res.data)
             setSpaceData(res.data || defaults.spaceData)
             setSpaceDataLoading(false)
             if (returnFunction) returnFunction(res.data.id)
@@ -166,11 +166,11 @@ function SpaceContextProvider({ children }: { children: JSX.Element }): JSX.Elem
             })
     }
 
-    function getSpaceUsers(spaceId, offset, limit) {
-        console.log(`SpaceContext: getSpaceUsers (${offset} to ${offset + limit})`)
+    function getSpacePeople(spaceId, offset, limit) {
+        console.log(`SpaceContext: getSpacePeople (${offset} to ${offset + limit})`)
         const firstLoad = offset === 0
-        if (firstLoad) setSpaceUsersLoading(true)
-        else setNextSpaceUsersLoading(true)
+        if (firstLoad) setSpacePeopleLoading(true)
+        else setNextSpacePeopleLoading(true)
         const isRootSpace = spaceId === 1
         axios
             .get(
@@ -178,21 +178,21 @@ function SpaceContextProvider({ children }: { children: JSX.Element }): JSX.Elem
                 `${config.apiURL}/${isRootSpace ? 'all-users' : 'space-users'
                 }?accountId=${accountData.id
                 }&spaceId=${spaceId
-                }&timeRange=${spaceUsersFilters.timeRange
-                }&spaceType=${spaceUsersFilters.type
-                }&sortBy=${spaceUsersFilters.sortBy
-                }&sortOrder=${spaceUsersFilters.sortOrder
-                }&searchQuery=${spaceUsersFilters.searchQuery
+                }&timeRange=${spacePeopleFilters.timeRange
+                }&spaceType=${spacePeopleFilters.type
+                }&sortBy=${spacePeopleFilters.sortBy
+                }&sortOrder=${spacePeopleFilters.sortOrder
+                }&searchQuery=${spacePeopleFilters.searchQuery
                 }&limit=${limit
                 }&offset=${offset}`
             )
             .then((res) => {
                 // console.log('res.data: ', res.data)
-                setSpaceUsers(firstLoad ? res.data : [...spaceUsers, ...res.data])
-                setSpaceUsersPaginationHasMore(res.data.length === spaceUsersPaginationLimit)
-                setSpaceUsersPaginationOffset(offset + spaceUsersPaginationLimit)
-                if (firstLoad) setSpaceUsersLoading(false)
-                else setNextSpaceUsersLoading(false)
+                setSpacePeople(firstLoad ? res.data : [...spacePeople, ...res.data])
+                setSpacePeoplePaginationHasMore(res.data.length === spacePeoplePaginationLimit)
+                setSpacePeoplePaginationOffset(offset + spacePeoplePaginationLimit)
+                if (firstLoad) setSpacePeopleLoading(false)
+                else setNextSpacePeopleLoading(false)
             })
     }
 
@@ -215,9 +215,9 @@ function SpaceContextProvider({ children }: { children: JSX.Element }): JSX.Elem
         setSpaceSpacesFilters({ ...spaceSpacesFilters, [key]: payload })
     }
 
-    function updateSpaceUsersFilter(key, payload) {
-        console.log(`SpaceContext: updateSpaceUsersFilter (${key}: ${payload})`)
-        setSpaceUsersFilters({ ...spaceUsersFilters, [key]: payload })
+    function updateSpacePeopleFilter(key, payload) {
+        console.log(`SpaceContext: updateSpacePeopleFilter (${key}: ${payload})`)
+        setSpacePeopleFilters({ ...spacePeopleFilters, [key]: payload })
     }
 
     function resetSpaceData() {
@@ -241,12 +241,12 @@ function SpaceContextProvider({ children }: { children: JSX.Element }): JSX.Elem
         setSpaceSpacesPaginationHasMore(true)
     }
 
-    function resetSpaceUsers() {
-        console.log('SpaceContext: resetSpaceUsers')
-        setSpaceUsers([])
-        setSpaceUsersPaginationLimit(10)
-        setSpaceUsersPaginationOffset(0)
-        setSpaceUsersPaginationHasMore(true)
+    function resetSpacePeople() {
+        console.log('SpaceContext: resetSpacePeople')
+        setSpacePeople([])
+        setSpacePeoplePaginationLimit(10)
+        setSpacePeoplePaginationOffset(0)
+        setSpacePeoplePaginationHasMore(true)
     }
 
     useEffect(() => {
@@ -275,8 +275,8 @@ function SpaceContextProvider({ children }: { children: JSX.Element }): JSX.Elem
                 nextSpacePostsLoading,
                 spaceSpacesLoading,
                 nextSpaceSpacesLoading,
-                spaceUsersLoading,
-                nextSpaceUsersLoading,
+                spacePeopleLoading,
+                nextSpacePeopleLoading,
 
                 spacePosts,
                 setSpacePosts,
@@ -297,26 +297,26 @@ function SpaceContextProvider({ children }: { children: JSX.Element }): JSX.Elem
                 spaceSpacesPaginationOffset,
                 spaceSpacesPaginationHasMore,
 
-                spaceUsers,
-                spaceUsersFilters,
-                spaceUsersFiltersOpen,
-                setSpaceUsersFiltersOpen,
-                spaceUsersPaginationLimit,
-                spaceUsersPaginationOffset,
-                spaceUsersPaginationHasMore,
+                spacePeople,
+                spacePeopleFilters,
+                spacePeopleFiltersOpen,
+                setSpacePeopleFiltersOpen,
+                spacePeoplePaginationLimit,
+                spacePeoplePaginationOffset,
+                spacePeoplePaginationHasMore,
 
                 getSpaceData,
                 getSpacePosts,
                 getSpaceSpaces,
-                getSpaceUsers,
+                getSpacePeople,
 
                 updateSpacePostsFilter,
                 updateSpaceSpacesFilter,
-                updateSpaceUsersFilter,
+                updateSpacePeopleFilter,
                 resetSpaceData,
                 resetSpacePosts,
                 resetSpaceSpaces,
-                resetSpaceUsers,
+                resetSpacePeople,
             }}
         >
             {children}

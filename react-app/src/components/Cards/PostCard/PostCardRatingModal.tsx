@@ -159,7 +159,7 @@ const PostCardRatingModal = (props: {
                     )}
                     <Button
                         text={`${postData.accountRating ? 'Remove' : 'Add'} rating`}
-                        colour={postData.accountRating ? 'red' : 'blue'}
+                        color={postData.accountRating ? 'red' : 'blue'}
                         disabled={newRating > 100}
                         loading={loading}
                         onClick={postData.accountRating ? removeRating : addRating}
@@ -169,7 +169,7 @@ const PostCardRatingModal = (props: {
                 <Row centerY style={{ marginTop: ratings.length ? 20 : 0 }}>
                     <Button
                         text='Log in'
-                        colour='blue'
+                        color='blue'
                         style={{ marginRight: 5 }}
                         onClick={() => {
                             setLogInModalOpen(true)

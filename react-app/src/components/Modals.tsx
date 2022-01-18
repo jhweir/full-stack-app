@@ -1,12 +1,12 @@
 import React, { useContext } from 'react'
 import { AccountContext } from '@contexts/AccountContext'
 import AlertModal from '@components/Modals/AlertModal'
-import NavBarDropDownModal from '@components/Modals/NavBarDropDownModal'
+import NavbarDropDownModal from '@components/Modals/NavbarDropDownModal'
 import ImageUploadModal from '@components/Modals/ImageUploadModal'
 import CreatePostModal from '@components/Modals/CreatePostModal'
 // import CreateSpaceModal from './Modals/CreateSpaceModal'
 // import CreateCommentModal from './Modals/CreateCommentModal'
-import SettingModal from '@components/Modals/SettingModal'
+// import SettingModal from '@components/Modals/SettingModal'
 import ResetPasswordModal from '@components/Modals/ResetPasswordModal'
 import LogInModal from '@components/Modals/LogInModal'
 import RegisterModal from '@components/Modals/RegisterModal'
@@ -26,7 +26,7 @@ const Modals = (): JSX.Element => {
         createPostModalOpen,
         // createSpaceModalOpen,
         // createCommentModalOpen,
-        settingModalOpen,
+        // settingModalOpen,
         resetPasswordModalOpen,
     } = useContext(AccountContext)
 
@@ -38,12 +38,12 @@ const Modals = (): JSX.Element => {
             {forgotPasswordModalOpen && (
                 <ForgotPasswordModal close={() => setForgotPasswordModalOpen(false)} />
             )}
-            {navBarDropDownModalOpen && <NavBarDropDownModal />}
+            {navBarDropDownModalOpen && <NavbarDropDownModal />}
             {imageUploadModalOpen && <ImageUploadModal />}
             {createPostModalOpen && <CreatePostModal />}
             {/* {createSpaceModalOpen && <CreateSpaceModal />} */}
             {/* {createCommentModalOpen && <CreateCommentModal />} */}
-            {settingModalOpen && <SettingModal />}
+            {/* {settingModalOpen && <SettingModal />} */}
             {resetPasswordModalOpen && <ResetPasswordModal />}
         </>
     )

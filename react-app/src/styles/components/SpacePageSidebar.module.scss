@@ -1,0 +1,132 @@
+@import '@styles/Variables';
+
+.wrapper {
+    width: $sidebarWidth;
+    height: 100%;
+    background-color: white;
+    position: fixed;
+    left: 70px;
+    flex-shrink: 0;
+    z-index: $sidebarZIndex;
+    // background-color: $white;
+
+    .flagImage {
+        width: $sidebarWidth;
+        height: $sidebarWidth;
+        object-fit: cover;
+        flex-shrink: 0;
+        position: relative;
+
+        .uploadButton {
+            all: unset;
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+            background-color: rgba(black, 0.4);
+            color: white;
+            font-size: 16px;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition-property: opacity;
+            transition-duration: 0.3s;
+            &:hover {
+                opacity: 1;
+            }
+        }
+    }
+
+    @media screen and (max-width: 1500px) {
+        width: $sidebarWidth - 30px;
+        .flagImage {
+            width: $sidebarWidth - 30px;
+            height: $sidebarWidth - 30px;
+        }
+    }
+
+    .content {
+        display: flex;
+        flex-direction: column;
+        padding: 10px 10px 10px 20px;
+        > h1 {
+            font-size: 32px;
+            line-height: 36px;
+            margin: 0 0 5px 0 !important;
+        }
+        > p {
+            margin-bottom: 20px;
+        }
+
+        .followButton {
+            all: unset;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            color: $grey5;
+            > svg {
+                width: 20px;
+                height: 20px;
+                margin-right: 5px;
+            }
+        }
+
+        .description {
+            max-height: 100px;
+            overflow: hidden;
+            margin: 0 0 20px 0;
+        }
+
+        .spacesWrapper {
+            margin: 10px 0;
+            //height: 100%;
+            max-height: 400px;
+            //background-color: red;
+            //overflow: auto;
+
+            > div {
+                > svg {
+                    width: 20px;
+                    height: 20px;
+                    margin-right: 10px;
+                    color: $grey4;
+                }
+                > p {
+                    color: $grey5;
+                    margin-bottom: 10px;
+                }
+            }
+
+            .spaces {
+                padding-right: 10px;
+
+                .expandSpaceButton {
+                    all: unset;
+                    cursor: pointer;
+                    color: $grey4;
+                    width: 20px;
+                    height: 20px;
+                    margin-left: 2px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    // transition: color 0.5s;
+                    > svg {
+                        width: 10px;
+                        height: 10px;
+                        //transition: color 0.5s;
+                        // color: $grey4;
+                        //transition: color 0.5s;
+                    }
+                    &:hover {
+                        color: $grey6;
+                    }
+                }
+            }
+        }
+    }
+}

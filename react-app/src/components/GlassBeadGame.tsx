@@ -289,7 +289,7 @@ const GameSettingsModal = (props) => {
                     {!saved && (
                         <Button
                             text='Start game'
-                            colour='blue'
+                            color='blue'
                             disabled={loading || saved}
                             submit
                         />
@@ -777,6 +777,10 @@ const GlassBeadGame = (): JSX.Element => {
 
         setShowBackgroundVideo(true)
         setBackgroundVideoModalOpen(false)
+        // todo: use YouTube embed api
+
+        // const video = document.getElementById('#videoBackground') as 
+        // if (video) video.playVideo()
     }
 
     // todo: flatten out userData into user object with socketId
@@ -1032,6 +1036,7 @@ const GlassBeadGame = (): JSX.Element => {
             {showBackgroundVideo && (
                 <iframe
                     className={styles.videoBackground}
+                    id='videoBackground'
                     title='videoBackground'
                     src={`https://www.youtube.com/embed/${youTubeUrl}?t=9&autoplay=1&mute=1&enablejsapi=1`} // PyFN_FYwqvc lXBr5tZu60o 6whHTP6L2Is UgHKb_7884o b7Cl7S0pLRw
                 />
@@ -1055,7 +1060,7 @@ const GlassBeadGame = (): JSX.Element => {
                             value={newComment}
                             onChange={(v) => setNewComment(v)}
                         />
-                        <Button text='Send' colour='blue' submit />
+                        <Button text='Send' color='blue' submit />
                     </form>
                     <button
                         type='button'
@@ -1070,7 +1075,7 @@ const GlassBeadGame = (): JSX.Element => {
                         <div className={styles.gameControls}>
                             <Button
                                 text='Stop game'
-                                colour='red'
+                                color='red'
                                 style={{ marginBottom: 10 }}
                                 onClick={signalStopGame}
                             />
@@ -1097,7 +1102,7 @@ const GlassBeadGame = (): JSX.Element => {
                         <div className={styles.gameControls}>
                             <Button
                                 text={`${userIsStreaming ? 'Disconnect' : 'Connect'} audio/video`}
-                                colour={userIsStreaming ? 'red' : 'grey'}
+                                color={userIsStreaming ? 'red' : 'grey'}
                                 style={{ marginBottom: 10 }}
                                 loading={loadingStream}
                                 disabled={loadingStream}
@@ -1112,14 +1117,14 @@ const GlassBeadGame = (): JSX.Element => {
                                 <>
                                     <Button
                                         text={`${beads.length ? 'Restart' : 'Start'} game`}
-                                        colour='grey'
+                                        color='grey'
                                         style={{ marginBottom: 10 }}
                                         onClick={() => setGameSettingsModalOpen(true)}
                                     />
                                     {beads.length > 0 && (
                                         <Button
                                             text='Save and lock game'
-                                            colour='grey'
+                                            color='grey'
                                             style={{ marginBottom: 10 }}
                                             onClick={saveGame}
                                         />
@@ -1128,7 +1133,7 @@ const GlassBeadGame = (): JSX.Element => {
                             )}
                             <Button
                                 text={`${showBackgroundVideo ? 'Remove' : 'Add'} background video`}
-                                colour={showBackgroundVideo ? 'red' : 'grey'}
+                                color={showBackgroundVideo ? 'red' : 'grey'}
                                 style={{ marginBottom: 10 }}
                                 onClick={() =>
                                     showBackgroundVideo
@@ -1150,7 +1155,7 @@ const GlassBeadGame = (): JSX.Element => {
                                     />
                                     <Button
                                         text='Add video'
-                                        colour='blue'
+                                        color='blue'
                                         disabled={!youTubeUrl.length}
                                         onClick={addBackgroundVideo}
                                     />
@@ -1447,7 +1452,7 @@ export default GlassBeadGame
 //             {!settingsSaved && (
 //                 <Button
 //                     text='Start game'
-//                     colour='blue'
+//                     color='blue'
 //                     disabled={loading}
 //                     submit
 //                 />

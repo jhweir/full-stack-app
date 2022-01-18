@@ -1,0 +1,52 @@
+@import '@styles/Variables';
+
+.wrapper {
+    width: $sidebarSmallWidth;
+    height: 100%;
+    background-color: $black3;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: $sidebarSmallZIndex;
+
+    > p {
+        font-size: 10px;
+        margin-bottom: 10px;
+        color: $grey5;
+        text-align: center;
+    }
+
+    .divider {
+        height: 3px;
+        width: 80%;
+        background-color: $grey7;
+        margin: 10px 0;
+    }
+
+    .followSpaceButton {
+        all: unset;
+        cursor: pointer;
+        background-color: $grey7;
+        &:hover { background-color: $grey6 }
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        > svg {
+            width: 50%;
+            height: 50%;
+            color: $aqua;
+        }
+    }
+    
+}
+.section {
+    //max-height: 480px;
+    overflow: scroll;
+    > a > div {
+        margin-bottom: 10px;
+    }
+}

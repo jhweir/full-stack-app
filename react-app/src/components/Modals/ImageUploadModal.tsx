@@ -2,11 +2,15 @@ import React, { useContext, useState } from 'react'
 import ImageUploader from 'react-images-upload'
 import axios from 'axios'
 import Cookies from 'universal-cookie'
-import { AccountContext } from '../../contexts/AccountContext'
-import { SpaceContext } from '../../contexts/SpaceContext'
-import { UserContext } from '../../contexts/UserContext'
-import styles from '../../styles/components/ImageUploadModal.module.scss'
-import config from '../../Config'
+import { AccountContext } from '@contexts/AccountContext'
+import { SpaceContext } from '@contexts/SpaceContext'
+import { UserContext } from '@contexts/UserContext'
+import styles from '@styles/components/ImageUploadModal.module.scss'
+import config from '@src/Config'
+import Button from '@components/Button'
+import Modal from '@components/Modal'
+import Column from '@components/Column'
+import Row from '@components/Row'
 import CloseButton from '../CloseButton'
 import CloseOnClickOutside from '../CloseOnClickOutside'
 
@@ -56,31 +60,24 @@ const ImageUploadModal = (): JSX.Element => {
     }
 
     return (
-        <div className={styles.imageUploadModalWrapper}>
-            <CloseOnClickOutside onClick={() => setImageUploadModalOpen(false)}>
-                <div className={styles.imageUploadModal}>
-                    <CloseButton size={20} onClick={() => setImageUploadModalOpen(false)} />
-                    <ImageUploader
-                        withIcon
-                        withPreview
-                        buttonText='Choose images'
-                        onChange={(imageFile) => setImage(imageFile)}
-                        imgExtension={['.jpg', '.jpeg', '.gif', '.png']}
-                        maxFileSize={1 * 1024 * 1024}
-                        singleImage
-                    />
-                    <div
-                        className='wecoButton'
-                        role='button'
-                        tabIndex={0}
-                        onClick={() => saveImage()}
-                        onKeyDown={() => saveImage()}
-                    >
-                        Save image
-                    </div>
-                </div>
-            </CloseOnClickOutside>
-        </div>
+        <Modal close={() => setImageUploadModalOpen(false)} centered>
+            <ImageUploader
+                withIcon
+                withPreview
+                buttonText='Choose images'
+                onChange={(imageFile) => setImage(imageFile)}
+                imgExtension={['.jpg', '.jpeg', '.gif', '.png']}
+                maxFileSize={1 * 1024 * 1024}
+                singleImage
+            />
+            <Button
+                text='Save image'
+                color='blue'
+                disabled={!image[0]}
+                style={{ marginRight: 10 }}
+                onClick={saveImage}
+            />
+        </Modal>
     )
 }
 

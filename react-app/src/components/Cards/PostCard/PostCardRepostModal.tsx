@@ -169,7 +169,7 @@ const PostCardRepostModal = (props: {
                     )}
                     <Button
                         text='Repost'
-                        colour='blue'
+                        color='blue'
                         disabled={!selectedSpaces.length}
                         loading={loading}
                         style={{ marginRight: 5 }}
@@ -180,7 +180,7 @@ const PostCardRepostModal = (props: {
                 <Row centerY style={{ marginTop: reposts.length ? 10 : 0 }}>
                     <Button
                         text='Log in'
-                        colour='blue'
+                        color='blue'
                         style={{ marginRight: 5 }}
                         onClick={() => {
                             setLogInModalOpen(true)

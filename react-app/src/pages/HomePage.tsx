@@ -5,35 +5,15 @@ import styles from '@styles/pages/HomePage.module.scss'
 import { AccountContext } from '@contexts/AccountContext'
 import FlagImage from '@components/FlagImage'
 import Button from '@components/Button'
+import FlagImageHighlights from '@components/FlagImageHighlights'
 import config from '@src/Config'
 import { ReactComponent as HandshakeIconSVG } from '@svgs/handshake-solid.svg'
 import { ReactComponent as PollIconSVG } from '@svgs/poll-solid.svg'
 import { ReactComponent as OSIconSVG } from '@svgs/osi-brands.svg'
 import { ReactComponent as ToolsIconSVG } from '@svgs/tools-solid.svg'
+import { pluralise, isPlural } from '@src/Functions'
 // todo: import logo and background images as SVG components
 // import { ReactComponent as BackgroundImageSVG } from '@svgs/earth.svg'
-
-const Highlight = (props: {
-    type: 'post' | 'space' | 'user'
-    text: string
-    imagePaths: string[]
-}): JSX.Element => {
-    const { type, text, imagePaths } = props
-    return (
-        <Link to={`/s/all/${type}s`} className={styles.highlight}>
-            <p>{text}</p>
-            <div style={{ zIndex: 3 }}>
-                <FlagImage type={type} size={45} outline imagePath={imagePaths[0]} />
-            </div>
-            <div style={{ marginLeft: -10, zIndex: 2 }}>
-                <FlagImage type={type} size={45} outline imagePath={imagePaths[1]} />
-            </div>
-            <div style={{ marginLeft: -10, zIndex: 1 }}>
-                <FlagImage type={type} size={45} outline imagePath={imagePaths[2]} />
-            </div>
-        </Link>
-    )
-}
 
 const Homepage = (): JSX.Element => {
     const {
@@ -117,33 +97,47 @@ const Homepage = (): JSX.Element => {
                 <div className={styles.authButtons}>
                     <Button
                         text='Log in'
-                        colour='blue'
+                        color='blue'
                         style={{ marginRight: 10 }}
                         onClick={() => setLogInModalOpen(true)}
                     />
                     <Button
                         text='Create new account'
-                        colour='green'
+                        color='aqua'
                         onClick={() => setRegisterModalOpen(true)}
                     />
                 </div>
 
                 {highlights && (
                     <div className={styles.highlights}>
-                        <Highlight
+                        <FlagImageHighlights
                             type='post'
-                            text={`${highlights.totals.totalPosts} Posts`}
                             imagePaths={highlights.posts}
+                            imageSize={45}
+                            text={`${highlights.totals.totalPosts} Post${pluralise(
+                                highlights.posts.length
+                            )}`}
+                            style={{ marginRight: 30 }}
+                            outline
                         />
-                        <Highlight
+                        <FlagImageHighlights
                             type='space'
-                            text={`${highlights.totals.totalSpaces} Spaces`}
                             imagePaths={highlights.spaces}
+                            imageSize={45}
+                            text={`${highlights.totals.totalSpaces} Space${pluralise(
+                                highlights.totals.totalSpaces
+                            )}`}
+                            style={{ marginRight: 30 }}
+                            outline
                         />
-                        <Highlight
+                        <FlagImageHighlights
                             type='user'
-                            text={`${highlights.totals.totalUsers} Users`}
                             imagePaths={highlights.users}
+                            imageSize={45}
+                            text={`${highlights.totals.totalUsers} ${
+                                isPlural(highlights.totals.totalUsers) ? 'People' : 'Person'
+                            }`}
+                            outline
                         />
                     </div>
                 )}
@@ -151,20 +145,20 @@ const Homepage = (): JSX.Element => {
                 {/* <div className={styles.authButtons}>
                     <Button
                         text='Log in'
-                        colour='blue'
+                        color='blue'
                         style={{ marginRight: 10 }}
                         onClick={() => setLogInModalOpen(true)}
                     />
                     <Button
                         text='Create new account'
-                        colour='green'
+                        color='aqua'
                         onClick={() => setRegisterModalOpen(true)}
                     />
                 </div> */}
             </div>
             <div className={styles.backgroundImage}>
                 {/* <BackgroundImageSVG /> */}
-                <img src='/images/earth.svg' alt='background wave svg' />
+                <img src='/images/homepage-earth.svg' alt='background wave svg' />
             </div>
             <div className={styles.bottom}>
                 <div className={styles.introText}>

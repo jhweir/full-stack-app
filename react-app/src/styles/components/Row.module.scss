@@ -1,4 +1,4 @@
-.row {
+.wrapper {
     display: flex;
     flex-direction: row;
     &.centerX {
@@ -12,5 +12,8 @@
     }
     &.wrap {
         flex-wrap: wrap;
+    }
+    &.scroll {
+        overflow: auto;
     }
 }

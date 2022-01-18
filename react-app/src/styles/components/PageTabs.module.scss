@@ -1,0 +1,41 @@
+@import '@styles/App.scss';
+
+$defaultColor: $black3;
+$highlightColor: $blue5;
+
+.wrapper {
+    width: 100%;
+    border-bottom: 2px solid $grey2;
+    margin-top: 10px;
+    padding: 0 $pageContentHorizontalPadding - 5px;
+    // z-index: 5;
+
+    .tab {
+        padding: 5px;
+        margin: 0 10px;
+        color: $defaultColor;
+        display: flex;
+
+        &:hover {
+            border-bottom: 3px solid $defaultColor;
+        }
+
+        &.selected {
+            border-bottom: 3px solid $highlightColor;
+            color: $highlightColor;
+        }
+
+        > p {
+            font-size: 22px;
+            line-height: 22px;
+        }
+
+        svg {
+            width: 22px;
+            height: 22px;
+            margin-right: 10px;
+        }
+    }
+
+    
+}
