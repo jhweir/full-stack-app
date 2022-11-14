@@ -24,7 +24,7 @@
     "react-images-upload": "^1.2.8",
     "react-markdown": "^5.0.3",
     "react-router-dom": "^5.1.2",
-    "react-scripts": "3.4.1",
+    "react-scripts": "5.0.1",
     "react-transition-group": "^4.3.0",
     "remark-gfm": "^1.0.0",
     "simple-peer": "^9.11.0",
